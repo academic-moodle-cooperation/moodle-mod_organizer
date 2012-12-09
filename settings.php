@@ -70,7 +70,7 @@ $organizersettings->add(
 $pickeroptions = array();
 $pickeroptions['never'] = 'Don\'t send';
 for ($i = 0; $i < 24; $i++) {
-    $pickeroptions[$i * 3600] = userdate($i * 3600, get_string('timetemplate', 'organizer'));
+    $pickeroptions[$i * 3600] = userdate($i * 3600, get_string('timetemplate', 'organizer'), 0);
 }
 
 // Appointment digest

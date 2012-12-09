@@ -802,8 +802,7 @@ function organizer_cron() {
 
     $time = $organizerconfig->digest + mktime(0, 0, 0, date("m"), date("d"), date("Y"));
 
-    // WATCH FOR IT!
-    if (true || ($organizerconfig->digest != 'never' && abs(time() - $time) < 15)) {
+    if ($organizerconfig->digest != 'never' && (abs(time() - $time) < 300)) {
         $params['tomorrowstart'] = mktime(0, 0, 0, date("m"), date("d") + 1, date("Y"));
         $params['tomorrowend'] = mktime(0, 0, 0, date("m"), date("d") + 2, date("Y"));
 
