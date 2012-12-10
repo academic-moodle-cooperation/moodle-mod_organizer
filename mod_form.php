@@ -136,7 +136,10 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         if ($organizerconfig->absolutedeadline != 'never') {
             $absdefault = strtotime($organizerconfig->absolutedeadline);
-            $mform->setDefault('absolutedeadline', $absdefault);
+            $mform->setDefault('enableuntil', $absdefault);
+        } else {
+            $PAGE->requires->js('/mod/organizer/js/jquery-1.7.2.min.js', true);
+            $PAGE->requires->js('/mod/organizer/js/uncheck.js');
         }
 
         $this->standard_coursemodule_elements();
