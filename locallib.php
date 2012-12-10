@@ -148,7 +148,8 @@ function add_event_slot($cmid, $slot) {
     $a->organizerlink = html_writer::link($organizerurl, $organizer->name);
 
     if ($organizer->isgrouporganizer) {
-        $app = reset($DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id)));
+        $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
+        $app = reset($apps);
         if (isset($slot->eventid) && $app) {
             $a->appwith = get_string('eventappwith:group', 'organizer');
             $a->with = get_string('eventwith', 'organizer');
