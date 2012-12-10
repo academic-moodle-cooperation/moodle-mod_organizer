@@ -47,12 +47,10 @@ function organizer_add_instance($organizer) {
     $organizer->timemodified = time();
     if (isset($organizer->enablefrom) && $organizer->enablefrom == 0) {
         unset($organizer->enablefrom);
-        $DB->execute("UPDATE {organizer} SET enablefrom = NULL WHERE id = :id", array('id' => $organizer->id));
     }
 
     if (isset($organizer->enableuntil) && $organizer->enableuntil == 0) {
         unset($organizer->enableuntil);
-        $DB->execute("UPDATE {organizer} SET enableuntil = NULL WHERE id = :id", array('id' => $organizer->id));
     }
 
     $organizer->id = $DB->insert_record('organizer', $organizer);
