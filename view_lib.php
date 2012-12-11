@@ -766,6 +766,7 @@ function generate_registration_table_content($columns, $params, $organizer, $con
                     break;
                 case 'datetime':
                     $cell = $row->cells[] = new html_table_cell(date_time($entry));
+                    $cell->style .= " text-align: left;";
                     break;
                 case 'appdetails':
                     if ($groupmode) {
@@ -797,6 +798,7 @@ function generate_registration_table_content($columns, $params, $organizer, $con
                     break;
                 case 'actions':
                     $cell = $row->cells[] = new html_table_cell(teacher_action_new($params, $entry, $context));
+                    $cell->style .= " text-align: center;";
                     break;
             }
 
