@@ -921,7 +921,7 @@ function get_popup($title, $content) {
 }
 
 function reg_app_details($organizer, $userid) {
-    $appointment = get_last_user_appointment($organizer, $userid);
+    $appointment = get_last_user_appointment($organizer, $userid, false);
     if ($appointment) {
         $list = '';
         if (is_group_mode()) {
