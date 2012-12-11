@@ -586,27 +586,19 @@ function evaluate_slots($data) {
                 continue;
             }
             $newapp->attended = $app['attended'];
-            $newapp->grade = $app['grade'];
-            //             if($app['attended']) {
-            /*
-            if ($organizer->grade >= 0) {
-                $newapp->grade = !isset($app['grade']) || $app['grade'] == -1 ? null : $app['grade'];
+
+            if ($organizer->grade > 0) {
+                $newapp->grade = isset($app['grade']) ? $app['grade'] : -1;
             } else {
-                $newapp->grade = !isset($app['grade']) || $app['grade'] == 0 ? null : $app['grade'];
+                $newapp->grade = isset($app['grade']) ? $app['grade'] : 0;
             }
-            */
-            //             } else {
-            //                 $newapp->grade = null; // TODO: check the min grade option in gradebook!
-            //             }
 
             $newapp->feedback = isset($app['feedback']) ? $app['feedback'] : "";
             $newapp->allownewappointments = $app['allownewappointments'];
 
             $DB->update_record('organizer_slot_appointments', $newapp);
 
-            //             if($app['attended']) {
             organizer_update_grades($organizer, $newapp->userid);
-            //             }
 
             $slotids[] = $newapp->slotid;
         }
