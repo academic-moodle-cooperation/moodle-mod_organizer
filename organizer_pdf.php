@@ -54,7 +54,7 @@ class organizer_pdf extends pdf {
         }
     }
 
-    public function setHeaderData($coursename = '', $organizername = 0, $useless = '', $useless2 = '') {
+    public function setHeaderData($coursename = '', $organizername = 0, $ht = '', $hs = '', $tc = array(0, 0, 0), $lc = array(0, 0, 0)) {
         $this->coursename = $coursename;
         $this->organizername = $organizername;
     }
