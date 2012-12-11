@@ -47,12 +47,10 @@ function organizer_add_instance($organizer) {
     $organizer->timemodified = time();
     if (isset($organizer->enablefrom) && $organizer->enablefrom == 0) {
         unset($organizer->enablefrom);
-        $DB->execute("UPDATE {organizer} SET enablefrom = NULL WHERE id = :id", array('id' => $organizer->id));
     }
 
     if (isset($organizer->enableuntil) && $organizer->enableuntil == 0) {
         unset($organizer->enableuntil);
-        $DB->execute("UPDATE {organizer} SET enableuntil = NULL WHERE id = :id", array('id' => $organizer->id));
     }
 
     $organizer->id = $DB->insert_record('organizer', $organizer);
@@ -921,12 +919,15 @@ function organizer_get_participants($organizerid) {
  *
  * @param int $organizerid ID of an instance of this module
  * @return mixed
- * @todo Finish documenting this function
  */
 function organizer_scale_used($organizerid, $scaleid) {
-    $return = false;
+    global $DB;
 
-    return $return;
+    if ($organizerid && $scaleid && $DB->record_exists('organizer', array('id' => $organizerid, 'grade' => -$scaleid))) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /**
@@ -940,7 +941,7 @@ function organizer_scale_used($organizerid, $scaleid) {
 function organizer_scale_used_anywhere($scaleid) {
     global $DB;
 
-    if ($scaleid and $DB->record_exists('organizer', array('grade' => -$scaleid))) {
+    if ($scaleid && $DB->record_exists('organizer', array('grade' => -$scaleid))) {
         return true;
     } else {
         return false;
