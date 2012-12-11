@@ -93,10 +93,10 @@ function add_appointment_slots($data) {
 
         $newslot = new stdClass();
         $newslot->maxparticipants = $data->maxparticipants;
-        $newslot->isanonymous = $data->isanonymous;
+        $newslot->isanonymous = isset($data->isanonymous) ? 1 : 0;
         $newslot->timemodified = time();
         $newslot->teacherid = $data->teacherid;
-        $newslot->teachervisible = $data->teachervisible;
+        $newslot->teachervisible = isset($data->teachervisible) ? 1 : 0;
         $newslot->notificationtime = $data->notificationtime;
         $newslot->availablefrom = isset($data->availablefrom) ? $data->availablefrom : 0;
         $newslot->location = $data->location;
