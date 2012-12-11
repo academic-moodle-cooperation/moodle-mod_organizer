@@ -387,6 +387,10 @@ die;
 
 function student_action_allowed($action, $slot) {
     global $DB;
+    
+    if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
+        return false;
+    }
 
     $slotx = new organizer_slot($slot);
 
