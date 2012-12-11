@@ -567,11 +567,11 @@ function get_status_table_entries_group($params) {
     $dir = isset($params['dir']) ? $params['dir'] : 'ASC';
 
     if ($params['sort'] == 'status') {
-        $orderby = "ORDER BY appid DESC, status $dir, g.name ASC";
+        $orderby = "ORDER BY status $dir, g.name ASC";
     } else if ($params['sort'] == 'group') {
-        $orderby = "ORDER BY appid DESC, g.name $dir, status ASC";
+        $orderby = "ORDER BY g.name $dir, status ASC";
     } else {
-        $orderby = "ORDER BY appid DESC, g.name ASC, status ASC";
+        $orderby = "ORDER BY g.name ASC, status ASC";
     }
 
     $par = array('now1' => time(), 'now2' => time(), 'organizerid' => $organizer->id);
@@ -646,13 +646,13 @@ function get_status_table_entries($params) {
     $dir = isset($params['dir']) ? $params['dir'] : 'ASC';
 
     if ($params['sort'] == 'status') {
-        $orderby = "ORDER BY appid DESC, status $dir, u.lastname ASC, u.firstname ASC, u.idnumber ASC";
+        $orderby = "ORDER BY status $dir, u.lastname ASC, u.firstname ASC, u.idnumber ASC";
     } else if ($params['sort'] == 'name') {
-        $orderby = "ORDER BY appid DESC, u.lastname $dir, u.firstname $dir, status ASC, u.idnumber ASC";
+        $orderby = "ORDER BY u.lastname $dir, u.firstname $dir, status ASC, u.idnumber ASC";
     } else if ($params['sort'] == 'id') {
-        $orderby = "ORDER BY appid DESC, u.idnumber $dir, status ASC, u.lastname ASC, u.firstname ASC";
+        $orderby = "ORDER BY u.idnumber $dir, status ASC, u.lastname ASC, u.firstname ASC";
     } else {
-        $orderby = "ORDER BY appid DESC, u.lastname ASC, u.firstname ASC, status ASC, u.idnumber ASC";
+        $orderby = "ORDER BY u.lastname ASC, u.firstname ASC, status ASC, u.idnumber ASC";
     }
 
     $par = array('now1' => time(), 'now2' => time(), 'organizerid' => $organizer->id);
