@@ -1,0 +1,78 @@
+tr.past_due td {
+    background-color: #F0F0F0 !important;
+}
+
+tr.affected_slot td {
+    background-color: LightGreen !important;
+}
+
+tr.unavailable td {
+    color: gray !important;
+}
+
+table.overview {
+    width: 100% !important;
+}
+
+table.overview td {
+	border: 1px solid #BBB !important;
+}
+
+fieldset.preview {
+	width: 97.3%;
+}
+
+/*fix here sn */
+div.forced_scroll {
+    overflow-x: scroll;
+    width: 100%;
+}
+
+div.forced_scroll table {
+	min-width: 1024px;
+}
+
+div.forced_scroll td {
+	white-space: nowrap;
+}
+
+table.legend td {
+    vertical-align: middle !important;
+}
+
+tr.registered_slot td {
+    background-color: LightGreen !important;
+}
+
+div.singlebutton button {
+    margin: 20px 5px;
+}
+
+span.countdown_normal {
+    background-color: LightGreen;
+}
+
+span.countdown_hurry {
+    background-color: Yellow;
+}
+
+span.countdown_critical {
+    background-color: rgb(255,204,153);
+}
+
+span.countdown_passed {
+    background-color: #F0F0F0;
+}
+
+span.nobreak {
+	white-space: nowrap;	
+}
+
+div.organizerinfo {
+	width: 50% !important;
+}
+
+table.print-preview td {
+	border: 1px solid #BBB !important;
+	border-collapse: collapse;
+}
