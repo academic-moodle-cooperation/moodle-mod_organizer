@@ -428,6 +428,8 @@ function remind_all() {
 function prepare_and_send_message($data, $type) {
     global $DB, $USER;
 
+    require_once('lib.php');
+
     switch ($type) {
         case 'edit_notify:student':
             foreach ($data->slots as $slotid) {
@@ -464,14 +466,17 @@ function prepare_and_send_message($data, $type) {
         case 'register_notify:teacher:register': // TODO: check how it was actually originally defined
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
-            if ($organizer->emailteachers) {
+            if ($organizer->emailteachers == MESSAGES_ALL) {
                 organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
             }
             break;
         case 'register_notify:teacher:reregister':
         case 'register_notify:teacher:unregister':
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
-            organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
+            $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
+            if ($organizer->emailteachers == MESSAGES_RE_UNREG || $organizer->emailteachers == MESSAGES_ALL) {
+                organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
+            }
             break;
         case 'group_registration_notify:student:register':
         case 'group_registration_notify:student:reregister':

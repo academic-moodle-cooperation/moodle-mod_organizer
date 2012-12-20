@@ -672,3 +672,7 @@ $string['message_error_slot_full_group'] = 'Dieser Slot ist vergeben!';
 
 $string['remind_all_title'] = 'Erinnerungen versenden';
 $string['can_reregister'] = 'Sie können sich für einen anderen Termin neu anmelden.';
+
+$string['messages_none'] = 'Keine Benachrichtigungen';
+$string['messages_re_unreg'] = 'Nur Ab-/Ummeldungen';
+$string['messages_all'] = 'Alle Anmeldungen und Ab-/Ummeldungen';
