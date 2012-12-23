@@ -122,7 +122,7 @@ class mod_organizer_slots_edit_form extends moodleform {
                 $defset['isanonymous'] = true;
             } else {
                 if (isset($defaults['isanonymous']) && $defaults['isanonymous'] != $slot->isanonymous) {
-                    $defaults['isanonymous'] = -1;
+                    unset($defaults['isanonymous']);
                 }
             }
             if (!isset($defaults['notificationtime']) && !$defset['notificationtime']) {

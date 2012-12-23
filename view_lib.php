@@ -567,11 +567,11 @@ function get_status_table_entries_group($params) {
     $dir = isset($params['dir']) ? $params['dir'] : 'ASC';
 
     if ($params['sort'] == 'status') {
-        $orderby = "ORDER BY appid DESC, status $dir, g.name ASC";
+        $orderby = "ORDER BY status $dir, g.name ASC";
     } else if ($params['sort'] == 'group') {
-        $orderby = "ORDER BY appid DESC, g.name $dir, status ASC";
+        $orderby = "ORDER BY g.name $dir, status ASC";
     } else {
-        $orderby = "ORDER BY appid DESC, g.name ASC, status ASC";
+        $orderby = "ORDER BY g.name ASC, status ASC";
     }
 
     $par = array('now1' => time(), 'now2' => time(), 'organizerid' => $organizer->id);
@@ -646,13 +646,13 @@ function get_status_table_entries($params) {
     $dir = isset($params['dir']) ? $params['dir'] : 'ASC';
 
     if ($params['sort'] == 'status') {
-        $orderby = "ORDER BY appid DESC, status $dir, u.lastname ASC, u.firstname ASC, u.idnumber ASC";
+        $orderby = "ORDER BY status $dir, u.lastname ASC, u.firstname ASC, u.idnumber ASC";
     } else if ($params['sort'] == 'name') {
-        $orderby = "ORDER BY appid DESC, u.lastname $dir, u.firstname $dir, status ASC, u.idnumber ASC";
+        $orderby = "ORDER BY u.lastname $dir, u.firstname $dir, status ASC, u.idnumber ASC";
     } else if ($params['sort'] == 'id') {
-        $orderby = "ORDER BY appid DESC, u.idnumber $dir, status ASC, u.lastname ASC, u.firstname ASC";
+        $orderby = "ORDER BY u.idnumber $dir, status ASC, u.lastname ASC, u.firstname ASC";
     } else {
-        $orderby = "ORDER BY appid DESC, u.lastname ASC, u.firstname ASC, status ASC, u.idnumber ASC";
+        $orderby = "ORDER BY u.lastname ASC, u.firstname ASC, status ASC, u.idnumber ASC";
     }
 
     $par = array('now1' => time(), 'now2' => time(), 'organizerid' => $organizer->id);
@@ -766,6 +766,7 @@ function generate_registration_table_content($columns, $params, $organizer, $con
                     break;
                 case 'datetime':
                     $cell = $row->cells[] = new html_table_cell(date_time($entry));
+                    $cell->style .= " text-align: left;";
                     break;
                 case 'appdetails':
                     if ($groupmode) {
@@ -797,6 +798,7 @@ function generate_registration_table_content($columns, $params, $organizer, $con
                     break;
                 case 'actions':
                     $cell = $row->cells[] = new html_table_cell(teacher_action_new($params, $entry, $context));
+                    $cell->style .= " text-align: center;";
                     break;
             }
 
@@ -921,7 +923,7 @@ function get_popup($title, $content) {
 }
 
 function reg_app_details($organizer, $userid) {
-    $appointment = get_last_user_appointment($organizer, $userid);
+    $appointment = get_last_user_appointment($organizer, $userid, false);
     if ($appointment) {
         $list = '';
         if (is_group_mode()) {

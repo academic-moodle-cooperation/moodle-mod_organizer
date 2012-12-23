@@ -18,7 +18,7 @@ require_once('../../config.php');
 require_once('../../lib/pdflib.php');
 require_once('lib.php');
 require_once('custom_table_renderer.php');
-require_once('organizer_pdf.php');
+require_once('../../lib/pdflib.php');
 
 define('CELL_HEIGHT', 8);
 define('MARGIN_LEFT', 10);
@@ -27,7 +27,59 @@ define('MARGIN_TOP', 10);
 define('MARGIN_HEADER', 10);
 define('MARGIN_FOOTER', 10);
 define('SHRINK_TO_FIT', true);
-define('FONT', 'Helvetica');
+define('FONT', 'freesans');
+define('HEADER_SEPARATOR_WIDTH', 8);
+
+class organizer_pdf extends pdf {
+    private $coursename;
+    private $organizername;
+    private $headerfooter;
+
+    public function __construct($headerfooter = true, $orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true,
+            $encoding = 'UTF-8') {
+        parent::__construct($orientation, $unit, $format, $unicode, $encoding);
+        $this->headerfooter = $headerfooter;
+    }
+
+    public function Header($coursename = '', $organizername = '') {
+        if ($this->headerfooter) {
+            $date = userdate(time(), get_string('fulldatetimetemplate', 'organizer'));
+
+            $this->SetFont(FONT, 'B', 8);
+            $this->Cell($this->GetStringWidth(get_string('course') . ": "), 10, get_string('course') . ": ", 0, false,
+                    'L', 0, '', 0, false, 'M', 'M');
+            $this->SetFont('', '', 8);
+            $this->Cell($this->GetStringWidth($this->coursename) + HEADER_SEPARATOR_WIDTH, 10, $this->coursename, 0,
+                    false, 'L', 0, '', 0, false, 'M', 'M');
+            $this->SetFont(FONT, 'B', 8);
+            $this->Cell($this->GetStringWidth(get_string('modulename', 'organizer') . ": "), 10,
+                    get_string('modulename', 'organizer') . ": ", 0, false, 'L', 0, '', 0, false, 'M', 'M');
+            $this->SetFont('', '', 8);
+            $this->Cell($this->GetStringWidth($this->organizername) + HEADER_SEPARATOR_WIDTH, 10, $this->organizername,
+                    0, false, 'L', 0, '', 0, false, 'M', 'M');
+            $this->SetFont(FONT, 'B', 8);
+            $this->Cell($this->GetStringWidth(get_string('date') . ": "), 10, get_string('date') . ": ", 0, false, 'L',
+                    0, '', 0, false, 'M', 'M');
+            $this->SetFont('', '', 8);
+            $this->Cell($this->GetStringWidth($date) + HEADER_SEPARATOR_WIDTH, 10, $date, 0, false, 'L', 0, '', 0,
+                    false, 'M', 'M');
+        }
+    }
+
+    public function setHeaderData($coursename = '', $organizername = 0, $ht = '', $hs = '', $tc = array(0, 0, 0), $lc = array(0, 0, 0)) {
+        $this->coursename = $coursename;
+        $this->organizername = $organizername;
+    }
+
+    public function Footer() {
+        if ($this->headerfooter) {
+            $this->SetY(-15);
+            $this->SetFont(FONT, 'I', 8);
+            $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0,
+                    '', 0, false, 'T', 'M');
+        }
+    }
+}
 
 function display_printable_table($columns, $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
         $headerfooter = true) {

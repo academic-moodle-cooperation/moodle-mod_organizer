@@ -139,7 +139,7 @@ class evaluate_form extends moodleform {
                     $appgroup[] = $mform->createElement('advcheckbox', "attended", '', '', null, array(0, 1));
 
                     $maxgrade = $organizer->grade;
-                    if ($maxgrade !== null) {
+                    if ($maxgrade != 0) {
                         $grademenu = make_grades_menu_organizer($maxgrade);
                         $appgroup[] = $mform->createElement('static', '', '', get_string('eval_grade', 'organizer'));
                         $appgroup[] = $mform->createElement('select', "grade", '', $grademenu);
@@ -170,8 +170,10 @@ class evaluate_form extends moodleform {
                     $mform->setType("{$name}[attended]", PARAM_INT);
                     $mform->setDefault("{$name}[attended]", $app->attended);
 
-                    $mform->setType("{$name}[grade]", PARAM_INT);
-                    $mform->setDefault("{$name}[grade]", $app->grade);
+                    if ($maxgrade != 0) {
+                        $mform->setType("{$name}[grade]", PARAM_INT);
+                        $mform->setDefault("{$name}[grade]", $app->grade);
+                    }
 
                     $mform->setType("{$name}[feedback]", PARAM_TEXT);
                     $mform->setDefault("{$name}[feedback]", $app->feedback);

@@ -266,6 +266,10 @@ if ($action == ACTION_ADD) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
     }
 
+    if (!student_action_allowed($action, $slot)) {
+        print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
+    }
+
     $group = fetch_my_group();
     $groupid = $group ? $group->id : 0;
     $success = register_appointment($slot, $groupid);
@@ -292,6 +296,10 @@ if ($action == ACTION_ADD) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
     }
 
+    if (!student_action_allowed($action, $slot)) {
+        print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
+    }
+
     $group = fetch_my_group();
     $groupid = $group ? $group->id : 0;
 
@@ -312,6 +320,10 @@ if ($action == ACTION_ADD) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
     }
 
+    if (!student_action_allowed($action, $slot)) {
+        print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
+    }
+
     $group = fetch_my_group();
     $groupid = $group ? $group->id : 0;
     $success = reregister_appointment($slot, $groupid);
@@ -319,7 +331,6 @@ if ($action == ACTION_ADD) {
     if ($success) {
         prepare_and_send_message($slot, 'register_notify:teacher:reregister');
         if ($group) {
-            echo "SHIT!";
             prepare_and_send_message($slot, 'group_registration_notify:student:reregister');
         }
     } else {
@@ -370,6 +381,60 @@ if ($action == ACTION_ADD) {
     print_error('If you see this, something went wrong with delete action!');
 } else {
     print_error('Either a wrong method or no method was selected!');
+}
+
+die;
+
+function student_action_allowed($action, $slot) {
+    global $DB;
+    
+    if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
+        return false;
+    }
+
+    $slotx = new organizer_slot($slot);
+
+    list($cm, $course, $organizer, $context) = get_course_module_data();
+
+    $canregister = has_capability('mod/organizer:register', $context, null, false);
+    $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
+    $canreregister = $canregister && $canunregister;
+
+    $myapp = get_last_user_appointment($organizer);
+    if ($myapp) {
+        $regslot = $DB->get_record('organizer_slots', array('id' => $myapp->slotid));
+        if (isset($regslot)) {
+            $regslotx = new organizer_slot($regslot);
+        }
+    }
+
+    $myslotexists = isset($regslot);
+    $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
+    $slotdisabled = $slotx->is_past_due() || $slotx->is_past_deadline();
+    $myslotpending = $myslotexists && $regslotx->is_past_deadline() && !$regslotx->is_evaluated();
+    $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
+    $slotfull = $slotx->is_full();
+    $didnotattend = isset($myapp->attended) && $myapp->attended == 0;
+
+    $disabled = $myslotpending || $organizerdisabled || $slotdisabled || !$slotx->user_has_access() || $slotx->is_evaluated();
+
+    if ($myslotexists && !$didnotattend) {
+        if (!$slotdisabled) {
+            if ($ismyslot) {
+                $disabled |= !$canunregister
+                || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
+            } else {
+                $disabled |= $slotfull || !$canreregister
+                || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
+            }
+        }
+        $allowedaction = $ismyslot ? ACTION_UNREGISTER : ACTION_REREGISTER;
+    } else {
+        $disabled |= $slotfull || !$canregister || $ismyslot;
+        $allowedaction = $ismyslot ? ACTION_UNREGISTER : ACTION_REGISTER;
+    }
+
+    return !$disabled && ($action == $allowedaction);
 }
 
 function display_form(moodleform $mform, $title, $addcalendar = true) {

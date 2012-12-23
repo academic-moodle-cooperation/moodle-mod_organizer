@@ -93,10 +93,10 @@ function add_appointment_slots($data) {
 
         $newslot = new stdClass();
         $newslot->maxparticipants = $data->maxparticipants;
-        $newslot->isanonymous = $data->isanonymous;
+        $newslot->isanonymous = isset($data->isanonymous) ? 1 : 0;
         $newslot->timemodified = time();
         $newslot->teacherid = $data->teacherid;
-        $newslot->teachervisible = $data->teachervisible;
+        $newslot->teachervisible = isset($data->teachervisible) ? 1 : 0;
         $newslot->notificationtime = $data->notificationtime;
         $newslot->availablefrom = isset($data->availablefrom) ? $data->availablefrom : 0;
         $newslot->location = $data->location;
@@ -587,27 +587,19 @@ function evaluate_slots($data) {
                 continue;
             }
             $newapp->attended = $app['attended'];
-            $newapp->grade = $app['grade'];
-            //             if($app['attended']) {
-            /*
-            if ($organizer->grade >= 0) {
-                $newapp->grade = !isset($app['grade']) || $app['grade'] == -1 ? null : $app['grade'];
+
+            if ($organizer->grade > 0) {
+                $newapp->grade = isset($app['grade']) ? $app['grade'] : -1;
             } else {
-                $newapp->grade = !isset($app['grade']) || $app['grade'] == 0 ? null : $app['grade'];
+                $newapp->grade = isset($app['grade']) ? $app['grade'] : 0;
             }
-            */
-            //             } else {
-            //                 $newapp->grade = null; // TODO: check the min grade option in gradebook!
-            //             }
 
             $newapp->feedback = isset($app['feedback']) ? $app['feedback'] : "";
             $newapp->allownewappointments = $app['allownewappointments'];
 
             $DB->update_record('organizer_slot_appointments', $newapp);
 
-            //             if($app['attended']) {
             organizer_update_grades($organizer, $newapp->userid);
-            //             }
 
             $slotids[] = $newapp->slotid;
         }

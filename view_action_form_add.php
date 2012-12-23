@@ -79,6 +79,8 @@ class mod_organizer_slots_form extends moodleform {
         $mform = &$this->_form;
         $mform->getElement('teacherid')->freeze();
         $mform->getElement('notificationtime')->freeze();
+        $mform->getElement('teachervisible')->freeze();
+        $mform->getElement('isanonymous')->freeze();
         $mform->getElement('location')->freeze();
         $mform->getElement('locationlink')->freeze();
         $mform->getElement('comments')->freeze();
@@ -169,14 +171,20 @@ class mod_organizer_slots_form extends moodleform {
         $mform->setDefault('teacherid', $USER->id);
         $mform->addHelpButton('teacherid', 'teacherid', 'organizer');
 
+        /*
         $mform->addElement('advcheckbox', 'teachervisible', get_string('teachervisible', 'organizer'), null, null,
                 array(0, 1));
+                */
+        $mform->addElement('checkbox', 'teachervisible', get_string('teachervisible', 'organizer'));
         $mform->setType('teachervisible', PARAM_BOOL);
         $mform->setDefault('teachervisible', 1);
         $mform->addHelpButton('teachervisible', 'teachervisible', 'organizer');
 
+        /*
         $mform->addElement('advcheckbox', 'isanonymous', get_string('isanonymous', 'organizer'), null, null,
                 array(0, 1));
+                */
+        $mform->addElement('checkbox', 'isanonymous', get_string('isanonymous', 'organizer'));
         $mform->setType('isanonymous', PARAM_BOOL);
         $mform->addHelpButton('isanonymous', 'isanonymous', 'organizer');
 
