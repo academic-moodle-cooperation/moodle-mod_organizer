@@ -376,7 +376,13 @@ function generate_table_content($columns, $params, $organizer, $showonlyregslot 
 
     if ($showonlyregslot) {
         if ($app) {
-            $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)));
+            $evaldapp = get_last_user_appointment($organizer, 0, false, true);
+            if ($app->id == $evaldapp->id) {
+                $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)));
+            } else {
+                $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)),
+                        $DB->get_record('organizer_slots', array('id' => $evaldapp->slotid)));
+            }
         } else {
             $slots = array();
         }
@@ -456,8 +462,12 @@ function generate_table_content($columns, $params, $organizer, $showonlyregslot 
                         $cell = $row->cells[] = new html_table_cell(location_link($slot));
                         break;
                     case 'participants':
-                        $cell = $row->cells[] = new html_table_cell(
-                                get_participant_list($params, $slot, $app, $showonlyregslot));
+                        if ($showonlyregslot) {
+                            $cell = $row->cells[] = new html_table_cell(get_participant_list_infobox($params, $slot));
+                        } else {
+                            $cell = $row->cells[] = new html_table_cell(
+                                    get_participant_list($params, $slot, $app));
+                        }
                         break;
                     case 'teacher':
                         $cell = $row->cells[] = new html_table_cell(teacher_data($params, $slot));
@@ -567,11 +577,11 @@ function get_status_table_entries_group($params) {
     $dir = isset($params['dir']) ? $params['dir'] : 'ASC';
 
     if ($params['sort'] == 'status') {
-        $orderby = "ORDER BY appid DESC, status $dir, g.name ASC";
+        $orderby = "ORDER BY status $dir, g.name ASC";
     } else if ($params['sort'] == 'group') {
-        $orderby = "ORDER BY appid DESC, g.name $dir, status ASC";
+        $orderby = "ORDER BY g.name $dir, status ASC";
     } else {
-        $orderby = "ORDER BY appid DESC, g.name ASC, status ASC";
+        $orderby = "ORDER BY g.name ASC, status ASC";
     }
 
     $par = array('now1' => time(), 'now2' => time(), 'organizerid' => $organizer->id);
@@ -646,13 +656,13 @@ function get_status_table_entries($params) {
     $dir = isset($params['dir']) ? $params['dir'] : 'ASC';
 
     if ($params['sort'] == 'status') {
-        $orderby = "ORDER BY appid DESC, status $dir, u.lastname ASC, u.firstname ASC, u.idnumber ASC";
+        $orderby = "ORDER BY status $dir, u.lastname ASC, u.firstname ASC, u.idnumber ASC";
     } else if ($params['sort'] == 'name') {
-        $orderby = "ORDER BY appid DESC, u.lastname $dir, u.firstname $dir, status ASC, u.idnumber ASC";
+        $orderby = "ORDER BY u.lastname $dir, u.firstname $dir, status ASC, u.idnumber ASC";
     } else if ($params['sort'] == 'id') {
-        $orderby = "ORDER BY appid DESC, u.idnumber $dir, status ASC, u.lastname ASC, u.firstname ASC";
+        $orderby = "ORDER BY u.idnumber $dir, status ASC, u.lastname ASC, u.firstname ASC";
     } else {
-        $orderby = "ORDER BY appid DESC, u.lastname ASC, u.firstname ASC, status ASC, u.idnumber ASC";
+        $orderby = "ORDER BY u.lastname ASC, u.firstname ASC, status ASC, u.idnumber ASC";
     }
 
     $par = array('now1' => time(), 'now2' => time(), 'organizerid' => $organizer->id);
@@ -766,6 +776,7 @@ function generate_registration_table_content($columns, $params, $organizer, $con
                     break;
                 case 'datetime':
                     $cell = $row->cells[] = new html_table_cell(date_time($entry));
+                    $cell->style .= " text-align: left;";
                     break;
                 case 'appdetails':
                     if ($groupmode) {
@@ -797,6 +808,7 @@ function generate_registration_table_content($columns, $params, $organizer, $con
                     break;
                 case 'actions':
                     $cell = $row->cells[] = new html_table_cell(teacher_action_new($params, $entry, $context));
+                    $cell->style .= " text-align: center;";
                     break;
             }
 
@@ -814,10 +826,9 @@ function get_participant_entry($entry) {
     return get_name_link($entry->id) . " {$icon}<br/>({$entry->idnumber})";
 }
 
-function app_details($params, $appointment, $isregonly = false) {
+function app_details($params, $appointment) {
     global $USER;
-    if (!isset($appointment) || !($params['mode'] != TAB_STUDENT_VIEW || $isregonly)
-            || ($isregonly && $appointment->userid != $USER->id)) {
+    if (!isset($appointment)) {
         return '';
     }
 
@@ -921,7 +932,7 @@ function get_popup($title, $content) {
 }
 
 function reg_app_details($organizer, $userid) {
-    $appointment = get_last_user_appointment($organizer, $userid);
+    $appointment = get_last_user_appointment($organizer, $userid, false);
     if ($appointment) {
         $list = '';
         if (is_group_mode()) {
@@ -987,7 +998,77 @@ function teacher_action_new($params, $entry, $context) {
     }
 }
 
-function get_participant_list($params, $slot, $app, $showonlyregslot = false) {
+function get_participant_list_infobox($params, $slot, $userid = 0) {
+    global $DB, $USER;
+
+    if ($userid == null) {
+        $userid = $USER->id;
+    }
+
+    if (is_group_mode()) {
+        $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
+        $firstapp = reset($apps);
+        $groupname = $DB->get_field('groups', 'name', array('id' => $firstapp->groupid));
+        $output = "<em>{$groupname}</em><br />";
+        foreach($apps as $app) {
+            $name = get_name_link($app->userid);
+            $idnumber = get_user_idnumber($app->userid);
+            if ($app->userid == $userid) {
+                $output .= $name . ($idnumber ? " ($idnumber) " : " ");
+                $output .= ($app->userid == $app->applicantid) ? 
+                        get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+                $output .= '<div style="float: right;">' . app_details($params, $app, true) .
+                        '</div><div style="clear: both;"></div>';
+            } else if (!$slot->isanonymous) {
+                $output .= $name . ($idnumber ? " ($idnumber) " : " ");
+                $output .= ($app->userid == $app->applicantid) ?
+                        get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+                $output .= '<div style="float: right;"></div><div style="clear: both;"></div>';
+            }
+        }
+        
+        if (count($apps) == 0) {
+            $output .= "<em>" . get_string('group_slot_available', 'organizer') . "</em>";
+        } else {
+            $output .= "<span style=\"color: red;\"><em>" . get_string('group_slot_full', 'organizer')
+            . "</em></span>";
+        }
+    } else {
+        $app = $DB->get_record('organizer_slot_appointments', array('slotid' => $slot->id, 'userid' => $userid));
+        $name = get_name_link($userid);
+        $idnumber = get_user_idnumber($userid);
+        $output = $name . ($idnumber ? " ($idnumber) " : " ") . '<div style="float: right;">' .
+                app_details($params, $app) .
+                '</div><div style="clear: both;"></div>';
+        
+        $count = count($DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id)));
+        $a = new stdClass();
+        $a->numtakenplaces = $count;
+        $a->totalplaces = $slot->maxparticipants;
+        
+        if ($slot->maxparticipants - $count != 0) {
+            if ($count == 1) {
+                $output .= "<em>" . get_string('places_taken_sg', 'organizer', $a) . "</em>";
+            } else {
+                $output .= "<em>" . get_string('places_taken_pl', 'organizer', $a) . "</em>";
+            }
+        } else {
+            if ($count == 1) {
+                $output .= "<span style=\"color: red;\"><em>" . get_string('places_taken_sg', 'organizer', $a)
+                . "</em></span>";
+            } else {
+                $output .= "<span style=\"color: red;\"><em>" . get_string('places_taken_pl', 'organizer', $a)
+                . "</em></span>";
+            }
+        }
+    }
+    
+    $output .= $slot->isanonymous ? ' ' . get_img('pix/anon.png', 'anonymous', get_string('slot_anonymous', 'organizer')) : '';
+    
+    return $output;
+}
+
+function get_participant_list($params, $slot, $app) {
     global $DB, $USER;
 
     $slotx = new organizer_slot($slot);
@@ -1028,16 +1109,45 @@ function get_participant_list($params, $slot, $app, $showonlyregslot = false) {
     }
 
     $content = '';
-    if ($params['mode'] == TAB_STUDENT_VIEW && $slot->isanonymous && !($groupmode && ($isownslot || $wasownslot))) {
-        if ((!$groupmode && $isownslot) || $wasownslot) {
-            $idnumber = get_user_idnumber($app->userid);
-            $content .= get_name_link($app->userid) . ($idnumber ? " ($idnumber) " : " ") .
-                    ($app->comments != '' ? get_img('pix/feedback2.png', '', '', '',
-                            'onmouseover="showPopup(event, \'' . get_string('studentcomment_title', 'organizer') .
-                            ':\', \'' . str_replace(array("\n", "\r"), "<br />", $app->comments) . '\')" onmouseout="hidePopup()"') :
-                                            get_img('pix/transparent.png', '', '')) . '<br />';
-        } else {
-            $content .= '<em>' . get_string('slot_anonymous', 'organizer') . '</em><br />';
+    $studentview = $params['mode'] == TAB_STUDENT_VIEW;
+    $ismyslot = $isownslot || $wasownslot;
+    $groupmode = is_group_mode();
+    
+    if ($studentview) {
+        if ($slot->isanonymous) {
+            if ($ismyslot) {
+                $idnumber = get_user_idnumber($app->userid);
+                $content .= get_name_link($app->userid) .
+                            ($idnumber ? " ($idnumber) " : " ") . '<br />';
+                $content .= '<em>' . get_string('slot_anonymous', 'organizer') . '</em><br />';
+            } else {
+                $content .= '<em>' . get_string('slot_anonymous', 'organizer') . '</em><br />';
+            }
+        } else { // not anonymous
+            if ($groupmode) {
+                $app = reset($appointments);
+                if($app === false) {
+                    $content = '<em>' . get_string('nogroup', 'organizer') . '</em><br />';
+                } else {
+                    $groupid = $app->groupid;
+                    $groupname = $DB->get_field('groups', 'name', array('id' => $groupid));
+                    $content = "<em>{$groupname}</em><br />";
+                }
+            } else {
+                $content = '';
+            }
+            
+            foreach($appointments as $appointment) {
+                $idnumber = get_user_idnumber($appointment->userid);
+                $content .= get_name_link($appointment->userid) .
+                            ($idnumber ? " ($idnumber) " : " ");
+                if ($groupmode) {
+                    $content .= ' ';
+                    $content .= (is_group_mode() && $appointment->userid == $appointment->applicantid) ? get_img(
+                                    'pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+                }
+                $content .= '<br />';
+            }
         }
     } else {
         if ($count == 0) {
@@ -1064,7 +1174,7 @@ function get_participant_list($params, $slot, $app, $showonlyregslot = false) {
                                     'pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
                 }
                 $list .= '</div>';
-                $list .= '<div style="float: right;">' . app_details($params, $appointment, $showonlyregslot)
+                $list .= '<div style="float: right;">' . app_details($params, $appointment)
                         . '</div><div style="clear: both;"></div>';
             }
             $content .= $list;
