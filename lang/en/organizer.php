@@ -709,3 +709,7 @@ $string['message_error_slot_full_group'] = 'This timeslot is already taken!';
 
 $string['remind_all_title'] = 'Send reminders';
 $string['can_reregister'] = 'You can re-registed to another appointment.';
+
+$string['messages_none'] = 'No registration notifications';
+$string['messages_re_unreg'] = 'Re-registrations and unregistrations only';
+$string['messages_all'] = 'All registration, re-registrations and unregistrations';

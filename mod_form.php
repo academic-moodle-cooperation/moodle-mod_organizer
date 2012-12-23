@@ -28,6 +28,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
+require_once('lib.php');
 
 class mod_organizer_mod_form extends moodleform_mod {
 
@@ -129,8 +130,12 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addGroup($group, 'isgrouporganizergroup', get_string('isgrouporganizer', 'organizer'), null, false);
         $mform->addHelpButton('isgrouporganizergroup', 'isgrouporganizer', 'organizer');
 
-        $mform->addElement('advcheckbox', 'emailteachers', get_string('emailteachers', 'organizer'), null, null,
-                array(0, 1));
+        $pickeroptions = array();
+        $pickeroptions[0] = get_string('messages_none', 'organizer');
+        $pickeroptions[1] = get_string('messages_re_unreg', 'organizer');
+        $pickeroptions[2] = get_string('messages_all', 'organizer');
+        
+        $mform->addElement('select', 'emailteachers', get_string('emailteachers', 'organizer'), $pickeroptions);
         $mform->setDefault('emailteachers', $organizerconfig->emailteachers);
         $mform->addHelpButton('emailteachers', 'emailteachers', 'organizer');
 

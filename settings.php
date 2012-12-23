@@ -63,9 +63,15 @@ $organizersettings->add(
                 get_string('configmaximumgrade', 'organizer'), 10, PARAM_INT));
 
 // E-mail teachers
+$pickeroptions = array();
+$pickeroptions[MESSAGES_NONE] = get_string('messages_none', 'organizer');
+$pickeroptions[MESSAGES_RE_UNREG] = get_string('messages_re_unreg', 'organizer');
+$pickeroptions[MESSAGES_ALL] = get_string('messages_all', 'organizer');
+
+// Appointment digest
 $organizersettings->add(
-        new admin_setting_configcheckbox('organizer/emailteachers', 'Send E-mail notifications to teachers',
-                get_string('configemailteachers', 'organizer'), 1));
+        new admin_setting_configselect('organizer/emailteachers', 'Send E-mail notifications to teachers',
+                get_string('configemailteachers', 'organizer'), 1, $pickeroptions));
 
 $pickeroptions = array();
 $pickeroptions['never'] = 'Don\'t send';

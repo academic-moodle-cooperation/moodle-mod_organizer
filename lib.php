@@ -32,6 +32,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once('slotlib.php');
 
+define('MESSAGES_NONE', 0);
+define('MESSAGES_RE_UNREG', 1);
+define('MESSAGES_ALL', 2);
+
 /**
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
