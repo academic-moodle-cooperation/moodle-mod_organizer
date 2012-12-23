@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-function get_last_user_appointment($organizer, $userid = null, $mergegroupapps = true) {
+function get_last_user_appointment($organizer, $userid = null, $mergegroupapps = true, $getevaluated = false) {
     global $DB, $USER;
 
     if ($userid == null) {
@@ -28,8 +28,9 @@ function get_last_user_appointment($organizer, $userid = null, $mergegroupapps =
     $params = array('userid' => $userid, 'organizerid' => $organizer->id);
     $query = "SELECT a.* FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
-            WHERE s.organizerid = :organizerid AND a.userid = :userid
-            ORDER BY a.id DESC";
+            WHERE s.organizerid = :organizerid AND a.userid = :userid" .
+            ($getevaluated ? " AND a.attended IS NOT NULL " : " ") .
+            "ORDER BY a.id DESC";
     $apps = $DB->get_records_sql($query, $params);
     $app = reset($apps);
 
