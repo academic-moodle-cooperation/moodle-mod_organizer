@@ -154,19 +154,10 @@ M.mod_organizer.init_infobox = function (Y) {
 	    
 	    toggle_info();
 	    
-	    var xmlhttp;
-	    if(window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-	        xmlhttp = new XMLHttpRequest();
-	    } else {// code for IE6, IE5
-	        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	    }
+	    M.util.set_user_preference('mod_organizer_showpasttimeslots', (showpastslots));
 	    
-	    xmlhttp.open("GET", "showhide.php?showpastslots=" + (showpastslots ? "1" : "0"), true);
-	    xmlhttp.send();
 	}
-	
-	Y.one('#show_past_slots').on('click', toggle_past_slots);
-	
+
 	function toggle_other_slots(e) {
 		var tablebody = Y.one('#slot_overview tbody');
 		var showpastslots = Y.one('#show_past_slots').get('checked');
@@ -184,19 +175,9 @@ M.mod_organizer.init_infobox = function (Y) {
 	    
 	    toggle_info();
 	    
-	    var xmlhttp;
-	    if(window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-	        xmlhttp = new XMLHttpRequest();
-	    } else {// code for IE6, IE5
-	        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	    }
-	    
-	    xmlhttp.open("GET", "showhide.php?showmyslotsonly=" + (showmyslotsonly ? "1" : "0"), true);
-	    xmlhttp.send();
+	    M.util.set_user_preference('mod_organizer_showmyslotsonly', (showmyslotsonly));
 	}
-	
-	Y.one('#show_my_slots_only').on('click', toggle_other_slots);
-	
+
 	function toggle_info() {
 		var tablebody = Y.one('#slot_overview tbody');
 		var noninforows = tablebody.all('tr:not(.info)');
@@ -204,7 +185,9 @@ M.mod_organizer.init_infobox = function (Y) {
 	    var anyvisible = false;
 	    
 	    noninforows.each(function (node) {
-		    if (!((node.get('offsetWidth') === 0 && node.get('offsetHeight') === 0) || node.get('display') === 'none')) {
+		    if (!((node.get('offsetWidth') === 0 && 
+		    		node.get('offsetHeight') === 0) || 
+		    		node.get('display') === 'none')) {
 		    	anyvisible = true;
 		    }
 		});
@@ -237,7 +220,9 @@ M.mod_organizer.init_infobox = function (Y) {
 	        legend.show();
 	    }
 	}
-	
+
+	Y.one('#show_past_slots').on('click', toggle_past_slots);
+	Y.one('#show_my_slots_only').on('click', toggle_other_slots);
 	Y.one('#toggle_legend').on('click', toggle_legend);
 }
 

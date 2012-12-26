@@ -24,6 +24,8 @@ require_once('locallib.php');
 require_once('slotlib.php');
 function make_infobox($params, $organizer, $context) {
     global $PAGE;
+    user_preference_allow_ajax_update('mod_organizer_showpasttimeslots', PARAM_BOOL);
+    user_preference_allow_ajax_update('mod_organizer_showmyslotsonly', PARAM_BOOL);
     $PAGE->requires->js_init_call('M.mod_organizer.init_infobox');
     
     $output = make_description_section($organizer);
