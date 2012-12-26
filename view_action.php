@@ -76,8 +76,6 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title($organizer->name);
 $PAGE->set_heading($course->fullname);
 
-$PAGE->requires->js('/mod/organizer/js/jquery-1.7.2.min.js', true);
-
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
 
 $logurl = new moodle_url('/mod/organizer/view_action.php');

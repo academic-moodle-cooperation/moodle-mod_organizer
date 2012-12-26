@@ -34,7 +34,14 @@ class evaluate_form extends moodleform {
 
     protected function definition() {
         global $PAGE;
-        $PAGE->requires->js("/mod/organizer/js/checkall_eval.js");
+        $jsmodule = array(
+                'name' => 'mod_organizer',
+                'fullpath' => '/mod/organizer/module.js',
+                'requires' => array('node-base'),
+        );
+        
+        $PAGE->requires->js_init_call('M.mod_organizer.init_eval_form', null, false, $jsmodule);
+        
         $this->_sethiddenfields();
         $this->_form->addElement('header', 'slots', get_string('eval_header', 'organizer'));
         $this->_addbuttons();
@@ -99,7 +106,7 @@ class evaluate_form extends moodleform {
                 $appgroup[] = $mform->createElement('static', '', '',
                         "<br/><strong>$groupname</strong> " . get_string('eval_allow_new_appointments', 'organizer'));
                 $appgroup[] = $mform->createElement('advcheckbox', "allownewappointments", '', '',
-                        array('group' => 0, 'onclick' => "toggleAll(this)", 'class' => "allow{$slotid}"), array(0, 1));
+                        array('group' => 0, 'class' => "allow{$slotid}"), array(0, 1));
                 $mform->setType("allownewappointments", PARAM_INT);
                 $mform->setDefault("allownewappointments", $app->allownewappointments);
             }

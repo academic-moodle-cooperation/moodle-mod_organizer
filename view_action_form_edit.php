@@ -32,8 +32,22 @@ require_once("$CFG->libdir/formslib.php");
 class mod_organizer_slots_edit_form extends moodleform {
 
     protected function definition() {
-        global $PAGE;
-        $PAGE->requires->js('/mod/organizer/js/change.js');
+        global $CFG, $PAGE;
+        $jsmodule = array(
+                'name' => 'mod_organizer',
+                'fullpath' => '/mod/organizer/module.js',
+                'requires' => array('node', 'node-event-delegate'),
+                'strings' => array(
+                        array('warningtext1', 'organizer'),
+                        array('warningtext2', 'organizer'),
+                ),
+        );
+        
+        $imagepaths = array(
+                'warning' => "{$CFG->wwwroot}/mod/organizer/pix/warning.png",
+                'changed' => "{$CFG->wwwroot}/mod/organizer/pix/warning2.png");
+        
+        $PAGE->requires->js_init_call('M.mod_organizer.init_edit_form', array($imagepaths), false, $jsmodule);
 
         $defaults = $this->_get_defaults();
         $this->_sethiddenfields();
@@ -147,8 +161,7 @@ class mod_organizer_slots_edit_form extends moodleform {
         $buttonarray = array();
 
         $buttonarray[] = &$mform->createElement('submit', 'editsubmit', get_string('edit_submit', 'organizer'));
-        $buttonarray[] = &$mform->createElement('reset', 'editreset', get_string('revert'),
-                array('onclick' => 'resetEditForm()'));
+        $buttonarray[] = &$mform->createElement('reset', 'editreset', get_string('revert'));
 
         $buttonarray[] = &$mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
@@ -182,13 +195,13 @@ class mod_organizer_slots_edit_form extends moodleform {
         $mform->addElement('header', 'slotdetails', get_string('slotdetails', 'organizer'));
 
         $teachers = $this->_load_teachers($defaults);
+        /*
         if (!isset($defaults['teacherid'])) {
             $teachers[-1] = get_string('teacher_unchanged', 'organizer');
         }
-
+        */
         $group = array();
-        $group[] = $mform->createElement('select', 'teacherid', get_string('teacher', 'organizer'), $teachers,
-                array('onchange' => 'detectChangeSelect(this);', 'group' => null));
+        $group[] = $mform->createElement('select', 'teacherid', get_string('teacher', 'organizer'), $teachers);
 
         $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('teacherid', isset($defaults['teacherid'])));
@@ -197,14 +210,14 @@ class mod_organizer_slots_edit_form extends moodleform {
 
         $mform->addGroup($group, '', get_string('teacher', 'organizer'), SPACING, false);
         $mform->addElement('hidden', 'mod_teacherid', 0);
-
+        /*
         if (!isset($defaults['teacherid'])) {
             $mform->setDefault('teacherid', -1);
         }
-
+        */
         $group = array();
         $group[] = $mform->createElement('advcheckbox', 'teachervisible', get_string('teachervisible', 'organizer'),
-                null, array('onclick' => 'detectChange(this);', 'group' => null), array(0, 1));
+                null, null, array(0, 1));
 
         $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('teachervisible', isset($defaults['teachervisible'])));
@@ -215,7 +228,7 @@ class mod_organizer_slots_edit_form extends moodleform {
 
         $group = array();
         $group[] = $mform->createElement('advcheckbox', 'isanonymous', get_string('isanonymous', 'organizer'), null,
-                array('onclick' => 'detectChange(this);', 'group' => null), array(0, 1));
+                null, array(0, 1));
         $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('isanonymous', isset($defaults['isanonymous'])));
 
@@ -225,7 +238,7 @@ class mod_organizer_slots_edit_form extends moodleform {
 
         $group = array();
         $group[] = $mform->createElement('text', 'location', get_string('location', 'organizer'),
-                array('size' => '64', 'onkeydown' => 'detectChange(this);', 'group' => null));
+                array('size' => '64', 'group' => null));
         $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('location', isset($defaults['location'])));
 
@@ -234,7 +247,7 @@ class mod_organizer_slots_edit_form extends moodleform {
 
         $group = array();
         $group[] = $mform->createElement('text', 'locationlink', get_string('locationlink', 'organizer'),
-                array('size' => '64', 'onkeydown' => 'detectChange(this);', 'group' => null));
+                array('size' => '64', 'group' => null));
         $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('locationlink', isset($defaults['locationlink'])));
 
@@ -244,7 +257,7 @@ class mod_organizer_slots_edit_form extends moodleform {
         if (!is_group_mode()) {
             $group = array();
             $group[] = $mform->createElement('text', 'maxparticipants', get_string('maxparticipants', 'organizer'),
-                    array('size' => '3', 'onkeydown' => 'detectChange(this);', 'group' => null));
+                    array('size' => '3', 'group' => null));
             $group[] = $mform->createElement('static', '', '',
                     $this->_warning_icon('maxparticipants', isset($defaults['maxparticipants'])));
 
@@ -263,16 +276,14 @@ class mod_organizer_slots_edit_form extends moodleform {
         $group = array();
         if ($now) {
             $group[] = $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer'),
-                    null, array('onchange' => 'detectChangeDuration(this);', 'group' => null, 'disabled' => true));
+                    null, array('group' => null, 'disabled' => true));
         } else {
-            $group[] = $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer'),
-                    null, array('onchange' => 'detectChangeDuration(this);', 'group' => null));
+            $group[] = $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer'));
         }
         $group[] = $mform->createElement('static', '', '',
                 get_string('relative_deadline_before', 'organizer') . '&nbsp;&nbsp;&nbsp;'
                         . get_string('relative_deadline_now', 'organizer'));
-        $group[] = $mform->createElement('checkbox', 'now', get_string('relative_deadline_now', 'organizer'), null,
-                array('onchange' => 'detectChange(this);toggleAvailableFrom(this);', 'group' => null));
+        $group[] = $mform->createElement('checkbox', 'availablefrom[now]', get_string('relative_deadline_now', 'organizer'));
         $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('availablefrom', isset($defaults['availablefrom'])));
 
@@ -287,7 +298,7 @@ class mod_organizer_slots_edit_form extends moodleform {
 
         $group = array();
         $group[] = $mform->createElement('duration', 'notificationtime', get_string('notificationtime', 'organizer'),
-                null, array('onchange' => 'detectChangeDuration(this);', 'group' => null), array(0, 1));
+                null, null, array(0, 1));
         $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('notificationtime', isset($defaults['notificationtime'])));
 
@@ -303,7 +314,7 @@ class mod_organizer_slots_edit_form extends moodleform {
 
         $group = array();
         $group[] = $mform->createElement('textarea', 'comments', get_string('appointmentcomments', 'organizer'),
-                array('wrap' => 'virtual', 'rows' => '10', 'cols' => '60', 'onkeydown' => 'detectChange(this);'));
+                array('wrap' => 'virtual', 'rows' => '10', 'cols' => '60'));
         $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('comments', isset($defaults['comments'])));
 

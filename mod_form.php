@@ -77,12 +77,18 @@ class mod_organizer_mod_form extends moodleform_mod {
 
     public function definition() {
         global $PAGE, $CFG;
-        $PAGE->requires->js('/mod/organizer/js/check.js');
-        $PAGE->requires->js('/mod/organizer/js/jquery-1.7.2.min.js', true);
-
-        $mform = &$this->_form;
+        
+        $jsmodule = array(
+                'name' => 'mod_organizer',
+                'fullpath' => '/mod/organizer/module.js',
+                'requires' => array('node-base', 'node-event-simulate'),
+        );
+        
         $organizerconfig = get_config('organizer');
-
+        $activatecheckbox = $organizerconfig->absolutedeadline == 'never';
+        $PAGE->requires->js_init_call('M.mod_organizer.init_mod_form', array($activatecheckbox), false, $jsmodule);
+        
+        $mform = &$this->_form;
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         $mform->addElement('text', 'name', get_string('organizername', 'organizer'), array('size' => '64'));
@@ -142,9 +148,6 @@ class mod_organizer_mod_form extends moodleform_mod {
         if ($organizerconfig->absolutedeadline != 'never') {
             $absdefault = strtotime($organizerconfig->absolutedeadline);
             $mform->setDefault('enableuntil', $absdefault);
-        } else {
-            $PAGE->requires->js('/mod/organizer/js/jquery-1.7.2.min.js', true);
-            $PAGE->requires->js('/mod/organizer/js/uncheck.js');
         }
 
         $this->standard_coursemodule_elements();

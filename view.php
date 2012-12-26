@@ -46,15 +46,26 @@ $logurl = create_url($params, true);
 $PAGE->set_url($url);
 $PAGE->set_title($instance->organizer->name);
 $PAGE->set_heading($instance->course->shortname);
-//$PAGE->set_pagelayout('standard');
-
-$PAGE->requires->js('/mod/organizer/js/jquery-1.7.2.min.js', true);
 
 //----------------------------- OUTPUT -----------------------------------------
+
+$jsmodule = array(
+        'name' => 'mod_organizer',
+        'fullpath' => '/mod/organizer/module.js',
+        'requires' => array('node', 'event', 'node-screen', 'panel', 'node-event-delegate'),
+        'strings' => array(
+                array('teachercomment_title', 'organizer'),
+                array('studentcomment_title', 'organizer'),
+                array('teacherfeedback_title', 'organizer'),
+        ),
+);
+$PAGE->requires->js_module($jsmodule);
 
 add_calendar();
 
 echo $OUTPUT->header();
+
+$popups = array();
 
 switch ($params['mode']) {
     case TAB_APPOINTMENTS_VIEW:
@@ -86,11 +97,26 @@ switch ($params['mode']) {
         break;
 }
 
-add_popup();
+$PAGE->requires->js_init_call('M.mod_organizer.init_popups', array($popups));
+
 echo $OUTPUT->footer();
 die();
 
 //---------------- UTILITY FUNCTIONS -------------------------------------------
+
+function register_popup($title, $content) {
+    static $id = 0;
+    global $popups;
+    if (!isset($popups[$title])) {
+        $popups[$title] = array();
+    }
+    $popups[$title][$id] = str_replace(array("\n", "\r"), "<br />", $content);
+
+    $elementid = "organizer_popup_icon_{$title}_{$id}";
+    $id++;
+    
+    return $elementid;
+}
 
 function create_url($params, $short = false) {
     $url = new moodle_url('/mod/organizer/view.php');

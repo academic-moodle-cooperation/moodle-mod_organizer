@@ -136,7 +136,14 @@ class print_form extends moodleform {
 
     private function _create_preview_table($columns) {
         global $PAGE;
-        $PAGE->requires->js('/mod/organizer/js/preview_toggle.js');
+        
+        $jsmodule = array(
+                'name' => 'mod_organizer',
+                'fullpath' => '/mod/organizer/module.js',
+                'requires' => array('node', 'node-event-delegate'),
+        );
+        
+        $PAGE->requires->js_init_call('M.mod_organizer.init_print_form', null, false, $jsmodule);
 
         $table = new html_table();
         $table->id = 'print_preview';
@@ -147,8 +154,7 @@ class print_form extends moodleform {
             $content = "<span name='{$column}_cell'>" . get_string("th_{$column}", 'organizer') . '</span>';
             $content .= ' '
                     . html_writer::checkbox('', '', $checked = true, '',
-                            array('onclick' => "toggleColumn(this, '{$column}')",
-                                    'title' => get_string("th_{$column}", 'organizer')));
+                            array('id' => "toggle_{$column}", 'title' => get_string("th_{$column}", 'organizer')));
             $cell = new html_table_cell($content);
             $cell->header = true;
             $header[] = $cell;

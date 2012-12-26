@@ -720,20 +720,24 @@ class mod_organizer_slots_form extends moodleform {
      */
     private function _add_scroll_fix() {
         global $PAGE;
-        $PAGE->requires->js('/mod/organizer/js/change.js');
 
         if (!USE_SCROLL_FIX) {
             return;
         }
 
-        $PAGE->requires->js('/mod/organizer/js/scrollfix.js');
+        $jsmodule = array(
+                'name' => 'mod_organizer',
+                'fullpath' => '/mod/organizer/module.js',
+                'requires' => array('node', 'node-scroll-info', 'scrollview-base'),
+        );
+        
+        $PAGE->requires->js_init_call('M.mod_organizer.init_add_form', null, false, $jsmodule);
 
         $mform = &$this->_form;
 
         $data = $this->_customdata;
         $mform->addElement('hidden', 'scrollx', isset($data->scrollx) ? $data->scrollx : 0);
         $mform->addElement('hidden', 'scrolly', isset($data->scrolly) ? $data->scrolly : 0);
-        $mform->updateAttributes('onsubmit="saveScroll()"');
     }
 
 }

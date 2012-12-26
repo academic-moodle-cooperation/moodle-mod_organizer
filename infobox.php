@@ -24,8 +24,8 @@ require_once('locallib.php');
 require_once('slotlib.php');
 function make_infobox($params, $organizer, $context) {
     global $PAGE;
-    $PAGE->requires->js('/mod/organizer/js/hide.js');
-    $PAGE->requires->js('/mod/organizer/js/showallslots.js');
+    $PAGE->requires->js_init_call('M.mod_organizer.init_infobox');
+    
     $output = make_description_section($organizer);
     switch($params['mode']) {
         case TAB_APPOINTMENTS_VIEW:
@@ -169,17 +169,17 @@ function make_slotoptions_section($params) {
         if ($params['mode'] == TAB_APPOINTMENTS_VIEW) {
             $pref = get_user_preferences('mod_organizer_showmyslotsonly');
             $output .= '<p><input type="checkbox" id="show_my_slots_only" ' .
-                        ($pref ? 'checked="true" ' : '') . 'onclick="toggleOtherSlots()" /> ' .
+                        ($pref ? 'checked="true" ' : '') . ' /> ' .
                         get_string('infobox_showmyslotsonly', 'organizer') . '</p>';
         }
         $pref = get_user_preferences('mod_organizer_showpasttimeslots');
         $output .= '<p><input type="checkbox" id="show_past_slots" ' .
-                    ($pref ? 'checked="true" ' : '') . 'onclick="togglePastSlots()" /> ' .
+                    ($pref ? 'checked="true" ' : '') . ' /> ' .
                     get_string('infobox_showslots', 'organizer') . '</p>';
     }
     $output .= '</div>';
-    $output .= '<div style="float:right;"><input type="button" value="' .
-            get_string('infobox_showlegend', 'organizer') . '" onclick="toggleLegend()" /></div>';
+    $output .= '<div style="float:right;"><input id="toggle_legend" type="button" value="' .
+            get_string('infobox_showlegend', 'organizer') . '" /></div>';
     $output .= '<div class="clearer"></div>';
     return make_section('infobox_slotoverview', $output) . make_section('infobox_legend', make_legend($params), true);
 }

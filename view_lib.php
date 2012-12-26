@@ -28,6 +28,19 @@ require_once('custom_table_renderer.php');
 require_once('slotlib.php');
 require_once('infobox.php');
 
+define('APP_STATUS_INVALID', -1);
+define('APP_STATUS_ATTENDED', 0);
+define('APP_STATUS_ATTENDED_REAPP', 1);
+define('APP_STATUS_PENDING', 2);
+define('APP_STATUS_REGISTERED', 3);
+define('APP_STATUS_NOT_ATTENDED', 4);
+define('APP_STATUS_NOT_ATTENDED_REAPP', 5);
+define('APP_STATUS_NOT_REGISTERED', 6);
+
+define('ICON_STUDENT_COMMENT', 0);
+define('ICON_TEACHER_COMMENT', 1);
+define('ICON_TEACHER_FEEDBACK', 2);
+
 function add_calendar() {
     global $PAGE, $DB;
 
@@ -51,20 +64,9 @@ function add_calendar() {
     $calendar->add_sidecalendar_blocks($renderer, true, 'month');
 }
 
-function add_popup() {
-    $popup = '<div id="organizer_popup" class="box generalbox"' .
-            'style="width: 200px; position: absolute; z-index: 100; left: 0px; top: 0px; display: none; background-color: white;">
-    <div id="organizer_popup_title" class="headingblock header outline">
-    </div>
-    <div id="organizer_popup_content">
-    </div>
-</div>';
-    echo $popup;
-}
-
 function generate_appointments_view($params, $instance) {
     global $PAGE;
-    $PAGE->requires->js('/mod/organizer/js/checkall.js');
+    $PAGE->requires->js_init_call('M.mod_organizer.init_checkboxes');
 
     $output = generate_tab_row($params, $instance->context);
     $output .= make_infobox($params, $instance->organizer, $instance->context);
@@ -191,9 +193,6 @@ function generate_tab_row($params, $context) {
 }
 
 function generate_button_bar($params, $organizer, $context) {
-    global $PAGE;
-    $PAGE->requires->js('/mod/organizer/js/newwindow.js');
-
     $actions = array('add', 'edit', 'delete', 'print', 'eval');
 
     $organizerexpired = isset($organizer->enableuntil) && $organizer->enableuntil - time() < 0;
@@ -235,8 +234,7 @@ function generate_table_header($columns, $sortable, $params, $usersort = false) 
         } else if ($column == 'select') {
             $cell = new html_table_cell(
                     html_writer::checkbox('select', null, false, '',
-                            array('onclick' => 'checkAll(this);',
-                                    'title' => get_string('select_all_slots', 'organizer'))));
+                            array('title' => get_string('select_all_slots', 'organizer'))));
         } else if ($column == 'participants' && $usersort) {
             if ($params['psort'] == 'name') {
                 $namedir = $params['pdir'] == 'ASC' ? 'DESC' : 'ASC';
@@ -753,9 +751,8 @@ function generate_registration_table_content($columns, $params, $organizer, $con
                             $idnumber = get_user_idnumber($member);
 
                             $list .= get_name_link($member) . ($idnumber ? " ($idnumber) " : " ")
-                                    . ($entry->comments != '' ? get_img('pix/feedback2.png', '', '', '',
-                            'onmouseover="showPopup(event, \'' . get_string('studentcomment_title', 'organizer')
-                                    . ':\', \'' . str_replace(array("\n", "\r"), "<br />", $entry->comments) . '\')" onmouseout="hidePopup()"') :
+                                    . ($entry->comments != '' ?
+                                            popup_icon(ICON_STUDENT_COMMENT, $entry->comments) :
                                             get_img('pix/transparent.png', '', ''));
                             if ($member == $entry->applicantid) {
                                 $list .= ' '
@@ -821,8 +818,9 @@ function generate_registration_table_content($columns, $params, $organizer, $con
 }
 
 function get_participant_entry($entry) {
-    $icon = ' ' . (isset($entry->comments) && $entry->comments != '' ? get_img('pix/feedback2.png', '', '', '',
-            get_popup(get_string('studentcomment_title', 'organizer'), $entry->comments)) : get_img('pix/transparent.png', '', ''));
+    $icon = ' ' . (isset($entry->comments) && $entry->comments != '' ? 
+            popup_icon(ICON_STUDENT_COMMENT, $entry->comments) :
+            get_img('pix/transparent.png', '', ''));
     return get_name_link($entry->id) . " {$icon}<br/>({$entry->idnumber})";
 }
 
@@ -832,8 +830,9 @@ function app_details($params, $appointment) {
         return '';
     }
 
-    $list = ' ' . ($appointment->comments != '' ? get_img('pix/feedback2.png', '', '', '',
-            get_popup(get_string('studentcomment_title', 'organizer'), $appointment->comments)) : get_img('pix/transparent.png', '', ''));
+    $list = ' ' . ($appointment->comments != '' ?
+            popup_icon(ICON_STUDENT_COMMENT, $appointment->comments) :
+            get_img('pix/transparent.png', '', ''));
     $list .= ' ' . get_attended_icon($appointment);
 
     list($cm, $course, $organizer, $context) = get_course_module_data();
@@ -841,8 +840,9 @@ function app_details($params, $appointment) {
         $list .= ' ' . display_grade($organizer, $appointment->grade); /// OVER HERE
     }
 
-    $list .= ' ' . ($appointment->feedback != '' ? get_img('pix/feedback.png', '', '', '',
-            get_popup(get_string('teachercomment_title', 'organizer'), $appointment->feedback)) : get_img('pix/transparent.png', '', ''));
+    $list .= ' ' . ($appointment->feedback != '' ? 
+            popup_icon(ICON_TEACHER_FEEDBACK, $appointment->feedback) :
+            get_img('pix/transparent.png', '', ''));
 
     return $list;
 }
@@ -878,8 +878,7 @@ function date_time($slot) {
 }
 
 function teacher_data($params, $slot) {
-    global $PAGE, $USER;
-    $PAGE->requires->js('/mod/organizer/js/popup.js');
+    global $USER;
 
     if (!isset($slot) || !isset($slot->teacherid)) {
         return '-';
@@ -908,25 +907,17 @@ function teacher_data($params, $slot) {
 
     if (isset($slot->teachercomments)) {
         if ($slot->teachercomments != '') {
-            $output .= ' ' . get_img('pix/feedback2.png', '', '', '', get_popup(get_string('teachercomment_title', 'organizer'), $slot->teachercomments));
+            $output .= ' ' . popup_icon(ICON_TEACHER_COMMENT, $slot->teachercomments);
         }
     } else {
         if ($slot->comments != '') {
-            $output .= ' ' . get_img('pix/feedback2.png', '', '', '', get_popup(get_string('teachercomment_title', 'organizer'), $slot->comments));
+            $output .= ' ' . popup_icon(ICON_TEACHER_COMMENT, $slot->comments);
         }
     }
 
     if ($params['mode'] != TAB_STUDENT_VIEW && !$slot->teachervisible) {
         $output .= '<br /><em>' . get_string('teacherinvisible', 'organizer') . '</em>';
     }
-
-    return $output;
-}
-
-function get_popup($title, $content) {
-    $title = str_replace(array("\n", "\r"), "<br />", $title);
-    $content = str_replace(array("\n", "\r"), "<br />", $content);
-    $output = "onmouseover=\"showPopup(event, '{$title}:', '{$content}')\" onmouseout=\"hidePopup()\"";
 
     return $output;
 }
@@ -940,25 +931,15 @@ function reg_app_details($organizer, $userid) {
         }
         if ($organizer->grade != 0) {
             $list .= display_grade($organizer, $appointment->grade);
-            $list .= ' '
-                    . (isset($appointment->feedback) && $appointment->feedback != '' ? get_img('pix/feedback.png', '',
-                                    '', '', get_popup(get_string('teacherfeedback_title', 'organizer'), $appointment->feedback)) : '');
         }
+        $list .= ' ' . (isset($appointment->feedback) && $appointment->feedback != '' ?
+                popup_icon(ICON_TEACHER_FEEDBACK, $appointment->feedback) : '');
     } else {
         $list = '-';
     }
 
     return $list;
 }
-
-define('APP_STATUS_INVALID', -1);
-define('APP_STATUS_ATTENDED', 0);
-define('APP_STATUS_ATTENDED_REAPP', 1);
-define('APP_STATUS_PENDING', 2);
-define('APP_STATUS_REGISTERED', 3);
-define('APP_STATUS_NOT_ATTENDED', 4);
-define('APP_STATUS_NOT_ATTENDED_REAPP', 5);
-define('APP_STATUS_NOT_REGISTERED', 6);
 
 function teacher_action_new($params, $entry, $context) {
     global $OUTPUT;
@@ -1229,7 +1210,7 @@ function get_attended_icon($appointment) {
 
 function location_link($slot) {
     if (!isset($slot) || !isset($slot->location) || $slot->location == '') {
-        return get_string('unknown', 'organizer');
+        return '-';
     }
 
     if (isset($slot->locationlink)) {
@@ -1466,4 +1447,14 @@ function get_countdown($time) {
 function get_user_idnumber($userid) {
     global $DB;
     return $DB->get_field_select('user', 'idnumber', "id = {$userid}");
+}
+
+function popup_icon($type, $content) {
+    $icons = array(
+            ICON_STUDENT_COMMENT => 'pix/feedback2.png',
+            ICON_TEACHER_COMMENT => 'pix/feedback2.png',
+            ICON_TEACHER_FEEDBACK => 'pix/feedback.png',
+    );
+    $iconid = register_popup($type, $content);
+    return get_img($icons[$type], '', '', $iconid);
 }
