@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/organizer/db" VERSION="20110929" COMMENT="XMLDB file for Moodle mod/organizer"
+<XMLDB PATH="mod/organizer/db" VERSION="20121226" COMMENT="XMLDB file for Moodle mod/organizer"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
     <TABLE NAME="organizer" COMMENT="organizer table retrofitted from MySQL" NEXT="organizer_slots">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="course"/>
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="name"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="name"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="course" NEXT="intro"/>
-        <FIELD NAME="intro" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="name" NEXT="introformat"/>
-        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="intro" NEXT="timemodified"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="introformat" NEXT="isgrouporganizer"/>
-        <FIELD NAME="isgrouporganizer" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timemodified" NEXT="emailteachers"/>
-        <FIELD NAME="emailteachers" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="isgrouporganizer" NEXT="enablefrom"/>
-        <FIELD NAME="enablefrom" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="emailteachers" NEXT="enableuntil"/>
-        <FIELD NAME="enableuntil" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="enablefrom" NEXT="relativedeadline"/>
-        <FIELD NAME="relativedeadline" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="enableuntil" NEXT="grade"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="name" NEXT="introformat"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="intro" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="introformat" NEXT="isgrouporganizer"/>
+        <FIELD NAME="isgrouporganizer" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timemodified" NEXT="emailteachers"/>
+        <FIELD NAME="emailteachers" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="isgrouporganizer" NEXT="enablefrom"/>
+        <FIELD NAME="enablefrom" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="emailteachers" NEXT="enableuntil"/>
+        <FIELD NAME="enableuntil" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="enablefrom" NEXT="relativedeadline"/>
+        <FIELD NAME="relativedeadline" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="enableuntil" NEXT="grade"/>
         <FIELD NAME="grade" TYPE="number" LENGTH="11" NOTNULL="true" SEQUENCE="false" DECIMALS="5" PREVIOUS="relativedeadline"/>
       </FIELDS>
       <KEYS>
@@ -25,53 +25,55 @@
     </TABLE>
     <TABLE NAME="organizer_slots" COMMENT="organizer_slots table retrofitted from MySQL" PREVIOUS="organizer" NEXT="organizer_slot_appointments">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="organizerid"/>
-        <FIELD NAME="organizerid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="starttime"/>
-        <FIELD NAME="starttime" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="organizerid" NEXT="duration"/>
-        <FIELD NAME="duration" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="starttime" NEXT="location"/>
-        <FIELD NAME="location" TYPE="text" LENGTH="medium" NOTNULL="true" SEQUENCE="false" PREVIOUS="duration" NEXT="locationlink"/>
-        <FIELD NAME="locationlink" TYPE="text" LENGTH="big" NOTNULL="true" SEQUENCE="false" PREVIOUS="location" NEXT="maxparticipants"/>
-        <FIELD NAME="maxparticipants" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="locationlink" NEXT="teacherid"/>
-        <FIELD NAME="teacherid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="maxparticipants" NEXT="isanonymous"/>
-        <FIELD NAME="isanonymous" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="teacherid" NEXT="availablefrom"/>
-        <FIELD NAME="availablefrom" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="isanonymous" NEXT="timemodified"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="availablefrom" NEXT="notificationtime"/>
-        <FIELD NAME="notificationtime" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="timemodified" NEXT="comments"/>
-        <FIELD NAME="comments" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="notificationtime" NEXT="teachervisible"/>
-        <FIELD NAME="teachervisible" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="comments" NEXT="eventid"/>
-        <FIELD NAME="eventid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="teachervisible" NEXT="notified"/>
-        <FIELD NAME="notified" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="eventid"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="organizerid"/>
+        <FIELD NAME="organizerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="starttime"/>
+        <FIELD NAME="starttime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="organizerid" NEXT="duration"/>
+        <FIELD NAME="duration" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" PREVIOUS="starttime" NEXT="location"/>
+        <FIELD NAME="location" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="duration" NEXT="locationlink"/>
+        <FIELD NAME="locationlink" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="location" NEXT="maxparticipants"/>
+        <FIELD NAME="maxparticipants" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" PREVIOUS="locationlink" NEXT="teacherid"/>
+        <FIELD NAME="teacherid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="maxparticipants" NEXT="isanonymous"/>
+        <FIELD NAME="isanonymous" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="teacherid" NEXT="availablefrom"/>
+        <FIELD NAME="availablefrom" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="isanonymous" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="availablefrom" NEXT="notificationtime"/>
+        <FIELD NAME="notificationtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="timemodified" NEXT="comments"/>
+        <FIELD NAME="comments" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="notificationtime" NEXT="teachervisible"/>
+        <FIELD NAME="teachervisible" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="comments" NEXT="eventid"/>
+        <FIELD NAME="eventid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="teachervisible" NEXT="notified"/>
+        <FIELD NAME="notified" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="eventid"/>
       </FIELDS>
       <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="organizer"/>
+        <KEY NAME="organizer" TYPE="foreign" FIELDS="organizerid" REFTABLE="organizer" REFFIELDS="id" PREVIOUS="primary"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="slots_userid" UNIQUE="false" FIELDS="teacherid" NEXT="slots_organizerid"/>
-        <INDEX NAME="slots_organizerid" UNIQUE="false" FIELDS="organizerid" PREVIOUS="slots_userid"/>
+        <INDEX NAME="slots_userid" UNIQUE="false" FIELDS="teacherid" NEXT="slots_eventid"/>
+        <INDEX NAME="slots_eventid" UNIQUE="false" FIELDS="eventid" PREVIOUS="slots_userid"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="organizer_slot_appointments" COMMENT="organizer_slot_appointments table retrofitted from MySQL" PREVIOUS="organizer_slots">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="slotid"/>
-        <FIELD NAME="slotid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="userid"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="slotid" NEXT="groupid"/>
-        <FIELD NAME="groupid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="userid" NEXT="applicantid"/>
-        <FIELD NAME="applicantid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="groupid" NEXT="attended"/>
-        <FIELD NAME="attended" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="applicantid" NEXT="grade"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="slotid"/>
+        <FIELD NAME="slotid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="slotid" NEXT="groupid"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="userid" NEXT="applicantid"/>
+        <FIELD NAME="applicantid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="groupid" NEXT="attended"/>
+        <FIELD NAME="attended" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" PREVIOUS="applicantid" NEXT="grade"/>
         <FIELD NAME="grade" TYPE="number" LENGTH="11" NOTNULL="false" SEQUENCE="false" DECIMALS="5" PREVIOUS="attended" NEXT="feedback"/>
-        <FIELD NAME="feedback" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="grade" NEXT="comments"/>
-        <FIELD NAME="comments" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="feedback" NEXT="eventid"/>
-        <FIELD NAME="eventid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="comments" NEXT="notified"/>
-        <FIELD NAME="notified" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="eventid" NEXT="allownewappointments"/>
-        <FIELD NAME="allownewappointments" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="notified"/>
+        <FIELD NAME="feedback" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="grade" NEXT="comments"/>
+        <FIELD NAME="comments" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="feedback" NEXT="eventid"/>
+        <FIELD NAME="eventid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="comments" NEXT="notified"/>
+        <FIELD NAME="notified" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="eventid" NEXT="allownewappointments"/>
+        <FIELD NAME="allownewappointments" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" PREVIOUS="notified"/>
       </FIELDS>
       <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="slot"/>
+        <KEY NAME="slot" TYPE="foreign" FIELDS="slotid" REFTABLE="organizer_slots" REFFIELDS="id" PREVIOUS="primary"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="slot_appointments_userid" UNIQUE="false" FIELDS="userid" NEXT="slot_appointments_slotid"/>
-        <INDEX NAME="slot_appointments_slotid" UNIQUE="false" FIELDS="slotid" PREVIOUS="slot_appointments_userid" NEXT="slot_appointments_groupid"/>
-        <INDEX NAME="slot_appointments_groupid" UNIQUE="false" FIELDS="groupid" PREVIOUS="slot_appointments_slotid"/>
+        <INDEX NAME="slot_appointments_userid" UNIQUE="false" FIELDS="userid" NEXT="slot_appointments_groupid"/>
+        <INDEX NAME="slot_appointments_groupid" UNIQUE="false" FIELDS="groupid" PREVIOUS="slot_appointments_userid" NEXT="slot_appointments_eventid"/>
+        <INDEX NAME="slot_appointments_eventid" UNIQUE="false" FIELDS="eventid" PREVIOUS="slot_appointments_groupid"/>
       </INDEXES>
     </TABLE>
   </TABLES>

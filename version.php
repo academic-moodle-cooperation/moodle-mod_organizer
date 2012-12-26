@@ -21,12 +21,12 @@
  * /admin/index.php
  *
  * @package   mod_organizer
- * @copyright 2010 Your Name
+ * @copyright 2012 Ivan Šakić
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version = 2012081404; // If version == 0 then module will not be installed
-$module->requires = 2011120500; // Requires this Moodle version
+$module->version = 2012122601; // If version == 0 then module will not be installed
+$module->requires = 2012120300; // Requires this Moodle version
 $module->cron = 300; // Period for cron to check this module (secs)

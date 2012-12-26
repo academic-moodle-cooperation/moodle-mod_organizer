@@ -43,6 +43,22 @@ function xmldb_organizer_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
+    if ($oldversion < 2012081401) {
+    
+        // Changing precision of field grade on table organizer to (10, 5)
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('grade', XMLDB_TYPE_NUMBER, '10, 5', null, XMLDB_NOTNULL, null, '0',
+                'relativedeadline');
+    
+        // Launch change of precision, sign and the default value for field grade
+        $dbman->change_field_precision($table, $field);
+        $dbman->change_field_unsigned($table, $field);
+        $dbman->change_field_default($table, $field);
+    
+        // organizer savepoint reached
+        upgrade_mod_savepoint(true, 2012081401, 'organizer');
+    }
+
     if ($oldversion < 2012081404) {
 
         // Changing precision of field grade on table organizer to (10, 5)
@@ -59,20 +75,56 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2012081404, 'organizer');
     }
 
-    if ($oldversion < 2012081401) {
+    if ($oldversion < 2012122601) {
+        
+        // Define index slots_eventid (not unique) to be dropped form organizer_slots
+        $table = new xmldb_table('organizer_slots');
+        $index = new xmldb_index('slots_organizerid', XMLDB_INDEX_NOTUNIQUE, array('organizerid'));
+        
+        // Conditionally launch drop index slots_eventid
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+        
+        // Define index slots_eventid (not unique) to be added to organizer_slots
+        $index = new xmldb_index('slots_eventid', XMLDB_INDEX_NOTUNIQUE, array('eventid'));
+        
+        // Conditionally launch add index slots_eventid
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        
+        // Define key organizer (foreign) to be added to organizer_slots
+        $key = new xmldb_key('organizer', XMLDB_KEY_FOREIGN, array('organizerid'), 'organizer', array('id'));
+    
+        // Launch add key organizer
+        $dbman->add_key($table, $key);
 
-        // Changing precision of field grade on table organizer to (10, 5)
-        $table = new xmldb_table('organizer');
-        $field = new xmldb_field('grade', XMLDB_TYPE_NUMBER, '10, 5', null, XMLDB_NOTNULL, null, '0',
-                'relativedeadline');
-
-        // Launch change of precision, sign and the default value for field grade
-        $dbman->change_field_precision($table, $field);
-        $dbman->change_field_unsigned($table, $field);
-        $dbman->change_field_default($table, $field);
-
+        // Define index slot_appointments_slotid (not unique) to be dropped form organizer_slot_appointments
+        $table = new xmldb_table('organizer_slot_appointments');
+        $index = new xmldb_index('slot_appointments_slotid', XMLDB_INDEX_NOTUNIQUE, array('slotid'));
+        
+        // Conditionally launch drop index slot_appointments_slotid
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+        
+        // Define index slot_appointments_eventid (not unique) to be added to organizer_slot_appointments
+        $index = new xmldb_index('slot_appointments_eventid', XMLDB_INDEX_NOTUNIQUE, array('eventid'));
+        
+        // Conditionally launch add index slot_appointments_eventid
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        
+        // Define key slot (foreign) to be added to organizer_slot_appointments
+        $key = new xmldb_key('slot', XMLDB_KEY_FOREIGN, array('slotid'), 'organizer_slots', array('id'));
+        
+        // Launch add key slot
+        $dbman->add_key($table, $key);
+    
         // organizer savepoint reached
-        upgrade_mod_savepoint(true, 2012081401, 'organizer');
+        upgrade_mod_savepoint(true, 2012122601, 'organizer');
     }
 
     return true;
