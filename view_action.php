@@ -61,8 +61,7 @@ $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ACTION);
 $user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
-//optional_param('slots', null, PARAM_RAW); -> this doesn't work, do not attempt to use it!!!
-$slots = isset($_POST["slots"]) ? $_POST["slots"] : (isset($_GET["slots"]) ? $_GET["slots"] : null);
+$slots = optional_param_array('slots', array(), PARAM_INT);
 $app = optional_param('app', null, PARAM_INT);
 
 $url = new moodle_url('/mod/organizer/view_action.php');

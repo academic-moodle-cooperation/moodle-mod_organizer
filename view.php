@@ -162,17 +162,12 @@ function load_params($instance) {
             break;
     }
 
-    if ($CFG->version <= 2011041200) {
-        $params['slots'] = optional_param('slots', array(), PARAM_RAW); // TODO: might have problems in the new version
-    } else {
-        $params['slots'] = (isset($_POST['slots']) ? $_POST['slots']
-                : (isset($_GET['slots']) ? $_GET['slots'] : array()));
-    }
+    $params['slots'] = optional_param_array('slots', array(), PARAM_INT);
     $params['pdir'] = optional_param('pdir', 'ASC', PARAM_ALPHA);
     $params['psort'] = optional_param('psort', 'name', PARAM_ALPHA);
     $params['dir'] = optional_param('dir', 'ASC', PARAM_ALPHA);
-    $params['data'] = optional_param_array('data', array(), PARAM_RAW);
-    $params['messages'] = optional_param_array('messages', array(), PARAM_RAW);
+    $params['data'] = optional_param_array('data', array(), PARAM_INT);
+    $params['messages'] = optional_param_array('messages', array(), PARAM_ALPHAEXT);
     $params['usersort'] = optional_param('usersort', 'name', PARAM_ALPHA);
 
     return $params;

@@ -114,8 +114,8 @@ class mod_organizer_slots_form extends moodleform {
             }
         }
 
-        if (isset($data['slots'])) {
-            $slots = $data['slots'];
+        if (isset($data['newslots'])) {
+            $slots = $data['newslots'];
 
             for ($i = 0; $i < count($slots); $i++) {
                 $slot = $slots[$i];
@@ -307,7 +307,7 @@ class mod_organizer_slots_form extends moodleform {
             $addday = -1;
         }
 
-        $slots = isset($mform->_submitValues['slots']) ? $mform->_submitValues['slots'] : array();
+        $slots = isset($mform->_submitValues['newslots']) ? $mform->_submitValues['newslots'] : array();
 
         for ($day = 0; $day < NUM_DAYS; $day++) {
             $dayset = false;
@@ -340,7 +340,7 @@ class mod_organizer_slots_form extends moodleform {
 
     private function _create_day_slot_group($day, $id, $isfirst) {
         $mform = &$this->_form;
-        $name = "slots[$id]";
+        $name = "newslots[$id]";
         $dayslot = array();
         $dayslot[] = $mform->createElement('advcheckbox', "{$name}[selected]", '', SPACING, null, array(0, 1));
         $mform->setDefault("{$name}[selected]", 0);
@@ -377,7 +377,7 @@ class mod_organizer_slots_form extends moodleform {
                 $mform->createElement('header', 'slottimeframes', get_string('rewievslotsheader', 'organizer')),
                 'other');
 
-        $slots = isset($mform->_submitValues['slots']) ? $mform->_submitValues['slots'] : array();
+        $slots = isset($mform->_submitValues['newslots']) ? $mform->_submitValues['newslots'] : array();
 
         $startdate = mktime(0, 0, 0, $mform->_submitValues['startdate']['month'],
                 $mform->_submitValues['startdate']['day'], $mform->_submitValues['startdate']['year']);
@@ -636,9 +636,9 @@ class mod_organizer_slots_form extends moodleform {
             }
         }
 
-        if (isset($data['slots'])) {
+        if (isset($data['newslots'])) {
             $invalidslots = array();
-            $slots = $data['slots'];
+            $slots = $data['newslots'];
 
             $slotcount = 0;
 
