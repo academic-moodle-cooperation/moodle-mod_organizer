@@ -1,78 +1,78 @@
-tr.past_due td {
+#organizer_main_cointainer table tr.past_due td {
     background-color: #F0F0F0 !important;
 }
 
-tr.affected_slot td {
+#organizer_main_cointainer table tr.affected_slot td {
     background-color: LightGreen !important;
 }
 
-tr.unavailable td {
+#organizer_main_cointainer table tr.unavailable td {
     color: gray !important;
 }
 
-table.overview {
+#organizer_main_cointainer table.overview {
     width: 100% !important;
 }
 
-table.overview td {
+#organizer_main_cointainer table.overview td {
 	border: 1px solid #BBB !important;
 }
 
-fieldset.preview {
+#organizer_main_cointainer fieldset.preview {
 	width: 97.3%;
 }
 
 /*fix here sn */
-div.forced_scroll {
+#organizer_main_cointainer div.forced_scroll {
     overflow-x: scroll;
     width: 100%;
 }
 
-div.forced_scroll table {
+#organizer_main_cointainer div.forced_scroll table {
 	min-width: 1024px;
 }
 
-div.forced_scroll td {
+#organizer_main_cointainer div.forced_scroll td {
 	white-space: nowrap;
 }
 
-table.legend td {
+#organizer_main_cointainer table.legend td {
     vertical-align: middle !important;
 }
 
-tr.registered_slot td {
+#organizer_main_cointainer tr.registered_slot td {
     background-color: LightGreen !important;
 }
 
-div.singlebutton button {
+#organizer_main_cointainer div.singlebutton button {
     margin: 20px 5px;
 }
 
-span.countdown_normal {
+#organizer_main_cointainer span.countdown_normal {
     background-color: LightGreen;
 }
 
-span.countdown_hurry {
+#organizer_main_cointainer span.countdown_hurry {
     background-color: Yellow;
 }
 
-span.countdown_critical {
+#organizer_main_cointainer span.countdown_critical {
     background-color: rgb(255,204,153);
 }
 
-span.countdown_passed {
+#organizer_main_cointainer span.countdown_passed {
     background-color: #F0F0F0;
 }
 
-span.nobreak {
+#organizer_main_cointainer span.nobreak {
 	white-space: nowrap;	
 }
 
-div.organizerinfo {
+#organizer_main_cointainer div.organizerinfo {
 	width: 50% !important;
 }
 
-table.print-preview td {
+#organizer_main_cointainer table.print-preview td {
 	border: 1px solid #BBB !important;
 	border-collapse: collapse;
 }

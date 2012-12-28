@@ -62,6 +62,7 @@ function add_calendar() {
     $calendar->prepare_for_view($course, $courses);
     $renderer = $PAGE->get_renderer('core_calendar');
     $calendar->add_sidecalendar_blocks($renderer, true, 'month');
+    $PAGE->requires->js_init_call('M.mod_organizer.fix_calendar_styles');
 }
 
 function generate_appointments_view($params, $instance) {

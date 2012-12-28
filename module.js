@@ -301,3 +301,7 @@ M.mod_organizer.init_print_form = function (Y) {
 	
 	Y.one('#mform1').delegate('change', toggle_column, 'table th input[type=checkbox]');
 }
+
+M.mod_organizer.fix_calendar_styles = function (Y) {
+	Y.one('#region-post').addClass('path-calendar');
+}

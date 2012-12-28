@@ -67,6 +67,7 @@ echo $OUTPUT->header();
 
 $popups = array();
 
+echo $OUTPUT->box_start('', 'organizer_main_cointainer');
 switch ($params['mode']) {
     case TAB_APPOINTMENTS_VIEW:
         if (has_capability('mod/organizer:viewallslots', $instance->context)) {
@@ -96,11 +97,12 @@ switch ($params['mode']) {
         print_error("Invalid view mode: {$params['mode']}");
         break;
 }
+echo $OUTPUT->box_end();
+echo $OUTPUT->footer();
 
 $PAGE->requires->js_init_call('M.mod_organizer.init_popups', array($popups));
 
-echo $OUTPUT->footer();
-die();
+die;
 
 //---------------- UTILITY FUNCTIONS -------------------------------------------
 
