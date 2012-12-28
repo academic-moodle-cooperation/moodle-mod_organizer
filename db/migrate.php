@@ -46,6 +46,7 @@ define('DEFAULT_APPOINTMENT_GRADE', 0);
 define('DEFAULT_ALLOW_NEW_APPOINTMENTS', 0);
 
 require_login();
+require_sesskey();
 if (!is_siteadmin()) {
     header('Location: index.php');
     exit;
