@@ -28,9 +28,9 @@ defined('MOODLE_INTERNAL') || die();
 // required for the form rendering
 
 require_once("$CFG->libdir/formslib.php");
-require_once("slotlib.php");
-require_once("locallib.php");
-require_once("view_lib.php");
+require_once(dirname(__FILE__) . '/slotlib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
+require_once(dirname(__FILE__) . '/view_lib.php');
 
 class organizer_remind_all_form extends moodleform {
 

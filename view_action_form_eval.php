@@ -28,7 +28,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
-require_once("lib.php");
+require_once(dirname(__FILE__) . '/lib.php');
 
 class organizer_evaluate_slots_form extends moodleform {
 

@@ -26,11 +26,11 @@ define("ORGANIZER_TAB_APPOINTMENTS_VIEW", 1);
 define("ORGANIZER_TAB_STUDENT_VIEW", 2);
 define("ORGANIZER_TAB_REGISTRATION_STATUS_VIEW", 3);
 
-require_once('../../config.php');
-require_once("../../calendar/lib.php");
-require_once('lib.php');
-require_once('view_lib.php');
-require_once('locallib.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/../../calendar/lib.php');
+require_once(dirname(__FILE__) . '/lib.php');
+require_once(dirname(__FILE__) . '/view_lib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
 //------------------------------------------------------------------------------
 

@@ -35,7 +35,7 @@ define('ORGANIZER_MESSAGES_RE_UNREG', 1);
 define('ORGANIZER_MESSAGES_ALL', 2);
 define('ORGANIZER_DELETE_EVENTS', 1);
 
-require_once('slotlib.php');
+require_once(dirname(__FILE__) . '/slotlib.php');
 
 /**
  * Given an object containing all the necessary data,
@@ -773,7 +773,7 @@ function organizer_is_student_in_course($courseid, $userid) {
  * @todo Finish documenting this function
  **/
 function organizer_cron() {
-    require_once('messaging.php');
+    require_once(dirname(__FILE__) . '/messaging.php');
     global $DB;
     $now = time();
 
@@ -869,7 +869,7 @@ function organizer_cron() {
 }
 
 function organizer_create_digest($teacherid) {
-    require_once('messaging.php');
+    require_once(dirname(__FILE__) . '/messaging.php');
     global $DB;
     $now = time();
 

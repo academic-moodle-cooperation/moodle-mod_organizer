@@ -28,7 +28,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
-require_once('lib.php');
+require_once(dirname(__FILE__) . '/lib.php');
 
 class mod_organizer_mod_form extends moodleform_mod {
 

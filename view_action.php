@@ -35,18 +35,18 @@ define('ORGANIZER_ACTION_REMIND', 'remind');
 define('ORGANIZER_ACTION_REMINDALL', 'remindall');
 define('ORGANIZER_ACTION_COMMENT', 'comment');
 
-require_once('../../config.php');
-require_once('locallib.php');
-require_once('view_action_form_add.php');
-require_once('view_action_form_eval.php');
-require_once('view_action_form_edit.php');
-require_once('view_action_form_delete.php');
-require_once('view_action_form_comment.php');
-require_once('view_action_form_print.php');
-require_once('view_action_form_remind_all.php');
-require_once('print.php');
-require_once('view_lib.php');
-require_once('messaging.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/locallib.php');
+require_once(dirname(__FILE__) . '/view_action_form_add.php');
+require_once(dirname(__FILE__) . '/view_action_form_eval.php');
+require_once(dirname(__FILE__) . '/view_action_form_edit.php');
+require_once(dirname(__FILE__) . '/view_action_form_delete.php');
+require_once(dirname(__FILE__) . '/view_action_form_comment.php');
+require_once(dirname(__FILE__) . '/view_action_form_print.php');
+require_once(dirname(__FILE__) . '/view_action_form_remind_all.php');
+require_once(dirname(__FILE__) . '/print.php');
+require_once(dirname(__FILE__) . '/view_lib.php');
+require_once(dirname(__FILE__) . '/messaging.php');
 
 //--------------------------------------------------------------------------------------------------
 

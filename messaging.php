@@ -16,7 +16,7 @@
 
 define('ORGANIZER_ENABLE_MESSAGING', 1);
 
-require_once("locallib.php");
+require_once(dirname(__FILE__) . '/locallib.php');
 
 function organizer_send_message($sender, $receiver, $slot, $type, $digest = null) {
     global $DB;

@@ -28,8 +28,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
-require_once('custom_table_renderer.php');
-require_once('print.php');
+require_once(dirname(__FILE__) . '/custom_table_renderer.php');
+require_once(dirname(__FILE__) . '/print.php');
 
 class organizer_print_slots_form extends moodleform {
 

@@ -33,13 +33,12 @@ define('ORGANIZER_ICON_STUDENT_COMMENT', 0);
 define('ORGANIZER_ICON_TEACHER_COMMENT', 1);
 define('ORGANIZER_ICON_TEACHER_FEEDBACK', 2);
 
-require_once('../../config.php');
-require_once('../../course/lib.php');
-require_once('../../calendar/lib.php');
-require_once('lib.php');
-require_once('custom_table_renderer.php');
-require_once('slotlib.php');
-require_once('infobox.php');
+require_once(dirname(__FILE__) . '/../../course/lib.php');
+require_once(dirname(__FILE__) . '/../../calendar/lib.php');
+require_once(dirname(__FILE__) . '/lib.php');
+require_once(dirname(__FILE__) . '/custom_table_renderer.php');
+require_once(dirname(__FILE__) . '/slotlib.php');
+require_once(dirname(__FILE__) . '/infobox.php');
 
 function organizer_add_calendar() {
     global $PAGE, $DB;

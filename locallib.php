@@ -26,7 +26,8 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-require_once('lib.php');
+
+require_once(dirname(__FILE__) . '/lib.php');
 
 function organizer_load_events($teacherid, $startdate, $enddate) {
     global $DB;

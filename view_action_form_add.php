@@ -31,8 +31,8 @@ define('ORGANIZER_NO_DAY', '-1');
 define('ORGANIZER_DAY_IN_SECS', '86400');
 define('ORGANIZER_USE_SCROLL_FIX', '1');
 
-require_once('../../lib/formslib.php');
-require_once('locallib.php');
+require_once(dirname(__FILE__) . '/../../lib/formslib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
 class organizer_add_slots_form extends moodleform {
 

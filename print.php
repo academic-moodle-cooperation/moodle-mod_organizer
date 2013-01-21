@@ -24,11 +24,10 @@ define('ORGANIZER_SHRINK_TO_FIT', true);
 define('ORGANIZER_FONT', 'freesans');
 define('ORGANIZER_HEADER_SEPARATOR_WIDTH', 8);
 
-require_once('../../config.php');
-require_once('../../lib/pdflib.php');
-require_once('lib.php');
-require_once('custom_table_renderer.php');
-require_once('../../lib/pdflib.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/../../lib/pdflib.php');
+require_once(dirname(__FILE__) . '/lib.php');
+require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
 class organizer_pdf extends pdf {
     private $coursename;

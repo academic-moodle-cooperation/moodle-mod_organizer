@@ -18,10 +18,12 @@
  * @copyright 2012 Ivan Šakić
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once('lib.php');
-require_once('legend.php');
-require_once('locallib.php');
-require_once('slotlib.php');
+
+require_once(dirname(__FILE__) . '/lib.php');
+require_once(dirname(__FILE__) . '/legend.php');
+require_once(dirname(__FILE__) . '/locallib.php');
+require_once(dirname(__FILE__) . '/slotlib.php');
+
 function organizer_make_infobox($params, $organizer, $context) {
     global $PAGE;
     user_preference_allow_ajax_update('mod_organizer_showpasttimeslots', PARAM_BOOL);

@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 // required for the form rendering
 
 require_once("$CFG->libdir/formslib.php");
-require_once("slotlib.php");
+require_once(dirname(__FILE__) . '/slotlib.php');
 
 class organizer_delete_slots_form extends moodleform {
 

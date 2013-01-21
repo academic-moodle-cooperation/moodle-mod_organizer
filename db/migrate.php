@@ -40,10 +40,9 @@ define('ORGANIZER_DEFAULT_APPOINTMENT_ALLOW_NEW_APPOINTMENTS', 0);
 define('ORGANIZER_DEFAULT_APPOINTMENT_GRADE', 0);
 define('ORGANIZER_DEFAULT_ALLOW_NEW_APPOINTMENTS', 0);
 
-require_once('../../../config.php');
-require_once('../../../lib/moodlelib.php');
-
-require_once('../locallib.php');
+require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/config.php');
+require_once(dirname(__FILE__) . '/../../../lib/moodlelib.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
 
 require_login();
 require_sesskey();
