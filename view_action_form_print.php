@@ -59,7 +59,7 @@ class organizer_print_slots_form extends moodleform {
     }
 
     private function _add_column_select() {
-        global $DB;
+        global $DB, $CFG;
 
         $mform = $this->_form;
         $data = &$this->_customdata;
@@ -71,7 +71,13 @@ class organizer_print_slots_form extends moodleform {
                 INNER JOIN {organizer_slots} s ON o.id = s.organizerid
                 WHERE s.id = :slotid", $params);
 
-        $selcols = array('datetime', 'location', 'teacher', 'participant', 'idnumber', 'attended', 'grade', 'feedback');
+        $identityfields = explode(',', $CFG->showuseridentity);
+        if (array_search('idnumber', $identityfields) !== false) {
+            $selcols = array('datetime', 'location', 'teacher', 'participant', 'idnumber', 'attended', 'grade', 'feedback');
+        } else {
+            $selcols = array('datetime', 'location', 'teacher', 'participant', 'attended', 'grade', 'feedback');
+        }
+        
         if ($isgrouporganizer) {
             array_splice($selcols, 3, 0, 'groupname');
         }
