@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-function organizer_render_table_with_footer(html_table $table, $printfooter = true) {
+function organizer_render_table_with_footer(html_table $table, $printfooter = true, $overrideevenodd = false) {
     // prepare table data and populate missing properties with reasonable defaults
     if (!empty($table->align)) {
         foreach ($table->align as $key => $aa) {
@@ -172,7 +172,10 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                     $row->attributes['class'] .= ' ' . $table->rowclasses[$key];
                 }
 
-                $row->attributes['class'] .= ' r' . $oddeven;
+                if (!$overrideevenodd) {
+                    $row->attributes['class'] .= ' r' . $oddeven;
+                }
+                
                 if ($key == $lastrowkey) {
                     $row->attributes['class'] .= ' lastrow';
                 }

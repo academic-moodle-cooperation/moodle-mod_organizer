@@ -76,3 +76,17 @@
 	border: 1px solid #BBB !important;
 	border-collapse: collapse;
 }
+
+#organizer_main_cointainer table.coloredrows th {
+    white-space:nowrap;
+}
+
+#organizer_main_cointainer table.coloredrows .r0 {
+    background-color: #f0f0f0;
+    white-space:nowrap
+}
+
+#organizer_main_cointainer table.coloredrows .r1 {
+    background-color: #fafafa;
+    white-space:nowrap
+}

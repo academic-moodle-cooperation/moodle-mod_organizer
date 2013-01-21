@@ -285,6 +285,34 @@ M.mod_organizer.init_popups = function (Y, popups) {
 
 M.mod_organizer.init_organizer_print_slots_form = function (Y) {
 	function toggle_column() {
+		
+		var column = this.get('id').split('_')[1];
+		
+		var imgurl = this.get('src');
+	    
+	    var unchecked = imgurl.search('switch_minus') !== -1;
+	    
+	    if (unchecked) {
+	    	imgurl = imgurl.replace('switch_minus', 'switch_plus');
+	    } else {
+	    	imgurl = imgurl.replace('switch_plus', 'switch_minus');
+	    }
+	    this.set('src', imgurl);
+	    
+	    Y.all("[name=" + column + "_cell]").each(function(node) {
+	    	if (!unchecked) {
+	    		node.show();
+	    	} else {
+	    		node.hide();
+	    	}
+	    });
+	}
+	
+	Y.one('#mform1').delegate('click', toggle_column, 'table th img');
+}
+
+M.mod_organizer.init_organizer_print_slots_form_old = function (Y) {
+	function toggle_column() {
 		var column = this.get('id').split('_')[1];
 	    var checked = this.get('checked');
 	    

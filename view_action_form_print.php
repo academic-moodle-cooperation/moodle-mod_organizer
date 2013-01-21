@@ -103,18 +103,17 @@ class organizer_print_slots_form extends moodleform {
         $mform->setType('headerfooter', PARAM_BOOL);
         $mform->setDefault('headerfooter', 1);
 
-        $mform->addElement('header', null, get_string('printpreview', 'organizer'), array('style' => 'width: 800px; overflow-x: scroll;'));
-
-        $mform->addElement('html', '<div class="forced_scroll">');
-        $mform->addElement('html', $this->_create_preview_table($selcols));
-        $mform->addElement('html', '</div>');
-
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'pdfsubmit', get_string('pdfsubmit', 'organizer'));
         $buttonarray[] = &$mform->createElement('cancel', 'cancel', get_string('print_return', 'organizer'));
-
+        
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
-        $mform->closeHeaderBefore('buttonar');
+
+        $mform->addElement('header', null, get_string('printpreview', 'organizer'), array('style' => 'width: 800px; overflow-x: scroll;'));
+        
+        $mform->addElement('html', '<div class="forced_scroll">');
+        $mform->addElement('html', $this->_create_preview_table($selcols));
+        $mform->addElement('html', '</div>');
 
         foreach ($selcols as $key => $selcol) {
             $mform->addElement('advcheckbox', "cols[$key]", null, null,
@@ -141,7 +140,7 @@ class organizer_print_slots_form extends moodleform {
     }
 
     private function _create_preview_table($columns) {
-        global $PAGE;
+        global $PAGE, $OUTPUT;
         
         $jsmodule = array(
                 'name' => 'mod_organizer',
@@ -153,14 +152,20 @@ class organizer_print_slots_form extends moodleform {
 
         $table = new html_table();
         $table->id = 'print_preview';
-        $table->attributes['class'] = 'generaltable boxaligncenter print-preview';
+        $table->attributes['class'] = 'boxaligncenter print-preview coloredrows';
 
         $header = array();
         foreach ($columns as $column) {
             $content = "<span name='{$column}_cell'>" . get_string("th_{$column}", 'organizer') . '</span>';
-            $content .= ' '
-                    . html_writer::checkbox('', '', $checked = true, '',
-                            array('id' => "toggle_{$column}", 'title' => get_string("th_{$column}", 'organizer')));
+            $imgattr = array(
+                    'src' => $OUTPUT->pix_url('t/switch_minus'),
+                    'alt' => get_string('hide'), 
+                    'id' => "toggle_{$column}",
+                    'style' => 'cursor: pointer',
+                    'title' => get_string("th_{$column}", 'organizer'));
+            
+            $content .= ' ' . html_writer::empty_tag('img', $imgattr);
+
             $cell = new html_table_cell($content);
             $cell->header = true;
             $header[] = $cell;
@@ -173,6 +178,7 @@ class organizer_print_slots_form extends moodleform {
         $rows = array();
         $rowspan = 0;
         $numcols = 0;
+        $evenodd = 0;
         foreach ($entries as $entry) {
             if ($numcols == 10) {
                 break;
@@ -273,11 +279,16 @@ class organizer_print_slots_form extends moodleform {
                 }
             }
             $numcols++;
+            $row->attributes['class'] = " r{$evenodd}";
             $rowspan = ($rowspan + 1) % $entry->rowspan;
+
+            if ($rowspan == 0) {
+                $evenodd = $evenodd ? 0 : 1;
+            }
         }
 
         $table->data = $rows;
 
-        return organizer_render_table_with_footer($table, false);
+        return organizer_render_table_with_footer($table, false, true);
     }
 }
