@@ -34,14 +34,14 @@ require_once('locallib.php');
 
 //------------------------------------------------------------------------------
 
-$instance = get_course_module_data_new();
+$instance = organizer_get_course_module_data_new();
 
 require_login($instance->course, false, $instance->cm);
 
-$params = load_params($instance);
+$params = organizer_load_params($instance);
 
-$url = create_url($params);
-$logurl = create_url($params, true);
+$url = organizer_create_url($params);
+$logurl = organizer_create_url($params, true);
 
 $PAGE->set_url($url);
 $PAGE->set_title($instance->organizer->name);
@@ -61,7 +61,7 @@ $jsmodule = array(
 );
 $PAGE->requires->js_module($jsmodule);
 
-add_calendar();
+organizer_add_calendar();
 
 echo $OUTPUT->header();
 
@@ -71,24 +71,24 @@ echo $OUTPUT->box_start('', 'organizer_main_cointainer');
 switch ($params['mode']) {
     case TAB_APPOINTMENTS_VIEW:
         if (has_capability('mod/organizer:viewallslots', $instance->context)) {
-            log_action('allview', $logurl, $instance);
-            echo generate_appointments_view($params, $instance);
+            organizer_log_action('allview', $logurl, $instance);
+            echo organizer_generate_appointments_view($params, $instance);
         } else {
             print_error('You do not have the permission to view this page!');
         }
         break;
     case TAB_STUDENT_VIEW:
         if (has_capability('mod/organizer:viewstudentview', $instance->context)) {
-            log_action('studview', $logurl, $instance);
-            echo generate_student_view($params, $instance);
+            organizer_log_action('studview', $logurl, $instance);
+            echo organizer_generate_student_view($params, $instance);
         } else {
             print_error('You do not have the permission to view this page!');
         }
         break;
     case TAB_REGISTRATION_STATUS_VIEW:
         if (has_capability('mod/organizer:viewregistrations', $instance->context)) {
-            log_action('statusview', $logurl, $instance);
-            echo generate_registration_status_view($params, $instance);
+            organizer_log_action('statusview', $logurl, $instance);
+            echo organizer_generate_registration_status_view($params, $instance);
         } else {
             print_error('You do not have the permission to view this page!');
         }
@@ -106,7 +106,7 @@ die;
 
 //---------------- UTILITY FUNCTIONS -------------------------------------------
 
-function register_popup($title, $content) {
+function organizer_register_popup($title, $content) {
     static $id = 0;
     global $popups;
     if (!isset($popups[$title])) {
@@ -114,13 +114,13 @@ function register_popup($title, $content) {
     }
     $popups[$title][$id] = str_replace(array("\n", "\r"), "<br />", $content);
 
-    $elementid = "organizer_popup_icon_{$title}_{$id}";
+    $elementid = "organizer_organizer_popup_icon_{$title}_{$id}";
     $id++;
     
     return $elementid;
 }
 
-function create_url($params, $short = false) {
+function organizer_create_url($params, $short = false) {
     $url = new moodle_url('/mod/organizer/view.php');
     $url->param('id', $params['id']);
     if (!$short) {
@@ -137,7 +137,7 @@ function create_url($params, $short = false) {
     return $url;
 }
 
-function load_params($instance) {
+function organizer_load_params($instance) {
     global $CFG;
 
     $params = array();

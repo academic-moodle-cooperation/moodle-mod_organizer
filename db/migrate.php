@@ -178,7 +178,7 @@ function migrate_slots($cm, $scheduler, $organizer) {
 
         echo "\t\tInserting new slot record... ";
         $newslot->id = $DB->insert_record("organizer_slots", $newslot);
-        $newslot->eventid = add_event_slot($cm->id, $newslot->id);
+        $newslot->eventid = organizer_add_event_slot($cm->id, $newslot->id);
         echo "\t\tEvent id = {$newslot->eventid}... ";
         $DB->update_record("organizer_slots", $newslot);
         echo "done. New slot id = {$newslot->id}\n";
@@ -218,7 +218,7 @@ function migrate_slots($cm, $scheduler, $organizer) {
 
             echo "\t\t\tInserting new appointment record for slot id = {$newslot->id} ...";
             $newapp->id = $DB->insert_record('organizer_slot_appointments', $newapp);
-            $newapp->eventid = add_event_appointment($cm->id, $newapp->id);
+            $newapp->eventid = organizer_add_event_appointment($cm->id, $newapp->id);
             echo "\t\t\tEvent id = {$newapp->eventid}... ";
             $DB->update_record('organizer_slot_appointments', $newapp);
             echo "done. Appointment id = {$newapp->id}\n";

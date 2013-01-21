@@ -103,7 +103,7 @@ foreach ($organizers as $organizer) {
     $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
     $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
     if (has_capability('mod/organizer:viewregistrations', $context)) {
-        $a = get_counters($organizer);
+        $a = organizer_get_counters($organizer);
         if ($organizer->isgrouporganizer) {
             $reg = get_string('mymoodle_registered_group_short', 'organizer', $a);
             $att = get_string('mymoodle_attended_group_short', 'organizer', $a);
@@ -119,9 +119,9 @@ foreach ($organizers as $organizer) {
         $row[] = '-';
     } else {
         $row[] = organizer_get_overview_student($organizer, true);
-        $app = get_last_user_appointment($organizer, null, false);
+        $app = organizer_get_last_user_appointment($organizer, null, false);
         if ($app) {
-            $row[] = display_grade($organizer, $app->grade);
+            $row[] = organizer_display_grade($organizer, $app->grade);
         } else {
             $row[] = '-';
         }

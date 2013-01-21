@@ -28,7 +28,7 @@
 defined('MOODLE_INTERNAL') || die();
 require_once('lib.php');
 
-function load_events($teacherid, $startdate, $enddate) {
+function organizer_load_events($teacherid, $startdate, $enddate) {
     global $DB;
 
     $params = array('teacherid' => $teacherid, 'startdate1' => $startdate, 'enddate1' => $enddate,
@@ -42,7 +42,7 @@ function load_events($teacherid, $startdate, $enddate) {
     return $DB->get_records_sql($query, $params);
 }
 
-function get_name_link($user = 0) {
+function organizer_get_name_link($user = 0) {
     global $DB, $USER, $COURSE;
     if (!$user) {
         $user = $USER;
@@ -57,7 +57,7 @@ function get_name_link($user = 0) {
     return html_writer::link($profileurl, $name);
 }
 
-function checkcollision($frame, $date, $events) {
+function organizer_check_collision($frame, $date, $events) {
     $collidingevents = array();
     foreach ($events as $event) {
         $framefrom = $frame['from'] + $date;
@@ -74,7 +74,7 @@ function checkcollision($frame, $date, $events) {
     return $collidingevents;
 }
 
-function add_appointment_slots($data) {
+function organizer_add_appointment_slots($data) {
     global $DB;
 
     $count = array();
@@ -115,7 +115,7 @@ function add_appointment_slots($data) {
 
             $newslot->id = $DB->insert_record('organizer_slots', $newslot);
 
-            $newslot->eventid = add_event_slot($data->id, $newslot);
+            $newslot->eventid = organizer_add_event_slot($data->id, $newslot);
             $DB->update_record('organizer_slots', $newslot);
             unset($newslot->eventid);
 
@@ -126,7 +126,7 @@ function add_appointment_slots($data) {
     return $count;
 }
 
-function add_event_slot($cmid, $slot) {
+function organizer_add_event_slot($cmid, $slot) {
     global $DB;
 
     if (is_number($slot)) {
@@ -157,7 +157,7 @@ function add_event_slot($cmid, $slot) {
             $users = groups_get_members($group->id);
             $memberlist = "{$group->name} (";
             foreach ($users as $user) {
-                $memberlist .= get_name_link($user->id) . ", ";
+                $memberlist .= organizer_get_name_link($user->id) . ", ";
             }
             $memberlist = trim($memberlist, ", ");
             $memberlist .= ")";
@@ -174,7 +174,7 @@ function add_event_slot($cmid, $slot) {
             $a->with = get_string('eventwith', 'organizer');
             $a->participants = "";
             foreach ($apps as $app) {
-                $a->participants .= get_name_link($app->userid) . ", ";
+                $a->participants .= organizer_get_name_link($app->userid) . ", ";
             }
             $a->participants = trim($a->participants, ", ");
         } else {
@@ -218,7 +218,7 @@ function add_event_slot($cmid, $slot) {
     }
 }
 
-function add_event_appointment($cmid, $appointment) {
+function organizer_add_event_appointment($cmid, $appointment) {
     global $DB;
 
     if (is_number($appointment)) {
@@ -246,12 +246,12 @@ function add_event_appointment($cmid, $appointment) {
         $group = groups_get_group($appointment->groupid);
         $users = groups_get_members($group->id);
         if ($slot->teachervisible) {
-            $memberlist = get_name_link($slot->teacherid) . " ({$group->name}: ";
+            $memberlist = organizer_get_name_link($slot->teacherid) . " ({$group->name}: ";
         } else {
             $memberlist = get_string('eventteacheranonymous', 'organizer') . " ({$group->name}: ";
         }
         foreach ($users as $user) {
-            $memberlist .= get_name_link($user->id) . ", ";
+            $memberlist .= organizer_get_name_link($user->id) . ", ";
         }
         $memberlist = trim($memberlist, ", ");
         $memberlist .= ")";
@@ -260,7 +260,7 @@ function add_event_appointment($cmid, $appointment) {
         $a->appwith = get_string('eventappwith:single', 'organizer');
         $a->with = get_string('eventwith', 'organizer');
         if ($slot->teachervisible) {
-            $a->participants = get_name_link($slot->teacherid);
+            $a->participants = organizer_get_name_link($slot->teacherid);
         } else {
             $a->participants = get_string('eventteacheranonymous', 'organizer');
         }
@@ -300,7 +300,7 @@ function add_event_appointment($cmid, $appointment) {
     }
 }
 
-function update_comments($appid, $comments) {
+function organizer_update_comments($appid, $comments) {
     global $DB;
 
     $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $appid));
@@ -313,7 +313,7 @@ function update_comments($appid, $comments) {
     return $DB->update_record('organizer_slot_appointments', $appointment);
 }
 
-function update_appointment_slot($data) {
+function organizer_update_appointment_slot($data) {
     global $DB;
 
     $slot = new stdClass();
@@ -372,11 +372,11 @@ function update_appointment_slot($data) {
 
             $updatedslot = $DB->get_record('organizer_slots', array('id' => $slotid));
 
-            add_event_slot($data->id, $updatedslot, $updatedslot->eventid);
+            organizer_add_event_slot($data->id, $updatedslot, $updatedslot->eventid);
 
             $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slotid));
             foreach ($apps as $app) {
-                add_event_appointment($data->id, $app, $app->eventid);
+                organizer_add_event_appointment($data->id, $app, $app->eventid);
             }
         }
     }
@@ -384,14 +384,14 @@ function update_appointment_slot($data) {
     return $data->slots;
 }
 
-function security_check_slots($slots) {
+function organizer_security_check_slots($slots) {
     global $DB;
 
     if (!isset($slots)) {
         return true;
     }
 
-    list($cm, $course, $organizer, $context) = get_course_module_data();
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     list($insql, $inparams) = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
 
     $params = array_merge(array('organizerid' => $organizer->id), $inparams);
@@ -403,14 +403,14 @@ function security_check_slots($slots) {
     return count($slots) == count($records);
 }
 
-function security_check_apps($apps) {
+function organizer_security_check_apps($apps) {
     global $DB;
 
     if (!isset($apps)) {
         return true;
     }
 
-    list($cm, $course, $organizer, $context) = get_course_module_data();
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     list($insql, $inparams) = $DB->get_in_or_equal($apps, SQL_PARAMS_NAMED);
 
     $params = array_merge(array('organizerid' => $organizer->id), $inparams);
@@ -423,7 +423,7 @@ function security_check_apps($apps) {
     return count($apps) == count($records);
 }
 
-function delete_appointment_slot($id) {
+function organizer_delete_appointment_slot($id) {
     global $DB;
 
     if (!$DB->get_record('organizer_slots', array('id' => $id))) {
@@ -438,7 +438,7 @@ function delete_appointment_slot($id) {
     return true;
 }
 
-function register_appointment($slotid, $groupid = 0) {
+function organizer_register_appointment($slotid, $groupid = 0) {
     global $DB, $USER;
 
     $slot = new organizer_slot($slotid);
@@ -447,27 +447,27 @@ function register_appointment($slotid, $groupid = 0) {
     }
 
     $ok = true;
-    if (is_group_mode()) {
+    if (organizer_is_group_mode()) {
         $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
 
         foreach ($memberids as $memberid) {
-            $ok ^= register_single_appointment($slotid, $memberid, $USER->id, $groupid);
+            $ok ^= organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid);
         }
     } else {
-        $ok ^= register_single_appointment($slotid, $USER->id);
+        $ok ^= organizer_register_single_appointment($slotid, $USER->id);
     }
 
-    list($cm, $course, $organizer, $context) = get_course_module_data();
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-    add_event_slot($cm->id, $slot); //FIXME!!!
+    organizer_add_event_slot($cm->id, $slot); //FIXME!!!
 
     return $ok;
 }
 
-function register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0) {
+function organizer_register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0) {
     global $DB;
 
-    list($cm, $course, $organizer, $context) = get_course_module_data();
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
     $appointment = new stdClass();
     $appointment->slotid = $slotid;
@@ -480,14 +480,14 @@ function register_single_appointment($slotid, $userid, $applicantid = 0, $groupi
     $appointment->feedback = '';
     $appointment->comments = '';
 
-    $appointment->eventid = add_event_appointment($cm->id, $appointment);
+    $appointment->eventid = organizer_add_event_appointment($cm->id, $appointment);
 
     $appointment->id = $DB->insert_record('organizer_slot_appointments', $appointment);
 
     return $appointment->id;
 }
 
-function reregister_appointment($slotid, $groupid = 0) {
+function organizer_reregister_appointment($slotid, $groupid = 0) {
     global $DB, $USER;
 
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
@@ -497,32 +497,32 @@ function reregister_appointment($slotid, $groupid = 0) {
     }
 
     $ok = true;
-    if (is_group_mode()) {
+    if (organizer_is_group_mode()) {
         $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
 
         foreach ($memberids as $memberid) {
-            $app = get_last_user_appointment($slot->organizerid, $memberid);
-            $ok ^= register_single_appointment($slotid, $memberid, $USER->id, $groupid);
+            $app = organizer_get_last_user_appointment($slot->organizerid, $memberid);
+            $ok ^= organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid);
             if (isset($app)) {
-                $ok ^= unregister_single_appointment($app->slotid, $memberid);
+                $ok ^= organizer_unregister_single_appointment($app->slotid, $memberid);
             }
         }
     } else {
-        $app = get_last_user_appointment($slot->organizerid);
-        $ok ^= register_single_appointment($slotid, $USER->id);
+        $app = organizer_get_last_user_appointment($slot->organizerid);
+        $ok ^= organizer_register_single_appointment($slotid, $USER->id);
         if (isset($app)) {
-            $ok ^= unregister_single_appointment($app->slotid, $USER->id);
+            $ok ^= organizer_unregister_single_appointment($app->slotid, $USER->id);
         }
     }
 
-    list($cm, $course, $organizer, $context) = get_course_module_data();
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-    add_event_slot($cm->id, $slot); //FIXME!!!
+    organizer_add_event_slot($cm->id, $slot); //FIXME!!!
 
     return $ok;
 }
 
-function get_active_appointment($userid, $organizerid) {
+function organizer_get_active_appointment($userid, $organizerid) {
     global $DB;
 
     $params = array('organizerid' => $organizerid, 'userid' => $userid);
@@ -536,28 +536,28 @@ function get_active_appointment($userid, $organizerid) {
     return null;
 }
 
-function unregister_appointment($slotid, $groupid) {
+function organizer_unregister_appointment($slotid, $groupid) {
     global $DB, $USER;
 
     $ok = true;
-    if (is_group_mode()) {
+    if (organizer_is_group_mode()) {
         $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
 
         foreach ($memberids as $memberid) {
-            $ok ^= unregister_single_appointment($slotid, $memberid);
+            $ok ^= organizer_unregister_single_appointment($slotid, $memberid);
         }
     } else {
-        $ok ^= unregister_single_appointment($slotid, $USER->id);
+        $ok ^= organizer_unregister_single_appointment($slotid, $USER->id);
     }
 
-    list($cm, $course, $organizer, $context) = get_course_module_data();
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-    add_event_slot($cm->id, $slot); //FIXME!!!
+    organizer_add_event_slot($cm->id, $slot); //FIXME!!!
 
     return $ok;
 }
 
-function unregister_single_appointment($slotid, $userid) {
+function organizer_unregister_single_appointment($slotid, $userid) {
     global $DB;
 
     $app = $DB->get_record('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid));
@@ -573,10 +573,10 @@ function unregister_single_appointment($slotid, $userid) {
     }
 }
 
-function evaluate_slots($data) {
+function organizer_evaluate_slots($data) {
     global $DB;
 
-    list($cm, $course, $organizer, $context) = get_course_module_data();
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
     $slotids = array();
 
@@ -608,7 +608,7 @@ function evaluate_slots($data) {
     return $slotids;
 }
 
-function get_course_module_data() {
+function organizer_get_course_module_data() {
     global $DB;
 
     $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
@@ -631,7 +631,7 @@ function get_course_module_data() {
     return array($cm, $course, $organizer, $context);
 }
 
-function get_course_module_data_new() {
+function organizer_get_course_module_data_new() {
     global $DB;
 
     $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
@@ -657,7 +657,7 @@ function get_course_module_data_new() {
     return $instance;
 }
 
-function is_group_mode() {
+function organizer_is_group_mode() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
     $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
@@ -665,7 +665,7 @@ function is_group_mode() {
     return $organizer->isgrouporganizer;
 }
 
-function fetch_my_group() {
+function organizer_fetch_my_group() {
     global $DB, $USER;
 
     $id = optional_param('id', 0, PARAM_INT);
@@ -682,6 +682,6 @@ function fetch_my_group() {
     return $group;
 }
 
-function log_action($action, $logurl, $instance) {
+function organizer_log_action($action, $logurl, $instance) {
     add_to_log($instance->course->id, 'organizer', $action, "{$logurl}", $instance->organizer->name, $instance->cm->id);
 }

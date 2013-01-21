@@ -22,30 +22,30 @@ require_once('lib.php');
 require_once('legend.php');
 require_once('locallib.php');
 require_once('slotlib.php');
-function make_infobox($params, $organizer, $context) {
+function organizer_make_infobox($params, $organizer, $context) {
     global $PAGE;
     user_preference_allow_ajax_update('mod_organizer_showpasttimeslots', PARAM_BOOL);
     user_preference_allow_ajax_update('mod_organizer_showmyslotsonly', PARAM_BOOL);
     $PAGE->requires->js_init_call('M.mod_organizer.init_infobox');
     
-    $output = make_description_section($organizer);
+    $output = organizer_make_description_section($organizer);
     switch($params['mode']) {
         case TAB_APPOINTMENTS_VIEW:
         break;
         case TAB_STUDENT_VIEW:
-            $output .= make_myapp_section($params, $organizer, get_last_user_appointment($organizer));
+            $output .= organizer_make_myapp_section($params, $organizer, organizer_get_last_user_appointment($organizer));
         break;
         case TAB_REGISTRATION_STATUS_VIEW:
-            $output .= make_reminder_section($params, $context);
+            $output .= organizer_make_reminder_section($params, $context);
         break;
         default:
             print_error("Wrong view mode: {$params['mode']}");
     }
-    $output .= make_slotoptions_section($params);
-    $output .= make_messages_section($params);
+    $output .= organizer_make_slotoptions_section($params);
+    $output .= organizer_make_messages_section($params);
     return $output;
 }
-function make_section($name, $content, $hidden = false) {
+function organizer_make_section($name, $content, $hidden = false) {
     $output = '<div id="' . $name . '_box" class="block_course_overview block"' . ($hidden ? ' style="display: none;"' : '') . '>';
     if ($name) {
         $output .= '<div id="' . $name . '_header" class="header">';
@@ -57,18 +57,18 @@ function make_section($name, $content, $hidden = false) {
     $output .= '</div></div>';
     return $output;
 }
-function add_message_icon($message) {
+function organizer_add_message_icon($message) {
     if (strpos($message, 'warning') !== false) {
-        return get_img('pix/message_warning.png', '', 'Warning');
+        return organizer_get_img('pix/message_warning.png', '', 'Warning');
     } else if (strpos($message, 'info') !== false) {
-        return get_img('pix/message_info.png', '', 'Info');
+        return organizer_get_img('pix/message_info.png', '', 'Info');
     } else if (strpos($message, 'error') !== false) {
-        return get_img('pix/message_error.png', '', 'Error');
+        return organizer_get_img('pix/message_error.png', '', 'Error');
     } else {
         return '';
     }
 }
-function make_messages_section($params) {
+function organizer_make_messages_section($params) {
     if ($params['messages']) {
         $output = '<div style="overflow: auto;">';
         $a = new stdClass();
@@ -76,16 +76,16 @@ function make_messages_section($params) {
             $a->$key = $value;
         }
         foreach ($params['messages'] as $message) {
-            $output .= '<p>' . add_message_icon($message);
+            $output .= '<p>' . organizer_add_message_icon($message);
             $output .= ' ' . get_string($message, 'organizer', $a) . '</p>';
         }
         $output .= '</div>';
-        return make_section('infobox_messages', $output);
+        return organizer_make_section('infobox_messages', $output);
     } else {
         return '';
     }
 }
-function make_reminder_section($params, $context) {
+function organizer_make_reminder_section($params, $context) {
     global $OUTPUT;
     if (has_capability("mod/organizer:sendreminders", $context, null, true)) {
         $sendurl = new moodle_url('view_action.php',
@@ -94,16 +94,16 @@ function make_reminder_section($params, $context) {
         $output .= get_string('remindall_desc', 'organizer') . '<br />';
         $output .= $OUTPUT->single_button($sendurl, get_string("btn_send", 'organizer'), 'post');
         $output .= '</div>';
-        return make_section('infobox_messaging', $output);
+        return organizer_make_section('infobox_messaging', $output);
     } else {
         return '';
     }
 }
-function make_description_section($organizer) {
+function organizer_make_description_section($organizer) {
     $output = $organizer->intro;
     if ($organizer->isgrouporganizer) {
         $output .= '<hr />';
-        $group = fetch_my_group();
+        $group = organizer_fetch_my_group();
         if ($group) {
             $a = new stdClass();
             $a->groupname = $group->name;
@@ -126,9 +126,9 @@ function make_description_section($organizer) {
         $output .= '<hr />';
         $output .= '<p>' . get_string('infobox_organizer_never_expires', 'organizer') . '</p>';
     }
-    return make_section('infobox_description', $output);
+    return organizer_make_section('infobox_description', $output);
 }
-function make_myapp_section($params, $organizer, $app) {
+function organizer_make_myapp_section($params, $organizer, $app) {
     global $DB;
     if ($app) {
         $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
@@ -137,16 +137,16 @@ function make_myapp_section($params, $organizer, $app) {
         $table = new html_table();
         $table->id = 'my_slot_overview';
         $table->attributes['class'] = 'generaltable boxaligncenter overview';
-        $table->head = generate_table_header($columns, $sortable, $params);
-        $table->data = generate_table_content($columns, $params, $organizer, true, false);
+        $table->head = organizer_generate_table_header($columns, $sortable, $params);
+        $table->data = organizer_generate_table_content($columns, $params, $organizer, true, false);
         $table->align = $align;
-        $output = render_table_with_footer($table, false);
+        $output = organizer_render_table_with_footer($table, false);
         $output = preg_replace('/<th /', '<th style="width: 0%;" ', $output); // Afterburner fix - try to fix it using css!
         $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
         if ($slot->starttime - $organizer->relativedeadline - time() > 0) {
             $a = new stdClass();
             list($a->days, $a->hours, $a->minutes, $a->seconds) =
-                get_countdown($slot->starttime - $organizer->relativedeadline - time());
+                organizer_get_countdown($slot->starttime - $organizer->relativedeadline - time());
             $class = $a->days > 1 ? "countdown_normal" : ($a->hours > 1 ? "countdown_hurry" : "countdown_critical");
             $output .= "<p><span class=\"$class\">" . get_string('infobox_deadline_countdown', 'organizer', $a) . '</span></p>';
         } else {
@@ -154,7 +154,7 @@ function make_myapp_section($params, $organizer, $app) {
         }
         if ($slot->starttime - time() > 0) {
             $a = new stdClass();
-            list($a->days, $a->hours, $a->minutes, $a->seconds) = get_countdown($slot->starttime - time());
+            list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown($slot->starttime - time());
             $class = $a->days > 1 ? "countdown_normal" : ($a->hours > 1 ? "countdown_hurry" : "countdown_critical");
             $output .= "<p><span class=\"$class\">" . get_string('infobox_app_countdown', 'organizer', $a) . '</span></p>';
         } else {
@@ -163,9 +163,9 @@ function make_myapp_section($params, $organizer, $app) {
     } else {
         $output = '<p>' . get_string('infobox_myslot_noslot', 'organizer') . '</p>';
     }
-    return make_section('infobox_myslot', $output);
+    return organizer_make_section('infobox_myslot', $output);
 }
-function make_slotoptions_section($params) {
+function organizer_make_slotoptions_section($params) {
     $output = '<div style="float:left;">';
     if ($params['mode'] != TAB_REGISTRATION_STATUS_VIEW) {
         if ($params['mode'] == TAB_APPOINTMENTS_VIEW) {
@@ -183,5 +183,5 @@ function make_slotoptions_section($params) {
     $output .= '<div style="float:right;"><input id="toggle_legend" type="button" value="' .
             get_string('infobox_showlegend', 'organizer') . '" /></div>';
     $output .= '<div class="clearer"></div>';
-    return make_section('infobox_slotoverview', $output) . make_section('infobox_legend', make_legend($params), true);
+    return organizer_make_section('infobox_slotoverview', $output) . organizer_make_section('infobox_legend', organizer_make_legend($params), true);
 }

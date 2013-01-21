@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-function generate_registration_table_content($columns, $params) {
+function organizer_generate_registration_table_content($columns, $params) {
     global $DB;
 
     list($cm, $course, $organizer, $context) = get_course_module_data();
@@ -22,9 +22,9 @@ function generate_registration_table_content($columns, $params) {
     $groupmode = is_group_mode();
 
     if ($groupmode) {
-        $entries = get_status_table_entries_group($params);
+        $entries = organizer_get_status_table_entries_group($params);
     } else {
-        $entries = get_status_table_entries($params);
+        $entries = organizer_get_status_table_entries($params);
     }
 
     $rows = array();
@@ -85,7 +85,7 @@ function generate_registration_table_content($columns, $params) {
     return $rows;
 }
 
-function get_status_table_entries_group($params) {
+function organizer_get_status_table_entries_group($params) {
     global $DB;
     list($cm, $course, $organizer, $context) = get_course_module_data();
 
@@ -146,7 +146,7 @@ function get_status_table_entries_group($params) {
     return $DB->get_records_sql($query, $par);
 }
 
-function get_status_table_entries($params) {
+function organizer_get_status_table_entries($params) {
     global $DB;
     list($cm, $course, $organizer, $context) = get_course_module_data();
 

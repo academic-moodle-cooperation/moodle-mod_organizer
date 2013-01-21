@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 require_once("lib.php");
 
-class evaluate_form extends moodleform {
+class organizer_evaluate_slots_form extends moodleform {
 
     protected function definition() {
         global $PAGE;
@@ -126,19 +126,19 @@ class evaluate_form extends moodleform {
                 $user = $DB->get_record('user', array('id' => $app->userid));
                 $name = "apps[{$app->id}]";
 
-                $lastapp = get_last_user_appointment($slot->organizerid, $app->userid);
+                $lastapp = organizer_get_last_user_appointment($slot->organizerid, $app->userid);
                 if ($lastapp->id != $app->id) {
                     $link = new moodle_url('/mod/organizer/view_action.php',
                             array('id' => $data['id'], 'mode' => $data['mode'], 'action' => 'eval',
                                     'slots[]' => $lastapp->slotid, 'sesskey' => sesskey()));
 
-                    $title = $this->_get_name_link($user->id) . '<br/><em>' . get_string('cannot_eval', 'organizer')
+                    $title = $this->_organizer_get_name_link($user->id) . '<br/><em>' . get_string('cannot_eval', 'organizer')
                             . '</em> ' . html_writer::link($link, get_string('eval_link', 'organizer')) . '<br/>';
 
                     $appgroup = array();
                     $appgroup[] = $mform->createElement('static', '', '', $title);
                 } else {
-                    $title = $this->_get_name_link($user->id) . '<br/>';
+                    $title = $this->_organizer_get_name_link($user->id) . '<br/>';
 
                     $appgroup = array();
                     $appgroup[] = $mform->createElement('static', '', '', $title);
@@ -147,7 +147,7 @@ class evaluate_form extends moodleform {
 
                     $maxgrade = $organizer->grade;
                     if ($maxgrade != 0) {
-                        $grademenu = make_grades_menu_organizer($maxgrade);
+                        $grademenu = organizer_make_grades_menu_organizer($maxgrade);
                         $appgroup[] = $mform->createElement('static', '', '', get_string('eval_grade', 'organizer'));
                         $appgroup[] = $mform->createElement('select', "grade", '', $grademenu);
                     }
@@ -196,7 +196,7 @@ class evaluate_form extends moodleform {
         }
     }
 
-    private function _get_name_link($id) {
+    private function _organizer_get_name_link($id) {
         global $DB;
         $profileurl = new moodle_url('/user/profile.php', array('id' => $id));
         $user = $DB->get_record('user', array('id' => $id));

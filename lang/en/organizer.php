@@ -692,22 +692,22 @@ $string['font_medium'] = 'Medium (10pt)';
 $string['font_large'] = 'Large (12pt)';
 
 $string['printout'] = 'Printout';
-$string['confirm_remind_all'] = 'Send';
+$string['confirm_organizer_remind_all'] = 'Send';
 
 $string['message_info_reminders_sent_sg'] = '{$a->count} reminder was sent.';
 $string['message_info_reminders_sent_pl'] = '{$a->count} reminders were sent.';
 
-$string['remind_all_recepients_sg'] = 'A total of {$a->count} message will be sent to the following recepients:';
-$string['remind_all_recepients_pl'] = 'A total of {$a->count} messages will be sent to the following recepients:';
+$string['organizer_remind_all_recepients_sg'] = 'A total of {$a->count} message will be sent to the following recepients:';
+$string['organizer_remind_all_recepients_pl'] = 'A total of {$a->count} messages will be sent to the following recepients:';
 
-$string['remind_all_no_recepients'] = 'There are no valid recepients.';
+$string['organizer_remind_all_no_recepients'] = 'There are no valid recepients.';
 
 $string['print_return'] = 'Return to slot overview';
 
 $string['message_error_slot_full_single'] = 'This timeslot has no free places left!';
 $string['message_error_slot_full_group'] = 'This timeslot is already taken!';
 
-$string['remind_all_title'] = 'Send reminders';
+$string['organizer_remind_all_title'] = 'Send reminders';
 $string['can_reregister'] = 'You can re-registed to another appointment.';
 
 $string['messages_none'] = 'No registration notifications';

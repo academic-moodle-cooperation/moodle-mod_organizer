@@ -346,7 +346,7 @@ function organizer_grade_item_update($organizer, $grades = null) {
     return grade_update('mod/organizer', $organizer->courseid, 'mod', 'organizer', $organizer->id, 0, $grades, $params);
 }
 
-function display_grade($organizer, $grade) {
+function organizer_display_grade($organizer, $grade) {
     global $DB;
     $nograde = get_string('nograde');
     static $scalegrades = array();   // Cache scales for each organizer - they might have different scales!!
@@ -355,7 +355,7 @@ function display_grade($organizer, $grade) {
         if ($grade == -1 || $grade == null) {
             return $nograde;
         } else {
-            return clean_num($grade) . ' / ' . clean_num($organizer->grade);
+            return organizer_clean_num($grade) . ' / ' . organizer_clean_num($organizer->grade);
         }
     } else {    // Scale
         if (empty($scalegrades[$organizer->id])) {
@@ -376,7 +376,7 @@ function display_grade($organizer, $grade) {
     }
 }
 
-function make_grades_menu_organizer($gradingtype) {
+function organizer_make_grades_menu_organizer($gradingtype) {
     global $DB;
 
     $grades = array();
@@ -389,14 +389,14 @@ function make_grades_menu_organizer($gradingtype) {
     } else if ($gradingtype > 0) {
         $grades['-1'] = get_string('nograde');
         for ($i = $gradingtype; $i >= 0; $i--) {
-            $grades[$i] = clean_num($i) . ' / ' . clean_num($gradingtype);
+            $grades[$i] = organizer_clean_num($i) . ' / ' . organizer_clean_num($gradingtype);
         }
         return $grades;
     }
     return $grades;
 }
 
-function clean_num($num) {
+function organizer_clean_num($num) {
     $pos = strpos($num, '.');
     if ($pos === false) { // it is integer number
         return $num;
@@ -405,7 +405,7 @@ function clean_num($num) {
     }
 }
 
-function get_last_group_appointment($organizer, $groupid) {
+function organizer_get_last_group_appointment($organizer, $groupid) {
     global $DB;
     $params = array('groupid' => $groupid, 'organizerid' => $organizer->id);
     $groupapps = $DB->get_records_sql("SELECT a.* FROM {organizer_slot_appointments} a
@@ -436,7 +436,7 @@ function get_last_group_appointment($organizer, $groupid) {
     return $app;
 }
 
-function get_counters($organizer) {
+function organizer_get_counters($organizer) {
     global $DB;
     if ($organizer->isgrouporganizer) {
         $params = array('groupingid' => $organizer->groupingid);
@@ -449,7 +449,7 @@ function get_counters($organizer) {
         $attended = 0;
         $registered = 0;
         foreach ($groups as $group) {
-            $app = get_last_group_appointment($organizer, $group->id);
+            $app = organizer_get_last_group_appointment($organizer, $group->id);
             if ($app && $app->attended == 1) {
                 $attended++;
             } else if ($app && !isset($app->attended)) {
@@ -472,7 +472,7 @@ function get_counters($organizer) {
         $attended = 0;
         $registered = 0;
         foreach ($students as $student) {
-            $app = get_last_user_appointment($organizer, $student->id);
+            $app = organizer_get_last_user_appointment($organizer, $student->id);
             if ($app && $app->attended == 1) {
                 $attended++;
             } else if ($app && !isset($app->attended)) {
@@ -496,7 +496,7 @@ function organizer_get_overview_teacher($organizer) {
     $str = '<div class="assignment overview">';
     $str .= organizer_get_overview_link($organizer);
 
-    $a = get_counters($organizer);
+    $a = organizer_get_counters($organizer);
 
     if ($organizer->isgrouporganizer) {
         $reg = get_string('mymoodle_registered_group', 'organizer', $a);
@@ -536,7 +536,7 @@ function organizer_get_overview_teacher($organizer) {
     return $str;
 }
 
-function fetch_group($organizer, $userid = null) {
+function organizer_fetch_group($organizer, $userid = null) {
     global $DB, $USER;
 
     if ($userid == null) {
@@ -565,8 +565,8 @@ function organizer_get_overview_student($organizer, $forindex = false) {
     }
 
     if ($organizer->isgrouporganizer) {
-        $group = fetch_group($organizer);
-        $app = get_last_user_appointment($organizer);
+        $group = organizer_fetch_group($organizer);
+        $app = organizer_get_last_user_appointment($organizer);
 
         if ($app && isset($app->attended) && (int) $app->attended === 1) {
             $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
@@ -575,7 +575,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
             $a->groupname = $group->name;
             $completedapp = get_string('mymoodle_completed_app_group', 'organizer', $a) . ($forindex ? '' :
-                "<br />(" . get_string('grade') . ": " . display_grade($organizer, $app->grade) . ")");
+                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade) . ")");
             if ($app->allownewappointments) {
                 $completedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -590,7 +590,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->groupname = $group->name;
 
             $missedapp = get_string('mymoodle_missed_app_group', 'organizer', $a) . ($forindex ? '' :
-                "<br />(" . get_string('grade') . ": " . display_grade($organizer, $app->grade) . ")");
+                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade) . ")");
             if ($app->allownewappointments) {
                 $missedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -646,14 +646,14 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             }
         }
     } else {
-        $app = get_last_user_appointment($organizer);
+        $app = organizer_get_last_user_appointment($organizer);
         if ($app && isset($app->attended) && (int) $app->attended === 1) {
             $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
             $a = new stdClass();
             $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
             $completedapp = get_string('mymoodle_completed_app', 'organizer', $a) . ($forindex ? '' :
-                "<br />(" . get_string('grade') . ": " . display_grade($organizer, $app->grade) . ")");
+                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade) . ")");
             if ($app->allownewappointments) {
                 $completedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -665,7 +665,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
             $missedapp = get_string('mymoodle_missed_app', 'organizer', $a) . ($forindex ? '' :
-                "<br />(" . get_string('grade') . ": " . display_grade($organizer, $app->grade) . ")");
+                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade) . ")");
             if ($app->allownewappointments) {
                 $missedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -739,7 +739,7 @@ function organizer_print_overview($courses, &$htmlarray) {
     }
 
     foreach ($organizers as $organizer) {
-        if (is_student_in_course($organizer->course, $USER->id)) {
+        if (organizer_is_student_in_course($organizer->course, $USER->id)) {
             $str = organizer_get_overview_student($organizer);
         } else {
             $str = organizer_get_overview_teacher($organizer);
@@ -754,7 +754,7 @@ function organizer_print_overview($courses, &$htmlarray) {
 }
 
 // FIXME replace this one with an alternative over capabilities
-function is_student_in_course($courseid, $userid) {
+function organizer_is_student_in_course($courseid, $userid) {
     global $DB;
 
     $stud = $DB->get_records_sql("SELECT * FROM {role_assignments}
@@ -869,7 +869,7 @@ function organizer_cron() {
     return $success;
 }
 
-function create_digest($teacherid) {
+function organizer_create_digest($teacherid) {
     require_once('messaging.php');
     global $DB;
     $now = time();

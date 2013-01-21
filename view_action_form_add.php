@@ -34,7 +34,7 @@ define('USE_SCROLL_FIX', '1');
 require_once('../../lib/formslib.php');
 require_once('locallib.php');
 
-class mod_organizer_slots_form extends moodleform {
+class organizer_add_slots_form extends moodleform {
 
     private $pickeroptions;
 
@@ -386,7 +386,7 @@ class mod_organizer_slots_form extends moodleform {
 
         $teacherid = $mform->_submitValues['teacherid'];
 
-        $events = $this->_load_events($teacherid, $startdate, $enddate + DAY_IN_SECS);
+        $events = $this->_organizer_load_events($teacherid, $startdate, $enddate + DAY_IN_SECS);
 
         $id = 0;
         $totalslots = 0;
@@ -466,8 +466,8 @@ class mod_organizer_slots_form extends moodleform {
 
         global $DB;
 
-        if (is_group_mode()) {
-            list($cm, $course, $organizer, $context) = get_course_module_data();
+        if (organizer_is_group_mode()) {
+            list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
             $slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
 
             $a = new stdClass();
@@ -479,7 +479,7 @@ class mod_organizer_slots_form extends moodleform {
             $html = get_string('addslots_placesinfo_group', 'organizer', $a);
 
         } else {
-            list($cm, $course, $organizer, $context) = get_course_module_data();
+            list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
             $slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
             $placecount = 0;
             foreach ($slots as $slot) {
@@ -595,7 +595,7 @@ class mod_organizer_slots_form extends moodleform {
      * Loads the events from the database in the period described in the POST header
      * @return array of event objects
      */
-    private function _load_events($teacherid, $startdate, $enddate) {
+    private function _organizer_load_events($teacherid, $startdate, $enddate) {
         global $DB;
 
         $params = array('teacherid' => $teacherid, 'startdate1' => $startdate, 'enddate1' => $enddate,
@@ -682,7 +682,7 @@ class mod_organizer_slots_form extends moodleform {
     }
 
     private function _get_teacher_list() {
-        list($cm, $course, $organizer, $context) = get_course_module_data();
+        list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
         $teachersraw = get_users_by_capability($context, 'mod/organizer:addslots');
 

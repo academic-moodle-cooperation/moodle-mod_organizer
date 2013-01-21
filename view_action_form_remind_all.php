@@ -32,7 +32,7 @@ require_once("slotlib.php");
 require_once("locallib.php");
 require_once("view_lib.php");
 
-class mod_organizer_slots_remind_all_form extends moodleform {
+class organizer_remind_all_form extends moodleform {
 
     protected function definition() {
         global $DB;
@@ -47,9 +47,9 @@ class mod_organizer_slots_remind_all_form extends moodleform {
         $mform->addElement('hidden', 'action', 'remindall');
         $mform->setType('action', PARAM_ACTION);
 
-        list($cm, $course, $organizer, $context) = get_course_module_data();
+        list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
-        $entries = get_status_table_entries(array('sort' => ''));
+        $entries = organizer_organizer_get_status_table_entries(array('sort' => ''));
 
         $counter = 0;
         $recepients = array();
@@ -65,18 +65,18 @@ class mod_organizer_slots_remind_all_form extends moodleform {
             $a = new stdClass();
             $a->count = $counter;
             if ($counter == 1) {
-                $mform->addElement('static', '', '', get_string('remind_all_recepients_sg', 'organizer', $a));
+                $mform->addElement('static', '', '', get_string('organizer_remind_all_recepients_sg', 'organizer', $a));
             } else {
-                $mform->addElement('static', '', '', get_string('remind_all_recepients_pl', 'organizer', $a));
+                $mform->addElement('static', '', '', get_string('organizer_remind_all_recepients_pl', 'organizer', $a));
             }
             foreach ($recepients as $recepient) {
                 $mform->addElement('static', '', '',
-                        get_name_link($recepient->id) . ($recepient->idnumber ? " ({$recepient->idnumber})" : ''));
+                        organizer_get_name_link($recepient->id) . ($recepient->idnumber ? " ({$recepient->idnumber})" : ''));
             }
-            $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_remind_all', 'organizer'));
+            $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_organizer_remind_all', 'organizer'));
         } else {
-            $mform->addElement('static', '', '', get_string('remind_all_no_recepients', 'organizer'));
-            $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_remind_all', 'organizer'),
+            $mform->addElement('static', '', '', get_string('organizer_remind_all_no_recepients', 'organizer'));
+            $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_organizer_remind_all', 'organizer'),
                     array('disabled'));
         }
         $buttonarray[] = &$mform->createElement('cancel');

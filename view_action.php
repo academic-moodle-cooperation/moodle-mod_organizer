@@ -52,7 +52,7 @@ define('ACTION_COMMENT', 'comment');
 
 //--------------------------------------------------------------------------------------------------
 
-list($cm, $course, $organizer, $context) = get_course_module_data();
+list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
 require_sesskey();
@@ -90,13 +90,13 @@ $logurl->param('id', $cm->id);
 if ($action == ACTION_ADD) {
     require_capability('mod/organizer:addslots', $context);
     add_to_log($course->id, 'organizer', 'add', "{$logurl}", $organizer->name, $cm->id);
-    $mform = new mod_organizer_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
+    $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
 
     if ($data = $mform->get_data()) {
         if (isset($data->reviewslots) || isset($data->addday)) {
-            display_form($mform, get_string('title_add', 'organizer'));
+            organizer_display_form($mform, get_string('title_add', 'organizer'));
         } else if (isset($data->createslots)) {
-            $count = count($slotids = add_appointment_slots($data));
+            $count = count($slotids = organizer_add_appointment_slots($data));
             if ($count == 0) {
                 $redirecturl->param('messages[]', 'message_warning_no_slots_added');
             } else {
@@ -119,7 +119,7 @@ if ($action == ACTION_ADD) {
     } else if ($mform->is_cancelled()) {
         redirect($redirecturl);
     } else {
-        display_form($mform, get_string('title_add', 'organizer'));
+        organizer_display_form($mform, get_string('title_add', 'organizer'));
     }
     print_error('If you see this, something went wrong with add action!');
 } else if ($action == ACTION_EDIT) {
@@ -131,18 +131,18 @@ if ($action == ACTION_ADD) {
         redirect($redirecturl);
     }
 
-    if (!security_check_slots($slots)) {
+    if (!organizer_security_check_slots($slots)) {
         print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
     }
 
-    $mform = new mod_organizer_slots_edit_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots),
+    $mform = new organizer_edit_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots),
             'post', '', array('name' => 'form_edit'));
 
     if ($data = $mform->get_data()) {
-        $slotids = update_appointment_slot($data);
+        $slotids = organizer_update_appointment_slot($data);
 
-        prepare_and_send_message($data, 'edit_notify:teacher');
-        prepare_and_send_message($data, 'edit_notify:student'); // ---------------------------------------- MESSAGE!!!
+        organizer_prepare_and_send_message($data, 'edit_notify:teacher');
+        organizer_prepare_and_send_message($data, 'edit_notify:student'); // ---------------------------------------- MESSAGE!!!
 
         $newurl = $redirecturl->out();
         foreach ($slotids as $slotid) {
@@ -153,7 +153,7 @@ if ($action == ACTION_ADD) {
     } else if ($mform->is_cancelled()) {
         redirect($redirecturl);
     } else {
-        display_form($mform, get_string('title_edit', 'organizer'));
+        organizer_display_form($mform, get_string('title_edit', 'organizer'));
     }
     print_error('If you see this, something went wrong with edit action!');
 } else if ($action == ACTION_EVAL) {
@@ -165,16 +165,16 @@ if ($action == ACTION_ADD) {
         redirect($redirecturl);
     }
 
-    if (!security_check_slots($slots)) {
+    if (!organizer_security_check_slots($slots)) {
         print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
     }
 
-    $mform = new evaluate_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
+    $mform = new organizer_evaluate_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
     if ($data = $mform->get_data()) {
-        $slotids = evaluate_slots($data);
+        $slotids = organizer_evaluate_slots($data);
 
-        prepare_and_send_message($data, 'eval_notify:student'); // ---------------------------------------- MESSAGE!!!
+        organizer_prepare_and_send_message($data, 'eval_notify:student'); // ---------------------------------------- MESSAGE!!!
 
         $newurl = $redirecturl->out();
         foreach ($slotids as $slotid) {
@@ -185,7 +185,7 @@ if ($action == ACTION_ADD) {
     } else if ($mform->is_cancelled()) {
         redirect($redirecturl);
     } else {
-        display_form($mform, get_string('title_eval', 'organizer'));
+        organizer_display_form($mform, get_string('title_eval', 'organizer'));
     }
     print_error('If you see this, something went wrong with edit action!');
 } else if ($action == ACTION_DELETE) {
@@ -197,23 +197,23 @@ if ($action == ACTION_ADD) {
         redirect($redirecturl);
     }
 
-    if (!security_check_slots($slots)) {
+    if (!organizer_security_check_slots($slots)) {
         print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
     }
 
-    $mform = new mod_organizer_slots_delete_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
+    $mform = new organizer_delete_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
     if ($data = $mform->get_data()) {
         if (isset($slots)) {
             foreach ($slots as $slotid) {
-                delete_appointment_slot($slotid);
+                organizer_delete_appointment_slot($slotid);
             }
         }
         redirect($redirecturl);
     } else if ($mform->is_cancelled()) {
         redirect($redirecturl);
     } else {
-        display_form($mform, get_string('title_delete', 'organizer'));
+        organizer_display_form($mform, get_string('title_delete', 'organizer'));
     }
     print_error('If you see this, something went wrong with delete action!');
 } else if ($action == ACTION_PRINT) {
@@ -226,65 +226,65 @@ if ($action == ACTION_ADD) {
         redirect($redirecturl);
     }
 
-    if (!security_check_slots($slots)) {
+    if (!organizer_security_check_slots($slots)) {
         print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
     }
 
-    $mform = new print_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
+    $mform = new organizer_print_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
     if ($data = $mform->get_data()) {
-        display_printable_table($data->cols, $data->slots, $data->entriesperpage, $data->textsize,
+        organizer_display_printable_table($data->cols, $data->slots, $data->entriesperpage, $data->textsize,
                 $data->pageorientation, $data->headerfooter);
         redirect($redirecturl);
     } else if ($mform->is_cancelled()) {
         redirect($redirecturl);
     } else {
-        display_form($mform, get_string('title_print', 'organizer'), true);
+        organizer_display_form($mform, get_string('title_print', 'organizer'), true);
     }
     print_error('If you see this, something went wrong with print action!');
 } else if ($action == ACTION_COMMENT) {
     require_capability('mod/organizer:comment', $context);
     add_to_log($course->id, 'organizer', 'comment', "{$logurl}", $organizer->name, $cm->id);
 
-    if (!security_check_slots($slot)) {
+    if (!organizer_security_check_slots($slot)) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
     }
 
-    $mform = new mod_organizer_slots_comment_form(null, array('id' => $cm->id, 'mode' => $mode, 'slot' => $slot));
+    $mform = new organizer_comment_slot_form(null, array('id' => $cm->id, 'mode' => $mode, 'slot' => $slot));
 
     if ($data = $mform->get_data()) {
         $app = $DB->get_record('organizer_slot_appointments', array('slotid' => $slot, 'userid' => $USER->id));
-        update_comments($app->id, $data->comments);
+        organizer_update_comments($app->id, $data->comments);
         redirect($redirecturl);
     } else if ($mform->is_cancelled()) {
         redirect($redirecturl);
     } else {
-        display_form($mform, get_string('title_comment', 'organizer'));
+        organizer_display_form($mform, get_string('title_comment', 'organizer'));
     }
     print_error('If you see this, something went wrong with delete action!');
 } else if ($action == ACTION_REGISTER) {
     require_capability('mod/organizer:register', $context);
     add_to_log($course->id, 'organizer', 'register', "{$logurl}", $organizer->name, $cm->id);
 
-    if (!security_check_slots($slot)) {
+    if (!organizer_security_check_slots($slot)) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
     }
 
-    if (!student_action_allowed($action, $slot)) {
+    if (!organizer_organizer_student_action_allowed($action, $slot)) {
         print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
     }
 
-    $group = fetch_my_group();
+    $group = organizer_fetch_my_group();
     $groupid = $group ? $group->id : 0;
-    $success = register_appointment($slot, $groupid);
+    $success = organizer_register_appointment($slot, $groupid);
 
     if ($success) {
-        prepare_and_send_message($slot, 'register_notify:teacher:register'); // ---------------------------------------- MESSAGE!!!
+        organizer_prepare_and_send_message($slot, 'register_notify:teacher:register'); // ---------------------------------------- MESSAGE!!!
         if ($group) {
-            prepare_and_send_message($slot, 'group_registration_notify:student:register');
+            organizer_prepare_and_send_message($slot, 'group_registration_notify:student:register');
         }
     } else {
-        if (is_group_mode()) {
+        if (organizer_is_group_mode()) {
             $redirecturl->param('messages[]', 'message_error_slot_full_group');
         } else {
             $redirecturl->param('messages[]', 'message_error_slot_full_single');
@@ -296,23 +296,23 @@ if ($action == ACTION_ADD) {
     require_capability('mod/organizer:unregister', $context);
     add_to_log($course->id, 'organizer', 'unregister', "{$logurl}", $organizer->name, $cm->id);
 
-    if (!security_check_slots($slot)) {
+    if (!organizer_security_check_slots($slot)) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
     }
 
-    if (!student_action_allowed($action, $slot)) {
+    if (!organizer_organizer_student_action_allowed($action, $slot)) {
         print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
     }
 
-    $group = fetch_my_group();
+    $group = organizer_fetch_my_group();
     $groupid = $group ? $group->id : 0;
 
-    prepare_and_send_message($slot, 'register_notify:teacher:unregister'); // ---------------------------------------- MESSAGE!!!
+    organizer_prepare_and_send_message($slot, 'register_notify:teacher:unregister'); // ---------------------------------------- MESSAGE!!!
     if ($group) {
-        prepare_and_send_message($slot, 'group_registration_notify:student:unregister');
+        organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unregister');
     }
 
-    unregister_appointment($slot, $groupid);
+    organizer_unregister_appointment($slot, $groupid);
 
     redirect($redirecturl);
 } else if ($action == ACTION_REREGISTER) {
@@ -320,25 +320,25 @@ if ($action == ACTION_ADD) {
     require_capability('mod/organizer:unregister', $context);
     add_to_log($course->id, 'organizer', 'reregister', "{$logurl}", $organizer->name, $cm->id);
 
-    if (!security_check_slots($slot)) {
+    if (!organizer_security_check_slots($slot)) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
     }
 
-    if (!student_action_allowed($action, $slot)) {
+    if (!organizer_organizer_student_action_allowed($action, $slot)) {
         print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
     }
 
-    $group = fetch_my_group();
+    $group = organizer_fetch_my_group();
     $groupid = $group ? $group->id : 0;
-    $success = reregister_appointment($slot, $groupid);
+    $success = organizer_reregister_appointment($slot, $groupid);
 
     if ($success) {
-        prepare_and_send_message($slot, 'register_notify:teacher:reregister');
+        organizer_prepare_and_send_message($slot, 'register_notify:teacher:reregister');
         if ($group) {
-            prepare_and_send_message($slot, 'group_registration_notify:student:reregister');
+            organizer_prepare_and_send_message($slot, 'group_registration_notify:student:reregister');
         }
     } else {
-        if (is_group_mode()) {
+        if (organizer_is_group_mode()) {
             $redirecturl->param('messages[]', 'message_error_slot_full_group');
         } else {
             $redirecturl->param('messages[]', 'message_error_slot_full_single');
@@ -348,25 +348,25 @@ if ($action == ACTION_ADD) {
     redirect($redirecturl);
 } else if ($action == ACTION_REMIND) {
     // WARNING! ADD GROUP CHECK!
-    list($cm, $course, $organizer, $context) = get_course_module_data();
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     if ($organizer->isgrouporganizer) {
         $members = groups_get_members($user);
         foreach ($members as $member) {
-            prepare_and_send_message(array('user' => $member->id, 'organizer' => $organizer),
+            organizer_prepare_and_send_message(array('user' => $member->id, 'organizer' => $organizer),
                     'register_reminder:student'); // ---------------------------------------- MESSAGE!!!
         }
     } else {
-        prepare_and_send_message(array('user' => $user, 'organizer' => $organizer), 'register_reminder:student');
+        organizer_prepare_and_send_message(array('user' => $user, 'organizer' => $organizer), 'register_reminder:student');
     }
 
     redirect($redirecturl);
 } else if ($action == ACTION_REMINDALL) {
     add_to_log($course->id, 'organizer', 'remindall', "{$logurl}", $organizer->name, $cm->id);
 
-    $mform = new mod_organizer_slots_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
+    $mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
     if ($data = $mform->get_data()) {
-        $count = remind_all();
+        $count = organizer_remind_all();
 
         $redirecturl->param('data[count]', $count);
         if ($count == 1) {
@@ -380,7 +380,7 @@ if ($action == ACTION_ADD) {
     } else if ($mform->is_cancelled()) {
         redirect($redirecturl);
     } else {
-        display_form($mform, get_string('remind_all_title', 'organizer'));
+        organizer_display_form($mform, get_string('organizer_remind_all_title', 'organizer'));
     }
     print_error('If you see this, something went wrong with delete action!');
 } else {
@@ -389,7 +389,7 @@ if ($action == ACTION_ADD) {
 
 die;
 
-function student_action_allowed($action, $slot) {
+function organizer_organizer_student_action_allowed($action, $slot) {
     global $DB;
     
     if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
@@ -398,13 +398,13 @@ function student_action_allowed($action, $slot) {
 
     $slotx = new organizer_slot($slot);
 
-    list($cm, $course, $organizer, $context) = get_course_module_data();
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
     $canregister = has_capability('mod/organizer:register', $context, null, false);
     $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
     $canreregister = $canregister && $canunregister;
 
-    $myapp = get_last_user_appointment($organizer);
+    $myapp = organizer_get_last_user_appointment($organizer);
     if ($myapp) {
         $regslot = $DB->get_record('organizer_slots', array('id' => $myapp->slotid));
         if (isset($regslot)) {
@@ -420,7 +420,7 @@ function student_action_allowed($action, $slot) {
     $slotfull = $slotx->is_full();
     $didnotattend = isset($myapp->attended) && $myapp->attended == 0;
 
-    $disabled = $myslotpending || $organizerdisabled || $slotdisabled || !$slotx->user_has_access() || $slotx->is_evaluated();
+    $disabled = $myslotpending || $organizerdisabled || $slotdisabled || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
     if ($myslotexists && !$didnotattend) {
         if (!$slotdisabled) {
@@ -441,11 +441,11 @@ function student_action_allowed($action, $slot) {
     return !$disabled && ($action == $allowedaction);
 }
 
-function display_form(moodleform $mform, $title, $addcalendar = true) {
+function organizer_display_form(moodleform $mform, $title, $addcalendar = true) {
     global $OUTPUT;
 
     if ($addcalendar) {
-        add_calendar();
+        organizer_add_calendar();
     }
 
     echo $OUTPUT->header();
@@ -458,10 +458,10 @@ function display_form(moodleform $mform, $title, $addcalendar = true) {
     die();
 }
 
-function remind_all() {
+function organizer_remind_all() {
     global $DB;
 
-    list($cm, $course, $organizer, $context) = get_course_module_data();
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
     if ($cm->groupingid == 0) {
         $entries = get_enrolled_users($context, 'mod/organizer:register');
@@ -486,7 +486,7 @@ function remind_all() {
     $count = 0;
     foreach ($entries as $entry) {
         if (!in_array($entry->id, $nonrecepients)) {
-            prepare_and_send_message(array('user' => $entry->id, 'organizer' => $organizer),
+            organizer_prepare_and_send_message(array('user' => $entry->id, 'organizer' => $organizer),
                     'register_reminder:student'); // ---------------------------------------- MESSAGE!!!
             $count++;
         }
@@ -494,7 +494,7 @@ function remind_all() {
     return $count;
 }
 
-function prepare_and_send_message($data, $type) {
+function organizer_prepare_and_send_message($data, $type) {
     global $DB, $USER;
 
     require_once('lib.php');

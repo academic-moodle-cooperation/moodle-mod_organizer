@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-function get_last_user_appointment($organizer, $userid = null, $mergegroupapps = true, $getevaluated = false) {
+function organizer_get_last_user_appointment($organizer, $userid = null, $mergegroupapps = true, $getevaluated = false) {
     global $DB, $USER;
 
     if ($userid == null) {
@@ -64,7 +64,7 @@ function get_last_user_appointment($organizer, $userid = null, $mergegroupapps =
     return $app;
 }
 
-function get_all_user_appointments($organizer, $userid = null, $mergegroupapps = true) {
+function organizer_get_all_user_appointments($organizer, $userid = null, $mergegroupapps = true) {
     global $DB, $USER;
 
     if ($userid == null) {
@@ -203,7 +203,7 @@ class organizer_slot {
         return count($this->apps) > 0;
     }
 
-    public function user_has_access() {
+    public function organizer_user_has_access() {
         $this->load_organizer();
         global $DB;
         if ($this->organizer->isgrouporganizer) {
@@ -235,7 +235,7 @@ class organizer_slot {
     }
 }
 
-function user_has_access($slotid) {
+function organizer_user_has_access($slotid) {
     global $USER, $DB;
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
     $moduleid = $DB->get_field('modules', 'id', array('name' => 'organizer'));

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-function get_appointment_status($app) {
+function organizer_get_appointment_status($app) {
     global $DB;
 
     if (is_number($app) && $app == intval($app)) {
@@ -46,6 +46,6 @@ define('APP_STATUS_NOT_ATTENDED', 4);
 define('APP_STATUS_NOT_ATTENDED_REAPP', 5);
 define('APP_STATUS_NOT_REGISTERED', 6);
 
-function check_appointment_status($app, $status) {
-    return $status & get_appointment_status($app);
+function organizer_check_appointment_status($app, $status) {
+    return $status & organizer_get_appointment_status($app);
 }

@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 require_once("slotlib.php");
 
-class mod_organizer_slots_delete_form extends moodleform {
+class organizer_delete_slots_form extends moodleform {
 
     protected function definition() {
         global $DB;

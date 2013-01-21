@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
 
-class mod_organizer_slots_edit_form extends moodleform {
+class organizer_edit_slots_form extends moodleform {
 
     protected function definition() {
         global $CFG, $PAGE;
@@ -141,7 +141,7 @@ class mod_organizer_slots_edit_form extends moodleform {
             }
             if (!isset($defaults['notificationtime']) && !$defset['notificationtime']) {
                 $defset['notificationtime'] = true;
-                $timeunit = $this->_figure_out_unit($slot->notificationtime);
+                $timeunit = $this->_organizer_figure_out_unit($slot->notificationtime);
                 $defaults['notificationtime']['number'] = $slot->notificationtime / $timeunit;
                 $defaults['notificationtime']['timeunit'] = $timeunit;
             } else {
@@ -254,7 +254,7 @@ class mod_organizer_slots_edit_form extends moodleform {
         $mform->addGroup($group, 'locationlinkgroup', get_string('locationlink', 'organizer'), SPACING, false);
         $mform->addElement('hidden', 'mod_locationlink', 0);
 
-        if (!is_group_mode()) {
+        if (!organizer_is_group_mode()) {
             $group = array();
             $group[] = $mform->createElement('text', 'maxparticipants', get_string('maxparticipants', 'organizer'),
                     array('size' => '3', 'group' => null));
@@ -353,7 +353,7 @@ class mod_organizer_slots_edit_form extends moodleform {
     }
 
     private function _load_teachers() {
-        list($cm, $course, $organizer, $context) = get_course_module_data();
+        list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
         $teachersraw = get_users_by_capability($context, 'mod/organizer:addslots');
 
@@ -382,7 +382,7 @@ class mod_organizer_slots_edit_form extends moodleform {
         }
     }
 
-    private function _figure_out_unit($time) {
+    private function _organizer_figure_out_unit($time) {
         if ($time % 86400 == 0) {
             return 86400;
         } else if ($time % 3600 == 0) {

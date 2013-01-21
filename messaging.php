@@ -86,7 +86,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $message->subject = get_string("$type:subject", 'organizer', $strings);
     $message->message = get_string("$type:fullmessage", 'organizer', $strings);
     $message->fullmessage = get_string("$type:fullmessage", 'organizer', $strings);
-    $message->fullmessagehtml = make_html(get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm,
+    $message->fullmessagehtml = organizer_make_html(get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm,
             $course);
     $message->smallmessage = get_string("$type:smallmessage", 'organizer', $strings);
 
@@ -97,7 +97,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     }
 }
 
-function make_html($content, $organizer, $cm, $course) {
+function organizer_make_html($content, $organizer, $cm, $course) {
     global $CFG;
 
     $posthtml = '<html>';

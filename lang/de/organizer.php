@@ -648,7 +648,7 @@ $string['font_medium'] = 'Mittel (10pt)';
 $string['font_large'] = 'Groß (12pt)';
 
 $string['printout'] = 'Ausdruck';
-$string['confirm_remind_all'] = 'Senden';
+$string['confirm_organizer_remind_all'] = 'Senden';
 
 $string['cannot_eval'] = 'Kann nicht bewertet werden. Diese(r) Teilnehmer/innen hat';
 $string['eval_link'] = 'einen neuen Termin';
@@ -660,17 +660,17 @@ $string['slot_anonymous'] = "Slot anonym";
 $string['message_info_reminders_sent_sg'] = 'Es wurde {$a->count} Mitteilung versandt.';
 $string['message_info_reminders_sent_pl'] = 'Es wurden {$a->count} Mitteilungen versandt.';
 
-$string['remind_all_recepients_sg'] = 'Es wird insgesamt {$a->count} Mitteilung an nachfolgende Empfänger versandt:';
-$string['remind_all_recepients_pl'] = 'Es werden insgesamt {$a->count} Mitteilungen an nachfolgende Empfänger versandt:';
+$string['organizer_remind_all_recepients_sg'] = 'Es wird insgesamt {$a->count} Mitteilung an nachfolgende Empfänger versandt:';
+$string['organizer_remind_all_recepients_pl'] = 'Es werden insgesamt {$a->count} Mitteilungen an nachfolgende Empfänger versandt:';
 
-$string['remind_all_no_recepients'] = 'Es gibt keine gültige Empfänger.';
+$string['organizer_remind_all_no_recepients'] = 'Es gibt keine gültige Empfänger.';
 
 $string['print_return'] = 'Zurück zur Terminansicht';
 
 $string['message_error_slot_full_single'] = 'Dieser Slot hat keine freien Plätze mehr!';
 $string['message_error_slot_full_group'] = 'Dieser Slot ist vergeben!';
 
-$string['remind_all_title'] = 'Erinnerungen versenden';
+$string['organizer_remind_all_title'] = 'Erinnerungen versenden';
 $string['can_reregister'] = 'Sie können sich für einen anderen Termin neu anmelden.';
 
 $string['messages_none'] = 'Keine Benachrichtigungen';

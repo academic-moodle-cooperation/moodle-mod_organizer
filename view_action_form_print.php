@@ -31,7 +31,7 @@ require_once("$CFG->libdir/formslib.php");
 require_once('custom_table_renderer.php');
 require_once('print.php');
 
-class print_form extends moodleform {
+class organizer_print_slots_form extends moodleform {
 
     protected function definition() {
         $this->_add_slot_info();
@@ -143,7 +143,7 @@ class print_form extends moodleform {
                 'requires' => array('node', 'node-event-delegate'),
         );
         
-        $PAGE->requires->js_init_call('M.mod_organizer.init_print_form', null, false, $jsmodule);
+        $PAGE->requires->js_init_call('M.mod_organizer.init_organizer_print_slots_form', null, false, $jsmodule);
 
         $table = new html_table();
         $table->id = 'print_preview';
@@ -272,6 +272,6 @@ class print_form extends moodleform {
 
         $table->data = $rows;
 
-        return render_table_with_footer($table, false);
+        return organizer_render_table_with_footer($table, false);
     }
 }
