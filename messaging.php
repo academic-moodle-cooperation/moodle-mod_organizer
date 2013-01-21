@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-define('ENABLE_MESSAGING', 1);
+define('ORGANIZER_ENABLE_MESSAGING', 1);
 
 require_once("locallib.php");
 
@@ -90,7 +90,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
             $course);
     $message->smallmessage = get_string("$type:smallmessage", 'organizer', $strings);
 
-    if (ENABLE_MESSAGING) {
+    if (ORGANIZER_ENABLE_MESSAGING) {
         return message_send($message);
     } else {
         return false;

@@ -17,7 +17,7 @@ function organizer_make_legend($params) {
     $output = html_writer::start_tag('table',
             array('class' => 'generaltable boxaligncenter legend', 'style' => 'width: 100%; table-layout: fixed;'));
     switch ($params['mode']) {
-        case TAB_APPOINTMENTS_VIEW:
+        case ORGANIZER_TAB_APPOINTMENTS_VIEW:
             $output .= html_writer::start_tag('tr');
             $output .= html_writer::start_tag('th', array('colspan' => '3'));
             $output .= get_string('legend_section_status', 'organizer');
@@ -88,7 +88,7 @@ function organizer_make_legend($params) {
             $output .= organizer_make_cell(' ', 'width: 20%');
             $output .= html_writer::end_tag('tr');
             break;
-        case TAB_STUDENT_VIEW:
+        case ORGANIZER_TAB_STUDENT_VIEW:
             $output .= html_writer::start_tag('tr');
             $output .= html_writer::start_tag('th', array('colspan' => '5'));
             $output .= get_string('legend_section_status', 'organizer');
@@ -133,7 +133,7 @@ function organizer_make_legend($params) {
                             . get_string('reg_status_organizer_expired', 'organizer'), 'width: 20%');
             $output .= html_writer::end_tag('tr');
             break;
-        case TAB_REGISTRATION_STATUS_VIEW:
+        case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             $output .= html_writer::start_tag('tr');
             $output .= html_writer::start_tag('th', array('colspan' => '4'));
             $output .= get_string('legend_section_status', 'organizer');

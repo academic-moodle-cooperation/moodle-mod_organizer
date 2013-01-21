@@ -14,36 +14,36 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+define('ORGANIZER_CHECK_USERS', 1);
+define('ORGANIZER_LIMIT_EXECUTION', 0); //all
+define('ORGANIZER_COURSE_START', 0);
+define('ORGANIZER_COURSE_COUNT_LIMIT', 9999999999);
+
+define('ORGANIZER_TABLE_ORGANIZER_OLD', 'scheduler');
+define('ORGANIZER_TABLE_ORGANIZER_NEW', 'organizer');
+define('ORGANIZER_TABLE_ORGANIZER_SLOTS_OLD', 'scheduler_slots');
+define('ORGANIZER_TABLE_ORGANIZER_SLOTS_NEW', 'organizer_slots');
+define('ORGANIZER_TABLE_ORGANIZER_SLOT_APPOINTMENTS_NEW', 'organizer_slot_appointments');
+
+define('ORGANIZER_DEFAULT_ORGANIZER_INTROFORMAT', 1);
+define('ORGANIZER_DEFAULT_ORGANIZER_ISGROUPORGANIZER', 0);
+define('ORGANIZER_DEFAULT_ORGANIZER_GRADE', 0);
+define('ORGANIZER_DEFAULT_ORGANIZER_RELATIVEDEADLINE', 86400);
+
+define('ORGANIZER_DEFAULT_SLOT_LOCATIONLINK', '');
+define('ORGANIZER_DEFAULT_SLOT_TEACHERVISIBLE', 1);
+define('ORGANIZER_DEFAULT_SLOT_NOTIFIED', 1);
+
+define('ORGANIZER_DEFAULT_APPOINTMENT_GROUPID', 0);
+define('ORGANIZER_DEFAULT_APPOINTMENT_NOTIFIED', 1);
+define('ORGANIZER_DEFAULT_APPOINTMENT_ALLOW_NEW_APPOINTMENTS', 0);
+define('ORGANIZER_DEFAULT_APPOINTMENT_GRADE', 0);
+define('ORGANIZER_DEFAULT_ALLOW_NEW_APPOINTMENTS', 0);
+
 require_once('../../../config.php');
 require_once('../../../lib/moodlelib.php');
 
 require_once('../locallib.php');
-
-define('CHECK_USERS', 1);
-define('LIMIT_EXECUTION', 0); //all
-define('COURSE_START', 0);
-define('COURSE_COUNT_LIMIT', 9999999999);
-
-define('TABLE_ORGANIZER_OLD', 'scheduler');
-define('TABLE_ORGANIZER_NEW', 'organizer');
-define('TABLE_ORGANIZER_SLOTS_OLD', 'scheduler_slots');
-define('TABLE_ORGANIZER_SLOTS_NEW', 'organizer_slots');
-define('TABLE_ORGANIZER_SLOT_APPOINTMENTS_NEW', 'organizer_slot_appointments');
-
-define('DEFAULT_ORGANIZER_INTROFORMAT', 1);
-define('DEFAULT_ORGANIZER_ISGROUPORGANIZER', 0);
-define('DEFAULT_ORGANIZER_GRADE', 0);
-define('DEFAULT_ORGANIZER_RELATIVEDEADLINE', 86400);
-
-define('DEFAULT_SLOT_LOCATIONLINK', '');
-define('DEFAULT_SLOT_TEACHERVISIBLE', 1);
-define('DEFAULT_SLOT_NOTIFIED', 1);
-
-define('DEFAULT_APPOINTMENT_GROUPID', 0);
-define('DEFAULT_APPOINTMENT_NOTIFIED', 1);
-define('DEFAULT_APPOINTMENT_ALLOW_NEW_APPOINTMENTS', 0);
-define('DEFAULT_APPOINTMENT_GRADE', 0);
-define('DEFAULT_ALLOW_NEW_APPOINTMENTS', 0);
 
 require_login();
 require_sesskey();
@@ -59,7 +59,7 @@ $courses = $DB->get_records_sql("SELECT DISTINCT c.* FROM {course} c INNER JOIN 
 
 $count = 0;
 foreach ($courses as $course) {
-    if ($count < COURSE_START) {
+    if ($count < ORGANIZER_COURSE_START) {
         $count++;
         continue;
     }
@@ -78,15 +78,15 @@ foreach ($courses as $course) {
             $organizer->course = $scheduler->course;
             $organizer->name = $scheduler->name;
             $organizer->intro = $scheduler->description;
-            $organizer->introformat = DEFAULT_ORGANIZER_INTROFORMAT;
+            $organizer->introformat = ORGANIZER_DEFAULT_ORGANIZER_INTROFORMAT;
             $organizer->timemodified = $scheduler->timemodified > 0 ? $scheduler->timemodified : 0;
-            $organizer->isgrouporganizer = DEFAULT_ORGANIZER_ISGROUPORGANIZER;
+            $organizer->isgrouporganizer = ORGANIZER_DEFAULT_ORGANIZER_ISGROUPORGANIZER;
             $organizer->emailteachers = $scheduler->emailteachers;
             $organizer->enablefrom = null;
             $organizer->enableuntil = $scheduler->changeuntil > 0 ? $scheduler->changeuntil : null;
             $organizer->relativedeadline = $scheduler->changebefore > 0 ? $scheduler->changebefore
-                    : DEFAULT_ORGANIZER_RELATIVEDEADLINE;
-            $organizer->grade = DEFAULT_ORGANIZER_GRADE;
+                    : ORGANIZER_DEFAULT_ORGANIZER_RELATIVEDEADLINE;
+            $organizer->grade = ORGANIZER_DEFAULT_ORGANIZER_GRADE;
 
             echo "done.\n";
 
@@ -127,7 +127,7 @@ foreach ($courses as $course) {
     rebuild_course_cache($course->id);
     $count++;
 
-    if (LIMIT_EXECUTION && $count == COURSE_START + COURSE_COUNT_LIMIT) {
+    if (ORGANIZER_LIMIT_EXECUTION && $count == ORGANIZER_COURSE_START + ORGANIZER_COURSE_COUNT_LIMIT) {
         break;
     }
 }
@@ -152,7 +152,7 @@ function migrate_slots($cm, $scheduler, $organizer) {
     foreach ($oldslots as $oldslot) {
         echo "\tProcessing slot tempid = {$oldslot->tempid}...\n";
         echo "\t\tReading slot data... ";
-        if (CHECK_USERS) {
+        if (ORGANIZER_CHECK_USERS) {
             if (!$DB->get_record('user', array('id' => $oldslot->teacher))) {
                 echo "\t\tTeacher with user id = {$oldslot->teacher} does not exist in the database! Skipping slot entry.";
                 continue;
@@ -164,7 +164,7 @@ function migrate_slots($cm, $scheduler, $organizer) {
         $newslot->starttime = $oldslot->starttime;
         $newslot->duration = $oldslot->duration == 0 ? 5 * 60 : $oldslot->duration * 60;
         $newslot->location = $oldslot->appointmentlocation ? $oldslot->appointmentlocation : '';
-        $newslot->locationlink = DEFAULT_SLOT_LOCATIONLINK;
+        $newslot->locationlink = ORGANIZER_DEFAULT_SLOT_LOCATIONLINK;
         $newslot->maxparticipants = $oldslot->exclusive != 1 ? $oldslot->maxstudents : 1;
         $newslot->teacherid = $oldslot->teacher;
         $newslot->isanonymous = ($oldslot->exclusive == 2) ? 1 : 0;
@@ -172,8 +172,8 @@ function migrate_slots($cm, $scheduler, $organizer) {
         $newslot->timemodified = $oldslot->timemodified > 0 ? $oldslot->timemodified : 0;
         $newslot->notificationtime = $oldslot->emaildate > 0 ? $oldslot->starttime - $oldslot->emaildate : null;
         $newslot->comments = isset($oldslot->appointmentnote) ? $oldslot->appointmentnote : '';
-        $newslot->teachervisible = DEFAULT_SLOT_TEACHERVISIBLE;
-        $newslot->notified = DEFAULT_SLOT_NOTIFIED;
+        $newslot->teachervisible = ORGANIZER_DEFAULT_SLOT_TEACHERVISIBLE;
+        $newslot->notified = ORGANIZER_DEFAULT_SLOT_NOTIFIED;
         echo "done.\n";
 
         echo "\t\tInserting new slot record... ";
@@ -196,7 +196,7 @@ function migrate_slots($cm, $scheduler, $organizer) {
 
         $appcount = 0;
         foreach ($oldapps as $oldapp) {
-            if (CHECK_USERS) {
+            if (ORGANIZER_CHECK_USERS) {
                 if (!$DB->get_record('user', array('id' => $oldapp->student))) {
                     echo "\t\tStudent with user id = {$oldapp->student} does not exist in the database!
                         Skipping appointment entry.";
@@ -207,14 +207,14 @@ function migrate_slots($cm, $scheduler, $organizer) {
             $newapp = new stdClass();
             $newapp->slotid = $newslot->id;
             $newapp->userid = $oldapp->student;
-            $newapp->groupid = DEFAULT_APPOINTMENT_GROUPID;
+            $newapp->groupid = ORGANIZER_DEFAULT_APPOINTMENT_GROUPID;
             $newapp->applicantid = $oldapp->student;
             $newapp->attended = $oldapp->attended;
-            $newapp->grade = DEFAULT_APPOINTMENT_GRADE;
+            $newapp->grade = ORGANIZER_DEFAULT_APPOINTMENT_GRADE;
             $newapp->feedback = '';
             $newapp->comments = isset($oldapp->notes) ? $oldapp->notes : '';
-            $newapp->notified = DEFAULT_APPOINTMENT_NOTIFIED;
-            $newapp->allownewappointments = DEFAULT_ALLOW_NEW_APPOINTMENTS;
+            $newapp->notified = ORGANIZER_DEFAULT_APPOINTMENT_NOTIFIED;
+            $newapp->allownewappointments = ORGANIZER_DEFAULT_ALLOW_NEW_APPOINTMENTS;
 
             echo "\t\t\tInserting new appointment record for slot id = {$newslot->id} ...";
             $newapp->id = $DB->insert_record('organizer_slot_appointments', $newapp);

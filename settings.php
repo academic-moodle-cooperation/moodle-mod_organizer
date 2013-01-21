@@ -64,9 +64,9 @@ $organizersettings->add(
 
 // E-mail teachers
 $pickeroptions = array();
-$pickeroptions[MESSAGES_NONE] = get_string('messages_none', 'organizer');
-$pickeroptions[MESSAGES_RE_UNREG] = get_string('messages_re_unreg', 'organizer');
-$pickeroptions[MESSAGES_ALL] = get_string('messages_all', 'organizer');
+$pickeroptions[ORGANIZER_MESSAGES_NONE] = get_string('messages_none', 'organizer');
+$pickeroptions[ORGANIZER_MESSAGES_RE_UNREG] = get_string('messages_re_unreg', 'organizer');
+$pickeroptions[ORGANIZER_MESSAGES_ALL] = get_string('messages_all', 'organizer');
 
 // Appointment digest
 $organizersettings->add(

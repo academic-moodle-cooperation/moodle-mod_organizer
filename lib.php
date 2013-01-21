@@ -30,11 +30,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('slotlib.php');
+define('ORGANIZER_MESSAGES_NONE', 0);
+define('ORGANIZER_MESSAGES_RE_UNREG', 1);
+define('ORGANIZER_MESSAGES_ALL', 2);
+define('ORGANIZER_DELETE_EVENTS', 1);
 
-define('MESSAGES_NONE', 0);
-define('MESSAGES_RE_UNREG', 1);
-define('MESSAGES_ALL', 2);
+require_once('slotlib.php');
 
 /**
  * Given an object containing all the necessary data,
@@ -93,8 +94,6 @@ function organizer_update_instance($organizer) {
     return $DB->update_record('organizer', $organizer);
 }
 
-define('DELETE_EVENTS', 1);
-
 /**
  * Given an ID of an instance of this module,
  * this function will permanently delete the instance
@@ -116,13 +115,13 @@ function organizer_delete_instance($id) {
         $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
 
         foreach ($apps as $app) {
-            if (DELETE_EVENTS) {
+            if (ORGANIZER_DELETE_EVENTS) {
                 $DB->delete_records('event', array('id' => $app->eventid));
             }
             $DB->delete_records('organizer_slot_appointments', array('id' => $app->id));
         }
 
-        if (DELETE_EVENTS) {
+        if (ORGANIZER_DELETE_EVENTS) {
             $DB->delete_records('event', array('id' => $slot->eventid));
         }
         $DB->delete_records('organizer_slots', array('id' => $slot->id));

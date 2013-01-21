@@ -30,12 +30,12 @@ function organizer_make_infobox($params, $organizer, $context) {
     
     $output = organizer_make_description_section($organizer);
     switch($params['mode']) {
-        case TAB_APPOINTMENTS_VIEW:
+        case ORGANIZER_TAB_APPOINTMENTS_VIEW:
         break;
-        case TAB_STUDENT_VIEW:
+        case ORGANIZER_TAB_STUDENT_VIEW:
             $output .= organizer_make_myapp_section($params, $organizer, organizer_get_last_user_appointment($organizer));
         break;
-        case TAB_REGISTRATION_STATUS_VIEW:
+        case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             $output .= organizer_make_reminder_section($params, $context);
         break;
         default:
@@ -167,8 +167,8 @@ function organizer_make_myapp_section($params, $organizer, $app) {
 }
 function organizer_make_slotoptions_section($params) {
     $output = '<div style="float:left;">';
-    if ($params['mode'] != TAB_REGISTRATION_STATUS_VIEW) {
-        if ($params['mode'] == TAB_APPOINTMENTS_VIEW) {
+    if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
+        if ($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
             $pref = get_user_preferences('mod_organizer_showmyslotsonly');
             $output .= '<p><input type="checkbox" id="show_my_slots_only" ' .
                         ($pref ? 'checked="true" ' : '') . ' /> ' .

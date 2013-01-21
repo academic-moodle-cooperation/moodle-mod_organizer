@@ -23,6 +23,18 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+define('ORGANIZER_ACTION_ADD', 'add');
+define('ORGANIZER_ACTION_EDIT', 'edit');
+define('ORGANIZER_ACTION_DELETE', 'delete');
+define('ORGANIZER_ACTION_EVAL', 'eval');
+define('ORGANIZER_ACTION_PRINT', 'print');
+define('ORGANIZER_ACTION_REGISTER', 'register');
+define('ORGANIZER_ACTION_UNREGISTER', 'unregister');
+define('ORGANIZER_ACTION_REREGISTER', 'reregister');
+define('ORGANIZER_ACTION_REMIND', 'remind');
+define('ORGANIZER_ACTION_REMINDALL', 'remindall');
+define('ORGANIZER_ACTION_COMMENT', 'comment');
+
 require_once('../../config.php');
 require_once('locallib.php');
 require_once('view_action_form_add.php');
@@ -35,20 +47,6 @@ require_once('view_action_form_remind_all.php');
 require_once('print.php');
 require_once('view_lib.php');
 require_once('messaging.php');
-
-//--------------------------------------------------------------------------------------------------
-
-define('ACTION_ADD', 'add');
-define('ACTION_EDIT', 'edit');
-define('ACTION_DELETE', 'delete');
-define('ACTION_EVAL', 'eval');
-define('ACTION_PRINT', 'print');
-define('ACTION_REGISTER', 'register');
-define('ACTION_UNREGISTER', 'unregister');
-define('ACTION_REREGISTER', 'reregister');
-define('ACTION_REMIND', 'remind');
-define('ACTION_REMINDALL', 'remindall');
-define('ACTION_COMMENT', 'comment');
 
 //--------------------------------------------------------------------------------------------------
 
@@ -87,7 +85,7 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 
 $logurl = new moodle_url('/mod/organizer/view_action.php');
 $logurl->param('id', $cm->id);
 
-if ($action == ACTION_ADD) {
+if ($action == ORGANIZER_ACTION_ADD) {
     require_capability('mod/organizer:addslots', $context);
     add_to_log($course->id, 'organizer', 'add', "{$logurl}", $organizer->name, $cm->id);
     $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
@@ -122,7 +120,7 @@ if ($action == ACTION_ADD) {
         organizer_display_form($mform, get_string('title_add', 'organizer'));
     }
     print_error('If you see this, something went wrong with add action!');
-} else if ($action == ACTION_EDIT) {
+} else if ($action == ORGANIZER_ACTION_EDIT) {
     require_capability('mod/organizer:editslots', $context);
     add_to_log($course->id, 'organizer', 'edit', "{$logurl}", $organizer->name, $cm->id);
 
@@ -156,7 +154,7 @@ if ($action == ACTION_ADD) {
         organizer_display_form($mform, get_string('title_edit', 'organizer'));
     }
     print_error('If you see this, something went wrong with edit action!');
-} else if ($action == ACTION_EVAL) {
+} else if ($action == ORGANIZER_ACTION_EVAL) {
     require_capability('mod/organizer:evalslots', $context);
     add_to_log($course->id, 'organizer', 'eval', "{$logurl}", $organizer->name, $cm->id);
 
@@ -188,7 +186,7 @@ if ($action == ACTION_ADD) {
         organizer_display_form($mform, get_string('title_eval', 'organizer'));
     }
     print_error('If you see this, something went wrong with edit action!');
-} else if ($action == ACTION_DELETE) {
+} else if ($action == ORGANIZER_ACTION_DELETE) {
     require_capability('mod/organizer:deleteslots', $context);
     add_to_log($course->id, 'organizer', 'delete', "{$logurl}", $organizer->name, $cm->id);
 
@@ -216,7 +214,7 @@ if ($action == ACTION_ADD) {
         organizer_display_form($mform, get_string('title_delete', 'organizer'));
     }
     print_error('If you see this, something went wrong with delete action!');
-} else if ($action == ACTION_PRINT) {
+} else if ($action == ORGANIZER_ACTION_PRINT) {
     require_capability('mod/organizer:printslots', $context);
 
     add_to_log($course->id, 'organizer', 'print', "{$logurl}", $organizer->name, $cm->id);
@@ -242,7 +240,7 @@ if ($action == ACTION_ADD) {
         organizer_display_form($mform, get_string('title_print', 'organizer'), true);
     }
     print_error('If you see this, something went wrong with print action!');
-} else if ($action == ACTION_COMMENT) {
+} else if ($action == ORGANIZER_ACTION_COMMENT) {
     require_capability('mod/organizer:comment', $context);
     add_to_log($course->id, 'organizer', 'comment', "{$logurl}", $organizer->name, $cm->id);
 
@@ -262,7 +260,7 @@ if ($action == ACTION_ADD) {
         organizer_display_form($mform, get_string('title_comment', 'organizer'));
     }
     print_error('If you see this, something went wrong with delete action!');
-} else if ($action == ACTION_REGISTER) {
+} else if ($action == ORGANIZER_ACTION_REGISTER) {
     require_capability('mod/organizer:register', $context);
     add_to_log($course->id, 'organizer', 'register', "{$logurl}", $organizer->name, $cm->id);
 
@@ -292,7 +290,7 @@ if ($action == ACTION_ADD) {
     }
 
     redirect($redirecturl);
-} else if ($action == ACTION_UNREGISTER) {
+} else if ($action == ORGANIZER_ACTION_UNREGISTER) {
     require_capability('mod/organizer:unregister', $context);
     add_to_log($course->id, 'organizer', 'unregister', "{$logurl}", $organizer->name, $cm->id);
 
@@ -315,7 +313,7 @@ if ($action == ACTION_ADD) {
     organizer_unregister_appointment($slot, $groupid);
 
     redirect($redirecturl);
-} else if ($action == ACTION_REREGISTER) {
+} else if ($action == ORGANIZER_ACTION_REREGISTER) {
     require_capability('mod/organizer:register', $context);
     require_capability('mod/organizer:unregister', $context);
     add_to_log($course->id, 'organizer', 'reregister', "{$logurl}", $organizer->name, $cm->id);
@@ -346,7 +344,7 @@ if ($action == ACTION_ADD) {
     }
 
     redirect($redirecturl);
-} else if ($action == ACTION_REMIND) {
+} else if ($action == ORGANIZER_ACTION_REMIND) {
     // WARNING! ADD GROUP CHECK!
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     if ($organizer->isgrouporganizer) {
@@ -360,7 +358,7 @@ if ($action == ACTION_ADD) {
     }
 
     redirect($redirecturl);
-} else if ($action == ACTION_REMINDALL) {
+} else if ($action == ORGANIZER_ACTION_REMINDALL) {
     add_to_log($course->id, 'organizer', 'remindall', "{$logurl}", $organizer->name, $cm->id);
 
     $mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
@@ -432,10 +430,10 @@ function organizer_organizer_student_action_allowed($action, $slot) {
                 || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
             }
         }
-        $allowedaction = $ismyslot ? ACTION_UNREGISTER : ACTION_REREGISTER;
+        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REREGISTER;
     } else {
         $disabled |= $slotfull || !$canregister || $ismyslot;
-        $allowedaction = $ismyslot ? ACTION_UNREGISTER : ACTION_REGISTER;
+        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REGISTER;
     }
 
     return !$disabled && ($action == $allowedaction);
@@ -535,7 +533,7 @@ function organizer_prepare_and_send_message($data, $type) {
         case 'register_notify:teacher:register': // TODO: check how it was actually originally defined
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
-            if ($organizer->emailteachers == MESSAGES_ALL) {
+            if ($organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
                 organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
             }
             break;
@@ -543,7 +541,7 @@ function organizer_prepare_and_send_message($data, $type) {
         case 'register_notify:teacher:unregister':
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
-            if ($organizer->emailteachers == MESSAGES_RE_UNREG || $organizer->emailteachers == MESSAGES_ALL) {
+            if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG || $organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
                 organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
             }
             break;

@@ -25,11 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-define('SPACING', '&nbsp;&nbsp;');
-define('NUM_DAYS', '7');
-define('NO_DAY', '-1');
-define('DAY_IN_SECS', '86400');
-define('USE_SCROLL_FIX', '1');
+define('ORGANIZER_SPACING', '&nbsp;&nbsp;');
+define('ORGANIZER_NUM_DAYS', '7');
+define('ORGANIZER_NO_DAY', '-1');
+define('ORGANIZER_DAY_IN_SECS', '86400');
+define('ORGANIZER_USE_SCROLL_FIX', '1');
 
 require_once('../../lib/formslib.php');
 require_once('locallib.php');
@@ -288,7 +288,7 @@ class organizer_add_slots_form extends moodleform {
         $mform->setDefault('now', $now);
         $mform->insertElementBefore(
                 $mform->createElement('group', 'availablefromgroup', get_string('availablefrom', 'organizer'), $group,
-                        SPACING, false), 'notificationtime');
+                        ORGANIZER_SPACING, false), 'notificationtime');
         $availablefromgroup = $mform->getElement('availablefromgroup')->getElements();
         $availablefrom = $availablefromgroup[0]->getElements();
         $availablefrom[1]->removeOption(1);
@@ -309,14 +309,14 @@ class organizer_add_slots_form extends moodleform {
 
         $slots = isset($mform->_submitValues['newslots']) ? $mform->_submitValues['newslots'] : array();
 
-        for ($day = 0; $day < NUM_DAYS; $day++) {
+        for ($day = 0; $day < ORGANIZER_NUM_DAYS; $day++) {
             $dayset = false;
             $first = true;
             foreach ($slots as $id => $slot) {
                 if ($slot['day'] == $day) {
                     $dayslot = $this->_create_day_slot_group($day, $id, $first);
                     $mform->insertElementBefore(
-                            $mform->createElement('group', "slotgroup{$id}", '', $dayslot, SPACING, false), 'other');
+                            $mform->createElement('group', "slotgroup{$id}", '', $dayslot, ORGANIZER_SPACING, false), 'other');
                     $dayset = true;
                     $first = false;
                 }
@@ -325,11 +325,11 @@ class organizer_add_slots_form extends moodleform {
             if ($addday == $day || !$dayset) {
                 $dayslot = $this->_create_day_slot_group($day, $totalslots, $first);
                 $mform->insertElementBefore(
-                        $mform->createElement('group', "slotgroup{$totalslots}", '', $dayslot, SPACING, false),
+                        $mform->createElement('group', "slotgroup{$totalslots}", '', $dayslot, ORGANIZER_SPACING, false),
                         'other');
                 $totalslots++;
             }
-            if ($day != NUM_DAYS - 1) {
+            if ($day != ORGANIZER_NUM_DAYS - 1) {
                 $mform->insertElementBefore($mform->createElement('html', '<hr />'), 'other');
             }
         }
@@ -342,7 +342,7 @@ class organizer_add_slots_form extends moodleform {
         $mform = &$this->_form;
         $name = "newslots[$id]";
         $dayslot = array();
-        $dayslot[] = $mform->createElement('advcheckbox', "{$name}[selected]", '', SPACING, null, array(0, 1));
+        $dayslot[] = $mform->createElement('advcheckbox', "{$name}[selected]", '', ORGANIZER_SPACING, null, array(0, 1));
         $mform->setDefault("{$name}[selected]", 0);
         $dayslot[] = $mform->createElement('static', '', '',
                 get_string("day_$day", 'organizer') . get_string('slotfrom', 'organizer'));
@@ -386,16 +386,16 @@ class organizer_add_slots_form extends moodleform {
 
         $teacherid = $mform->_submitValues['teacherid'];
 
-        $events = $this->_organizer_load_events($teacherid, $startdate, $enddate + DAY_IN_SECS);
+        $events = $this->_organizer_load_events($teacherid, $startdate, $enddate + ORGANIZER_DAY_IN_SECS);
 
         $id = 0;
         $totalslots = 0;
 
         $collcount = 0;
 
-        for ($day = 0; $day < NUM_DAYS; $day++) {
+        for ($day = 0; $day < ORGANIZER_NUM_DAYS; $day++) {
             $dayempty = true;
-            for ($date = $startdate; $date < $enddate + DAY_IN_SECS; $date += DAY_IN_SECS) {
+            for ($date = $startdate; $date < $enddate + ORGANIZER_DAY_IN_SECS; $date += ORGANIZER_DAY_IN_SECS) {
 
                 $datedata = getdate($date);
                 $dayofweek = ($datedata['wday'] + 6) % 7;
@@ -422,7 +422,7 @@ class organizer_add_slots_form extends moodleform {
                             $dayslot = $this->_create_slot_review_group($date, $id, $slot['from'], $slot['to'],
                                     $duration, $unit, $disabled);
                             $mform->insertElementBefore(
-                                    $mform->createElement('group', "reviewgroup{$id}", '', $dayslot, SPACING, false),
+                                    $mform->createElement('group', "reviewgroup{$id}", '', $dayslot, ORGANIZER_SPACING, false),
                                     'other');
 
                             $head = true;
@@ -523,7 +523,7 @@ class organizer_add_slots_form extends moodleform {
 
         $dayslot = array();
         $dayslot[] = $mform->createElement('advcheckbox', "{$name}[selected]", '',
-                SPACING . get_string('totalslots', 'organizer', $a),
+                ORGANIZER_SPACING . get_string('totalslots', 'organizer', $a),
                 $disabled ? array('disabled' => 'disabled', 'group' => 0) : null, array(0, 1));
 
         $dayslot[] = $mform->createElement('hidden', "{$name}[date]", $date);
@@ -716,12 +716,12 @@ class organizer_add_slots_form extends moodleform {
      * the submission. It preserves the scroll coordinates within hidden form fields and restores
      * the scroll position from them when the page reloads. Uses JavaScript.
      *
-     * The fix can be overriden by setting USE_SCROLL_FIX constant to 0.
+     * The fix can be overriden by setting ORGANIZER_USE_SCROLL_FIX constant to 0.
      */
     private function _add_scroll_fix() {
         global $PAGE;
 
-        if (!USE_SCROLL_FIX) {
+        if (!ORGANIZER_USE_SCROLL_FIX) {
             return;
         }
 

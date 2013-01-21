@@ -22,9 +22,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define("TAB_APPOINTMENTS_VIEW", 1);
-define("TAB_STUDENT_VIEW", 2);
-define("TAB_REGISTRATION_STATUS_VIEW", 3);
+define("ORGANIZER_TAB_APPOINTMENTS_VIEW", 1);
+define("ORGANIZER_TAB_STUDENT_VIEW", 2);
+define("ORGANIZER_TAB_REGISTRATION_STATUS_VIEW", 3);
 
 require_once('../../config.php');
 require_once("../../calendar/lib.php");
@@ -69,7 +69,7 @@ $popups = array();
 
 echo $OUTPUT->box_start('', 'organizer_main_cointainer');
 switch ($params['mode']) {
-    case TAB_APPOINTMENTS_VIEW:
+    case ORGANIZER_TAB_APPOINTMENTS_VIEW:
         if (has_capability('mod/organizer:viewallslots', $instance->context)) {
             organizer_log_action('allview', $logurl, $instance);
             echo organizer_generate_appointments_view($params, $instance);
@@ -77,7 +77,7 @@ switch ($params['mode']) {
             print_error('You do not have the permission to view this page!');
         }
         break;
-    case TAB_STUDENT_VIEW:
+    case ORGANIZER_TAB_STUDENT_VIEW:
         if (has_capability('mod/organizer:viewstudentview', $instance->context)) {
             organizer_log_action('studview', $logurl, $instance);
             echo organizer_generate_student_view($params, $instance);
@@ -85,7 +85,7 @@ switch ($params['mode']) {
             print_error('You do not have the permission to view this page!');
         }
         break;
-    case TAB_REGISTRATION_STATUS_VIEW:
+    case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
         if (has_capability('mod/organizer:viewregistrations', $instance->context)) {
             organizer_log_action('statusview', $logurl, $instance);
             echo organizer_generate_registration_status_view($params, $instance);
@@ -146,18 +146,18 @@ function organizer_load_params($instance) {
 
     if ($params['mode'] == 0) {
         if (has_capability('mod/organizer:addslots', $instance->context, null, true)) {
-            $params['mode'] = TAB_APPOINTMENTS_VIEW;
+            $params['mode'] = ORGANIZER_TAB_APPOINTMENTS_VIEW;
         } else {
-            $params['mode'] = TAB_STUDENT_VIEW;
+            $params['mode'] = ORGANIZER_TAB_STUDENT_VIEW;
         }
     }
 
     switch ($params['mode']) {
-        case TAB_APPOINTMENTS_VIEW:
-        case TAB_STUDENT_VIEW:
+        case ORGANIZER_TAB_APPOINTMENTS_VIEW:
+        case ORGANIZER_TAB_STUDENT_VIEW:
             $params['sort'] = optional_param('sort', 'datetime', PARAM_ALPHA);
             break;
-        case TAB_REGISTRATION_STATUS_VIEW:
+        case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             $params['sort'] = optional_param('sort', 'status', PARAM_ALPHA);
             break;
     }

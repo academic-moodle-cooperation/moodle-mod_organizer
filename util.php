@@ -14,6 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+define('ORGANIZER_APP_STATUS_EVALUATED', 1);
+define('ORGANIZER_APP_STATUS_PENDING', 2);
+define('ORGANIZER_APP_STATUS_ATTENDED', 4);
+define('ORGANIZER_APP_STATUS_REAPPOINTMENT_ALLOWED', 8);
+
+define('ORGANIZER_APP_STATUS_INVALID', 0);
+define('ORGANIZER_APP_STATUS_ATTENDED_REAPP', ORGANIZER_APP_STATUS_ATTENDED & ORGANIZER_APP_STATUS_REAPPOINTMENT_ALLOWED);
+define('ORGANIZER_APP_STATUS_REGISTERED', ORGANIZER_APP_STATUS_PENDING);
+define('ORGANIZER_APP_STATUS_NOT_ATTENDED', 4);
+define('ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP', 5);
+define('ORGANIZER_APP_STATUS_NOT_REGISTERED', 6);
+
 function organizer_get_appointment_status($app) {
     global $DB;
 
@@ -33,18 +45,6 @@ function organizer_get_appointment_status($app) {
 
     return ($evaluated) & ($attended << 1) & ($pending << 2) & ($reapp << 3);
 }
-
-define('APP_STATUS_EVALUATED', 1);
-define('APP_STATUS_PENDING', 2);
-define('APP_STATUS_ATTENDED', 4);
-define('APP_STATUS_REAPPOINTMENT_ALLOWED', 8);
-
-define('APP_STATUS_INVALID', 0);
-define('APP_STATUS_ATTENDED_REAPP', APP_STATUS_ATTENDED & APP_STATUS_REAPPOINTMENT_ALLOWED);
-define('APP_STATUS_REGISTERED', APP_STATUS_PENDING);
-define('APP_STATUS_NOT_ATTENDED', 4);
-define('APP_STATUS_NOT_ATTENDED_REAPP', 5);
-define('APP_STATUS_NOT_REGISTERED', 6);
 
 function organizer_check_appointment_status($app, $status) {
     return $status & organizer_get_appointment_status($app);
