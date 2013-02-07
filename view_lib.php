@@ -429,7 +429,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
             if ($myslot) {
                 $row->attributes['class'] .= ' my_slot';
             } else {
-                if ($showonlymyslots) {
+                if ($showonlymyslots && $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
                     $row->style = 'display: none;';
                     $hidden = true;
                 }
