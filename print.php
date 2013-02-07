@@ -74,7 +74,7 @@ class organizer_pdf extends pdf {
         if ($this->headerfooter) {
             $this->SetY(-15);
             $this->SetFont(ORGANIZER_FONT, 'I', 8);
-            $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0,
+            $this->Cell(0, 10, get_string('page') . ' ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0,
                     '', 0, false, 'T', 'M');
         }
     }
