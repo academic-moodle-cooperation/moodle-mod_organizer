@@ -231,8 +231,8 @@ M.mod_organizer.init_popups = function (Y, popups) {
 	              M.util.get_string('teachercomment_title', 'organizer'),
 	              M.util.get_string('teacherfeedback_title', 'organizer')];
 	
-	Y.one('form[name=viewform]').delegate('mouseover', show_popup, '*[id*=organizer_organizer_popup_icon]');
-	Y.one('form[name=viewform]').delegate('mouseout', hide_popup, '*[id*=organizer_organizer_popup_icon]');	
+	Y.one('#slot_overview').delegate('mouseover', show_popup, '*[id*=organizer_popup_icon]');
+	Y.one('#slot_overview').delegate('mouseout', hide_popup, '*[id*=organizer_popup_icon]');
 	
 	var popuppanel = new Y.Panel({
         contentBox 		: Y.Node.create('<div id="organizer_popup_panel" />'),

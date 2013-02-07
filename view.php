@@ -97,10 +97,11 @@ switch ($params['mode']) {
         print_error("Invalid view mode: {$params['mode']}");
         break;
 }
-echo $OUTPUT->box_end();
-echo $OUTPUT->footer();
 
 $PAGE->requires->js_init_call('M.mod_organizer.init_popups', array($popups));
+
+echo $OUTPUT->box_end();
+echo $OUTPUT->footer();
 
 die;
 
@@ -114,7 +115,7 @@ function organizer_register_popup($title, $content) {
     }
     $popups[$title][$id] = str_replace(array("\n", "\r"), "<br />", $content);
 
-    $elementid = "organizer_organizer_popup_icon_{$title}_{$id}";
+    $elementid = "organizer_popup_icon_{$title}_{$id}";
     $id++;
     
     return $elementid;
