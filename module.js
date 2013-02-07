@@ -227,7 +227,12 @@ M.mod_organizer.init_popups = function (Y, popups) {
 	var titles = [M.util.get_string('studentcomment_title', 'organizer'),
 	              M.util.get_string('teachercomment_title', 'organizer'),
 	              M.util.get_string('teacherfeedback_title', 'organizer')];
-	
+
+	var myslotoverview = Y.one('#my_slot_overview');
+	if (myslotoverview) {
+		Y.one('#my_slot_overview').delegate('mouseover', show_popup, '*[id*=organizer_popup_icon]');
+		Y.one('#my_slot_overview').delegate('mouseout', hide_popup, '*[id*=organizer_popup_icon]');
+	}
 	Y.one('#slot_overview').delegate('mouseover', show_popup, '*[id*=organizer_popup_icon]');
 	Y.one('#slot_overview').delegate('mouseout', hide_popup, '*[id*=organizer_popup_icon]');
 	
