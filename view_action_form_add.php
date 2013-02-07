@@ -626,6 +626,10 @@ class organizer_add_slots_form extends moodleform {
             $errors['notificationtime'] = get_string('err_posint', 'organizer');
         }
 
+        if (!isset($data['now']) && (!$this->_converts_to_int($data['availablefrom']) || $data['availablefrom'] <= 0)) {
+            $errors['availablefromgroup'] = get_string('err_posint', 'organizer');
+        }
+
         if ($data['startdate'] != 0 && $data['enddate'] != 0) {
             $today = mktime(0, 0, 0, date("m", time()), date("d", time()), date("Y", time()));
             if ($data['startdate'] < $today) {
