@@ -91,7 +91,7 @@ if ($action == ORGANIZER_ACTION_ADD) {
     $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
 
     if ($data = $mform->get_data()) {
-        if (isset($data->reviewslots) || isset($data->addday)) {
+        if (isset($data->reviewslots) || isset($data->addday) || isset($data->back)) {
             organizer_display_form($mform, get_string('title_add', 'organizer'));
         } else if (isset($data->createslots)) {
             $count = count($slotids = organizer_add_appointment_slots($data));

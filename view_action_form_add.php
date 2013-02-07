@@ -51,6 +51,7 @@ class organizer_add_slots_form extends moodleform {
                 $this->_hide_button($buttons[1]);
             } else {
                 $this->_add_review_slots();
+                $this->_add_dummy_fields_for_back();
 
                 $this->_freeze_fields();
 
@@ -72,6 +73,7 @@ class organizer_add_slots_form extends moodleform {
 
             $buttons = &$mform->getElement('buttonar')->getElements();
             $this->_hide_button($buttons[1]);
+            $this->_hide_button($buttons[2]);
         }
     }
 
@@ -241,6 +243,7 @@ class organizer_add_slots_form extends moodleform {
 
         $buttonarray[] = &$mform->createElement('submit', 'reviewslots', get_string('reviewsubmit', 'organizer'));
         $buttonarray[] = &$mform->createElement('submit', 'createslots', get_string('createsubmit', 'organizer'));
+        $buttonarray[] = &$mform->createElement('submit', 'back', get_string('back', 'organizer'));
         $buttonarray[] = &$mform->createElement('cancel');
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
@@ -250,7 +253,7 @@ class organizer_add_slots_form extends moodleform {
     private function _add_slot_fields() {
         $mform = &$this->_form;
 
-        if (!isset($mform->_submitValues['reviewslots'])) {
+        if (!isset($mform->_submitValues['reviewslots']) && !isset($mform->_submitValues['back'])) {
             $now = true;
         } else {
             if (isset($mform->_submitValues['now'])) {
@@ -555,6 +558,22 @@ class organizer_add_slots_form extends moodleform {
                 $mform->addElement('hidden', "{$name}[from]", $slot['from']);
                 $mform->addElement('hidden', "{$name}[to]", $slot['to']);
             }
+        }
+    }
+
+    private function _add_dummy_fields_for_back() {
+        $mform = $this->_form;
+        if (isset($mform->_submitValues['newslots'])) {
+            foreach ($mform->_submitValues['newslots'] as $id => $slot) {
+                $name = "newslots[{$id}]";
+                $mform->addElement('hidden', "{$name}[selected]", $slot['selected']);
+                $mform->addElement('hidden', "{$name}[day]", $slot['day']);
+                $mform->addElement('hidden', "{$name}[from]", $slot['from']);
+                $mform->addElement('hidden', "{$name}[to]", $slot['to']);
+            }
+        }
+        if (isset($mform->_submitValues['now'])) {
+            $mform->addElement('hidden', 'now', $mform->_submitValues['now']);
         }
     }
 

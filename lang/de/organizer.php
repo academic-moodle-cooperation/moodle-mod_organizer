@@ -81,6 +81,7 @@ $string['slotperiodheader_help'] = 'Geben Sie ein Start- und Enddatum an für we
 $string['slottimeframesheader'] = 'Zeitfenster angeben';
 $string['slottimeframesheader_help'] = 'Hier können Sie Zeitfenster auf Wochentagsbasis definieren die mit Terminslots befüllt werden, wie oben spezifiziert. Mehr als ein Zeitfenster pro Tag ist erlaubt. Ist ein Zeitfenster an einem Tag ausgewählt (zB Montag), so werden für jeden Montag im Datumszeitraum Zeitfenster und Termine erstellt.';
 $string['slotdetails'] = 'Slot Details';
+$string['back'] = 'Zurück';
 $string['teacherid'] = 'Lehrenden';
 $string['teacherid_help'] = 'Bitte Lehrenden auswählen, der die Termine leitet';
 $string['teacher'] = 'Lehrende/r';

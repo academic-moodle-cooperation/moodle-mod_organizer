@@ -79,6 +79,7 @@ $string['slotperiodheader_help'] = 'Specify the starting and the ending date to 
 $string['slottimeframesheader'] = 'Specific time frames';
 $string['slottimeframesheader_help'] = 'This section allows for weekday-based definition of time frames which will be filled with appointment slots with properties specified above. There can be more than one time frame per day. If a time frame on Monday is selected, it will generate time slots for every Monday between the starting and the ending date (inclusive).';
 $string['slotdetails'] = 'Slot details';
+$string['back'] = 'Back';
 $string['teacherid'] = 'Teacher';
 $string['teacherid_help'] = 'Select the teacher you want to lead the appointments';
 $string['teacher'] = 'Teacher';
