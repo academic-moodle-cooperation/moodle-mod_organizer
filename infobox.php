@@ -170,13 +170,14 @@ function organizer_make_myapp_section($params, $organizer, $app) {
 function organizer_make_slotoptions_section($params) {
     $output = '<div style="float:left;">';
     if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
-        if ($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
-            $pref = get_user_preferences('mod_organizer_showmyslotsonly');
-            $output .= '<p><input type="checkbox" id="show_my_slots_only" ' .
-                        ($pref ? 'checked="true" ' : '') . ' /> ' .
-                        get_string('infobox_showmyslotsonly', 'organizer') . '</p>';
-        }
-        $pref = get_user_preferences('mod_organizer_showpasttimeslots');
+        $displaymyslotsonly = $params['mode'] != ORGANIZER_TAB_STUDENT_VIEW;
+        $pref = get_user_preferences('mod_organizer_showmyslotsonly', false);
+        $output .= '<p' . ($displaymyslotsonly ? '' : ' style="display: none;" ') . '>' .
+                    '<input type="checkbox" id="show_my_slots_only" ' .
+                    ($pref ? 'checked="true" ' : '') . ' /> ' .
+                    get_string('infobox_showmyslotsonly', 'organizer') . '</p>';
+
+        $pref = get_user_preferences('mod_organizer_showpasttimeslots', true);
         $output .= '<p><input type="checkbox" id="show_past_slots" ' .
                     ($pref ? 'checked="true" ' : '') . ' /> ' .
                     get_string('infobox_showslots', 'organizer') . '</p>';
