@@ -204,6 +204,7 @@ class organizer_add_slots_form extends moodleform {
         $duration = $mform->getElement('duration')->getElements();
         $duration[1]->removeOption(1);
         $duration[1]->removeOption(86400);
+        $duration[1]->removeOption(604800);
         $mform->addHelpButton('duration', 'duration', 'organizer');
 
         $mform->addElement('text', 'maxparticipants', get_string('maxparticipants', 'organizer'), array('size' => '3'));
