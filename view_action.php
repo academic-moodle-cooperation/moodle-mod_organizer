@@ -345,18 +345,33 @@ if ($action == ORGANIZER_ACTION_ADD) {
 
     redirect($redirecturl);
 } else if ($action == ORGANIZER_ACTION_REMIND) {
-    // WARNING! ADD GROUP CHECK!
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    $count = 0;
     if ($organizer->isgrouporganizer) {
         $members = groups_get_members($user);
         foreach ($members as $member) {
-            organizer_prepare_and_send_message(array('user' => $member->id, 'organizer' => $organizer),
+            $success = organizer_prepare_and_send_message(array('user' => $member->id, 'organizer' => $organizer),
                     'register_reminder:student'); // ---------------------------------------- MESSAGE!!!
+            if ($success) {
+                $count++;
+            }
         }
     } else {
-        organizer_prepare_and_send_message(array('user' => $user, 'organizer' => $organizer), 'register_reminder:student');
+        $success = organizer_prepare_and_send_message(array('user' => $user, 'organizer' => $organizer), 'register_reminder:student');
+        if ($success) {
+            $count++;
+        }
     }
 
+    $redirecturl->param('data[count]', $count);
+    if ($count == 1) {
+        $redirecturl->param('messages[]', 'message_info_reminders_sent_sg');
+    } else {
+        $redirecturl->param('messages[]', 'message_info_reminders_sent_pl');
+    }
+    
+    $redirecturl = $redirecturl->out();
+    
     redirect($redirecturl);
 } else if ($action == ORGANIZER_ACTION_REMINDALL) {
     add_to_log($course->id, 'organizer', 'remindall', "{$logurl}", $organizer->name, $cm->id);
@@ -496,7 +511,7 @@ function organizer_prepare_and_send_message($data, $type) {
     global $DB, $USER;
 
     require_once('lib.php');
-
+    
     switch ($type) {
         case 'edit_notify:student':
             foreach ($data->slots as $slotid) {
@@ -560,8 +575,7 @@ function organizer_prepare_and_send_message($data, $type) {
             }
             break;
         case 'register_reminder:student':
-            organizer_send_message(intval($USER->id), intval($data['user']), $data['organizer'], $type);
-            break;
+            return organizer_send_message(intval($USER->id), intval($data['user']), $data['organizer'], $type);
         default:
             print_error('Not debugged yet!');
     }
