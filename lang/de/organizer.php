@@ -274,8 +274,11 @@ $string['configmaximumgrade'] = 'Voreinstellung für den Wert im Feld "Höchste 
 $string['configabsolutedeadline'] = 'Voreinstellung für den Offset der Datums- und Zeitauswahl, ausgehend vom jetzigen Zeitpunkt.';
 $string['configrelativedeadline'] = 'Voreinstellung für den Zeitpunkt an dem Teilnehmer/innen vor einem Termin davon in Kenntnis gesetzt werden sollten.';
 $string['configdigest'] = 'Zusammenfassung der Termine für den jeweils nächsten Tag an Lehrende versenden.';
-$string['configemailteachers'] = 'Send E-mail notifications to teachers regarding stuff.';
+$string['configemailteachers'] = 'E-Mail Benachrichtigungen an Lehrenden bezüglich Änderungen der Anmeldungsstatus';
 $string['configlocationlink'] = 'Link zu Suchmaschine, die den Weg zum Zielort zeigt. Setzen Sie $searchstring in die URL ein, die die Anfrage bearbeitet.';
+
+$string['configemailteachers_label'] = 'E-Mail Benachrichtigungen';
+$string['configdigest_label'] = 'Zusammenfassungen';
 
 $string['no_slots_defined'] = 'Derzeit sind keine Zeitslots verfügbar.';
 $string['no_slots_defined_teacher'] = 'Derzeit sind keine Zeitslots verfügbar. Legen Sie <a href="{$a->link}">hier</a> neue an.';

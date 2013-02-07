@@ -292,8 +292,11 @@ $string['configmaximumgrade'] = 'Sets the default value selected in the grade fi
 $string['configabsolutedeadline'] = 'The default offset of the date and time selector from the current date and time.';
 $string['configrelativedeadline'] = 'The default time ahead of an appointment when the participants should be notified of it.';
 $string['configdigest'] = 'Send summary of the next day appointments to the teacher.';
-$string['configemailteachers'] = 'Send E-mail notifications to teachers regarding stuff.';
+$string['configemailteachers'] = 'Send E-mail notifications to teachers about registration status changes.';
 $string['configlocationlink'] = 'The link to a search engine used to show the way to the location. Place $searchstring in the URL where the query goes.';
+
+$string['configemailteachers_label'] = 'Send E-mail notifications to teachers';
+$string['configdigest_label'] = 'Send appointment digest to teachers';
 
 $string['organizer:comment'] = 'Add comments';
 $string['organizer:addslots'] = 'Add new time slots';

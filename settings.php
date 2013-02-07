@@ -70,7 +70,7 @@ $pickeroptions[ORGANIZER_MESSAGES_ALL] = get_string('messages_all', 'organizer')
 
 // Appointment digest
 $organizersettings->add(
-        new admin_setting_configselect('organizer/emailteachers', 'Send E-mail notifications to teachers',
+        new admin_setting_configselect('organizer/emailteachers', get_string('configemailteachers_label', 'organizer'),
                 get_string('configemailteachers', 'organizer'), 1, $pickeroptions));
 
 $pickeroptions = array();
@@ -81,7 +81,7 @@ for ($i = 0; $i < 24; $i++) {
 
 // Appointment digest
 $organizersettings->add(
-        new admin_setting_configselect('organizer/digest', 'Send appointment digest to teachers',
+        new admin_setting_configselect('organizer/digest', get_string('configdigest_label', 'organizer'),
                 get_string('configdigest', 'organizer'), 'never', $pickeroptions));
 
 $abschoices = array();
@@ -98,7 +98,7 @@ $abschoices['+6 month'] = "6 months";
 $abschoices['+1 year'] = "1 year";
 
 $organizersettings->add(
-        new admin_setting_configselect('organizer/absolutedeadline', 'Absolute deadline',
+        new admin_setting_configselect('organizer/absolutedeadline', get_string('absolutedeadline', 'organizer'),
                 get_string('configabsolutedeadline', 'organizer'), 'never', $abschoices));
 
 $relchoices = array();
@@ -116,7 +116,7 @@ $relchoices[86400 * 1] = "1 day ahead";
 $relchoices[86400 * 2] = "2 days ahead";
 
 $organizersettings->add(
-        new admin_setting_configselect('organizer/relativedeadline', 'Relative deadline',
+        new admin_setting_configselect('organizer/relativedeadline', get_string('relativedeadline', 'organizer'),
                 get_string('configrelativedeadline', 'organizer'), 86400, $relchoices));
 
 // Now, depending on whether any reports have their own settings page, add
