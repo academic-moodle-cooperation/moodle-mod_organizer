@@ -113,6 +113,7 @@ $string['err_location'] = 'Ein Ort muss angegeben werden!';
 $string['err_posint'] = 'Nur positive Werte erlaubt!';
 $string['create'] = 'Erstellen';
 $string['availablefrom'] = 'Anfragen möglich ab';
+$string['availablefrom_help'] = 'Definieren Sie das Zeitfenster, während welches Student/innen sich für diese Slots anmelden können. Ersatzweise checken Sie die "Ab jetzt" Checkbox, um die Anmeldungen sofort zu ermöglichen.';
 $string['err_availablefromearly'] = 'Dieses Datum kann nicht vor dem Startdatum liegen!';
 $string['err_availablefromlate'] = 'Dieses Datum kann nicht nach dem Enddatum liegen!';
 $string['teachervisible'] = 'Lehrende sichtbar';

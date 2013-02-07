@@ -111,6 +111,7 @@ $string['err_location'] = 'You must enter a location!';
 $string['err_posint'] = 'You must enter a positive integer!';
 $string['create'] = 'Create';
 $string['availablefrom'] = 'Applications possible from';
+$string['availablefrom_help'] = 'Set the timeframe within which students will be allowed to register for these timeslots. Alternatively, check "Starting now" to enable registration immediately.';
 $string['err_availablefromearly'] = 'This date cannot be set later than the start date!';
 $string['err_availablefromlate'] = 'This date cannot be set later than the end date!';
 $string['teachervisible'] = 'Teacher visible';

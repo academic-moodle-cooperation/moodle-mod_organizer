@@ -290,6 +290,7 @@ class organizer_add_slots_form extends moodleform {
         $mform->insertElementBefore(
                 $mform->createElement('group', 'availablefromgroup', get_string('availablefrom', 'organizer'), $group,
                         ORGANIZER_SPACING, false), 'notificationtime');
+        $mform->addHelpButton('availablefromgroup', 'availablefrom', 'organizer');
         $availablefromgroup = $mform->getElement('availablefromgroup')->getElements();
         $availablefrom = $availablefromgroup[0]->getElements();
         $availablefrom[1]->removeOption(1);
