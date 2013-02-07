@@ -19,18 +19,15 @@ M.mod_organizer.init_mod_form = function (Y, activatecheckbox) {
 }
 
 M.mod_organizer.init_add_form = function (Y) {
-	var form = Y.one('#mform1');
-	
-	Y.config.win.scrollTo(
-			form.one('[name=scrollx]').get('value'), 
-			form.one('[name=scrolly]').get('value'));
-	
-	form.on('submit', save_scroll);
-	
-	function save_scroll() {
-		var body = Y.one('body');
-	    form.one('[name=scrollx]').set('value', 0);
-	    form.one('[name=scrolly]').set('value', 0);
+	var togglebox = Y.one('#id_now');
+
+	if (togglebox) {
+		togglebox.on('change', toggle_available_from);
+	}
+
+	function toggle_available_from() {
+		Y.one("select[name^=availablefrom]").set('disabled', togglebox.get('checked'));
+		Y.one("input[type=text][name^=availablefrom]").set('disabled', togglebox.get('checked'));
 	}
 }
 
