@@ -393,6 +393,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
 
     $showpasttimeslots = get_user_preferences('mod_organizer_showpasttimeslots');
     $showonlymyslots = get_user_preferences('mod_organizer_showmyslotsonly');
+    $showonlyfreeslots = get_user_preferences('mod_organizer_showfreeslotsonly');
 
     $rows = array();
     if (count($slots) != 0) {
@@ -429,6 +430,15 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
                 $row->attributes['class'] .= ' my_slot';
             } else {
                 if ($showonlymyslots) {
+                    $row->style = 'display: none;';
+                    $hidden = true;
+                }
+            }
+
+            if (!$slotx->is_full()) {
+                $row->attributes['class'] .= ' free_slot';
+            } else {
+                if ($showonlyfreeslots) {
                     $row->style = 'display: none;';
                     $hidden = true;
                 }

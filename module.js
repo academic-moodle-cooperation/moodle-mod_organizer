@@ -136,12 +136,21 @@ M.mod_organizer.init_infobox = function (Y) {
 		var tablebody = Y.one('#slot_overview tbody');
 		var showpastslots = Y.one('#show_past_slots').get('checked');
 	    var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
+	    var showfreeslotsonly = Y.one('#show_free_slots_only').get('checked');
 	    
 	    if(showpastslots) {
 	        if(showmyslotsonly) {
-	        	tablebody.all('tr.past_due.my_slot').show();
+	        	if(showfreeslotsonly) {
+                    tablebody.all('tr.past_due.my_slot.free_slot').show();
+	        	} else {
+                    tablebody.all('tr.past_due.my_slot').show();
+	        	}
 	        } else {
-	        	tablebody.all('tr.past_due').show();
+	        	if(showfreeslotsonly) {
+                    tablebody.all('tr.past_due.free_slot').show();
+	        	} else {
+                    tablebody.all('tr.past_due').show();
+	        	}
 	        }
 	    } else {
 	    	tablebody.all('tr.past_due').hide();
@@ -152,17 +161,56 @@ M.mod_organizer.init_infobox = function (Y) {
 	    M.util.set_user_preference('mod_organizer_showpasttimeslots', (showpastslots));
 	    
 	}
+	
+	function toggle_free_slots(e) {
+		var tablebody = Y.one('#slot_overview tbody');
+		var showpastslots = Y.one('#show_past_slots').get('checked');
+	    var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
+	    var showfreeslotsonly = Y.one('#show_free_slots_only').get('checked');
+	    
+	    if (!showfreeslotsonly) {
+	        if (!showmyslotsonly) {
+	        	if (showpastslots) {
+	        		tablebody.all('tr:not(.info)').show();
+	        	} else {
+	        		tablebody.all('tr:not(.info):not(.past_due)').show();
+	        	}
+	        } else {
+	        	if (showpastslots) {
+	        		tablebody.all('tr.past_due.my_slot').show();
+	        	} else {
+	        		tablebody.all('tr:not(.past_due).my_slot').show();
+	        	}
+	        }
+	    } else {
+	    	tablebody.all('tr:not(.info):not(.free_slot)').hide();
+	    }
+	    
+	    toggle_info();
+	    
+	    M.util.set_user_preference('mod_organizer_showfreeslotsonly', (showfreeslotsonly));
+	    
+	}
 
 	function toggle_other_slots(e) {
 		var tablebody = Y.one('#slot_overview tbody');
 		var showpastslots = Y.one('#show_past_slots').get('checked');
 	    var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
+	    var showfreeslotsonly = Y.one('#show_free_slots_only').get('checked');
 	    
 	    if(!showmyslotsonly) {
 	        if(showpastslots) {
-	        	tablebody.all('tr:not(.info)').show();
+	        	if (showfreeslotsonly) {
+	        		tablebody.all('tr:not(.info).free_slot').show();
+	        	} else {
+	        		tablebody.all('tr:not(.info)').show();
+	        	}
 	        } else {
-	        	tablebody.all('tr:not(.info):not(.past_due)').show();
+	        	if (showfreeslotsonly) {
+	        		tablebody.all('tr:not(.info):not(.past_due).free_slot').show();
+	        	} else {
+	        		tablebody.all('tr:not(.info):not(.past_due)').show();
+	        	}
 	        }
 	    } else {
 	    	tablebody.all('tr:not(.info):not(.my_slot)').hide();
@@ -217,7 +265,8 @@ M.mod_organizer.init_infobox = function (Y) {
 	}
 
 	Y.one('#show_past_slots').on('click', toggle_past_slots);
-	Y.one('#show_my_slots_only').on('click', toggle_other_slots);
+	Y.one('#show_my_slots_only').on('click', toggle_other_slots); //toggle_free_slots
+	Y.one('#show_free_slots_only').on('click', toggle_free_slots);
 	Y.one('#toggle_legend').on('click', toggle_legend);
 }
 

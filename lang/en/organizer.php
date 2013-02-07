@@ -268,6 +268,7 @@ $string['infobox_deadlines_title'] = 'Deadlines';
 
 $string['fullname_template'] = '{$a->firstname} {$a->lastname}';
 
+$string['infobox_showfreeslots'] = 'Show free slots only';
 $string['infobox_showslots'] = 'Show past time slots';
 $string['infobox_showlegend'] = 'Toggle legend';
 $string['infobox_slotoverview_title'] = 'Slot overview';
