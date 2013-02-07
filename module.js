@@ -29,10 +29,8 @@ M.mod_organizer.init_add_form = function (Y) {
 	
 	function save_scroll() {
 		var body = Y.one('body');
-		body.plug(Y.Plugin.ScrollInfo);
-		var info = body.scrollInfo.getScrollInfo();
-	    form.one('[name=scrollx]').set('value', info.scrollLeft);
-	    form.one('[name=scrolly]').set('value', info.scrollTop);
+	    form.one('[name=scrollx]').set('value', 0);
+	    form.one('[name=scrolly]').set('value', 0);
 	}
 }
 
