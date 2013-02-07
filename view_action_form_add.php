@@ -171,19 +171,11 @@ class organizer_add_slots_form extends moodleform {
         $mform->setDefault('teacherid', $USER->id);
         $mform->addHelpButton('teacherid', 'teacherid', 'organizer');
 
-        /*
-        $mform->addElement('advcheckbox', 'teachervisible', get_string('teachervisible', 'organizer'), null, null,
-                array(0, 1));
-                */
         $mform->addElement('checkbox', 'teachervisible', get_string('teachervisible', 'organizer'));
         $mform->setType('teachervisible', PARAM_BOOL);
         $mform->setDefault('teachervisible', 1);
         $mform->addHelpButton('teachervisible', 'teachervisible', 'organizer');
 
-        /*
-        $mform->addElement('advcheckbox', 'isanonymous', get_string('isanonymous', 'organizer'), null, null,
-                array(0, 1));
-                */
         $mform->addElement('checkbox', 'isanonymous', get_string('isanonymous', 'organizer'));
         $mform->setType('isanonymous', PARAM_BOOL);
         $mform->addHelpButton('isanonymous', 'isanonymous', 'organizer');
@@ -237,8 +229,6 @@ class organizer_add_slots_form extends moodleform {
         $mform->addElement('date_selector', 'enddate', get_string('slotperiodendtime', 'organizer'));
         $mform->setType('enddate', PARAM_INT);
         $mform->setDefault('enddate', mktime(null, null, null, date("m"), date("d") + 6, date("Y")));
-
-        // HERE GO THE SLOT FIELDS
 
         $mform->addElement('header', 'other', get_string('otherheader', 'organizer'));
 
@@ -367,11 +357,13 @@ class organizer_add_slots_form extends moodleform {
             $mform->insertElementBefore(
                     $mform->createElement('static', 'availablefromdummy', get_string('availablefrom', 'organizer'),
                             'Starting now'), 'notificationtime');
+            $mform->addHelpButton('availablefromdummy', 'availablefrom', 'organizer');
             $mform->addElement('hidden', 'availablefrom', 0);
         } else {
             $mform->insertElementBefore(
                     $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer')),
                     'notificationtime');
+            $mform->addHelpButton('availablefrom', 'availablefrom', 'organizer');
         }
 
         $mform->insertElementBefore(
