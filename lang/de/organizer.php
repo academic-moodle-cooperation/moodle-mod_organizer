@@ -269,6 +269,7 @@ $string['eval_no_participants'] = 'Dieser Slot hatte keine Teilnehmer/innen';
 
 $string['infobox_myslot_noslot'] = 'Sie sind derzeit für keinen Slot angemeldet.';
 $string['resetorganizerall'] = 'Alle Daten des Terminplaners löschen (Slots & Termine)';
+$string['deleteorganizergrades'] = 'Alle Bewertungen im Gradebook löschen';
 
 $string['configintro'] = 'Die Werte die Sie hier einstellen, bestimmen die Standardwerte, die im Einstellungsformular aufscheinen, wenn Sie einen neuen Terminplaner erstellen.';
 $string['configmaximumgrade'] = 'Voreinstellung für den Wert im Feld "Höchste Bewertung" beim Erstellen eines neuen Terminplaners. Diese Einstellung entspricht dem Beurteilungsmaximum, das ein Student erhalten kann.';

@@ -287,6 +287,7 @@ $string['eval_no_participants'] = 'This slot had no participants';
 
 $string['infobox_myslot_noslot'] = 'You are not registered to any slot at the time.';
 $string['resetorganizerall'] = 'Clear all organizer data (slots & appointments)';
+$string['deleteorganizergrades'] = 'Delete grades from gradebook';
 
 $string['configintro'] = 'The values you set here define the default values that are used in the settings form when you create a new organizer.';
 $string['configmaximumgrade'] = 'Sets the default value selected in the grade field when creating a new organizer. This is the maximum grade assignable to a student for his appointment.';

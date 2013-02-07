@@ -184,7 +184,7 @@ function organizer_get_overview_link($organizer) {
 function organizer_reset_course_form_definition(&$mform) {
     $mform->addElement('header', 'organizerheader', get_string('modulenameplural', 'organizer'));
     $mform->addElement('checkbox', 'reset_organizer_all', get_string('resetorganizerall', 'organizer'));
-    $mform->addElement('checkbox', 'delete_organizer_grades', 'Delete grades from gradebook');
+    $mform->addElement('checkbox', 'delete_organizer_grades', get_string('deleteorganizergrades', 'organizer'));
 }
 
 function organizer_reset_userdata($data) {
