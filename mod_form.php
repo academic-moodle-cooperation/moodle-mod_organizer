@@ -106,13 +106,13 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         //------ MY ELEMENTS -----------------------------------------------------------
 
-        $mform->addElement('organizer_date_time_selector', 'enablefrom', get_string('timeavailable', 'organizer'),
+        $mform->addElement('date_time_selector', 'enablefrom', get_string('timeavailable', 'organizer'),
                 array('optional' => true));
         $mform->setDefault('enablefrom', mktime(0, 0, 0, date('m'), date('d'), date('y')));
         $mform->setType('enablefrom', PARAM_INT);
         $mform->addHelpButton('enablefrom', 'timeavailable', 'organizer');
 
-        $mform->addElement('organizer_date_time_selector', 'enableuntil', get_string('absolutedeadline', 'organizer'),
+        $mform->addElement('date_time_selector', 'enableuntil', get_string('absolutedeadline', 'organizer'),
                 array('optional' => true));
         $mform->setDefault('enableuntil', mktime(0, 0, 0, date('m'), date('d'), date('y') + 1) - (5 * 60));
         $mform->setType('enableuntil', PARAM_INT);
