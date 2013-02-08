@@ -49,6 +49,7 @@ $string['introeditor_error'] = 'Organizer description must be given!';
 $string['timeavailable'] = 'Available from';
 $string['timeavailable_help'] = "Check this if you want to make this organizer
     available to students after a certain point in time.";
+$string['warning_groupingid'] = 'Group mode enabled. You must select a valid grouping.';
 $string['addappointment'] = 'Add appointment';
 $string['taballapp'] = 'Appointments';
 $string['tabstud'] = 'Student view';

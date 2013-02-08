@@ -1,14 +1,33 @@
 M.mod_organizer = {};
 
 M.mod_organizer.init_mod_form = function (Y, activatecheckbox) {
+	var warningdiv = Y.one("#groupingid_warning").ancestor().ancestor();
+	warningdiv.addClass('advanced');
+	warningdiv.hide();
+	
 	function check_group_members_only(e) {
 		var groupcheckbox = e.target;
 	    var groupmembersonlycheckbox = Y.one('#id_groupmembersonly');
 
-	    if (groupmembersonlycheckbox) {
-	    	groupmembersonlycheckbox.set('checked', groupcheckbox.get('checked'));
+	    if (groupcheckbox.get('checked') == true) {
+	    	if (groupmembersonlycheckbox) {
+	    		groupmembersonlycheckbox.set('checked', true);
+	    	}
+	    	if (Y.one('.hide.advanced') != null) {
+	    		Y.one('input[name="mform_showadvanced"]').simulate('click');
+	    	}
+			Y.one('#id_groupmode option[value="2"]').set('selected', 'selected');
+			warningdiv.show();
+	    } else {
+	    	if (groupmembersonlycheckbox) {
+	    		groupmembersonlycheckbox.set('checked', false);
+	    	}
+	    	if (Y.one('.hide.advanced') != null) {
+	    		Y.one('input[name="mform_showadvanced"]').simulate('click');
+	    	}
+			Y.one('#id_groupmode option[value="0"]').set('selected', 'selected');
+			warningdiv.hide();
 	    }
-	    
 	}
 	
 	Y.one('#id_isgrouporganizer').on('change', check_group_members_only);

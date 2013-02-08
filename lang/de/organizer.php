@@ -49,6 +49,7 @@ $string['introeditor_error'] = 'Eine Beschreibung des Terminplaners muss vorhand
 $string['timeavailable'] = 'Verfügbar ab';
 $string['timeavailable_help'] = "Kreuzen Sie diese Option an um Studierenden den Zugang zu diesem Terminplaner
     erst ab einem bestimmten Zeitpunkt zu ermöglichen.";
+$string['warning_groupingid'] = 'Gruppenmodus eingeschaltet. Sie müssen eine gültige Gruppierung auswählen.';
 $string['addappointment'] = 'Termin hinzufügen';
 $string['taballapp'] = 'Termine';
 $string['tabstud'] = 'Studierendenansicht';

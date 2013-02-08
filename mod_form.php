@@ -130,8 +130,7 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         $group = array();
         $group[] = $mform->createElement('advcheckbox', 'isgrouporganizer',
-                get_string('isgrouporganizer', 'organizer'), null,
-                array('group' => '0', 'onclick' => 'checkGroupMembersOnly()'), array(0, 1));
+                get_string('isgrouporganizer', 'organizer'), null, null, array(0, 1));
         $mform->setType('isgrouporganizer', PARAM_INT);
         $mform->addGroup($group, 'isgrouporganizergroup', get_string('isgrouporganizer', 'organizer'), null, false);
         $mform->addHelpButton('isgrouporganizergroup', 'isgrouporganizer', 'organizer');
@@ -149,8 +148,9 @@ class mod_organizer_mod_form extends moodleform_mod {
             $absdefault = strtotime($organizerconfig->absolutedeadline);
             $mform->setDefault('enableuntil', $absdefault);
         }
-
         $this->standard_coursemodule_elements();
+        $warning = $mform->createElement('static', '', '', '<span id="groupingid_warning">' . get_string('warning_groupingid', 'organizer') . '</span>');
+        $mform->insertElementBefore($warning, 'groupingid');
         $this->add_action_buttons();
     }
 
