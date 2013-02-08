@@ -189,6 +189,7 @@ function organizer_reset_course_form_definition(&$mform) {
 
 function organizer_reset_userdata($data) {
     global $DB;
+    print_r($data);
 
     if (!$DB->count_records('organizer', array('course' => $data->courseid))) {
         return array();
@@ -198,7 +199,7 @@ function organizer_reset_userdata($data) {
     $status = array();
 
     $ok = true;
-    if ($data->reset_organizer_all) {
+    if (isset($data->reset_organizer_all)) {
 
         $params = array('courseid' => $data->courseid);
 
@@ -231,8 +232,8 @@ function organizer_reset_userdata($data) {
     $status[] = array('component' => $componentstr, 'item' => 'Deleting slots, appointments and related events',
             'error' => !$ok);
 
-    if (isset($data->reset_gradebook_grades) && isset($data->delete_organizer_grades)) {
-        organizer_reset_gradebook($data->courseid); // not sure if working!
+    if (isset($data->delete_organizer_grades)) {
+        organizer_reset_gradebook($data->courseid);
     }
 
     if ($data->timeshift) {
@@ -244,7 +245,7 @@ function organizer_reset_userdata($data) {
     return $status;
 }
 
-function organizer_reset_gradebook($courseid) { // FIXME !!!
+function organizer_reset_gradebook($courseid) {
     global $CFG, $DB;
 
     $params = array('courseid' => $courseid);
