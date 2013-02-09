@@ -375,7 +375,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
     if ($showonlyregslot) {
         if ($app) {
             $evaldapp = organizer_get_last_user_appointment($organizer, 0, false, true);
-            if ($app->id == $evaldapp->id) {
+            if (!$evaldapp || $app->id == $evaldapp->id) {
                 $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)));
             } else {
                 $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)),
