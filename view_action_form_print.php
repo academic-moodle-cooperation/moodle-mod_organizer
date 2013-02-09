@@ -126,9 +126,9 @@ class organizer_print_slots_form extends moodleform {
         }
         $this->_form->getValidationScript();
         $output = $this->_form->toHtml();
-        $output .= '<div class="forced_scroll">';
+        $output .= '<div class="forced_scroll"><div style="float: left">';
         $output .= $this->_create_preview_table($this->_selcols);
-        $output .= '</div>';
+        $output .= '</div><div style="width: 1em; float: left;"> </div></div>';
         print $output;
     }
 
