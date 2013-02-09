@@ -113,9 +113,7 @@ class organizer_print_slots_form extends moodleform {
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
 
         foreach ($selcols as $key => $selcol) {
-            $mform->addElement('advcheckbox', "cols[$key]", null, null,
-                    array('id' => "col_{$selcol}", 'group' => false, 'style' => 'display: none;'), $selcol);
-            $mform->setDefault("cols[$key]", true);
+            $mform->addElement('hidden', "cols[$key]", $selcol, array('id' => "col_{$selcol}"));
         }
 
     }

@@ -362,12 +362,12 @@ M.mod_organizer.init_organizer_print_slots_form = function (Y) {
 	    
 	    if (unchecked) {
 	    	imgurl = imgurl.replace('switch_minus', 'switch_plus');
+	    	Y.one('#col_' + column).set('value', '');
 	    } else {
 	    	imgurl = imgurl.replace('switch_plus', 'switch_minus');
+	    	Y.one('#col_' + column).set('value', column);
 	    }
 	    this.set('src', imgurl);
-
-	    Y.one('#col_' + column).set('checked', !unchecked);
 
 	    Y.all("[name=" + column + "_cell]").each(function(node) {
 	    	if (!unchecked) {
