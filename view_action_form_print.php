@@ -33,6 +33,8 @@ require_once(dirname(__FILE__) . '/print.php');
 
 class organizer_print_slots_form extends moodleform {
 
+    private $_selcols;
+
     protected function definition() {
         $this->_add_slot_info();
         $this->_add_column_select();
@@ -77,6 +79,7 @@ class organizer_print_slots_form extends moodleform {
         } else {
             $selcols = array('datetime', 'location', 'teacher', 'participant', 'attended', 'grade', 'feedback');
         }
+        $this->_selcols = $selcols;
         
         if ($isgrouporganizer) {
             array_splice($selcols, 3, 0, 'groupname');
@@ -106,14 +109,8 @@ class organizer_print_slots_form extends moodleform {
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'pdfsubmit', get_string('pdfsubmit', 'organizer'));
         $buttonarray[] = &$mform->createElement('cancel', 'cancel', get_string('print_return', 'organizer'));
-        
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
 
-        $mform->addElement('header', null, get_string('printpreview', 'organizer'), array('style' => 'width: 800px; overflow-x: scroll;'));
-        
-        $mform->addElement('html', '<div class="forced_scroll">');
-        $mform->addElement('html', $this->_create_preview_table($selcols));
-        $mform->addElement('html', '</div>');
+        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
 
         foreach ($selcols as $key => $selcol) {
             $mform->addElement('advcheckbox', "cols[$key]", null, null,
@@ -131,11 +128,9 @@ class organizer_print_slots_form extends moodleform {
         }
         $this->_form->getValidationScript();
         $output = $this->_form->toHtml();
-        $needle = '/<\s*fieldset\s+class="clearfix"\s*>\s*<\s*legend\s+class="ftoggler"\s*>' .
-                preg_quote(get_string('printpreview', 'organizer')) . '/';
-        $replacement = '<fieldset class="clearfix preview"><legend class="ftoggler">' .
-                get_string('printpreview', 'organizer');
-        $output = preg_replace($needle, $replacement, $output);
+        $output .= '<div class="forced_scroll">';
+        $output .= $this->_create_preview_table($this->_selcols);
+        $output .= '</div>';
         print $output;
     }
 

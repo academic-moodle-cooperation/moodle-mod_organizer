@@ -378,7 +378,7 @@ M.mod_organizer.init_organizer_print_slots_form = function (Y) {
 	    });
 	}
 	
-	Y.one('#mform1').delegate('click', toggle_column, 'table th img');
+	Y.one('.forced_scroll').delegate('click', toggle_column, 'table th img');
 }
 
 M.mod_organizer.init_organizer_print_slots_form_old = function (Y) {

@@ -24,12 +24,14 @@
 
 /*fix here sn */
 #organizer_main_cointainer div.forced_scroll {
+	border: solid 1px #ddd;
     overflow-x: scroll;
     width: 100%;
 }
 
 #organizer_main_cointainer div.forced_scroll table {
 	min-width: 1024px;
+	margin: 1em;
 }
 
 #organizer_main_cointainer div.forced_scroll td {
