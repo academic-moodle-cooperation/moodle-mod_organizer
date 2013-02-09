@@ -544,6 +544,7 @@ class organizer_add_slots_form extends moodleform {
                     $mform->createElement('static', 'availablefromdummy', get_string('availablefrom', 'organizer'),
                             'Starting now'), 'notificationtime');
             $mform->addElement('hidden', 'availablefrom', 0);
+            $mform->addElement('hidden', 'now', 1);
         } else {
             $mform->insertElementBefore(
                     $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer')),
