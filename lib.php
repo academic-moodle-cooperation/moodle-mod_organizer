@@ -189,7 +189,6 @@ function organizer_reset_course_form_definition(&$mform) {
 
 function organizer_reset_userdata($data) {
     global $DB;
-    print_r($data);
 
     if (!$DB->count_records('organizer', array('course' => $data->courseid))) {
         return array();
@@ -198,9 +197,7 @@ function organizer_reset_userdata($data) {
     $componentstr = get_string('modulenameplural', 'organizer');
     $status = array();
 
-    $ok = true;
     if (isset($data->reset_organizer_all)) {
-
         $params = array('courseid' => $data->courseid);
 
         $slotquery = "SELECT s.*
@@ -217,6 +214,8 @@ function organizer_reset_userdata($data) {
         $slots = $DB->get_records_sql($slotquery, $params);
         $appointments = $DB->get_records_sql($appquery, $params);
 
+        $ok = true;
+
         foreach ($slots as $slot) {
             $DB->delete_records('event', array('id' => $slot->eventid));
             $ok &= $DB->delete_records('organizer_slots', array('id' => $slot->id));
@@ -227,19 +226,20 @@ function organizer_reset_userdata($data) {
             $ok &= $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
         }
 
+        $status[] = array('component' => $componentstr, 'item' => get_string('reset_organizer_all', 'organizer'),
+                'error' => !$ok);
     }
 
-    $status[] = array('component' => $componentstr, 'item' => 'Deleting slots, appointments and related events',
-            'error' => !$ok);
-
     if (isset($data->delete_organizer_grades)) {
-        organizer_reset_gradebook($data->courseid);
+        $ok = organizer_reset_gradebook($data->courseid);
+        $status[] = array('component' => $componentstr, 'item' => get_string('delete_organizer_grades', 'organizer'),
+                'error' => !$ok);
     }
 
     if ($data->timeshift) {
         $ok = shift_course_mod_dates('organizer', array('enablefrom', 'enableuntil'), $data->timeshift, $data->courseid);
-
-        $status[] = array('component' => $componentstr, 'item' => 'Shifting absolute deadline', 'error' => !$ok);
+        $status[] = array('component' => $componentstr, 'item' => get_string('timeshift', 'organizer'), 
+                'error' => !$ok);
     }
 
     return $status;
@@ -254,11 +254,15 @@ function organizer_reset_gradebook($courseid) {
               FROM {organizer} a, {course_modules} cm, {modules} m
              WHERE m.name='organizer' AND m.id=cm.module AND cm.instance=a.id AND a.course=:courseid";
 
+    $ok = true;
     if ($assignments = $DB->get_records_sql($sql, $params)) {
         foreach ($assignments as $assignment) {
-            organizer_grade_item_update($assignment, 'reset');
+            $status = organizer_grade_item_update($assignment, 'reset');
+            $ok &= $status == GRADE_UPDATE_OK;
         }
     }
+
+    return $ok;
 }
 
 function organizer_get_user_grade($organizer, $userid = 0) {

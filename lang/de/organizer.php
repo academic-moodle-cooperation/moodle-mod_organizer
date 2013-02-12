@@ -684,3 +684,7 @@ $string['can_reregister'] = 'Sie können sich für einen anderen Termin neu anme
 $string['messages_none'] = 'Keine Benachrichtigungen';
 $string['messages_re_unreg'] = 'Nur Ab-/Ummeldungen';
 $string['messages_all'] = 'Alle Anmeldungen und Ab-/Ummeldungen';
+
+$string['reset_organizer_all'] = 'Löschen aller Slots, Anmeldungen und zugehörigen Kalendereinträge';
+$string['delete_organizer_grades'] = 'Löschen aller Bewertungen';
+$string['timeshift'] = 'Verschiebung endgültiger Deadline';

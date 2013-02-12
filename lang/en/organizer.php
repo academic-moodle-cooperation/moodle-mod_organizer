@@ -721,3 +721,7 @@ $string['can_reregister'] = 'You can re-registed to another appointment.';
 $string['messages_none'] = 'No registration notifications';
 $string['messages_re_unreg'] = 'Re-registrations and unregistrations only';
 $string['messages_all'] = 'All registration, re-registrations and unregistrations';
+
+$string['reset_organizer_all'] = 'Deleting slots, appointments and related events';
+$string['delete_organizer_grades'] = 'Deleting grades of all organizers';
+$string['timeshift'] = 'Shifting absolute deadline';
