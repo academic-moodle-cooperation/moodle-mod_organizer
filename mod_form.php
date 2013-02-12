@@ -157,11 +157,8 @@ class mod_organizer_mod_form extends moodleform_mod {
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
-        global $DB;
-
-        if (isset($data['enablefrom']) && $data['enablefrom'] != 0 && isset($data['enableuntil'])
-                && $data['enableuntil'] != 0) {
-            if ($data['enablefrom'] >= $data['enableuntil']) {
+        if ($data['enablefrom'] && $data['enableuntil']) {
+            if ($data['enablefrom'] > $data['enableuntil']) {
                 $errors['enableuntil'] = get_string('enableuntilerror', 'organizer');
             }
         }
@@ -179,6 +176,7 @@ class mod_organizer_mod_form extends moodleform_mod {
             $errormsg = get_string('invalidgrouping', 'organizer');
             $errors['groupingid'] = $errormsg;
         } else if ($data['groupmode'] != 0 && $data['groupingid'] != 0) {
+            global $DB;
             $errormsg = '';
             $error = false;
             $memberships = $this->_get_memberships($data['groupingid']);

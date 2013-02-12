@@ -32,7 +32,7 @@ M.mod_organizer.init_mod_form = function (Y, activatecheckbox) {
 	
 	Y.one('#id_isgrouporganizer').on('change', check_group_members_only);
 	
-	if (activatecheckbox) {
+	if (activatecheckbox && !Y.one('.error')) {
 		Y.one('#id_enableuntil_enabled').simulate('click');
 	}
 }
