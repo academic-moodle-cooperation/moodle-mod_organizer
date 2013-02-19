@@ -29,6 +29,24 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/lib.php');
 
+if (!function_exists('sem_get')) {
+    function sem_get($key) {
+        global $CFG;
+        if (!is_dir($CFG->dataroot . '/temp/mod/organizer')) {
+            mkdir($CFG->dataroot . '/temp/mod/organizer', 0777, true);
+        }
+        return fopen($CFG->dataroot . '/temp/mod/organizer/organizer_' . $key . '.sem', 'w+');
+    }
+
+    function sem_acquire($sem_id) {
+        return flock($sem_id, LOCK_EX);
+    }
+
+    function sem_release($sem_id) {
+        return flock($sem_id, LOCK_UN);
+    }
+}
+
 function organizer_load_events($teacherid, $startdate, $enddate) {
     global $DB;
 
@@ -442,6 +460,9 @@ function organizer_delete_appointment_slot($id) {
 function organizer_register_appointment($slotid, $groupid = 0) {
     global $DB, $USER;
 
+    $semaphore = sem_get($slotid);
+    sem_acquire($semaphore);
+
     $slot = new organizer_slot($slotid);
     if ($slot->is_full()) {
         return false;
@@ -460,7 +481,8 @@ function organizer_register_appointment($slotid, $groupid = 0) {
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-    organizer_add_event_slot($cm->id, $slot); //FIXME!!!
+    organizer_add_event_slot($cm->id, $slot);
+    sem_release($semaphore);
 
     return $ok;
 }
@@ -491,7 +513,9 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
 function organizer_reregister_appointment($slotid, $groupid = 0) {
     global $DB, $USER;
 
-    $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
+    $semaphore = sem_get($slotid);
+    sem_acquire($semaphore);
+
     $slot = new organizer_slot($slotid);
     if ($slot->is_full()) {
         return false;
@@ -518,7 +542,8 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-    organizer_add_event_slot($cm->id, $slot); //FIXME!!!
+    organizer_add_event_slot($cm->id, $slot);
+    sem_release($semaphore);
 
     return $ok;
 }
