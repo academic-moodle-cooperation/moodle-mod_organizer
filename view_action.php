@@ -431,11 +431,10 @@ function organizer_organizer_student_action_allowed($action, $slot) {
     $myslotpending = $myslotexists && $regslotx->is_past_deadline() && !$regslotx->is_evaluated();
     $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
     $slotfull = $slotx->is_full();
-    $didnotattend = isset($myapp->attended) && $myapp->attended == 0;
 
     $disabled = $myslotpending || $organizerdisabled || $slotdisabled || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
-    if ($myslotexists && !$didnotattend) {
+    if ($myslotexists) {
         if (!$slotdisabled) {
             if ($ismyslot) {
                 $disabled |= !$canunregister
