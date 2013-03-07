@@ -391,9 +391,9 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
         $slots = $DB->get_records_sql($query, $sqlparams);
     }
 
-    $showpasttimeslots = get_user_preferences('mod_organizer_showpasttimeslots');
-    $showonlymyslots = get_user_preferences('mod_organizer_showmyslotsonly');
-    $showonlyfreeslots = get_user_preferences('mod_organizer_showfreeslotsonly');
+    $showpasttimeslots = get_user_preferences('mod_organizer_showpasttimeslots', true);
+    $showonlymyslots = get_user_preferences('mod_organizer_showmyslotsonly', false);
+    $showonlyfreeslots = get_user_preferences('mod_organizer_showfreeslotsonly', false);
 
     $rows = array();
     if (count($slots) != 0) {
