@@ -35,9 +35,19 @@ class mod_organizer_mod_form extends moodleform_mod {
     public function definition_after_data() {
         global $DB, $PAGE;
         $mform = &$this->_form;
+        
+        $jsmodule = array(
+                'name' => 'mod_organizer',
+                'fullpath' => '/mod/organizer/module.js',
+                'requires' => array('node-base', 'node-event-simulate'),
+        );
+        
+        $organizerconfig = get_config('organizer');
+        $togglecheckbox = $organizerconfig->absolutedeadline == 'never';
 
         $instance = $mform->getElementValue('instance');
         if ($instance) {
+            $PAGE->requires->js_init_call('M.mod_organizer.init_mod_form', array(false), false, $jsmodule);
             $count = $DB->get_field_sql(
                     "SELECT COUNT(*) AS count
 					FROM {organizer} o
@@ -72,22 +82,18 @@ class mod_organizer_mod_form extends moodleform_mod {
                     $mform->insertElementBefore($warning3, 'visible');
                 }
             }
+        } else {
+            $organizerconfig = get_config('organizer');
+            $activatecheckbox = $organizerconfig->absolutedeadline == 'never';
+            $PAGE->requires->js_init_call('M.mod_organizer.init_mod_form', array($togglecheckbox), false, $jsmodule);
         }
     }
 
     public function definition() {
         global $PAGE, $CFG;
-        
-        $jsmodule = array(
-                'name' => 'mod_organizer',
-                'fullpath' => '/mod/organizer/module.js',
-                'requires' => array('node-base', 'node-event-simulate'),
-        );
-        
+
         $organizerconfig = get_config('organizer');
-        $activatecheckbox = $organizerconfig->absolutedeadline == 'never';
-        $PAGE->requires->js_init_call('M.mod_organizer.init_mod_form', array($activatecheckbox), false, $jsmodule);
-        
+
         $mform = &$this->_form;
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
