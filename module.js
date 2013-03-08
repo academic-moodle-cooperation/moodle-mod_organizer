@@ -305,9 +305,9 @@ M.mod_organizer.init_popups = function (Y, popups) {
 	Y.one('#slot_overview').delegate('mouseout', hide_popup, '*[id*=organizer_popup_icon]');
 	
 	var popuppanel = new Y.Panel({
-        contentBox 		: Y.Node.create('<div id="organizer_popup_panel" />'),
-        headerContent	: '<div id="organizer_popup_header" />',
-        bodyContent		: '<div id="organizer_popup_body" />',
+        contentBox 		: Y.Node.create('<div id="organizer_popup_panel" class="block_course_overview block"/>'),
+        headerContent	: '<div id="organizer_popup_header" class="header" />',
+        bodyContent		: '<div id="organizer_popup_body" class="content" />',
         width      		: 300,
         zIndex     		: 100,
         centered   		: false,
@@ -316,6 +316,9 @@ M.mod_organizer.init_popups = function (Y, popups) {
     });
 	
 	popuppanel.render();
+	Y.one('#organizer_popup_panel .yui3-widget-buttons').remove();
+	Y.one('#organizer_popup_panel .yui3-widget-hd').removeClass('yui3-widget-hd');
+	Y.one('#organizer_popup_panel .yui3-widget-bd').removeClass('yui3-widget-bd');
 	
 	function show_popup() {
 	    var posx = 0;
@@ -338,7 +341,7 @@ M.mod_organizer.init_popups = function (Y, popups) {
 	    var title = titles[data[3]];
 	    var content = popups[data[3]][data[4]];
 	    
-	    Y.one('#organizer_popup_header').set('innerHTML', '<h4>' + title + '</h4>');
+	    Y.one('#organizer_popup_header').set('innerHTML', '<div class="title"><h2>' + title + '</h2></div>');
 	    Y.one('#organizer_popup_body').set('innerHTML', '<p>' + content + '</p>');
 
 	    popuppanel.move([posx + 16, posy + 16]);
