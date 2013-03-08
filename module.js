@@ -320,13 +320,11 @@ M.mod_organizer.init_popups = function (Y, popups) {
 	Y.one('#organizer_popup_panel .yui3-widget-hd').removeClass('yui3-widget-hd');
 	Y.one('#organizer_popup_panel .yui3-widget-bd').removeClass('yui3-widget-bd');
 	
-	function show_popup() {
+	function show_popup(e) {
 	    var posx = 0;
 	    var posy = 0;
 	
-	    if (!e) {
-	    	var e = window.event;
-	    }
+	    e = e || window.event;
 	    
 	    if (e.pageX || e.pageY) {
 	        posx = e.pageX;
