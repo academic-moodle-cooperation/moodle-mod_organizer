@@ -369,9 +369,9 @@ if ($action == ORGANIZER_ACTION_ADD) {
     } else {
         $redirecturl->param('messages[]', 'message_info_reminders_sent_pl');
     }
-    
+
     $redirecturl = $redirecturl->out();
-    
+
     redirect($redirecturl);
 } else if ($action == ORGANIZER_ACTION_REMINDALL) {
     add_to_log($course->id, 'organizer', 'remindall', "{$logurl}", $organizer->name, $cm->id);
@@ -404,7 +404,7 @@ die;
 
 function organizer_organizer_student_action_allowed($action, $slot) {
     global $DB;
-    
+
     if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
         return false;
     }
@@ -510,7 +510,7 @@ function organizer_prepare_and_send_message($data, $type) {
     global $DB, $USER;
 
     require_once('lib.php');
-    
+
     switch ($type) {
         case 'edit_notify:student':
             foreach ($data->slots as $slotid) {
