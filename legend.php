@@ -1,4 +1,5 @@
 <?php
+//tscpr: adapt file header and add description, author, etc. (phpdoc-filecomment)
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -13,6 +14,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//tscpr: add doctype comments (for all functions)
 function organizer_make_legend($params) {
     $output = html_writer::start_tag('table',
             array('class' => 'generaltable boxaligncenter legend', 'style' => 'width: 100%; table-layout: fixed;'));

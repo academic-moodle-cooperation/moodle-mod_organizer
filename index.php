@@ -1,4 +1,5 @@
 <?php
+//tscpr: adapt file header "This file is made for moodle...", author, copyright and so on.
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -108,12 +109,12 @@ foreach ($organizers as $organizer) {
             $reg = get_string('mymoodle_registered_group_short', 'organizer', $a);
             $att = get_string('mymoodle_attended_group_short', 'organizer', $a);
 
-            $str = "<p>$reg</p><p>$att</p>";
+            $str = '<p>'.$reg.'</p><p>'.$att.'</p>';
         } else {
             $reg = get_string('mymoodle_registered_short', 'organizer', $a);
             $att = get_string('mymoodle_attended_short', 'organizer', $a);
 
-            $str = "<p>$reg</p><p>$att</p>";
+            $str = '<p>'.$reg.'</p><p>'.$att.'</p>';
         }
         $row[] = $str;
         $row[] = '-';

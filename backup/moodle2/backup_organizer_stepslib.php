@@ -1,4 +1,5 @@
 <?php
+//tscpr: adapt file header "This file is made for Moodle" + doctype-filecomment (with author, copyright, etc.)
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -48,12 +49,12 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
                         'feedback', 'comments', 'eventid', 'notified', 'allownewappointments'));
 
         // Build the tree
-
         $organizer->add_child($slots);
         $slots->add_child($slot);
 
         $slot->add_child($appointments);
         $appointments->add_child($appointment);
+
         // Define sources
         $organizer->set_source_table('organizer', array('id' => backup::VAR_ACTIVITYID));
 

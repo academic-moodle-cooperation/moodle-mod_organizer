@@ -1,4 +1,5 @@
 <?php
+//tscpr: adapt file header (This file is made for Moodle, author, copyright, etc.
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -81,12 +82,12 @@ function organizer_update_instance($organizer) {
 
     if (isset($organizer->enablefrom) && $organizer->enablefrom == 0) {
         unset($organizer->enablefrom);
-        $DB->execute("UPDATE {organizer} SET enablefrom = NULL WHERE id = :id", array('id' => $organizer->id));
+        $DB->execute('UPDATE {organizer} SET enablefrom = NULL WHERE id = :id', array('id' => $organizer->id));
     }
 
     if (isset($organizer->enableuntil) && $organizer->enableuntil == 0) {
         unset($organizer->enableuntil);
-        $DB->execute("UPDATE {organizer} SET enableuntil = NULL WHERE id = :id", array('id' => $organizer->id));
+        $DB->execute('UPDATE {organizer} SET enableuntil = NULL WHERE id = :id', array('id' => $organizer->id));
     }
 
     organizer_grade_item_update($organizer);
@@ -145,6 +146,7 @@ function organizer_delete_instance($id) {
  * @todo Finish documenting this function
  */
 function organizer_user_outline($course, $user, $mod, $organizer) {
+    //tscpr: do we need this function if it's returning just nothing?
     $return = new stdClass;
     $return->time = time();
     $return->info = '';
@@ -159,6 +161,7 @@ function organizer_user_outline($course, $user, $mod, $organizer) {
  * @todo Finish documenting this function
  */
 function organizer_user_complete($course, $user, $mod, $organizer) {
+    //tscpr: do we need this function if we don't support completions?
     return false;
 }
 
@@ -200,16 +203,16 @@ function organizer_reset_userdata($data) {
     if (isset($data->reset_organizer_all)) {
         $params = array('courseid' => $data->courseid);
 
-        $slotquery = "SELECT s.*
+        $slotquery = 'SELECT s.*
                     FROM {organizer_slots} s
                     INNER JOIN {organizer} m ON s.organizerid = m.id
-                    WHERE m.course = :courseid";
+                    WHERE m.course = :courseid';
 
-        $appquery = "SELECT a.*
+        $appquery = 'SELECT a.*
                     FROM {organizer_slot_appointments} a
                     INNER JOIN {organizer_slots} s ON a.slotid = s.id
                     INNER JOIN {organizer} m ON s.organizerid = m.id
-                    WHERE m.course = :courseid";
+                    WHERE m.course = :courseid';
 
         $slots = $DB->get_records_sql($slotquery, $params);
         $appointments = $DB->get_records_sql($appquery, $params);
@@ -218,11 +221,13 @@ function organizer_reset_userdata($data) {
 
         foreach ($slots as $slot) {
             $DB->delete_records('event', array('id' => $slot->eventid));
+            //tscpr: Petr Skoda told us that $DB->delete_records will throw an exeption if it fails, otherwise it always succeeds...
             $ok &= $DB->delete_records('organizer_slots', array('id' => $slot->id));
         }
 
         foreach ($appointments as $appointment) {
             $DB->delete_records('event', array('id' => $appointment->eventid));
+            //tscpr: Petr Skoda told us that $DB->delete_records will throw an exeption if it fails, otherwise it always succeeds...
             $ok &= $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
         }
 
@@ -250,9 +255,9 @@ function organizer_reset_gradebook($courseid) {
 
     $params = array('courseid' => $courseid);
 
-    $sql = "SELECT a.*, cm.idnumber as cmidnumber, a.course as courseid
+    $sql = 'SELECT a.*, cm.idnumber as cmidnumber, a.course as courseid
               FROM {organizer} a, {course_modules} cm, {modules} m
-             WHERE m.name='organizer' AND m.id=cm.module AND cm.instance=a.id AND a.course=:courseid";
+             WHERE m.name=\'organizer\' AND m.id=cm.module AND cm.instance=a.id AND a.course=:courseid';
 
     $ok = true;
     if ($assignments = $DB->get_records_sql($sql, $params)) {
@@ -270,7 +275,7 @@ function organizer_get_user_grade($organizer, $userid = 0) {
 
     $params = array('organizerid' => $organizer->id, 'userid' => $userid);
     if ($userid) {
-        $query = "SELECT
+        $query = 'SELECT
                     a.id AS id,
                     a.userid AS userid,
                     a.grade AS rawgrade,
@@ -280,11 +285,12 @@ function organizer_get_user_grade($organizer, $userid = 0) {
                 FROM {organizer_slot_appointments} a
                 INNER JOIN {organizer_slots} s ON a.slotid = s.id
                 WHERE s.organizerid = :organizerid AND a.userid = :userid
-                ORDER BY id DESC";
+                ORDER BY id DESC';
         $result = reset($DB->get_records_sql($query, $params));
         return array($result->userid => $result);
     } else {
-        $query = "SELECT
+        //tscpr: Why keep this query and this whole else-branch if we don't use it?
+        $query = 'SELECT
                 a.id AS id,
                 a.userid AS userid,
                 a.grade AS rawgrade,
@@ -294,7 +300,7 @@ function organizer_get_user_grade($organizer, $userid = 0) {
             FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.organizerid = :organizerid
-            ORDER BY id DESC";
+            ORDER BY id DESC';
         return array(); // unused
     }
 }
@@ -380,6 +386,7 @@ function organizer_display_grade($organizer, $grade) {
     }
 }
 
+//tscpr: we can strip the trailing _organizer in this function name...
 function organizer_make_grades_menu_organizer($gradingtype) {
     global $DB;
 
@@ -412,10 +419,10 @@ function organizer_clean_num($num) {
 function organizer_get_last_group_appointment($organizer, $groupid) {
     global $DB;
     $params = array('groupid' => $groupid, 'organizerid' => $organizer->id);
-    $groupapps = $DB->get_records_sql("SELECT a.* FROM {organizer_slot_appointments} a
+    $groupapps = $DB->get_records_sql('SELECT a.* FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE a.groupid = :groupid AND s.organizerid = :organizerid
-            ORDER BY a.id DESC", $params);
+            ORDER BY a.id DESC', $params);
 
     $app = null;
 
@@ -444,10 +451,10 @@ function organizer_get_counters($organizer) {
     global $DB;
     if ($organizer->isgrouporganizer) {
         $params = array('groupingid' => $organizer->groupingid);
-        $query = "SELECT {groups}.* FROM {groups}
+        $query = 'SELECT {groups}.* FROM {groups}
                 INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
                 WHERE {groupings_groups}.groupingid = :groupingid
-                ORDER BY {groups}.name ASC";
+                ORDER BY {groups}.name ASC';
         $groups = $DB->get_records_sql($query, $params);
 
         $attended = 0;
@@ -506,21 +513,21 @@ function organizer_get_overview_teacher($organizer) {
         $reg = get_string('mymoodle_registered_group', 'organizer', $a);
         $att = get_string('mymoodle_attended_group', 'organizer', $a);
 
-        $str .= "<div class=\"info organizerinfo\">$reg</div><div class=\"info organizerinfo\">$att</div>";
+        $str .= '<div class="info organizerinfo">'.$reg.'</div><div class="info organizerinfo">'.$att.'</div>';
     } else {
         $reg = get_string('mymoodle_registered', 'organizer', $a);
         $att = get_string('mymoodle_attended', 'organizer', $a);
 
-        $str .= "<div class=\"info organizerinfo\">$reg</div><div class=\"info organizerinfo\">$att</div>";
+        $str .= '<div class="info organizerinfo">'.$reg.'</div><div class="info organizerinfo">'.$att.'</div>';
     }
 
     $now = time();
 
-    $slot = $DB->get_records_sql("SELECT * FROM {organizer_slots} WHERE
+    $slot = $DB->get_records_sql('SELECT * FROM {organizer_slots} WHERE
             {organizer_slots}.teacherid = {$USER->id} AND
             {organizer_slots}.organizerid = {$organizer->id} AND
-            {organizer_slots}.starttime > {$now}
-            ORDER BY {organizer_slots}.starttime ASC");
+            {organizer_slots}.starttime > :now
+            ORDER BY {organizer_slots}.starttime ASC', array('now' => $now));
 
     $nextslot = reset($slot);
 
@@ -529,10 +536,10 @@ function organizer_get_overview_teacher($organizer) {
         $a->date = userdate($nextslot->starttime, get_string('fulldatetemplate', 'organizer'));
         $a->time = userdate($nextslot->starttime, get_string('timetemplate', 'organizer'));
         $nextslot = get_string('mymoodle_next_slot', 'organizer', $a);
-        $str .= "<div class=\"info organizerinfo\">$nextslot</div>";
+        $str .= '<div class="info organizerinfo">'.$nextslot.'</div>';
     } else {
         $noslots = get_string('mymoodle_no_slots', 'organizer');
-        $str .= "<div class=\"info organizerinfo\">$noslots</div>";
+        $str .= '<div class="info organizerinfo">'.$noslots.'</div>';
     }
 
     $str .= '</div>';
@@ -719,7 +726,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
                 } else {
                     $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
                 }
-                $str .= "<{$element} {$class}>$orgexpires</{$element}>";
+                $str .= '<'.$element.' '.$class.'>'.$orgexpires.'</'.$element.'>';
             }
         }
     }
@@ -761,11 +768,12 @@ function organizer_print_overview($courses, &$htmlarray) {
 function organizer_is_student_in_course($courseid, $userid) {
     global $DB;
 
-    $stud = $DB->get_records_sql("SELECT * FROM {role_assignments}
+    $stud = $DB->get_records_sql('SELECT * FROM {role_assignments}
     		INNER JOIN {context} ON {role_assignments}.contextid = {context}.id
     		WHERE {role_assignments}.roleid = 5
-    			AND {context}.instanceid = {$courseid}
-    			AND {role_assignments}.userid = {$userid}");
+    			AND {context}.instanceid = :courseid
+    			AND {role_assignments}.userid = :userid', array('courseid' => $courseid,
+                                                                'userid'   => $userid));
     return count($stud) > 0;
 }
 
@@ -882,9 +890,9 @@ function organizer_create_digest($teacherid) {
 
     $params = array('now' => $now, 'teacherid' => $teacherid);
 
-    $slotsquery = "SELECT * FROM {organizer_slots} s
+    $slotsquery = 'SELECT * FROM {organizer_slots} s
             WHERE s.starttime - s.notificationtime < :now AND
-            s.notified = 0 AND s.teacherid = :teacherid";
+            s.notified = 0 AND s.teacherid = :teacherid';
 
     $digest = '';
 
@@ -894,7 +902,7 @@ function organizer_create_digest($teacherid) {
             $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
             $time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
         }
-        $digest .= "$date, $time @ $slot->location; ";
+        $digest .= $date.', '.$time.' @ '.$slot->location.'; ';
         $slot->notified = 1;
         $DB->update_record('organizer_slots', $slot);
     }

@@ -1,4 +1,5 @@
 <?php
+//tscpr: adapt file header "This file is made for Moodle" + doctype-filecomment (with author, copyright, etc.)
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -47,36 +48,89 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-        'mod/organizer:addinstance' => array('captype' => 'write', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW)),
-        'mod/organizer:register' => array('captype' => 'write', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('student' => CAP_ALLOW)),
-        'mod/organizer:unregister' => array('captype' => 'write', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('student' => CAP_ALLOW)),
-        'mod/organizer:comment' => array('captype' => 'write', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('student' => CAP_ALLOW)),
-        'mod/organizer:viewallslots' => array('captype' => 'read', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW)),
-        'mod/organizer:viewmyslots' => array('captype' => 'read', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW)),
-        'mod/organizer:viewregistrations' => array('captype' => 'read', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW)),
-        'mod/organizer:viewstudentview' => array('captype' => 'read', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('student' => CAP_ALLOW, 'teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW)),
-        'mod/organizer:addslots' => array('captype' => 'write', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW)),
-        'mod/organizer:editslots' => array('captype' => 'write', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW)),
-        'mod/organizer:evalslots' => array('captype' => 'write', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW)),
-        'mod/organizer:deleteslots' => array('captype' => 'write', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW)),
-        'mod/organizer:sendreminders' => array('captype' => 'write', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW)),
-        'mod/organizer:printslots' => array('captype' => 'write', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW)),
-        'mod/organizer:receivemessagesstudent' => array('captype' => 'write', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('student' => CAP_ALLOW)),
-        'mod/organizer:receivemessagesteacher' => array('captype' => 'write', 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array('teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW)));
+        'mod/organizer:addinstance' => array('captype'      => 'write',
+                                             'contextlevel' => CONTEXT_MODULE,
+                                             'legacy'       => array('editingteacher' => CAP_ALLOW,
+                                                                     'manager'        => CAP_ALLOW)),
+
+        'mod/organizer:register' => array('captype'      => 'write',
+                                          'contextlevel' => CONTEXT_MODULE,
+                                          'legacy'       => array('student' => CAP_ALLOW)),
+
+        'mod/organizer:unregister' => array('captype'      => 'write',
+                                            'contextlevel' => CONTEXT_MODULE,
+                                            'legacy'       => array('student' => CAP_ALLOW)),
+
+        'mod/organizer:comment' => array('captype'      => 'write',
+                                         'contextlevel' => CONTEXT_MODULE,
+                                         'legacy'       => array('student' => CAP_ALLOW)),
+
+        'mod/organizer:viewallslots' => array('captype'      => 'read',
+                                              'contextlevel' => CONTEXT_MODULE,
+                                              'legacy'       => array('teacher'        => CAP_ALLOW,
+                                                                      'editingteacher' => CAP_ALLOW,
+                                                                      'manager'        => CAP_ALLOW)),
+
+        'mod/organizer:viewmyslots' => array('captype'      => 'read',
+                                             'contextlevel' => CONTEXT_MODULE,
+                                             'legacy'       => array('teacher'        => CAP_ALLOW,
+                                                                     'editingteacher' => CAP_ALLOW,
+                                                                     'manager'        => CAP_ALLOW)),
+
+        'mod/organizer:viewregistrations' => array('captype'      => 'read',
+                                                   'contextlevel' => CONTEXT_MODULE,
+                                                   'legacy'       => array('teacher'        => CAP_ALLOW,
+                                                                           'editingteacher' => CAP_ALLOW,
+                                                                           'manager'        => CAP_ALLOW)),
+
+        'mod/organizer:viewstudentview' => array('captype'      => 'read',
+                                                 'contextlevel' => CONTEXT_MODULE,
+                                                 'legacy'       => array('student'        => CAP_ALLOW,
+                                                                         'teacher'        => CAP_ALLOW,
+                                                                         'editingteacher' => CAP_ALLOW,
+                                                                         'manager'        => CAP_ALLOW)),
+        'mod/organizer:addslots' => array('captype'      => 'write',
+                                          'contextlevel' => CONTEXT_MODULE,
+                                          'legacy'       => array('teacher'        => CAP_ALLOW,
+                                                                  'editingteacher' => CAP_ALLOW,
+                                                                  'manager'        => CAP_ALLOW)),
+
+        'mod/organizer:editslots' => array('captype'      => 'write',
+                                           'contextlevel' => CONTEXT_MODULE,
+                                           'legacy' => array('teacher'        => CAP_ALLOW,
+                                                             'editingteacher' => CAP_ALLOW,
+                                                             'manager' => CAP_ALLOW)),
+
+        'mod/organizer:evalslots' => array('captype' => 'write',
+                                           'contextlevel' => CONTEXT_MODULE,
+                                           'legacy' => array('teacher'        => CAP_ALLOW,
+                                                             'editingteacher' => CAP_ALLOW,
+                                                             'manager'        => CAP_ALLOW)),
+
+        'mod/organizer:deleteslots' => array('captype' => 'write',
+                                             'contextlevel' => CONTEXT_MODULE,
+                                             'legacy' => array('teacher'        => CAP_ALLOW,
+                                                               'editingteacher' => CAP_ALLOW,
+                                                               'manager'        => CAP_ALLOW)),
+
+        'mod/organizer:sendreminders' => array('captype'      => 'write',
+                                               'contextlevel' => CONTEXT_MODULE,
+                                               'legacy' => array('teacher'        => CAP_ALLOW,
+                                                                 'editingteacher' => CAP_ALLOW,
+                                                                 'manager'        => CAP_ALLOW)),
+
+        'mod/organizer:printslots' => array('captype'      => 'write',
+                                            'contextlevel' => CONTEXT_MODULE,
+                                            'legacy'       => array('teacher' => CAP_ALLOW,
+                                                                    'editingteacher' => CAP_ALLOW,
+                                                                    'manager' => CAP_ALLOW)),
+
+        'mod/organizer:receivemessagesstudent' => array('captype'      => 'write',
+                                                        'contextlevel' => CONTEXT_MODULE,
+                                                        'legacy'       => array('student' => CAP_ALLOW)),
+
+        'mod/organizer:receivemessagesteacher' => array('captype'      => 'write',
+                                                        'contextlevel' => CONTEXT_MODULE,
+                                                        'legacy'       => array('teacher' => CAP_ALLOW,
+                                                                                'editingteacher' => CAP_ALLOW,
+                                                                                'manager' => CAP_ALLOW)));

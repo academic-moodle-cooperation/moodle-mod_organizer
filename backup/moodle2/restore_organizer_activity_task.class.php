@@ -1,4 +1,5 @@
 <?php
+//tscpr: adapt file header "This file is made for Moodle" + doctype-filecomment (with author, copyright, etc.)
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -42,7 +43,7 @@ class restore_organizer_activity_task extends restore_activity_task {
      * Define (add) particular steps this activity can have
      */
     protected function define_my_steps() {
-        // Choice only has one structure step
+        // Organizer only has one structure step
         $this->add_step(new restore_organizer_activity_structure_step('organizer_structure', 'organizer.xml'));
     }
 
@@ -81,6 +82,7 @@ class restore_organizer_activity_task extends restore_activity_task {
     static public function define_restore_log_rules() {
         $rules = array();
 
+        //tscpr: better use instead of "XXXview" "view XXX" so we can filter all view-log-entries with the core filters
         $rules[] = new restore_log_rule('organizer', 'myview', 'view.php?id={course_module}', '{organizer}');
         $rules[] = new restore_log_rule('organizer', 'allview', 'view.php?id={course_module}', '{organizer}');
         $rules[] = new restore_log_rule('organizer', 'studview', 'view.php?id={course_module}', '{organizer}');
