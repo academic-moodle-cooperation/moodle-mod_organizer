@@ -59,6 +59,7 @@ class organizer_delete_slots_form extends moodleform {
                 if (!$slot->has_participants()) {
                     $deletableslots = true;
                     $mform->addElement('hidden', 'slots[]', $slot->id);
+                    $mform->setType('slots[]', PARAM_INT);
                     $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
                     $stime = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
                     $etime = userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));

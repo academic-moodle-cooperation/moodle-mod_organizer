@@ -45,6 +45,7 @@ class organizer_comment_slot_form extends moodleform {
         $mform->setType('action', PARAM_ACTION);
 
         $mform->addElement('hidden', 'slot', $data['slot']);
+        $mform->setType('slot', PARAM_INT);
         $mform->setType('comment', PARAM_INT);
 
         $mform->addElement('textarea', 'comments', get_string('appointmentcomments', 'organizer'),

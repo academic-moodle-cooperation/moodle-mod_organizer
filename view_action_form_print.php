@@ -45,7 +45,9 @@ class organizer_print_slots_form extends moodleform {
         $data = &$this->_customdata;
 
         $mform->addElement('hidden', 'id', $data['id']);
+        $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'mode', $data['mode']);
+        $mform->setType('mode', PARAM_INT);
 
         // TODO: might cause crashes!
         $mform->addElement('hidden', 'action', 'print');
@@ -54,6 +56,7 @@ class organizer_print_slots_form extends moodleform {
         if (isset($data['slots'])) {
             foreach ($data['slots'] as $key => $slotid) {
                 $mform->addElement('hidden', "slots[$key]", $slotid);
+                $mform->setType("slots[$key]", PARAM_INT);
             }
         } else {
             print_error('This should not happen!');
@@ -114,6 +117,7 @@ class organizer_print_slots_form extends moodleform {
 
         foreach ($selcols as $key => $selcol) {
             $mform->addElement('hidden', "cols[$key]", $selcol, array('id' => "col_{$selcol}"));
+            $mform->setType("cols[$key]", PARAM_ALPHANUMEXT);
         }
 
     }

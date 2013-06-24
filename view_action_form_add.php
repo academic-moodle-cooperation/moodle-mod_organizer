@@ -188,7 +188,7 @@ class organizer_add_slots_form extends moodleform {
         $mform->addHelpButton('location', 'location', 'organizer');
 
         $mform->addElement('text', 'locationlink', get_string('locationlink', 'organizer'), array('size' => '64'));
-        $mform->setType('locationlink', PARAM_TEXT);
+        $mform->setType('locationlink', PARAM_URL);
         $mform->addHelpButton('locationlink', 'locationlink', 'organizer');
 
         $mform->addElement('duration', 'duration', get_string('duration', 'organizer'),
@@ -754,7 +754,9 @@ class organizer_add_slots_form extends moodleform {
 
         $data = $this->_customdata;
         $mform->addElement('hidden', 'scrollx', isset($data->scrollx) ? $data->scrollx : 0);
+        $mform->setType('scrollx', PARAM_BOOL);
         $mform->addElement('hidden', 'scrolly', isset($data->scrolly) ? $data->scrolly : 0);
+        $mform->setType('scrolly', PARAM_BOOL);
     }
 
 }

@@ -182,10 +182,13 @@ class organizer_edit_slots_form extends moodleform {
         $mform->setType('action', PARAM_ACTION);
 
         $mform->addElement('hidden', 'warningtext1', get_string('warningtext1', 'organizer'));
+        $mform->setType('warningtext1', PARAM_TEXT);
         $mform->addElement('hidden', 'warningtext2', get_string('warningtext2', 'organizer'));
+        $mform->setType('warningtext2', PARAM_TEXT);
 
         for ($i = 0; $i < count($data['slots']); $i++) {
             $mform->addElement('hidden', "slots[$i]", $data['slots'][$i]);
+            $mform->setType("slots[$i]", PARAM_INT);
         }
     }
 
@@ -210,6 +213,7 @@ class organizer_edit_slots_form extends moodleform {
 
         $mform->addGroup($group, '', get_string('teacher', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_teacherid', 0);
+        $mform->setType('mod_teacherid', PARAM_BOOL);
         /*
         if (!isset($defaults['teacherid'])) {
             $mform->setDefault('teacherid', -1);
@@ -225,6 +229,7 @@ class organizer_edit_slots_form extends moodleform {
         $mform->setDefault('teachervisible', 1);
         $mform->addGroup($group, '', get_string('teachervisible', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_teachervisible', 0);
+        $mform->setType('mod_teachervisible', PARAM_BOOL);
 
         $group = array();
         $group[] = $mform->createElement('advcheckbox', 'isanonymous', get_string('isanonymous', 'organizer'), null,
@@ -235,6 +240,7 @@ class organizer_edit_slots_form extends moodleform {
         $mform->setDefault('isanonymous', 0);
         $mform->addGroup($group, '', get_string('isanonymous', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_isanonymous', 0);
+        $mform->setType('mod_isanonymous', PARAM_BOOL);
 
         $group = array();
         $group[] = $mform->createElement('text', 'location', get_string('location', 'organizer'),
@@ -242,17 +248,23 @@ class organizer_edit_slots_form extends moodleform {
         $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('location', isset($defaults['location'])));
 
+        $mform->setType('location', PARAM_TEXT);
+        
         $mform->addGroup($group, 'locationgroup', get_string('location', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_location', 0);
+        $mform->setType('mod_location', PARAM_BOOL);
 
         $group = array();
         $group[] = $mform->createElement('text', 'locationlink', get_string('locationlink', 'organizer'),
                 array('size' => '64', 'group' => null));
         $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('locationlink', isset($defaults['locationlink'])));
+        
+        $mform->setType('locationlink', PARAM_URL);
 
         $mform->addGroup($group, 'locationlinkgroup', get_string('locationlink', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_locationlink', 0);
+        $mform->setType('mod_locationlink', PARAM_BOOL);
 
         if (!organizer_is_group_mode()) {
             $group = array();
@@ -263,12 +275,13 @@ class organizer_edit_slots_form extends moodleform {
 
             $mform->addGroup($group, 'maxparticipantsgroup', get_string('maxparticipants', 'organizer'), ORGANIZER_SPACING, false);
             $mform->addElement('hidden', 'mod_maxparticipants', 0);
+            $mform->setType('mod_maxparticipants', PARAM_BOOL);
             $mform->setType('maxparticipants', PARAM_INT);
         } else {
             $mform->addElement('hidden', 'maxparticipants', 1);
             $mform->addElement('hidden', 'mod_maxparticipants', 0);
             $mform->setType('maxparticipants', PARAM_INT);
-            $mform->setType('mod_maxparticipants', PARAM_INT);
+            $mform->setType('mod_maxparticipants', PARAM_BOOL);
         }
 
         $now = $defaults['now'];
@@ -295,6 +308,7 @@ class organizer_edit_slots_form extends moodleform {
         $availablefrom[1]->removeOption(1);
 
         $mform->addElement('hidden', 'mod_availablefrom', 0);
+        $mform->setType('mod_availablefrom', PARAM_BOOL);
 
         $group = array();
         $group[] = $mform->createElement('duration', 'notificationtime', get_string('notificationtime', 'organizer'),
@@ -305,6 +319,7 @@ class organizer_edit_slots_form extends moodleform {
         $mform->setDefault('notificationtime', '');
         $mform->addGroup($group, 'notificationtimegroup', get_string('notificationtime', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_notificationtime', 0);
+        $mform->setType('mod_notificationtime', PARAM_BOOL);
 
         $notificationtimegroup = $mform->getElement('notificationtimegroup')->getElements();
         $notificationtime = $notificationtimegroup[0]->getElements();
@@ -321,6 +336,7 @@ class organizer_edit_slots_form extends moodleform {
         $mform->setDefault('comments', '');
         $mform->addGroup($group, '', get_string('appointmentcomments', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_comments', 0);
+        $mform->setType('mod_comments', PARAM_BOOL);
     }
 
     private function _converts_to_int($value) {
