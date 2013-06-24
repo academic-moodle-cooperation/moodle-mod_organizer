@@ -900,19 +900,44 @@ function organizer_teacher_data($params, $slot) {
     WHERE a.slotid = :slotid";
     $param = array('slotid' => $slot->id);
     $appointments = $DB->get_records_sql($query, $param);
+    
+    
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    
+    $canregister = has_capability('mod/organizer:register', $context, null, false);
+    $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
+    $canreregister = $canregister && $canunregister;
+    
+    $slotx = new organizer_slot($slot);
 
     $wasownslot = false;
     foreach ($appointments as $someapp) {
-        if ($someapp->userid == $USER->id) {
-            $wasownslot = true;
-            break;
-        }
+    	if ($someapp->userid == $USER->id) {
+    		$wasownslot = true;
+    		break;
+    	}
     }
+    
+    $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
+    $slotdisabled = $slotx->is_past_due() || $slotx->is_past_deadline();
+    $myslotpending = $wasownslot && $slotx->is_past_deadline() && !$slotx->is_evaluated();
+    $slotfull = $slotx->is_full();
+    
+    $showteacher = $myslotpending || $organizerdisabled || $slotdisabled || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
-    if ($params['mode'] == ORGANIZER_TAB_STUDENT_VIEW && !$slot->teachervisible && !$wasownslot) {
-        $output = '<em>' . get_string('teacherinvisible', 'organizer') . '</em>';
-    } else {
-        $output = organizer_get_name_link($slot->teacherid);
+   
+    if ($wasownslot) {
+    	if (!$slotdisabled) {
+   			$showteacher |= !$canunregister || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
+    	}
+    }
+    
+    $slotx = new organizer_slot($slot);
+    
+    if($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW || $slot->teachervisible || $showteacher){
+    	$output = organizer_get_name_link($slot->teacherid);
+    }else{
+    	$output = '<em>' . get_string('teacherinvisible', 'organizer') . '</em>';
     }
 
     if (isset($slot->teachercomments)) {
