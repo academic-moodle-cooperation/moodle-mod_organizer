@@ -390,6 +390,18 @@ $string['eval_notify:student:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->
 
 //--------------------------------------------------------------------------------------------------
 
+$string['eval_notify_newappointment:student:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Termin bewertet';
+$string['eval_notify_newappointment:student:fullmessage'] = 'Hallo {$a->receivername}!
+
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Termin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location} bewertet worden.
+
+Die LVA-Leitung des Kurses ermöglicht Ihnen sich nochmals im Terminpalner {$a->coursefullname} zu einem noch freien Termin anzumelden.
+		
+TUWEL Messaging System';
+$string['eval_notify_newappointment:student:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im {$a->location} ist bewertet worden.';
+
+//--------------------------------------------------------------------------------------------------
+
 $string['eval_notify:student:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Termin bewertet';
 $string['eval_notify:student:group:fullmessage'] = 'Hallo {$a->receivername}!
 
@@ -399,6 +411,20 @@ TUWEL Messaging System';
 $string['eval_notify:student:group:smallmessage'] = 'Ihr Gruppentermin am {$a->date} um {$a->time} im {$a->location} ist bewertet worden.';
 
 //--------------------------------------------------------------------------------------------------
+
+
+$string['eval_notify_newappointment:student:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Termin bewertet';
+$string['eval_notify_newappointment:student:group:fullmessage'] = 'Hallo {$a->receivername}!
+
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Gruppentermin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location} bewertet worden.
+
+Die LVA-Leitung des Kurses ermöglicht Ihnen sich nochmals im Terminpalner {$a->coursefullname} zu einem noch freien Termin anzumelden.
+
+TUWEL Messaging System';
+$string['eval_notify_newappointment:student:group:smallmessage'] = 'Ihr Gruppentermin am {$a->date} um {$a->time} im {$a->location} ist bewertet worden.';
+
+//--------------------------------------------------------------------------------------------------
+
 
 $string['edit_notify:student:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Termindetails verÃ¤ndert';
 $string['edit_notify:student:fullmessage'] = 'Hallo {$a->receivername}!

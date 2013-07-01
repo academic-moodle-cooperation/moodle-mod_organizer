@@ -540,6 +540,11 @@ function organizer_prepare_and_send_message($data, $type) {
                         continue;
                     }
                     $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
+                    
+                    if($app->allownewappointments == 1){
+                    	$type = 'eval_notify_newappointment:student';
+                    }
+                    
                     organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
                 }
             }

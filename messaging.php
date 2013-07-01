@@ -68,6 +68,10 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
         $strings->groupname = $group->name;
         $type .= ":group";
     }
+    
+    if($namesplit[0] == "eval_notify_newappointment"){
+    	$namesplit[0] = "eval_notify";
+    }
 
     $message = new stdClass();
     $message->modulename = 'organizer';

@@ -441,7 +441,22 @@ $string['eval_notify:student:fullmessage'] =
 As a part of the course {$a->courseid} {$a->coursefullname}, your appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
 TUWEL Messaging System';
+
 $string['eval_notify:student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
+//--------------------------------------------------------------------------------------------------
+
+$string['eval_notify_newappointment:student:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
+
+$string['eval_notify_newappointment:student:fullmessage'] =
+'Hello {$a->receivername}!
+
+As a part of the course {$a->courseid} {$a->coursefullname}, your appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
+
+Teachers of the course enable you to re-register to any available slot in the organizer {$a->coursefullname}.
+
+TUWEL Messaging System';
+
+$string['eval_notify_newappointment:student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
 
 //--------------------------------------------------------------------------------------------------
 
@@ -453,6 +468,19 @@ As a part of the course {$a->courseid} {$a->coursefullname}, your group appointm
 
 TUWEL Messaging System';
 $string['eval_notify:student:group:smallmessage'] = 'Your group appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
+
+//--------------------------------------------------------------------------------------------------
+
+$string['eval_notify_newappointment:student:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
+$string['eval_notify_newappointment:student:group:fullmessage'] =
+'Hello {$a->receivername}!
+
+As a part of the course {$a->courseid} {$a->coursefullname}, your group appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
+
+Teachers of the course enable you to re-register to any available slot in the organizer {$a->coursefullname}.
+
+TUWEL Messaging System';
+$string['eval_notify_newappointment:student:group:smallmessage'] = 'Your group appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
 
 //--------------------------------------------------------------------------------------------------
 
