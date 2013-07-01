@@ -524,10 +524,10 @@ function organizer_get_overview_teacher($organizer) {
     $now = time();
 
     $slot = $DB->get_records_sql('SELECT * FROM {organizer_slots} WHERE
-            {organizer_slots}.teacherid = {$USER->id} AND
-            {organizer_slots}.organizerid = {$organizer->id} AND
+            {organizer_slots}.teacherid = :uid AND
+            {organizer_slots}.organizerid = :oid AND
             {organizer_slots}.starttime > :now
-            ORDER BY {organizer_slots}.starttime ASC', array('now' => $now));
+            ORDER BY {organizer_slots}.starttime ASC', array('uid'=>$USER->id,'oid'=>$organizer->id,'now' => $now));
 
     $nextslot = reset($slot);
 
