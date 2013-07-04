@@ -22,11 +22,19 @@
 	width: 97.3%;
 }
 
+#organizer_main_cointainer div.datapreviewtitle{
+	margin-bottom:-2em;
+	font-weight:bold;
+	margin-left: 1.5em;
+}
+
 /*fix here sn */
 #organizer_main_cointainer div.forced_scroll {
 	border: solid 1px #ddd;
     overflow-x: scroll;
-    width: 100%;
+    margin-left:10px;
+    margin-right:10px;
+    padding-top:2em;
 }
 
 #organizer_main_cointainer div.forced_scroll table {

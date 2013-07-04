@@ -61,6 +61,7 @@ $user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = optional_param_array('slots', array(), PARAM_INT);
 $app = optional_param('app', null, PARAM_INT);
+$tsort = optional_param('tsort', null, PARAM_ALPHA);
 
 $url = new moodle_url('/mod/organizer/view_action.php');
 $url->param('id', $cm->id);
@@ -219,6 +220,16 @@ if ($action == ORGANIZER_ACTION_ADD) {
 
     add_to_log($course->id, 'organizer', 'print', "{$logurl}", $organizer->name, $cm->id);
 
+    if($tsort != NULL){
+    	$_SESSION['organizer_tsort'] = $tsort;
+    }
+    
+    if($slots){
+    	$_SESSION['organizer_slots'] = $slots;
+    }else if(isset($_SESSION['organizer_slots'])){
+    	$slots = $_SESSION['organizer_slots'];
+    }
+    
     if (!$slots) {
         $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
         redirect($redirecturl);
@@ -231,12 +242,35 @@ if ($action == ORGANIZER_ACTION_ADD) {
     $mform = new organizer_print_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
     if ($data = $mform->get_data()) {
-        organizer_display_printable_table($data->cols, $data->slots, $data->entriesperpage, $data->textsize,
+    	// create pdf
+    	    	
+    	set_user_preference('organizer_printperpage', $data->entriesperpage);
+    	set_user_preference('organizer_printperpage_optimal', $data->printperpage_optimal);
+    	set_user_preference('organizer_textsize',$data->textsize);
+    	set_user_preference('organizer_pageorientation', $data->pageorientation);
+    	set_user_preference('organizer_headerfooter', $data->headerfooter);
+    	
+    	if($data->printperpage_optimal == 1){
+    		$ppp = false;
+    	}else{
+    		$ppp = $data->entriesperpage;
+    	}
+    	
+    	$organizer = $DB->get_record('organizer', array('id'=>$cm->instance));
+    	
+        organizer_display_printable_table($organizer->enablefrom, $organizer->enableuntil, $data->cols, $data->slots, $ppp, $data->textsize,
                 $data->pageorientation, $data->headerfooter);
         redirect($redirecturl);
     } else if ($mform->is_cancelled()) {
+    	set_user_preference('organizer_printperpage', $data->entriesperpage);
+    	set_user_preference('organizer_printperpage_optimal', $data->printperpage_optimal);
+    	set_user_preference('organizer_textsize',$data->textsize);
+    	set_user_preference('organizer_pageorientation', $data->pageorientation);
+    	set_user_preference('organizer_headerfooter', $data->headerfooter);
+    	
         redirect($redirecturl);
     } else {
+    	// display printpreview
         organizer_display_form($mform, get_string('title_print', 'organizer'), true);
     }
     print_error('If you see this, something went wrong with print action!');

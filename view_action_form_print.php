@@ -87,27 +87,50 @@ class organizer_print_slots_form extends moodleform {
         if ($isgrouporganizer) {
             array_splice($selcols, 3, 0, 'groupname');
         }
+       
 
-        $mform->addElement('header', null, get_string('printoptions', 'organizer'));
-
-        $mform->addElement('text', 'entriesperpage', get_string('numentries', 'organizer'), array('size' => '2'));
+        
+        $mform->addElement('header', 'print_settings_header', get_string('printoptions', 'organizer'));        
+        
+        
+    	$entriesperpage = get_user_preferences('organizer_printperpage', 20);
+    	$printperpage_optimal = get_user_preferences('organizer_printperpage_optimal', 0);
+    	$textsize = get_user_preferences('organizer_textsize',10);
+    	$pageorientation = get_user_preferences('organizer_pageorientation', 'P');
+    	$headerfooter = get_user_preferences('organizer_headerfooter', 1);
+        
+        
+        
+        // submissions per page        
+        $pppgroup = array();
+        $pppgroup[] = &$mform->createElement('text', 'entriesperpage', get_string('numentries', 'organizer'), array('size' => '2'));
+        $pppgroup[] = &$mform->createElement('advcheckbox','printperpage_optimal', get_string('stroptimal','organizer'),get_string('stroptimal','organizer'), array("group"=> 1));
+        $mform->addGroup($pppgroup,'printperpagegrp',get_string('numentries', 'organizer'), array(' '), false);
         $mform->setType('entriesperpage', PARAM_INT);
-        $mform->setDefault('entriesperpage', '20');
+        
+        $mform->setDefault('entriesperpage', $entriesperpage);
+        $mform->setDefault('printperpage_optimal', $printperpage_optimal);
+        
+        $mform->disabledIf('entriesperpage','printperpage_optimal','checked');
 
-        $textsize = $mform->addElement('select', 'textsize', get_string('textsize', 'organizer'),
+        $mform->addElement('select', 'textsize', get_string('textsize', 'organizer'),
                 array('8' => get_string('font_small', 'organizer'), '10' => get_string('font_medium', 'organizer'),
                         '12' => get_string('font_large', 'organizer')));
-        $textsize->setSelected('10');
+        
+        $mform->setDefault('textsize', $textsize);
 
-        $pageorientation = $mform->addElement('select', 'pageorientation', get_string('pageorientation', 'organizer'),
+        $mform->addElement('select', 'pageorientation', get_string('pageorientation', 'organizer'),
                 array('P' => get_string('orientationportrait', 'organizer'),
                         'L' => get_string('orientationlandscape', 'organizer')));
-        $pageorientation->setSelected('L');
+        
+        $mform->setDefault('pageorientation', $pageorientation);
+
 
         $mform->addElement('advcheckbox', 'headerfooter', get_string('headerfooter', 'organizer'), null, null,
                 array(0, 1));
         $mform->setType('headerfooter', PARAM_BOOL);
-        $mform->setDefault('headerfooter', 1);
+        $mform->setDefault('headerfooter', $headerfooter);
+        $mform->addHelpButton('headerfooter','headerfooter','organizer');
 
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'pdfsubmit', get_string('pdfsubmit', 'organizer'));
@@ -119,10 +142,11 @@ class organizer_print_slots_form extends moodleform {
             $mform->addElement('hidden', "cols[$key]", $selcol, array('id' => "col_{$selcol}"));
             $mform->setType("cols[$key]", PARAM_ALPHANUMEXT);
         }
-
     }
 
     public function display() {
+    	global $OUTPUT;
+    	
         //finalize the form definition if not yet done
         if (!$this->_definition_finalized) {
             $this->_definition_finalized = true;
@@ -130,14 +154,24 @@ class organizer_print_slots_form extends moodleform {
         }
         $this->_form->getValidationScript();
         $output = $this->_form->toHtml();
-        $output .= '<div class="forced_scroll"><div style="float: left">';
+        
+        $help_icon = new help_icon('datapreviewtitle', 'organizer');
+        $output .= html_writer::tag('div',
+        		get_string('datapreviewtitle', 'organizer') . $OUTPUT->render($help_icon),
+        		array('class'=>'datapreviewtitle'));
+        
+        
+        $output .= '<div class="forced_scroll">';
+        		
+        $output .= '<div style="float: left">';
         $output .= $this->_create_preview_table($this->_selcols);
         $output .= '</div><div style="width: 1em; float: left;"> </div></div>';
+        
         print $output;
     }
 
     private function _create_preview_table($columns) {
-        global $PAGE, $OUTPUT;
+        global $PAGE, $OUTPUT, $cm;
         
         $jsmodule = array(
                 'name' => 'mod_organizer',
@@ -149,11 +183,43 @@ class organizer_print_slots_form extends moodleform {
 
         $table = new html_table();
         $table->id = 'print_preview';
-        $table->attributes['class'] = 'boxaligncenter print-preview coloredrows';
+        $table->attributes['class'] = 'boxaligncenter';
+        
+        $tsort = isset($_SESSION['organizer_tsort']) ? $_SESSION['organizer_tsort'] : "";
+        
+        if($tsort != ""){
+        	$order = "ASC";
+        	        	
+        	if(substr($tsort, strlen($tsort) - strlen("DESC")) == "DESC"){
+        		$tsort = substr($tsort,0, strlen($tsort) - strlen("DESC"));        		
+        		$order = "DESC";
+        	}
+        }
+        
+        
+        $icon_up = ' <img src="' . $OUTPUT->pix_url('t/up') . '" class="iconsmall" alt="up" />';
+        $icon_down = ' <img src=' . $OUTPUT->pix_url('t/down') . '" class="iconsmall" alt="down" />';
 
         $header = array();
-        foreach ($columns as $column) {
-            $content = "<span name='{$column}_cell'>" . get_string("th_{$column}", 'organizer') . '</span>';
+        foreach ($columns as $column) {       	
+        	
+            $content = '<a href="?id=' . $cm->id . '&sesskey=' . sesskey() . '&action=print&tsort=' . $column;
+
+            
+            
+            $icon = "";
+            if($column == $tsort){
+            	if($order == "ASC"){
+            		$content .= "DESC";
+            		$icon = $icon_up;
+            	}else{
+            		$icon = $icon_down;
+            	}
+            }
+            
+            $content .= '" name="' . $column . '_cell">' . get_string("th_{$column}", 'organizer') . $icon;
+            $content .= '</a>';
+            
             $imgattr = array(
                     'src' => $OUTPUT->pix_url('t/switch_minus'),
                     'alt' => get_string('hide'), 
@@ -169,9 +235,28 @@ class organizer_print_slots_form extends moodleform {
         }
         $table->head = $header;
 
+        switch($tsort){
+        	case "datetime";		$sort = "starttime"; break;     		
+        	case "location":		$sort = "s.location"; break;
+        	case "teacher":			$sort = "teacherfirstname"; break;
+        	case "participant":		$sort = "u.lastname"; break;
+        	case "idnumber":		$sort = "u.idnumber"; break;
+        	case "attended":		$sort = "a.attended"; break;
+        	case "grade":			$sort = "a.grade"; break;
+        	case "feedback":		$sort = "a.feedback"; break; 				
+        	default:				$sort = NULL;
+        }
+        
+        if(!isset($order)){
+        	$order = "";
+        }else if($order != "DESC" && $order != "ASC"){
+        	$order = "";
+        }
+        
+        
         $data = &$this->_customdata;
-        $entries = fetch_table_entries($data['slots']);
-
+        $entries = fetch_table_entries($data['slots'],$sort . ' ' . $order);
+        
         $rows = array();
         $rowspan = 0;
         $numcols = 0;

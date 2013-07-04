@@ -49,6 +49,7 @@ $string['introeditor_error'] = 'Organizer description must be given!';
 $string['timeavailable'] = 'Available from';
 $string['timeavailable_help'] = "Check this if you want to make this organizer
     available to students after a certain point in time.";
+$string['duedate'] = 'Due date';
 $string['warning_groupingid'] = 'Group mode enabled. You must select a valid grouping.';
 $string['addappointment'] = 'Add appointment';
 $string['taballapp'] = 'Appointments';
@@ -201,7 +202,7 @@ $string['btn_remind'] = 'Send reminder';
 $string['btn_save'] = 'Save comment';
 $string['btn_send'] = 'Send';
 
-$string['pdfsubmit'] = 'Print to PDF file';
+$string['pdfsubmit'] = 'Create PDF';
 $string['teacherinvisible'] = 'Teacher invisible';
 
 $string['img_title_evaluated'] = 'The slot is evaluated';
@@ -675,15 +676,20 @@ $string['deletekeep'] = 'Following slots will not be deleted as they have studen
 
 $string['atlocation'] = 'at';
 
-$string['printoptions'] = 'Print options';
-$string['numentries'] = 'Entries per page';
-$string['textsize'] = 'Text size';
+$string['printoptions'] = 'Print settings';
+$string['numentries'] = 'Entries shown per page';
+$string['stroptimal'] = 'optimal';
+$string['textsize'] = 'Textsize';
 $string['pageorientation'] = 'Page orientation';
-$string['orientationportrait'] = 'Portrait';
-$string['orientationlandscape'] = 'Landscape';
+$string['orientationportrait'] = 'portrait';
+$string['orientationlandscape'] = 'landscape';
 
-$string['headerfooter'] = 'Include header and footer';
+$string['headerfooter'] = 'Print header/footer';
+$string['headerfooter_help'] = 'Print header/footer if checked';
 $string['printpreview'] = 'Print preview (first 10 entries)';
+
+$string['datapreviewtitle'] = "Data Preview";
+$string['datapreviewtitle_help'] = "Click on [+] or [-] for showing or hiding columns in the print-preview.";
 
 $string['unknown'] = 'Unknown';
 
@@ -723,9 +729,9 @@ $string['fulldatetemplate'] = '%a %d.%m.%Y';
 $string['datetemplate'] = '%d.%m.%Y';
 $string['timetemplate'] = '%H:%M';
 
-$string['font_small'] = 'Small (8pt)';
-$string['font_medium'] = 'Medium (10pt)';
-$string['font_large'] = 'Large (12pt)';
+$string['font_small'] = 'small';
+$string['font_medium'] = 'medium';
+$string['font_large'] = 'large';
 
 $string['printout'] = 'Printout';
 $string['confirm_organizer_remind_all'] = 'Send';

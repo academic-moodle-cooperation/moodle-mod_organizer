@@ -49,6 +49,7 @@ $string['introeditor_error'] = 'Eine Beschreibung des Terminplaners muss vorhand
 $string['timeavailable'] = 'Verfügbar ab';
 $string['timeavailable_help'] = "Kreuzen Sie diese Option an um Studierenden den Zugang zu diesem Terminplaner
     erst ab einem bestimmten Zeitpunkt zu ermöglichen.";
+$string['duedate'] = 'Abgabetermin';
 $string['warning_groupingid'] = 'Gruppenmodus eingeschaltet. Sie müssen eine gültige Gruppierung auswählen.';
 $string['addappointment'] = 'Termin hinzufügen';
 $string['taballapp'] = 'Termine';
@@ -192,7 +193,7 @@ $string['btn_remind'] = 'Erinnerung senden';
 $string['btn_save'] = 'Kommentar speichern';
 $string['btn_send'] = 'Senden';
 
-$string['pdfsubmit'] = 'PDF-Datei generieren';
+$string['pdfsubmit'] = 'PDF erstellen';
 $string['teacherinvisible'] = 'Lehrende nicht sichtbar';
 
 $string['img_title_evaluated'] = 'Der Slot ist bewertet';
@@ -395,7 +396,7 @@ $string['eval_notify_newappointment:student:fullmessage'] = 'Hallo {$a->receiver
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Termin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location} bewertet worden.
 
-Die LVA-Leitung des Kurses erm�glicht Ihnen sich nochmals im Terminpalner {$a->coursefullname} zu einem noch freien Termin anzumelden.
+Die LVA-Leitung des Kurses erm�glicht Ihnen sich nochmals im Terminpalner {$a->coursefullname} zu einem noch freien Termin anzumelden.
 		
 TUWEL Messaging System';
 $string['eval_notify_newappointment:student:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im {$a->location} ist bewertet worden.';
@@ -418,7 +419,7 @@ $string['eval_notify_newappointment:student:group:fullmessage'] = 'Hallo {$a->re
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Gruppentermin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location} bewertet worden.
 
-Die LVA-Leitung des Kurses erm�glicht Ihnen sich nochmals im Terminpalner {$a->coursefullname} zu einem noch freien Termin anzumelden.
+Die LVA-Leitung des Kurses erm�glicht Ihnen sich nochmals im Terminpalner {$a->coursefullname} zu einem noch freien Termin anzumelden.
 
 TUWEL Messaging System';
 $string['eval_notify_newappointment:student:group:smallmessage'] = 'Ihr Gruppentermin am {$a->date} um {$a->time} im {$a->location} ist bewertet worden.';
@@ -631,13 +632,18 @@ $string['atlocation'] = 'in';
 
 $string['printoptions'] = 'Druckeinstellungen';
 $string['numentries'] = 'Einträge pro Seite';
+$string['stroptimal'] = 'optimal';
 $string['textsize'] = 'Textgröße';
 $string['pageorientation'] = 'Seitenausrichtung';
 $string['orientationportrait'] = 'Hochformat';
 $string['orientationlandscape'] = 'Querformat';
 
-$string['headerfooter'] = 'Inkludiere Kopf-/Fußzeilen';
+$string['headerfooter'] = 'Kopf-/Fußzeilen';
+$string['headerfooter_help'] = 'Inkludiere Kopf-/Fußzeile';
 $string['printpreview'] = 'Druckvorschau (erste 10 Einträge)';
+
+$string['datapreviewtitle'] = 'Datenvorschau';
+$string['datapreviewtitle_help'] = "Klicken Sie in der Vorschau auf [+] bzw. [-], um die zu druckenden Spalten ein- bzw. auszublenden.";
 
 $string['unknown'] = 'Unbekannt';
 
@@ -677,9 +683,9 @@ $string['fulldatetemplate'] = '%a %d.%m.%Y';
 $string['datetemplate'] = '%d.%m.%Y';
 $string['timetemplate'] = '%H:%M';
 
-$string['font_small'] = 'Klein (8pt)';
-$string['font_medium'] = 'Mittel (10pt)';
-$string['font_large'] = 'Groß (12pt)';
+$string['font_small'] = 'klein';
+$string['font_medium'] = 'mittel';
+$string['font_large'] = 'groß';
 
 $string['printout'] = 'Ausdruck';
 $string['confirm_organizer_remind_all'] = 'Senden';

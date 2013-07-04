@@ -30,7 +30,7 @@ require_once(dirname(__FILE__) . '/lib.php');
 require_once(dirname(__FILE__) . '/mtablepdf.php');
 require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
-function organizer_display_printable_table($columns, $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
+function organizer_display_printable_table($timeavailable, $timedue, $columns, $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
         $headerfooter = true) {
     global $USER;
 
@@ -39,58 +39,111 @@ function organizer_display_printable_table($columns, $slots, $entriesperpage = f
     $columnwitdh = array();
     $titles = array();
     $columnformats = array();
-
-    foreach ($columns as $column) {
-        $titles[] = get_string("th_$column", 'organizer');
-        switch ($column) {
-            case 'datetime':
-                $columnwitdh[] = array('value' => 64, 'mode' => 'Relativ');
-                $columnformats[] = array('fill' => 0, 'align' => 'C');
-                break;
-            case 'location':
-                $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                $columnformats[] = array('fill' => 0, 'align' => 'C');
-                break;
-            case 'teacher':
-                $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
-                $columnformats[] = array('fill' => 0, 'align' => 'C');
-                break;
-            case 'groupname':
-                $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
-                $columnformats[] = array('fill' => 0, 'align' => 'C');
-                break;
-            case 'participant':
-                $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
-                $columnformats[] = array('fill' => 0, 'align' => 'C');
-                break;
-            case 'idnumber':
-                $columnwitdh[] = array('value' => 24, 'mode' => 'Relativ');
-                $columnformats[] = array('fill' => 0, 'align' => 'C');
-                break;
-            case 'attended':
-                $columnwitdh[] = array('value' => 12, 'mode' => 'Relativ');
-                $columnformats[] = array('fill' => 0, 'align' => 'C');
-                break;
-            case 'grade':
-                $columnwitdh[] = array('value' => 18, 'mode' => 'Relativ');
-                $columnformats[] = array('fill' => 0, 'align' => 'C');
-                break;
-            case 'feedback':
-                $columnwitdh[] = array('value' => 64, 'mode' => 'Relativ');
-                $columnformats[] = array('fill' => 1, 'align' => 'L');
-                break;
-        }
+    
+    $tsort = isset($_SESSION['organizer_tsort']) ? $_SESSION['organizer_tsort'] : "";
+    if($tsort != ""){
+    	$order = "ASC";
+    
+    	if(substr($tsort, strlen($tsort) - strlen("DESC")) == "DESC"){
+    		$tsort = substr($tsort,0, strlen($tsort) - strlen("DESC"));
+    		$order = "DESC";
+    	}
     }
+
+    $dosort = false;
+    foreach ($columns as $column) {
+    	if($column != ""){	
+	        $titles[] = get_string("th_$column", 'organizer');
+	        
+	        if($tsort == $column){
+	        	$dosort = true;
+	        }
+	        
+	        switch ($column) {
+	            case 'datetime':
+	                $columnwitdh[] = array('value' => 64, 'mode' => 'Relativ');
+	                $columnformats[] = array('fill' => 0, 'align' => 'C');
+	                break;
+	            case 'location':
+	                $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+	                $columnformats[] = array('fill' => 0, 'align' => 'C');
+	                break;
+	            case 'teacher':
+	                $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
+	                $columnformats[] = array('fill' => 0, 'align' => 'C');
+	                break;
+	            case 'groupname':
+	                $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
+	                $columnformats[] = array('fill' => 0, 'align' => 'C');
+	                break;
+	            case 'participant':
+	                $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
+	                $columnformats[] = array('fill' => 0, 'align' => 'C');
+	                break;
+	            case 'idnumber':
+	                $columnwitdh[] = array('value' => 24, 'mode' => 'Relativ');
+	                $columnformats[] = array('fill' => 0, 'align' => 'C');
+	                break;
+	            case 'attended':
+	                $columnwitdh[] = array('value' => 12, 'mode' => 'Relativ');
+	                $columnformats[] = array('fill' => 0, 'align' => 'C');
+	                break;
+	            case 'grade':
+	                $columnwitdh[] = array('value' => 18, 'mode' => 'Relativ');
+	                $columnformats[] = array('fill' => 0, 'align' => 'C');
+	                break;
+	            case 'feedback':
+	                $columnwitdh[] = array('value' => 64, 'mode' => 'Relativ');
+	                $columnformats[] = array('fill' => 1, 'align' => 'L');
+	                break;
+	        }
+    	}
+    }
+    
+    
+    switch($tsort){
+    	case "datetime";		$sort = "starttime"; break;
+    	case "location":		$sort = "s.location"; break;
+    	case "teacher":			$sort = "teacherfirstname"; break;
+    	case "participant":		$sort = "u.lastname"; break;
+    	case "idnumber":		$sort = "u.idnumber"; break;
+    	case "attended":		$sort = "a.attended"; break;
+    	case "grade":			$sort = "a.grade"; break;
+    	case "feedback":		$sort = "a.feedback"; break;
+    	default:				$sort = NULL;
+    }
+    
+    if(!isset($order)){
+    	$order = "";
+    }else if($order != "DESC" && $order != "ASC"){
+    	$order = "";
+    }
+    
+    if($dosort){
+    	$dosort = $sort . ' ' . $order;
+    }else{
+    	$dosort = "";
+    }
+    
+    if($timedue == NULL){
+    	$duetitle = "";
+    	$due = "";
+    }else{
+    	$duetitle = get_string('duedate', 'organizer').':';
+    	$due = userdate($timedue);
+    }
+
     $mpdftable = new MTablePDF($orientation, $columnwitdh);
     $mpdftable->SetTitle(get_string('modulename', 'organizer') . " " . $organizer->name . " - " . get_string('printout', 'organizer'));
     $mpdftable->setRowsperPage($entriesperpage);
     $mpdftable->ShowHeaderFooter($headerfooter);
     $mpdftable->SetFontSize($textsize);
-    $mpdftable->setHeaderText(get_string('course'), "{$course->idnumber} {$course->fullname}", get_string('modulename', 'organizer'), $organizer->name, get_string('date'), userdate(time()), '', '', '', '', '', '');
+    $mpdftable->setHeaderText(get_string('course') . ':', "{$course->idnumber} {$course->fullname}", get_string('availablefrom', 'organizer').':', userdate($timeavailable), get_string('date') . ':', userdate(time()),
+    							get_string('modulename', 'organizer') . ':', $organizer->name, $duetitle, $due, '', '');
     $mpdftable->setTitles($titles);
     $mpdftable->setColumnFormat($columnformats);
 
-    $entries = fetch_table_entries($slots);
+    $entries = fetch_table_entries($slots, $dosort);
     $rowspan = 0;
     foreach ($entries as $entry) {
         $row = array();
@@ -157,7 +210,7 @@ function organizer_display_printable_table($columns, $slots, $entriesperpage = f
     $mpdftable->generate();
 }
 
-function fetch_table_entries($slots) {
+function fetch_table_entries($slots,$orderby="") {
     global $DB;
 
     list($insql, $inparams) = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
@@ -192,12 +245,20 @@ function fetch_table_entries($slots) {
         LEFT JOIN {groups} g ON a.groupid = g.id
 
     WHERE s.id $insql
+	";
 
-    ORDER BY s.starttime ASC,
+    
+    if($orderby == " " || $orderby == ""){
+    	$query .=     "ORDER BY s.starttime ASC,
         u.lastname ASC,
         u.firstname ASC,
         teacherlastname ASC,
         teacherfirstname ASC";
+    }else{
+    	$query .= "ORDER BY " . $orderby;
+    }
+    
+    
 
     $params = array_merge($params, $inparams);
     return $DB->get_records_sql($query, $params);
