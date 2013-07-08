@@ -396,7 +396,7 @@ $string['eval_notify_newappointment:student:fullmessage'] = 'Hallo {$a->receiver
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Termin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location} bewertet worden.
 
-Die LVA-Leitung des Kurses erm�glicht Ihnen sich nochmals im Terminpalner {$a->coursefullname} zu einem noch freien Termin anzumelden.
+Die LVA-Leitung des Kurses ermölicht Ihnen sich nochmals im Terminpalner {$a->organizername} zu einem noch freien Termin anzumelden.
 		
 TUWEL Messaging System';
 $string['eval_notify_newappointment:student:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im {$a->location} ist bewertet worden.';

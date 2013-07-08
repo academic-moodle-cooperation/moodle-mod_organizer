@@ -453,7 +453,7 @@ $string['eval_notify_newappointment:student:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, your appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
-Teachers of the course enable you to re-register to any available slot in the organizer {$a->coursefullname}.
+Teachers of the course enable you to re-register to any available slot in the organizer {$a->organizername}.
 
 TUWEL Messaging System';
 
