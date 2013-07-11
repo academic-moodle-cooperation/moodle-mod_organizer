@@ -23,7 +23,7 @@ require_once($CFG->libdir . '/pdflib.php');
 
 /**
  * @author Andreas Windbichler
- * @version 11.06.2013
+ * @version 11.07.2013
  *
  */
 class MTablePDF extends pdf{
@@ -285,7 +285,7 @@ class MTablePDF extends pdf{
     /**
      * Generate the pdf
      */
-    public function generate(){
+    public function generate($filename = ''){
         $pdf = $this;
 
         // Add a page.
@@ -588,6 +588,16 @@ class MTablePDF extends pdf{
             $fill=!$fill;
         }
 
-        $pdf->Output();
+        
+        if($filename != ''){
+        	if(substr($filename,strlen($filename)-4) != ".pdf"){
+        		$filename .= '.pdf';
+        	}
+        	
+        	$filename = clean_filename($filename);
+        	$pdf->Output($filename, 'D');
+        }else{
+        	$pdf->Output();
+        }        
     }
 }

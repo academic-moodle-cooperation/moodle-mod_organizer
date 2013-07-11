@@ -193,7 +193,7 @@ $string['btn_remind'] = 'Erinnerung senden';
 $string['btn_save'] = 'Kommentar speichern';
 $string['btn_send'] = 'Senden';
 
-$string['pdfsubmit'] = 'PDF erstellen';
+$string['pdfsubmit'] = 'PDF herunterladen';
 $string['teacherinvisible'] = 'Lehrende nicht sichtbar';
 
 $string['img_title_evaluated'] = 'Der Slot ist bewertet';

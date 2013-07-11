@@ -202,7 +202,7 @@ $string['btn_remind'] = 'Send reminder';
 $string['btn_save'] = 'Save comment';
 $string['btn_send'] = 'Send';
 
-$string['pdfsubmit'] = 'Create PDF';
+$string['pdfsubmit'] = 'Download PDF';
 $string['teacherinvisible'] = 'Teacher invisible';
 
 $string['img_title_evaluated'] = 'The slot is evaluated';

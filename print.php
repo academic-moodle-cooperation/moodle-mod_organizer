@@ -31,7 +31,7 @@ require_once(dirname(__FILE__) . '/mtablepdf.php');
 require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
 function organizer_display_printable_table($timeavailable, $timedue, $columns, $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
-        $headerfooter = true) {
+        $headerfooter = true, $filename = '') {
     global $USER;
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
@@ -207,7 +207,7 @@ function organizer_display_printable_table($timeavailable, $timedue, $columns, $
         $rowspan--;
     }
 
-    $mpdftable->generate();
+    $mpdftable->generate($filename);
 }
 
 function fetch_table_entries($slots,$orderby="") {
