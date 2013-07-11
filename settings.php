@@ -74,7 +74,7 @@ $organizersettings->add(
                 get_string('configemailteachers', 'organizer'), 1, $pickeroptions));
 
 $pickeroptions = array();
-$pickeroptions['never'] = 'Don\'t send';
+$pickeroptions['never'] = get_string('configdontsend','organizer');
 for ($i = 0; $i < 24; $i++) {
     $pickeroptions[$i * 3600] = userdate($i * 3600, get_string('timetemplate', 'organizer'), 0);
 }
@@ -85,35 +85,35 @@ $organizersettings->add(
                 get_string('configdigest', 'organizer'), 'never', $pickeroptions));
 
 $abschoices = array();
-$abschoices['never'] = get_string('never');
-$abschoices['+1 week'] = "1 week";
-$abschoices['+2 weeks'] = "2 weeks";
-$abschoices['+3 weeks'] = "3 weeks";
-$abschoices['+1 month'] = "1 month";
-$abschoices['+2 month'] = "2 months";
-$abschoices['+3 month'] = "3 months";
-$abschoices['+4 month'] = "4 months";
-$abschoices['+5 month'] = "5 months";
-$abschoices['+6 month'] = "6 months";
-$abschoices['+1 year'] = "1 year";
+$abschoices['never'] = get_string('confignever','organizer');
+$abschoices['+1 week'] = '1 ' . get_string('configweek','organizer');
+$abschoices['+2 weeks'] = '2 ' . get_string('configweeks','organizer');
+$abschoices['+3 weeks'] = '3 ' . get_string('configweeks','organizer');
+$abschoices['+1 month'] = '1 ' . get_string('configmonth','organizer');
+$abschoices['+2 month'] = '2 ' . get_string('configmonths','organizer');
+$abschoices['+3 month'] = '3 ' . get_string('configmonths','organizer');
+$abschoices['+4 month'] = '4 ' . get_string('configmonths','organizer');
+$abschoices['+5 month'] = '5 ' . get_string('configmonths','organizer');
+$abschoices['+6 month'] = '6 ' . get_string('configmonths','organizer');
+$abschoices['+1 year'] = '1 ' . get_string('configyear','organizer');
 
 $organizersettings->add(
         new admin_setting_configselect('organizer/absolutedeadline', get_string('absolutedeadline', 'organizer'),
                 get_string('configabsolutedeadline', 'organizer'), 'never', $abschoices));
 
 $relchoices = array();
-$relchoices[60 * 1] = "1 minute ahead";
-$relchoices[60 * 5] = "5 minutes ahead";
-$relchoices[60 * 15] = "15 minutes ahead";
-$relchoices[60 * 30] = "30 minutes ahead";
-$relchoices[3600 * 1] = "1 hour ahead";
-$relchoices[3600 * 2] = "2 hours ahead";
-$relchoices[3600 * 3] = "3 hours ahead";
-$relchoices[3600 * 6] = "6 hours ahead";
-$relchoices[3600 * 12] = "12 hours ahead";
-$relchoices[3600 * 18] = "18 hours ahead";
-$relchoices[86400 * 1] = "1 day ahead";
-$relchoices[86400 * 2] = "2 days ahead";
+$relchoices[60 * 1] 	= '1 ' . 	get_string('configminute','organizer') . ' ' . 	get_string('configahead','organizer');
+$relchoices[60 * 5] 	= '5 ' . 	get_string('configminutes','organizer') . ' ' . get_string('configahead','organizer');
+$relchoices[60 * 15] 	= '15 ' . 	get_string('configminutes','organizer') . ' ' . get_string('configahead','organizer');
+$relchoices[60 * 30] 	= '30 ' . 	get_string('configminutes','organizer') . ' ' . get_string('configahead','organizer');
+$relchoices[3600 * 1] 	= '1 ' . 	get_string('confighour','organizer') . ' ' . 	get_string('configahead','organizer');
+$relchoices[3600 * 2] 	= '2 ' . 	get_string('confighours','organizer') . ' ' . 	get_string('configahead','organizer');
+$relchoices[3600 * 3] 	= '3 ' . 	get_string('confighours','organizer') . ' ' . 	get_string('configahead','organizer');
+$relchoices[3600 * 6] 	= '6 ' . 	get_string('confighours','organizer') . ' ' . 	get_string('configahead','organizer');
+$relchoices[3600 * 12] 	= '12 ' . 	get_string('confighours','organizer') . ' ' . 	get_string('configahead','organizer');
+$relchoices[3600 * 18] 	= '18 ' .	get_string('confighours','organizer') . ' ' . 	get_string('configahead','organizer');
+$relchoices[86400 * 1] 	= '1 ' . 	get_string('configday','organizer') . ' ' . 	get_string('configahead','organizer');
+$relchoices[86400 * 2] 	= '2 ' . 	get_string('configdays','organizer') . ' ' . 	get_string('configahead','organizer');
 
 $organizersettings->add(
         new admin_setting_configselect('organizer/relativedeadline', get_string('relativedeadline', 'organizer'),
