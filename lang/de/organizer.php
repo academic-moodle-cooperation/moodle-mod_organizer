@@ -114,6 +114,7 @@ $string['err_fromto'] = 'Endzeit kann nicht vor Startzeit gesetzt werden!';
 $string['err_collision'] = 'Dieses Zeitfenster fällt mit anderen Zeitfenstern zusammen:';
 $string['err_location'] = 'Ein Ort muss angegeben werden!';
 $string['err_posint'] = 'Nur positive Werte erlaubt!';
+$string['err_fullminute'] = 'Die Dauer muss ganzen Minuten entsprechen.';
 $string['create'] = 'Erstellen';
 $string['availablefrom'] = 'Anfragen möglich ab';
 $string['availablefrom_help'] = 'Definieren Sie das Zeitfenster, während welches Student/innen sich für diese Slots anmelden können. Ersatzweise checken Sie die "Ab jetzt" Checkbox, um die Anmeldungen sofort zu ermöglichen.';

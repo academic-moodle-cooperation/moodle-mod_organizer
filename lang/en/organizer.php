@@ -112,6 +112,7 @@ $string['err_fromto'] = 'End time cannot be set before the start time!';
 $string['err_collision'] = 'This frame is in collision with other frames:';
 $string['err_location'] = 'You must enter a location!';
 $string['err_posint'] = 'You must enter a positive integer!';
+$string['err_fullminute'] = 'The duration has to be a full minute.';
 $string['create'] = 'Create';
 $string['availablefrom'] = 'Applications possible from';
 $string['availablefrom_help'] = 'Set the timeframe within which students will be allowed to register for these timeslots. Alternatively, check "Starting now" to enable registration immediately.';

@@ -104,7 +104,7 @@ class organizer_add_slots_form extends moodleform {
 
     private function _my_validation($data) {
         if ($data['location'] == '' || !$this->_converts_to_int($data['maxparticipants'])
-                || $data['maxparticipants'] <= 0 || !$this->_converts_to_int($data['duration']['number'])
+                || $data['maxparticipants'] <= 0 || !($data['duration']['number'] * $data['duration']['timeunit'] % 60 == 0)
                 || $data['duration']['number'] <= 0 || !$this->_converts_to_int($data['notificationtime']['number'])
                 || $data['notificationtime']['number'] <= 0) {
             return false;
@@ -630,8 +630,9 @@ class organizer_add_slots_form extends moodleform {
             $errors['maxparticipants'] = get_string('err_posint', 'organizer');
         }
 
-        if (!$this->_converts_to_int($data['duration']) || $data['duration'] <= 0) {
-            $errors['duration'] = get_string('err_posint', 'organizer');
+        // check if duration is a full minute
+		if($data['duration'] % 60 != 0){
+			$errors['duration'] = get_string('err_fullminute', 'organizer');
         }
 
         if (!$this->_converts_to_int($data['notificationtime']) || $data['notificationtime'] <= 0) {
