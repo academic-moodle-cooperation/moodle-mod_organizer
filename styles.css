@@ -100,3 +100,8 @@
     background-color: #fafafa;
     white-space:nowrap
 }
+
+#organizer_main_cointainer div#fgroup_id_printperpagegrp fieldset {
+	margin-bottom:0;
+	padding-left:0;
+}
