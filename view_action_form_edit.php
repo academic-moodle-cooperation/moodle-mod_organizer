@@ -37,15 +37,17 @@ class organizer_edit_slots_form extends moodleform {
                 'name' => 'mod_organizer',
                 'fullpath' => '/mod/organizer/module.js',
                 'requires' => array('node', 'node-event-delegate'),
-                'strings' => array(
-                        array('warningtext1', 'organizer'),
-                        array('warningtext2', 'organizer'),
-                ),
+                'strings' => array()
         );
         
         $imagepaths = array(
                 'warning' => "{$CFG->wwwroot}/mod/organizer/pix/warning.png",
                 'changed' => "{$CFG->wwwroot}/mod/organizer/pix/warning2.png");
+        
+        $PAGE->requires->strings_for_js(array(
+        		'warningtext1',
+        		'warningtext2'
+        ), 'organizer');
         
         $PAGE->requires->js_init_call('M.mod_organizer.init_edit_form', array($imagepaths), false, $jsmodule);
 
