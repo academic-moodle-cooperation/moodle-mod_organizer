@@ -179,9 +179,12 @@ function organizer_print_recent_activity($course, $viewfullnames, $timestart) {
 
 function organizer_get_overview_link($organizer) {
     global $CFG;
-    return '<div class="name">' . get_string('modulename', 'organizer') . ': <a title="' . $organizer->name
+
+    $class = $organizer->visible == 0 ? "dimmed" : "";
+    
+    return '<div class="name">' . get_string('modulename', 'organizer') . ': <a class="' . $class . '" title="' . $organizer->name
             . '" href="' . $CFG->wwwroot . '/mod/organizer/view.php?id=' . $organizer->coursemodule . '">'
-            . $organizer->name . '</a>: </div>';
+            . $organizer->name . '</a> </div>';
 }
 
 function organizer_reset_course_form_definition(&$mform) {
