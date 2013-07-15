@@ -384,7 +384,7 @@ $string['modformwarningplural'] = 'These fields cannot be edited as there are ap
  * If more strings are required, add them to the $strings object in messaging.php
  */
 
-$string['register_notify:teacher:register:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Student registered';
+$string['register_notify:teacher:register:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student registered';
 $string['register_notify:teacher:register:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -395,7 +395,7 @@ $string['register_notify:teacher:register:smallmessage'] = 'Student {$a->sendern
 
 //--------------------------------------------------------------------------------------------------
 
-$string['register_notify:teacher:reregister:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Student re-registered';
+$string['register_notify:teacher:reregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student re-registered';
 $string['register_notify:teacher:reregister:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -406,7 +406,7 @@ $string['register_notify:teacher:reregister:smallmessage'] = 'Student {$a->sende
 
 //--------------------------------------------------------------------------------------------------
 
-$string['register_notify:teacher:unregister:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Student unregistered';
+$string['register_notify:teacher:unregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student unregistered';
 $string['register_notify:teacher:unregister:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -417,7 +417,7 @@ $string['register_notify:teacher:unregister:smallmessage'] = 'Student {$a->sende
 
 //--------------------------------------------------------------------------------------------------
 
-$string['register_notify:teacher:register:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Group registered';
+$string['register_notify:teacher:register:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group registered';
 $string['register_notify:teacher:register:group:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -428,7 +428,7 @@ $string['register_notify:teacher:register:group:smallmessage'] = 'Student {$a->s
 
 //--------------------------------------------------------------------------------------------------
 
-$string['register_notify:teacher:reregister:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Group re-registered';
+$string['register_notify:teacher:reregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group re-registered';
 $string['register_notify:teacher:reregister:group:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -439,7 +439,7 @@ $string['register_notify:teacher:reregister:group:smallmessage'] = 'Student {$a-
 
 //--------------------------------------------------------------------------------------------------
 
-$string['register_notify:teacher:unregister:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Group unregistered';
+$string['register_notify:teacher:unregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group unregistered';
 $string['register_notify:teacher:unregister:group:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -450,7 +450,7 @@ $string['register_notify:teacher:unregister:group:smallmessage'] = 'Student {$a-
 
 //--------------------------------------------------------------------------------------------------
 
-$string['eval_notify:student:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
+$string['eval_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify:student:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -461,7 +461,7 @@ TUWEL Messaging System';
 $string['eval_notify:student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
 //--------------------------------------------------------------------------------------------------
 
-$string['eval_notify_newappointment:student:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
+$string['eval_notify_newappointment:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 
 $string['eval_notify_newappointment:student:fullmessage'] =
 'Hello {$a->receivername}!
@@ -476,7 +476,7 @@ $string['eval_notify_newappointment:student:smallmessage'] = 'Your appointment o
 
 //--------------------------------------------------------------------------------------------------
 
-$string['eval_notify:student:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
+$string['eval_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify:student:group:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -487,7 +487,7 @@ $string['eval_notify:student:group:smallmessage'] = 'Your group appointment on {
 
 //--------------------------------------------------------------------------------------------------
 
-$string['eval_notify_newappointment:student:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
+$string['eval_notify_newappointment:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify_newappointment:student:group:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -500,7 +500,7 @@ $string['eval_notify_newappointment:student:group:smallmessage'] = 'Your group a
 
 //--------------------------------------------------------------------------------------------------
 
-$string['edit_notify:student:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Appointment details changed';
+$string['edit_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify:student:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -511,7 +511,7 @@ $string['edit_notify:student:smallmessage'] = 'The details of the appointment wi
 
 //--------------------------------------------------------------------------------------------------
 
-$string['edit_notify:student:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Appointment details changed';
+$string['edit_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify:student:group:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -522,7 +522,7 @@ $string['edit_notify:student:group:smallmessage'] = 'The details of the group ap
 
 //--------------------------------------------------------------------------------------------------
 
-$string['edit_notify:teacher:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Appointment details changed';
+$string['edit_notify:teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify:teacher:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -533,7 +533,7 @@ $string['edit_notify:teacher:smallmessage'] = 'The details of the time slot on {
 
 //--------------------------------------------------------------------------------------------------
 
-$string['edit_notify:teacher:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Appointment details changed';
+$string['edit_notify:teacher:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify:teacher:group:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -544,7 +544,7 @@ $string['edit_notify:teacher:group:smallmessage'] = 'The details of the time slo
 
 //--------------------------------------------------------------------------------------------------
 
-$string['register_reminder:student:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Registration reminder';
+$string['register_reminder:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
 $string['register_reminder:student:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -555,7 +555,7 @@ $string['register_reminder:student:smallmessage'] = 'Please register to a new ti
 
 //--------------------------------------------------------------------------------------------------
 
-$string['register_reminder:student:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Registration reminder';
+$string['register_reminder:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
 $string['register_reminder:student:group:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -565,7 +565,7 @@ TUWEL Messaging System';
 $string['register_reminder:student:group:smallmessage'] = 'Please register your group to a new time slot.';
 
 //--------------------------------------------------------------------------------------------------
-$string['group_registration_notify:student:register:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Group registered';
+$string['group_registration_notify:student:register:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group registered';
 $string['group_registration_notify:student:register:group:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -576,7 +576,7 @@ $string['group_registration_notify:student:register:group:smallmessage'] = '{$a-
 
 //--------------------------------------------------------------------------------------------------
 
-$string['group_registration_notify:student:reregister:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Group re-registered';
+$string['group_registration_notify:student:reregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group re-registered';
 $string['group_registration_notify:student:reregister:group:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -587,7 +587,7 @@ $string['group_registration_notify:student:reregister:group:smallmessage'] = '{$
 
 //--------------------------------------------------------------------------------------------------
 
-$string['group_registration_notify:student:unregister:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Group unregistered';
+$string['group_registration_notify:student:unregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group unregistered';
 $string['group_registration_notify:student:unregister:group:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -610,7 +610,7 @@ $string['appointment_reminder:teacher:digest:smallmessage'] = 'You have appointm
 
 //--------------------------------------------------------------------------------------------------
 
-$string['appointment_reminder:teacher:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Appointment reminder';
+$string['appointment_reminder:teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment reminder';
 $string['appointment_reminder:teacher:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -647,7 +647,7 @@ $string['appointment_reminder:teacher:group:digest:smallmessage'] = 'You have re
 
 //--------------------------------------------------------------------------------------------------
 
-$string['appointment_reminder:student:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Appointment reminder';
+$string['appointment_reminder:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment reminder';
 $string['appointment_reminder:student:fullmessage'] =
 'Hello {$a->receivername}!
 
@@ -658,7 +658,7 @@ $string['appointment_reminder:student:smallmessage'] = 'You have an appointment 
 
 //--------------------------------------------------------------------------------------------------
 
-$string['appointment_reminder:student:group:subject'] = '[{$a->courseid} {$a->courseshortname} / {$a->organizername}] - Group appointment reminder';
+$string['appointment_reminder:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group appointment reminder';
 $string['appointment_reminder:student:group:fullmessage'] =
 'Hello {$a->receivername}!
 

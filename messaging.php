@@ -57,7 +57,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $strings->organizername = $organizer->name;
     $strings->coursefullname = $course->fullname;
     $strings->courseshortname = $course->shortname;
-    $strings->courseid = $course->idnumber;
+    $strings->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
 
     if ($organizer->isgrouporganizer) {
         if (strpos($type, 'register_notify') !== false || strpos($type, 'group_registration_notify') !== false) {
