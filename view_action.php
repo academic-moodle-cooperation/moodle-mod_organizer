@@ -220,30 +220,34 @@ if ($action == ORGANIZER_ACTION_ADD) {
 
     add_to_log($course->id, 'organizer', 'print', "{$logurl}", $organizer->name, $cm->id);
 
+    $slots = optional_param_array('slots', NULL, PARAM_INT);
+    
     if($tsort != NULL){
     	$_SESSION['organizer_tsort'] = $tsort;
-    }
-    
-    if($slots){
-    	$_SESSION['organizer_slots'] = $slots;
-    }else if(isset($_SESSION['organizer_slots'])){
     	$slots = $_SESSION['organizer_slots'];
+    }else{
+    	$_SESSION['organizer_slots'] = $slots;
     }
     
-    if (!$slots) {
-        $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
-        redirect($redirecturl);
-    }
+    
+    $s = $slots == NULL ? array() : $slots;
 
-    if (!organizer_security_check_slots($slots)) {
-        print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
-    }
-
-    $mform = new organizer_print_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
+    $mform = new organizer_print_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $s));
 
     if ($data = $mform->get_data()) {
     	// create pdf
-    	    	
+    	
+    	$slots = $_SESSION['organizer_slots'];
+
+    	if (count($slots) == 0) {
+    		$redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+    		redirect($redirecturl);
+    	}
+    	
+    	if (!organizer_security_check_slots($slots)) {
+    		print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
+    	}
+    	
     	set_user_preference('organizer_printperpage', $data->entriesperpage);
     	set_user_preference('organizer_printperpage_optimal', $data->printperpage_optimal);
     	set_user_preference('organizer_textsize',$data->textsize);
@@ -261,19 +265,30 @@ if ($action == ORGANIZER_ACTION_ADD) {
         organizer_display_printable_table($organizer->enablefrom, $organizer->enableuntil, $data->cols, $data->slots, $ppp, $data->textsize,
                 $data->pageorientation, $data->headerfooter, $course->shortname . '-' . $organizer->name);
         redirect($redirecturl);
+
     } else if ($mform->is_cancelled()) {
-    	set_user_preference('organizer_printperpage', $data->entriesperpage);
-    	set_user_preference('organizer_printperpage_optimal', $data->printperpage_optimal);
-    	set_user_preference('organizer_textsize',$data->textsize);
-    	set_user_preference('organizer_pageorientation', $data->pageorientation);
-    	set_user_preference('organizer_headerfooter', $data->headerfooter);
+    	// form canceled
+    	
+    	unset($_SESSION['organizer_slots']);
     	
         redirect($redirecturl);
+
     } else {
     	// display printpreview
+    	
+    	if ($slots == NULL || count($slots) == 0) {
+    		$redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+    		redirect($redirecturl);
+    	}
+    	 
+    	if (!organizer_security_check_slots($slots)) {
+    		print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
+    	}
+    	
         organizer_display_form($mform, get_string('title_print', 'organizer'), true);
     }
     print_error('If you see this, something went wrong with print action!');
+
 } else if ($action == ORGANIZER_ACTION_COMMENT) {
     require_capability('mod/organizer:comment', $context);
     add_to_log($course->id, 'organizer', 'comment', "{$logurl}", $organizer->name, $cm->id);
