@@ -105,3 +105,7 @@
 	margin-bottom:0;
 	padding-left:0;
 }
+
+#page-mod-organizer-view div#organizer_popup_header div.title h2{
+	width:100%;
+}
