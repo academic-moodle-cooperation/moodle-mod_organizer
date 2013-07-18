@@ -210,7 +210,11 @@ class organizer_add_slots_form extends moodleform {
         $cm = get_coursemodule_from_id('organizer', $data['id'], 0, false, MUST_EXIST);
         $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
         if ($organizer->isgrouporganizer) {
+        	$mform->addElement('hidden','isgrouporganizer','1');
+        	$mform->setType('isgrouporganizer', PARAM_BOOL);
+        	
             $mform->freeze('maxparticipants');
+            $mform->disabledIf('maxparticipants', 'isgrouporganizer');
         }
 
         $mform->addElement('duration', 'notificationtime', get_string('notificationtime', 'organizer'),
