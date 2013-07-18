@@ -278,8 +278,10 @@ M.mod_organizer.init_infobox = function (Y) {
 
 	    if (!((legend.get('offsetWidth') === 0 && legend.get('offsetHeight') === 0) || legend.get('display') === 'none')) {
 	        legend.hide();
+	        Y.one('#toggle_legend').set('value',M.util.get_string('infobox_showlegend', 'organizer'));
 	    } else {
 	        legend.show();
+	        Y.one('#toggle_legend').set('value',M.util.get_string('infobox_hidelegend', 'organizer'));
 	    }
 	}
 

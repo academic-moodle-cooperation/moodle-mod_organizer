@@ -57,6 +57,8 @@ $jsmodule = array(
                 array('teachercomment_title', 'organizer'),
                 array('studentcomment_title', 'organizer'),
                 array('teacherfeedback_title', 'organizer'),
+        		array('infobox_showlegend', 'organizer'),
+        		array('infobox_hidelegend', 'organizer'),
         ),
 );
 $PAGE->requires->js_module($jsmodule);
