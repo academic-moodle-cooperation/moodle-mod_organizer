@@ -54,7 +54,7 @@ class organizer_remind_all_form extends moodleform {
         $counter = 0;
         $recepients = array();
         foreach ($entries as $entry) {
-            if ($entry->status == APP_STATUS_NOT_REGISTERED || $entry->status == APP_STATUS_NOT_ATTENDED_REAPP) {
+            if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED || $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP) {
                 $counter++;
                 $recepients[] = $entry;
             }
