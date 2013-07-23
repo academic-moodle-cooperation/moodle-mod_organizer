@@ -48,40 +48,6 @@ class mod_organizer_mod_form extends moodleform_mod {
         $instance = $mform->getElementValue('instance');
         if ($instance) {
             $PAGE->requires->js_init_call('M.mod_organizer.init_mod_form', array(false), false, $jsmodule);
-            $count = $DB->get_field_sql(
-                    "SELECT COUNT(*) AS count
-					FROM {organizer} o
-					INNER JOIN {organizer_slots} s ON o.id = s.organizerid
-					INNER JOIN {organizer_slot_appointments} a ON s.id = a.slotid
-					WHERE o.id = :id", array("id" => $instance));
-            if ($count > 0) {
-                $mform->freeze('enablefrom');
-                $warning1 = $mform->createElement('static', '', '',
-                        '<span class="error">' . get_string('modformwarningsingular', 'organizer') . '</span>');
-                $mform->insertElementBefore($warning1, 'enableuntil');
-
-                $isgrouporganizergroup = $mform->getElement('isgrouporganizergroup')->getElements();
-                $isgrouporganizergroup[] = $mform->createElement('static', '', '',
-                        '<br /><span class="error">' . get_string('modformwarningsingular', 'organizer') . '</span>');
-                $mform->getElement('isgrouporganizergroup')->setElements($isgrouporganizergroup);
-                $isgrouporganizergroup[0]->freeze();
-
-                $warning2 = $mform->createElement('static', '', '',
-                        '<span class="error">' . get_string('modformwarningplural', 'organizer') . '</span>');
-                $mform->insertElementBefore($warning2, 'organizercommon');
-                $mform->freeze('grade');
-                $mform->freeze('gradecat');
-
-                $mform->freeze('groupmode');
-                $mform->freeze('groupingid');
-                $warning3 = $mform->createElement('static', '', '',
-                        '<span class="error">' . get_string('modformwarningplural', 'organizer') . '</span>');
-                if ($mform->elementExists('groupmembersonly')) {
-                    $mform->insertElementBefore($warning3, 'groupmembersonly');
-                } else {
-                    $mform->insertElementBefore($warning3, 'visible');
-                }
-            }
         } else {
             $organizerconfig = get_config('organizer');
             $activatecheckbox = $organizerconfig->absolutedeadline == 'never';
