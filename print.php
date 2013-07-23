@@ -49,8 +49,9 @@ function organizer_display_printable_table($timeavailable, $timedue, $columns, $
     		$order = "DESC";
     	}
     }
-
+	$colorder = array();
     $dosort = false;
+    $i = 0;
     foreach ($columns as $column) {
     	if($column != ""){	
 	        $titles[] = get_string("th_$column", 'organizer');
@@ -58,6 +59,8 @@ function organizer_display_printable_table($timeavailable, $timedue, $columns, $
 	        if($tsort == $column){
 	        	$dosort = true;
 	        }
+	        
+	        $colorder[$column] = $i++;
 	        
 	        switch ($column) {
 	            case 'datetime':
@@ -142,7 +145,6 @@ function organizer_display_printable_table($timeavailable, $timedue, $columns, $
     							get_string('modulename', 'organizer') . ':', $organizer->name, $duetitle, $due, '', '');
     $mpdftable->setTitles($titles);
     $mpdftable->setColumnFormat($columnformats);
-
     $entries = fetch_table_entries($slots, $dosort);
     $rowspan = 0;
     foreach ($entries as $entry) {
@@ -154,22 +156,38 @@ function organizer_display_printable_table($timeavailable, $timedue, $columns, $
             switch ($column) {
             // these columns may have rowspan
             case 'datetime':
-                $datetime = userdate($entry->starttime, get_string('fulldatetimetemplate', 'organizer')) . ' - ' . userdate($entry->starttime + $entry->duration, get_string('timetemplate', 'organizer'));
-                $row[] = array('data' => $datetime, 'rowspan' => $rowspan - 1);
+            	if($rowspan != $entry->rowspan){
+            		$row[] = null;
+            	}else{
+	                $datetime = userdate($entry->starttime, get_string('fulldatetimetemplate', 'organizer')) . ' - ' . userdate($entry->starttime + $entry->duration, get_string('timetemplate', 'organizer'));
+	                $row[] = array('data' => $datetime, 'rowspan' => $rowspan - 1);
+            	}
                 break;
             case 'location':
-                $row[] = array('data' => $entry->location, 'rowspan' => $rowspan - 1);
+            	if($rowspan != $entry->rowspan){
+            		$row[] = null;
+            	}else{
+                	$row[] = array('data' => $entry->location, 'rowspan' => $rowspan - 1);
+            	}
                 break;
             case 'teacher':
-                $a = new stdClass();
-                $a->firstname = $entry->teacherfirstname;
-                $a->lastname = $entry->teacherlastname;
-                $name = get_string('fullname_template', 'organizer', $a);
-                $row[] = array('data' => $name, 'rowspan' => $rowspan - 1);
+            	if($rowspan != $entry->rowspan){
+            		$row[] = null;
+            	}else{
+	                $a = new stdClass();
+	                $a->firstname = $entry->teacherfirstname;
+	                $a->lastname = $entry->teacherlastname;
+	                $name = get_string('fullname_template', 'organizer', $a);
+	                $row[] = array('data' => $name, 'rowspan' => $rowspan - 1);
+            	}
                 break;
             case 'groupname':
-                $groupname = isset($entry->groupname) ? $entry->groupname : '';
-                $row[] = array('data' => $groupname, 'rowspan' => $rowspan - 1);
+            	if($rowspan != $entry->rowspan){
+            		$row[] = null;
+            	}else{
+	                $groupname = isset($entry->groupname) ? $entry->groupname : '';
+	                $row[] = array('data' => $groupname, 'rowspan' => $rowspan - 1);
+            	}
                 break;
             // these columns cannot have rowspan
             case 'participant':
@@ -197,12 +215,7 @@ function organizer_display_printable_table($timeavailable, $timedue, $columns, $
                 break;
             }
         }
-        if ($rowspan != $entry->rowspan) { // TODO: this must be fixed to account for invisible columns
-            $row[0] = null;
-            $row[1] = null;
-            $row[2] = null;
-            $row[3] = null;
-        }
+
         $mpdftable->addRow($row);
         $rowspan--;
     }
