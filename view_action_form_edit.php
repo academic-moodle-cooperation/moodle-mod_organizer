@@ -303,6 +303,9 @@ class organizer_edit_slots_form extends moodleform {
                 $this->_warning_icon('availablefrom', isset($defaults['availablefrom'])));
 
         $mform->setDefault('availablefrom', '');
+        if($defaults['now'] == 1){
+        	$mform->setDefault('availablefrom[now]', '1');
+        }
         $mform->addGroup($group, 'availablefromgroup', get_string('availablefrom', 'organizer'), ORGANIZER_SPACING, false);
 
         $availablefromgroup = $mform->getElement('availablefromgroup')->getElements();
