@@ -209,11 +209,12 @@ function organizer_add_event_slot($cmid, $slot) {
         $a->location = $slot->location;
     }
 
-    $a->description = $slot->comments;
-
     $event = new stdClass();
     $event->name = get_string('eventtitle', 'organizer', $a);
     $event->description = get_string('eventtemplate', 'organizer', $a);
+    if($slot->comments != ""){
+    	$event->description .= get_string('eventtemplatecomment','organizer',$slot->comments);
+    }
     $event->format = 1;
     $event->courseid = 0;
     $event->groupid = 0;
