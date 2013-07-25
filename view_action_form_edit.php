@@ -213,9 +213,9 @@ class organizer_edit_slots_form extends moodleform {
 
         $mform->setType('teacherid', PARAM_INT);
 
-        $mform->addGroup($group, '', get_string('teacher', 'organizer'), ORGANIZER_SPACING, false);
+        $mform->addGroup($group, 'teachergrp', get_string('teacher', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_teacherid', 0);
-        $mform->setType('mod_teacherid', PARAM_BOOL);
+        $mform->setType('mod_teacherid', PARAM_BOOL); 
         /*
         if (!isset($defaults['teacherid'])) {
             $mform->setDefault('teacherid', -1);
@@ -369,8 +369,48 @@ class organizer_edit_slots_form extends moodleform {
         if ($data['mod_location'] != 0 && (!isset($data['location']) || $data['location'] === '')) {
             $errors['locationgroup'] = get_string('err_location', 'organizer');
         }
+        
+        $collisions = $this->_check_collision($data['slots'],$data['teacherid']);
+        
+        if(count($collisions) > 0){
+        	$errors['teachergrp'] = get_string('collision','organizer') . "<br/>";
 
+        	foreach($collisions as $collision){
+        		$errors['teachergrp'] .= '&nbsp;&nbsp;- <strong>' . $collision->name . '</strong> from '
+        			. userdate($collision->starttime,get_string('timetemplate', 'organizer')) . ' to '
+        			. userdate($collision->starttime + $collision->duration,get_string('timetemplate', 'organizer')) . '<br />';
+        	}
+        	
+        }
+        
         return $errors;
+    }
+    
+    /*
+     * Checks if the teacher has allready an appointment at the time
+     */
+    private function _check_collision($slots, $teacherid){
+    	global $DB;
+    	
+    	$params = array();
+    	$params[] = $teacherid;
+    	$params[] = implode(",",$slots);
+    	
+    	$rs = $DB->get_records_sql('	
+SELECT old.*, org.name
+FROM {organizer_slots} AS upd
+JOIN {organizer_slots} AS old ON upd.teacherid = old.teacherid AND upd.id <> old.id
+JOIN {organizer} AS org ON old.organizerid = org.id
+WHERE
+(
+	( upd.starttime >= old.starttime AND upd.starttime < old.starttime + old.duration ) OR
+	( upd.starttime + upd.duration  >= old.starttime AND upd.starttime + upd.duration < old.starttime + old.duration )
+)
+AND old.teacherid = ?
+AND upd.id IN (?)',
+    			$params);
+
+    	return $rs;
     }
 
     private function _load_teachers() {
