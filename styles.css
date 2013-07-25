@@ -109,3 +109,10 @@
 #page-mod-organizer-view div#organizer_popup_header div.title h2{
 	width:100%;
 }
+
+#organizer_main_cointainer fieldset#id_slotdetails input[readonly='readonly'] {
+    background: #ffffff; 
+    color: #6d6d6d; 
+    border: 1px solid #afafaf;
+    cursor:default;
+}
