@@ -395,20 +395,19 @@ class organizer_edit_slots_form extends moodleform {
     	$params = array();
     	$params[] = $teacherid;
     	$params[] = implode(",",$slots);
+    	$params[] = implode(",",$slots);
     	
     	$rs = $DB->get_records_sql('	
-SELECT old.*, org.name
-FROM {organizer_slots} AS upd
-JOIN {organizer_slots} AS old ON upd.teacherid = old.teacherid AND upd.id <> old.id
-JOIN {organizer} AS org ON old.organizerid = org.id
-WHERE
-(
-	( upd.starttime >= old.starttime AND upd.starttime < old.starttime + old.duration ) OR
-	( upd.starttime + upd.duration  >= old.starttime AND upd.starttime + upd.duration < old.starttime + old.duration )
-)
-AND old.teacherid = ?
-AND upd.id IN (?)',
-    			$params);
+			SELECT old.*, org.name
+			FROM {organizer_slots} AS upd
+			JOIN {organizer_slots} AS old ON upd.id <> old.id
+			JOIN {organizer} AS org ON old.organizerid = org.id
+			WHERE
+			(
+			    NOT ( upd.starttime + upd.duration <= old.starttime OR upd.starttime >= old.starttime + old.duration)
+			)
+			AND old.teacherid = ?
+			AND upd.id IN (?) AND old.id NOT IN(?)', $params);
 
     	return $rs;
     }
