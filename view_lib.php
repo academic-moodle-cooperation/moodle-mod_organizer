@@ -113,8 +113,8 @@ function organizer_generate_student_view($params, $instance) {
 
 function organizer_generate_registration_status_view($params, $instance) {
     $output = organizer_generate_tab_row($params, $instance->context);
+    
     $output .= organizer_make_infobox($params, $instance->organizer, $instance->context);
-    $output .= organizer_begin_form($params);
 
     $columns = array('status');
 
@@ -141,7 +141,6 @@ function organizer_generate_registration_status_view($params, $instance) {
     $table->align = $align;
 
     $output .= organizer_render_table_with_footer($table);
-    $output .= organizer_end_form();
 
     return $output;
 }
@@ -983,35 +982,87 @@ function organizer_teacher_action_new($params, $entry, $context) {
             array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'eval', 'slots[]' => $entry->slotid));
 
     $remindurl = new moodle_url('/mod/organizer/view_action.php',
-            array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'remind', 'user' => $entry->id));
+            array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'remind', 'user' => $entry->id, 'sesskey'=>sesskey()));
 
+    $buttons = array();
+    
     switch ($entry->status) {
         case ORGANIZER_APP_STATUS_ATTENDED:
-            return $OUTPUT->single_button($evalurl, get_string("btn_reeval", 'organizer'), 'post',
-                    array('disabled' => !has_capability('mod/organizer:evalslots', $context, null, true)));
+        	$button = new stdClass();
+        	$button->text = get_string("btn_reeval", 'organizer');
+        	$button->url = $evalurl;
+        	$button->$disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+        	$buttons[] = $button;
+        	break;
+
         case ORGANIZER_APP_STATUS_ATTENDED_REAPP:
-            return $OUTPUT->single_button($evalurl, get_string("btn_reeval", 'organizer'), 'post',
-                    array('disabled' => !has_capability('mod/organizer:evalslots', $context, null, true)));
+        	$button = new stdClass();
+        	$button->text = get_string("btn_reeval", 'organizer');
+        	$button->url = $evalurl;
+        	$button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+        	$buttons[] = $button;
+        	break;
+
         case ORGANIZER_APP_STATUS_PENDING:
-            return $OUTPUT->single_button($evalurl, get_string("btn_eval_short", 'organizer'), 'post',
-                    array('disabled' => !has_capability('mod/organizer:evalslots', $context, null, true)));
+        	$button = new stdClass();
+        	$button->text = get_string("btn_eval_short", 'organizer');
+        	$button->url = $evalurl;
+        	$button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+        	$buttons[] = $button;
+        	break;
+
         case ORGANIZER_APP_STATUS_REGISTERED:
-            return $OUTPUT->single_button($evalurl, get_string("btn_eval_short", 'organizer'), 'post',
-                    array('disabled' => !has_capability('mod/organizer:evalslots', $context, null, true)));
+        	$button = new stdClass();
+        	$button->text = get_string("btn_eval_short", 'organizer');
+        	$button->url = $evalurl;
+        	$button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+        	$buttons[] = $button;
+        	break;
+
         case ORGANIZER_APP_STATUS_NOT_ATTENDED:
-            return $OUTPUT->single_button($evalurl, get_string("btn_reeval", 'organizer'), 'post',
-                    array('disabled' => !has_capability('mod/organizer:evalslots', $context, null, true)));
+        	$button = new stdClass();
+        	$button->text = get_string("btn_reeval", 'organizer');
+        	$button->url = $evalurl;
+        	$button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+        	$buttons[] = $button;
+        	break;
+
         case ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP:
-            return $OUTPUT->single_button($remindurl, get_string("btn_remind", 'organizer'), 'post',
-                    array('disabled' => !has_capability('mod/organizer:sendreminders', $context, null, true)))
-                    . $OUTPUT->single_button($evalurl, get_string("btn_reeval", 'organizer'), 'post',
-                            array('disabled' => !has_capability('mod/organizer:evalslots', $context, null, true)));
+        	$button = new stdClass();
+        	$button->text = get_string("btn_remind", 'organizer');
+        	$button->url = $remindurl;
+        	$button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true);
+        	$buttons[] = $button;
+        	
+        	$button = new stdClass();
+        	$button->text = get_string("btn_reeval", 'organizer');
+        	$button->url = $evalurl;
+        	$button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+        	$buttons[] = $button;
+        	break;
+
         case ORGANIZER_APP_STATUS_NOT_REGISTERED:
-            return $OUTPUT->single_button($remindurl, get_string("btn_remind", 'organizer'), 'post',
-                    array('disabled' => !has_capability('mod/organizer:sendreminders', $context, null, true)));
+        	$button = new stdClass();
+        	$button->text = get_string("btn_remind", 'organizer');
+        	$button->url = $remindurl;
+        	$button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true);
+        	$buttons[] = $button;
+        	break;
         default:
             print_error("Wrong status code: $entry->status");
     }
+    
+    $output = "";
+    
+    foreach($buttons as $button){
+    	if($button->disabled){
+    		$output .= '<a href="#" class="action disabled">' . $button->text . '</a>';
+    	}else{
+    		$output .= '<a href="' . $button->url . '" class="action">' . $button->text . '</a>';
+    	}
+    }
+    
+    return $output;
 }
 
 function organizer_organizer_get_participant_list_infobox($params, $slot, $userid = 0) {

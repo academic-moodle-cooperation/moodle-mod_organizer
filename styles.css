@@ -116,3 +116,11 @@
     border: 1px solid #afafaf;
     cursor:default;
 }
+
+#organizer_main_cointainer a.action{
+	white-space:nowrap;
+}
+
+#organizer_main_cointainer a.disabled{
+	color:grey;
+}
