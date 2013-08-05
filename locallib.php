@@ -360,12 +360,16 @@ function organizer_update_appointment_slot($data) {
         $slot->notificationtime = $data->notificationtime;
         $modified = true;
     }
-    //*
+
     if ($data->mod_availablefrom == 1) {
-        $slot->availablefrom = $data->availablefrom;
+    	if(is_array($data->availablefrom)){
+    		$slot->availablefrom = 0;
+    	}else{
+    		$slot->availablefrom = $data->availablefrom;
+    	}
         $modified = true;
     }
-    //*/
+
     if ($data->mod_teachervisible == 1) {
         $slot->teachervisible = $data->teachervisible;
         $modified = true;

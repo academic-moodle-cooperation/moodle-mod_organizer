@@ -285,11 +285,9 @@ class organizer_edit_slots_form extends moodleform {
             $mform->setType('maxparticipants', PARAM_INT);
             $mform->setType('mod_maxparticipants', PARAM_BOOL);
         }
-
-        $now = $defaults['now'];
-
+       
         $group = array();
-        if ($now) {
+        if ($defaults['now']) {
             $group[] = $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer'),
                     null, array('group' => null, 'disabled' => true));
         } else {
@@ -303,9 +301,8 @@ class organizer_edit_slots_form extends moodleform {
                 $this->_warning_icon('availablefrom', isset($defaults['availablefrom'])));
 
         $mform->setDefault('availablefrom', '');
-        if($defaults['now'] == 1){
-        	$mform->setDefault('availablefrom[now]', '1');
-        }
+       	$mform->setDefault('availablefrom[now]', $defaults['now']);
+
         $mform->addGroup($group, 'availablefromgroup', get_string('availablefrom', 'organizer'), ORGANIZER_SPACING, false);
 
         $availablefromgroup = $mform->getElement('availablefromgroup')->getElements();
