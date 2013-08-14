@@ -101,11 +101,6 @@
     white-space:nowrap
 }
 
-#organizer_main_cointainer div#fgroup_id_printperpagegrp fieldset {
-	margin-bottom:0;
-	padding-left:0;
-}
-
 #page-mod-organizer-view div#organizer_popup_header div.title h2{
 	width:100%;
 }
