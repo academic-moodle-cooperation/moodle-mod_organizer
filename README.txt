@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------
 # This software is provided under the GNU General Public License
 # http://www.gnu.org/licenses/gpl.html
-# with Copyright © 2009 onwards
+# with Copyright ï¿½ 2009 onwards
 #
 # Dipl.-Ing. Andreas Hruska
 # andreas.hruska@tuwien.ac.at
@@ -11,15 +11,15 @@
 # 
 # Vienna University of Technology
 # Teaching Support Center
-# Gußhausstraße 28/E015
+# Guï¿½hausstraï¿½e 28/E015
 # 1040 Wien
 # http://tsc.tuwien.ac.at/
 # ---------------------------------------------------------------
-# FOR Moodle 2.2.1+
+# FOR Moodle 2.5
 # ---------------------------------------------------------------
 
 README.txt
-v.2012-05-24
+v.2013-09-23
 
 
 Organizer module
@@ -49,7 +49,7 @@ OVERVIEW
 
 REQUIREMENTS
 ================================================================================
-	Moodle 2.2.1+ or later
+	Moodle 2.5 or later
 
 INSTALLATION 
 ================================================================================
@@ -68,6 +68,6 @@ INSTALLATION
 	
 CHANGELOG
 ================================================================================
-
-24.5.2012.
-Version 2012052400 released.
+	*) 23.9.2013 Bugs fixed
+	*) 23.9.2013 compatibility for Moodle 2.5
+	*) 24.5.2012 Version 2012052400 released.
