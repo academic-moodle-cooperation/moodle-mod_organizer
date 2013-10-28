@@ -259,9 +259,14 @@ class organizer_add_slots_form extends moodleform {
     	return $errors;
     }
 
-    private function _validation_step1($data) { 	 
-    	if ($data['location'] == '' || !$this->_converts_to_int($data['maxparticipants'])
-    	|| $data['maxparticipants'] <= 0 || !($data['duration']['number'] * $data['duration']['timeunit'] % 60 == 0)
+    private function _validation_step1($data) {
+    	if(isset($data['isgrouporganizer']) && $data['isgrouporganizer'] == 0 &&
+    		(!$this->_converts_to_int($data['maxparticipants']) || $data['maxparticipants'] <= 0)){
+    		return false;
+    	}
+    	
+    	if ($data['location'] == '' 
+    	|| !($data['duration']['number'] * $data['duration']['timeunit'] % 60 == 0)
     	|| $data['duration']['number'] <= 0 || !$this->_converts_to_int($data['notificationtime']['number'])
     	|| $data['notificationtime']['number'] <= 0) {
     		return false;
