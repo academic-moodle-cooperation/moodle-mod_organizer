@@ -697,6 +697,7 @@ $string['atlocation'] = 'at';
 
 $string['printoptions'] = 'Print settings';
 $string['numentries'] = 'Entries shown per page';
+$string['numentries_help'] = 'Choose "optimal" to optimize the distribution of list entries according to the chosen textsize and page orientation, if there are plenty of participants registered in your course';
 $string['stroptimal'] = 'optimal';
 $string['textsize'] = 'Textsize';
 $string['pageorientation'] = 'Page orientation';

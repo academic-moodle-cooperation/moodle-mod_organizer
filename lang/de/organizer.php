@@ -651,6 +651,7 @@ $string['atlocation'] = 'in';
 
 $string['printoptions'] = 'Druckeinstellungen';
 $string['numentries'] = 'Einträge pro Seite';
+$string['numentries_help'] = 'Wenn in Ihrem Kurs sehr viele Teilnehmer/innen eingeschrieben sind, können Sie mittels der Einstellung "Optimal" die Aufteilung der Listeneinträge pro Seite entsprechend der gewählten Schriftgröße und Seitenausrichtung optimieren.';
 $string['stroptimal'] = 'optimal';
 $string['textsize'] = 'Textgröße';
 $string['pageorientation'] = 'Seitenausrichtung';
