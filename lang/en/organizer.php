@@ -296,6 +296,8 @@ $string['resetorganizerall'] = 'Clear all organizer data (slots & appointments)'
 $string['deleteorganizergrades'] = 'Delete grades from gradebook';
 
 $string['configintro'] = 'The values you set here define the default values that are used in the settings form when you create a new organizer.';
+$string['requiremodintro'] = 'Require activity description';
+$string['configrequiremodintro'] = 'Disable this option if you do not want to force users to enter description of each activity.';
 $string['configmaximumgrade'] = 'Sets the default value selected in the grade field when creating a new organizer. This is the maximum grade assignable to a student for his appointment.';
 $string['configabsolutedeadline'] = 'The default offset of the date and time selector from the current date and time.';
 $string['configrelativedeadline'] = 'The default time ahead of an appointment when the participants should be notified of it.';
