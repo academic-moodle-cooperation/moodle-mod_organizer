@@ -310,6 +310,7 @@ $string['no_slots_defined_teacher'] = 'Derzeit sind keine Zeitslots verfügbar. 
 $string['eventnoparticipants'] = 'Keine Teilnehmer/innen';
 $string['eventteacheranonymous'] = '<em>anonymous</em>';
 
+$string['organizer:addinstance'] = 'Organizer hinzufügen';
 $string['organizer:addslots'] = 'Neue Zeitslots hinzufügen';
 $string['organizer:editslots'] = 'Vorhandene Zeitslots bearbeiten';
 $string['organizer:evalslots'] = 'Abgeschlossene Zeitslots bewerten';

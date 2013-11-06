@@ -322,6 +322,7 @@ $string['configahead'] = 'ahead';
 $string['configemailteachers_label'] = 'Send E-mail notifications to teachers';
 $string['configdigest_label'] = 'Send appointment digest to teachers';
 
+$string['organizer:addinstance'] = 'Add a new organizer';
 $string['organizer:comment'] = 'Add comments';
 $string['organizer:addslots'] = 'Add new time slots';
 $string['organizer:editslots'] = 'Edit existing time slots';
