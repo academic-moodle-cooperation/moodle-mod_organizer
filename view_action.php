@@ -83,8 +83,7 @@ $PAGE->requires->js_module($jsmodule);
 
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
 
-$logurl = new moodle_url('/mod/organizer/view_action.php');
-$logurl->param('id', $cm->id);
+$logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
 if ($action == ORGANIZER_ACTION_ADD) {
     require_capability('mod/organizer:addslots', $context);
