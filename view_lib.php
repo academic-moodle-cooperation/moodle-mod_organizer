@@ -979,7 +979,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
     global $OUTPUT;
 
     $evalurl = new moodle_url('/mod/organizer/view_action.php',
-            array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'eval', 'slots[]' => $entry->slotid));
+            array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'eval', 'slots[]' => $entry->slotid, 'sesskey'=>sesskey()));
 
     $remindurl = new moodle_url('/mod/organizer/view_action.php',
             array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'remind', 'user' => $entry->id, 'sesskey'=>sesskey()));
