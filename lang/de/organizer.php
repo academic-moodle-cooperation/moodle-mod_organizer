@@ -71,6 +71,7 @@ $string['relativedeadline_help'] = "Die Deadline wird relativ zum jeweiligen Slo
     Studierenden können sich nach Ablauf dieser Deadline nicht für diesen Slot anmelden oder abmelden.";
 $string['grade'] = 'Höchste Bewertung';
 $string['grade_help'] = 'Bestimmt die höchste erreichbare Bewertung für jeden Termin der beurteilt werden kann.';
+$string['changegradewarning'] = 'In diesem Terminplaner sind bereits Termine bewertet worden. Bei einer Änderung der Bewertungsskala sind Neuberechnungen der Bewertungen erforderlich. Sie müssen ggfs. die Neuberechnung gesondert starten.';
 $string['groupoptions'] = 'Gruppeneinstellungen';
 $string['organizercommon'] = 'Terminplaner Einstellungen';
 $string['grouppicker'] = 'Gruppenauswahl';

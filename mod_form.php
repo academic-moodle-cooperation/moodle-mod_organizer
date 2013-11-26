@@ -56,7 +56,7 @@ class mod_organizer_mod_form extends moodleform_mod {
     }
 
     public function definition() {
-        global $PAGE, $CFG;
+        global $PAGE, $CFG, $DB;
 
         $organizerconfig = get_config('organizer');
 
@@ -122,6 +122,35 @@ class mod_organizer_mod_form extends moodleform_mod {
         $warning = $mform->createElement('static', '', '', '<span id="groupingid_warning">' . get_string('warning_groupingid', 'organizer') . '</span>');
         $mform->insertElementBefore($warning, 'groupingid');
         $this->add_action_buttons();
+        
+        // Add warning popup/noscript tag, if grades are changed by user.
+        $hasgrade = false;
+        if (!empty($this->_instance)) {
+        	$hasgrade = $DB->record_exists_sql('SELECT *
+					FROM {organizer_slots} slots
+					JOIN {organizer_slot_appointments} apps
+					ON slots.id = apps.slotid
+					WHERE slots.organizerid=? and NOT grade IS NULL',
+        			array($this->_instance));
+        }
+        
+        if ($mform->elementExists('grade') && $hasgrade) {
+        	$module = array(
+        			'name' => 'mod_organizer',
+        			'fullpath' => '/mod/organizer/module.js',
+        			'requires' => array('node', 'event'),
+        			'strings' => array(array('changegradewarning', 'mod_organizer'))
+        	);
+        	$PAGE->requires->js_init_call('M.mod_organizer.init_grade_change', null, false, $module);
+        
+        	// Add noscript tag in case.
+        	$noscriptwarning = $mform->createElement('static',
+        			'warning',
+        			null,
+        			html_writer::tag('noscript',
+        					get_string('changegradewarning', 'mod_organizer')));
+        	$mform->insertElementBefore($noscriptwarning, 'grade');
+        }
     }
 
     public function validation($data, $files) {

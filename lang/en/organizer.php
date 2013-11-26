@@ -69,6 +69,7 @@ $string['relativedeadline'] = 'Relative deadline';
 $string['relativedeadline_help'] = "Sets the deadline for the application for a specific slot specified time ahead. The students will not be able to change register or unregister once the deadline has expired.";
 $string['grade'] = 'Maximum grade';
 $string['grade_help'] = 'Defines the highest amount of points that can be awarded for any appointment that can be graded.';
+$string['changegradewarning'] = 'This organizer has graded appointments and changing the grade will not automatically re-calculate existing grades. You must re-grade all existing appointments, if you wish to change the grade.';
 $string['groupoptions'] = 'Group settings';
 $string['organizercommon'] = 'Organizer settings';
 $string['grouppicker'] = 'Group picker';
