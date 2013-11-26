@@ -991,7 +991,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
         	$button = new stdClass();
         	$button->text = get_string("btn_reeval", 'organizer');
         	$button->url = $evalurl;
-        	$button->$disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+        	$button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
         	$buttons[] = $button;
         	break;
 

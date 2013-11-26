@@ -128,6 +128,14 @@ class organizer_slot {
             $this->slot = $DB->get_record('organizer_slots', array('id' => $slot));
         } else {
             $this->slot = $slot;
+            
+            if(!isset($this->slot->organizerid)){
+            	$this->slot->organizerid = $DB->get_field('organizer_slots', 'organizerid', array('id'=>$slot->slotid));
+            }
+            
+            if(!isset($this->slot->maxparticipants)){
+            	$this->slot->maxparticipants = $DB->get_field('organizer_slots', 'maxparticipants', array('id'=>$slot->slotid));
+            }
         }
 
         foreach ((array) $this->slot as $key => $value) {
