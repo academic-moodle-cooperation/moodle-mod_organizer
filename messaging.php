@@ -59,11 +59,14 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $strings->courseshortname = $course->shortname;
     $strings->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
 
+    $courseurl = new moodle_url('/mod/organizer/view.php',array('id'=>$cm->id));
+    $strings->courselink = html_writer::link($courseurl, $course->fullname);
+
     if ($organizer->isgrouporganizer) {
         if (strpos($type, 'register_notify') !== false || strpos($type, 'group_registration_notify') !== false) {
-            $group = groups_get_group(reset(reset(groups_get_user_groups($organizer->course, $sender->id))));
+        	$group = groups_get_group(reset(reset(groups_get_user_groups($organizer->course, $sender->id))));
         } else {
-            $group = groups_get_group(reset(reset(groups_get_user_groups($organizer->course, $receiver->id))));
+        	$group = groups_get_group(reset(reset(groups_get_user_groups($organizer->course, $receiver->id))));
         }
         $strings->groupname = $group->name;
         $type .= ":group";

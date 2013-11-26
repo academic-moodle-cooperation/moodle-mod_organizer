@@ -282,7 +282,18 @@ $string['message_warning_no_slots_selected'] = 'You must select at least one slo
 $string['message_info_slots_added_sg'] = '{$a->count} new slot was added.';
 $string['message_info_slots_added_pl'] = '{$a->count} new slots were added.';
 $string['message_warning_no_slots_added'] = 'No new slots were added!';
+$string['message_info_slots_deleted'] = 'The following slots were deleted:<br/>
+{$a->deleted} slots deleted.<br/>
+{$a->notified} users have been notified.';
+$string['message_info_slots_deleted_group'] = 'The following slots were deleted:<br/>
+{$a->deleted} slots deleted.<br/>
+{$a->notified} users have been notified.';
 
+$string['message_info_available'] = 'There are {$a->freeslots} empty slots available for {$a->notregistered} users without any appointment.';
+$string['message_info_available_group'] = 'There are {$a->freeslots} empty slots available for {$a->notregistered} groups without any appointment.';
+
+$string['message_warning_available'] = '<span style="color:red;">Warning</span> There are {$a->freeslots} empty slots available for {$a->notregistered} users without any appointment.';
+$string['message_warning_available_group'] = '<span style="color:red;">Warning</span> There are {$a->freeslots} empty slots available for {$a->notregistered} groups without any appointment.';
 
 $string['grouporganizer_desc_nogroup'] = 'This is a group organizer. Students can register their groups to appointments. All group members may change and comment the registration.';
 $string['grouporganizer_desc_hasgroup'] = 'This is a group organizer. Clicking the register button will register you and all members of your group {$a->groupname} to this slot. All group members may change and comment the registration.';
@@ -345,6 +356,9 @@ $string['messageprovider:manual_reminder:student'] = 'Test string';
 $string['messageprovider:appointment_reminder:teacher'] = 'Test string';
 $string['messageprovider:eval_notify:student'] = 'Test string';
 $string['messageprovider:group_registration_notify:student'] = 'Test string';
+$string['messageprovider:register_reminder:student'] = 'Organizer registration reminder';
+$string['messageprovider:edit_notify:student'] = 'Organizer changes';
+$string['messageprovider:slotdeleted_notify:student'] = 'Orgnizer slots cancled';
 
 $string['reg_status_organizer_expired'] = 'Organizer expired';
 $string['reg_status_slot_expired'] = 'Slot expired';
@@ -384,9 +398,27 @@ $string['modformwarningplural'] = 'These fields cannot be edited as there are ap
 /* Message templates following.
  * Please note that the following strings are available:
  * 	   sendername, receivername, courseshortname, courselongname, courseid, organizername,
- *     date, time, location, groupname
+ *     date, time, location, groupname, courselink
  * If more strings are required, add them to the $strings object in messaging.php
  */
+
+$string['slotdeleted_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment cancled';
+$string['slotdeleted_notify:student:fullmessage'] = 'Hello {$a->receivername}!
+
+Your appointment in the course {$a->courseshortname} on {$a->date} at {$a->time} in {$a->location} was cancelled.
+Note that you have no longer an appointment in the organizer {$a->organizername}.
+Please follow the link to make a new appointment: {$a->courselink}';
+$string['slotdeleted_notify:student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->organizername} was cancled.';
+
+$string['slotdeleted_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment cancled';
+$string['slotdeleted_notify:student:group:fullmessage'] = 'Hello {$a->receivername}!
+
+Your appointment in the course {$a->courseshortname} on {$a->date} at {$a->time} in {$a->location} was cancelled.
+Note that you have no longer an appointment in the organizer {$a->organizername}.
+Please follow the link to make a new appointment: {$a->courselink}';
+$string['slotdeleted_notify:student:group:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->organizername} was cancled.';
+
+//--------------------------------------------------------------------------------------------------
 
 $string['register_notify:teacher:register:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student registered';
 $string['register_notify:teacher:register:fullmessage'] =
@@ -691,7 +723,7 @@ $string['applicant'] = 'This is the person that registered the group';
 
 $string['deleteheader'] = 'Deleting following slots:';
 $string['deletenoslots'] = 'No deletable slots selected';
-$string['deletekeep'] = 'Following slots will not be deleted as they have students registered to them:';
+$string['deletekeep'] = 'The following appointments will be cancelled. Registered students will be notified and the slots will be deleted:';
 
 $string['atlocation'] = 'at';
 

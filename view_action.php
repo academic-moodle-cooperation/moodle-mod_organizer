@@ -203,9 +203,57 @@ if ($action == ORGANIZER_ACTION_ADD) {
 
     if ($data = $mform->get_data()) {
         if (isset($slots)) {
+        	$notified = 0;
             foreach ($slots as $slotid) {
-                organizer_delete_appointment_slot($slotid);
+                $notified += organizer_delete_appointment_slot($slotid);
             }
+            
+            $slots_deleted = count($slots);
+            
+            $slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
+           
+            
+            // count_records_sql doesnt work
+           	$appointments_total = $DB->get_record_sql('SELECT COUNT(*) as total
+				FROM {organizer_slots} org
+				JOIN {organizer_slot_appointments} app ON org.id = app.slotid
+				WHERE org.organizerid=?',array($organizer->id));
+           	$appointments_total = $appointments_total->total;
+           	
+            if($organizer->isgrouporganizer){
+            	$redirecturl->param('messages[]','message_info_slots_deleted_group');
+            	
+            	$groups = groups_get_all_groups($course->id, 0, $cm->groupingid);
+            	$registrants_total = count($groups);
+            	
+            	$places_total = count($slots);
+            	
+            }else{
+            	$redirecturl->param('messages[0]','message_info_slots_deleted');
+            	
+            	$slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
+            	$places_total = 0;
+            	foreach ($slots as $slot) {
+            		$places_total += $slot->maxparticipants;
+            	}
+            	
+            	$registrants_total = count(get_enrolled_users($context, 'mod/organizer:register'));
+            }
+            
+            $free_total = $places_total - $appointments_total;
+            $notregistered = $registrants_total - $appointments_total;
+            
+            
+            $redirecturl->param('data[deleted]',$slots_deleted);
+            $redirecturl->param('data[notified]',$notified); // anzahl benachrichtigter studenten
+            $redirecturl->param('data[freeslots]',$free_total); // freie slots
+            $redirecturl->param('data[notregistered]',$notregistered); // anzahl noch nicht angemeldeter studenten
+            
+            $prefix = ($notregistered > $free_total) ? 'warning' : 'info';
+            $suffix = ($organizer->isgrouporganizer) ? '_group' :'';
+            
+            $redirecturl->param('messages[1]','message_' . $prefix . '_available' . $suffix);
+            
         }
         redirect($redirecturl);
     } else if ($mform->is_cancelled()) {

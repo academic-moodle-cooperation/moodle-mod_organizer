@@ -20,6 +20,8 @@ $messageproviders = array(
                 'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
         'appointment_reminder:teacher' => array('capability' => 'mod/organizer:receivemessagesteacher',
                 'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
+        'slotdeleted_notify:student' => array('capability' => 'mod/organizer:receivemessagesstudent',
+                		'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),         
         'appointment_reminder:student' => array('capability' => 'mod/organizer:receivemessagesstudent',
                 'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
         'register_reminder:student' => array('capability' => 'mod/organizer:receivemessagesstudent',

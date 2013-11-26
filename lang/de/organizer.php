@@ -265,6 +265,19 @@ $string['message_warning_no_slots_selected'] = 'Sie müssen zuerst mindestens ei
 $string['message_info_slots_added_sg'] = '{$a->count} neuer Slot hinzugefügt.';
 $string['message_info_slots_added_pl'] = '{$a->count} neue Slots hinzugefügt.';
 $string['message_warning_no_slots_added'] = 'Es wurden keine neuen Slots hinzugefügt!';
+$string['message_info_slots_deleted'] = 'Folgende Slots wurden gelöscht:<br/>
+{$a->deleted} Slots gelöscht.<br/>
+{$a->notified} Teilnehmer/innen wurden benachrichtigt.';
+$string['message_info_slots_deleted_group'] = 'Folgende Slots wurden gelöscht:<br/>
+{$a->deleted} Slots gelöscht.<br/>
+{$a->notified} Teilnehmer/innen wurden benachrichtigt.';
+
+$string['message_info_available'] = 'Es stehen noch {$a->freeslots} freie Slots für insgesamt {$a->notregistered} Teilnehmer/innen ohne Termin zur Verfügung.';
+$string['message_info_available_group'] = 'Es stehen noch {$a->freeslots} freie Slots für insgesamt {$a->notregistered} Gruppen ohne Termin zur Verfügung.';
+
+$string['message_warning_available'] = '<span style="color:red;">Warnung</span> Es stehen noch {$a->freeslots} freie Slots für insgesamt {$a->notregistered} Teilnehmer/innen ohne Termin zur Verfügung.';
+$string['message_warning_available_group'] = '<span style="color:red;">Warnung</span> Es stehen noch {$a->freeslots} freie Slots für insgesamt {$a->notregistered} Gruppen ohne Termin zur Verfügung.';
+
 
 $string['grouporganizer_desc_nogroup'] = 'Dies ist ein Gruppenorganizer. Student/innen können hier Ihre Gruppen für Termine anmelden. Alle Gruppenmitglieder können die Anmeldung ändern und kommentieren.';
 $string['grouporganizer_desc_hasgroup'] = 'Dies ist ein Gruppenorganizer. Das Betätigen des Anmeldebuttons meldet Sie und alle Mitglieder Ihrer Gruppe {$a->groupname} für diesen Slot an. Alle Gruppenmitglieder können die Anmeldung ändern und kommentieren.';
@@ -332,13 +345,34 @@ $string['messageprovider:manual_reminder:student'] = 'Test string';
 $string['messageprovider:appointment_reminder:teacher'] = 'Test string';
 $string['messageprovider:eval_notify:student'] = 'Test string';
 $string['messageprovider:group_registration_notify:student'] = 'Test string';
+$string['messageprovider:register_reminder:student'] = 'Organizer Anmelde Erinnerung';
+$string['messageprovider:edit_notify:student'] = 'Organizer änderungen';
+$string['messageprovider:slotdeleted_notify:student'] = 'Organizer Slot absagen';
 
 /* Message templates following.
  * Please note that the following strings are available:
  * 	   sendername, receivername, courseshortname, courselongname, courseid, organizername,
- *     date, time, location, groupname
+ *     date, time, location, groupname, courselink
  * If more strings are required, add them to the $strings object in messaging.php
  */
+
+$string['slotdeleted_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin abgesagt';
+$string['slotdeleted_notify:student:fullmessage'] = 'Hallo {$a->receivername}!
+
+Im Rahmen des Kurses {$a->courseshortname} wurde ihr Termin am {$a->date} um {$a->time} im {$a->location} abgesagt.
+Beachten Sie dabei, dass Sie keinen Termin mehr im Terminplaner {$a->organizername} haben!
+Für einen Ersatztermin folgen Sie bitte dem Link: {$a->courselink}';
+$string['slotdeleted_notify:student:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im {$a->organizername} wurde abgesagt.';
+
+$string['slotdeleted_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin abgesagt';
+$string['slotdeleted_notify:student:group:fullmessage'] = 'Hallo {$a->receivername}!
+
+Im Rahmen des Kurses {$a->courseshortname} wurde ihr Termin am {$a->date} um {$a->time} im {$a->location} abgesagt.
+Beachten Sie dabei, dass Sie keinen Termin mehr im Terminplaner {$a->organizername} haben!
+Für einen Ersatztermin folgen Sie bitte dem Link: {$a->courselink}';
+$string['slotdeleted_notify:student:group:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im {$a->organizername} wurde abgesagt.';
+
+//--------------------------------------------------------------------------------------------------
 
 $string['register_notify:teacher:register:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student/in angemeldet';
 $string['register_notify:teacher:register:fullmessage'] = 'Hallo {$a->receivername}!
@@ -645,7 +679,7 @@ $string['applicant'] = 'Person, die die Gruppe registriert hat';
 
 $string['deleteheader'] = 'Löschen der folgenden Slots:';
 $string['deletenoslots'] = 'Keine löschbaren Slots ausgewählt';
-$string['deletekeep'] = 'Die folgenden Slots können nicht gelöscht werden, da sich bereits Student/innen für diesen Slot angemeldet haben:';
+$string['deletekeep'] = 'Die folgenden Termine werden abgesagt, die angemeldeten Teilnehmer/innen werden benachrichtigt und die Slots gelöscht:';
 
 $string['atlocation'] = 'in';
 
