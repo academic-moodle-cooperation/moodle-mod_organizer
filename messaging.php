@@ -64,9 +64,15 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
 
     if ($organizer->isgrouporganizer) {
         if (strpos($type, 'register_notify') !== false || strpos($type, 'group_registration_notify') !== false) {
-        	$group = groups_get_group(reset(reset(groups_get_user_groups($organizer->course, $sender->id))));
+        	$group = groups_get_user_groups($organizer->course, $sender->id);
+        	$group = reset($group);
+        	$group = reset($group);
+        	$group = groups_get_group($group);
         } else {
-        	$group = groups_get_group(reset(reset(groups_get_user_groups($organizer->course, $receiver->id))));
+        	$group = groups_get_user_groups($organizer->course, $receiver->id);
+        	$group = reset($group);
+        	$group = reset($group);
+        	$group = groups_get_group($group);
         }
         $strings->groupname = $group->name;
         $type .= ":group";
