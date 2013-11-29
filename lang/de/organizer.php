@@ -340,15 +340,15 @@ $string['organizer:viewmyslots'] = 'Eigene Zeitslots als Lehrende/r ansehen';
 $string['organizer:viewstudentview'] = 'Alle Zeitslots als Student/in ansehen';
 $string['organizer:viewregistrations'] = 'Status der Anmeldung von Student/innen ansehen';
 
-$string['messageprovider:test'] = 'Test string';
-$string['messageprovider:appointment_reminder:student'] = 'Test string';
-$string['messageprovider:manual_reminder:student'] = 'Test string';
-$string['messageprovider:appointment_reminder:teacher'] = 'Test string';
-$string['messageprovider:eval_notify:student'] = 'Test string';
-$string['messageprovider:group_registration_notify:student'] = 'Test string';
-$string['messageprovider:register_reminder:student'] = 'Organizer Anmelde Erinnerung';
-$string['messageprovider:edit_notify:student'] = 'Organizer änderungen';
-$string['messageprovider:slotdeleted_notify:student'] = 'Organizer Slot absagen';
+$string['messageprovider:test'] = 'Terminplaner Test Nachricht';
+$string['messageprovider:appointment_reminder:student'] = 'Terminplaner Terminerinnerung';
+$string['messageprovider:manual_reminder:student'] = 'Terminplaner manuele Terminerinnerung';
+$string['messageprovider:appointment_reminder:teacher'] = 'Terminplaner Terminerinnerung';
+$string['messageprovider:eval_notify:student'] = 'Terminplaner Bewertungsbenachrichtigung';
+$string['messageprovider:group_registration_notify:student'] = 'Terminplaner Gruppenregistrierung Benachrichtigung';
+$string['messageprovider:register_reminder:student'] = 'Terminplaner Registrierungserinnerung';
+$string['messageprovider:edit_notify:student'] = 'Terminplaner änderungen';
+$string['messageprovider:slotdeleted_notify:student'] = 'Terminplaner Slot absagen';
 
 /* Message templates following.
  * Please note that the following strings are available:
