@@ -95,18 +95,28 @@ function organizer_generate_student_view($params, $instance) {
     $output = organizer_generate_tab_row($params, $instance->context);
     $output .= organizer_make_infobox($params, $instance->organizer, $instance->context);
 
-    $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
-    $align = array('left', 'left', 'left', 'left', 'center', 'center');
-    $sortable = array('datetime', 'location', 'teacher');
+    if(time() > $instance->organizer->allowregistrationsfromdate ){
+	    $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
+	    $align = array('left', 'left', 'left', 'left', 'center', 'center');
+	    $sortable = array('datetime', 'location', 'teacher');
+	
+	    $table = new html_table();
+	    $table->id = 'slot_overview';
+	    $table->attributes['class'] = 'generaltable boxaligncenter overview';
+	    $table->head = organizer_generate_table_header($columns, $sortable, $params);
+	    $table->data = organizer_generate_table_content($columns, $params, $instance->organizer, false, false);
+	    $table->align = $align;
 
-    $table = new html_table();
-    $table->id = 'slot_overview';
-    $table->attributes['class'] = 'generaltable boxaligncenter overview';
-    $table->head = organizer_generate_table_header($columns, $sortable, $params);
-    $table->data = organizer_generate_table_content($columns, $params, $instance->organizer, false, false);
-    $table->align = $align;
-
-    $output .= organizer_render_table_with_footer($table);
+	    $output .= organizer_render_table_with_footer($table);
+    }else{
+    	
+    	if($instance->organizer->alwaysshowdescription){
+    		$message = get_string('allowsubmissionsfromdatesummary','organizer',userdate($instance->organizer->allowregistrationsfromdate));
+    	}else{
+    		$message = get_string('allowsubmissionsanddescriptionfromdatesummary','organizer',userdate($instance->organizer->allowregistrationsfromdate));
+    	}
+    	$output .= html_writer::div($message,'',array('id'=>'intro'));
+    }
 
     return $output;
 }
@@ -194,7 +204,7 @@ function organizer_generate_tab_row($params, $context) {
 function organizer_generate_button_bar($params, $organizer, $context) {
     $actions = array('add', 'edit', 'delete', 'print', 'eval');
 
-    $organizerexpired = isset($organizer->enableuntil) && $organizer->enableuntil - time() < 0;
+    $organizerexpired = isset($organizer->duedate) && $organizer->duedate - time() < 0;
     $disable = array($organizerexpired, $organizerexpired, $organizerexpired, false, false);
 
     $output = '<div name="button_bar" class="buttons mdl-align">';

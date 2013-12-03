@@ -160,7 +160,7 @@ class organizer_slot {
 
     public function get_abs_deadline() {
         $this->load_organizer();
-        return $this->organizer->enableuntil;
+        return $this->organizer->duedate;
     }
 
     public function is_upcoming() {
@@ -192,12 +192,12 @@ class organizer_slot {
 
     public function organizer_expired() {
         $this->load_organizer();
-        return isset($this->organizer->enableuntil) && $this->organizer->enableuntil - time() < 0;
+        return isset($this->organizer->duedate) && $this->organizer->duedate - time() < 0;
     }
 
     public function organizer_unavailable() {
         $this->load_organizer();
-        return isset($this->organizer->enablefrom) && $this->organizer->enablefrom - time() > 0;
+        return isset($this->organizer->allowregistrationsfromdate) && $this->organizer->allowregistrationsfromdate - time() > 0;
     }
 
     public function is_evaluated() {

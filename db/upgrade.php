@@ -143,6 +143,46 @@ function xmldb_organizer_upgrade($oldversion) {
         // organizer savepoint reached
         upgrade_mod_savepoint(true, 2012122601, 'organizer');
     }
+    
+    if ($oldversion < 2013112900) {
+		$table = new xmldb_table('organizer');
+
+		// rename enableuntil field to duedate
+		$field = new xmldb_field('enableuntil', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'enablefrom');
+		if ($dbman->field_exists($table, $field)){
+			$dbman->rename_field($table, $field, 'duedate');
+		}
+		
+		// rename enablefrom to allowsubmissionsfromdate
+		$field = new xmldb_field('enablefrom', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'emailteachers');
+		if ($dbman->field_exists($table, $field)){
+			$dbman->rename_field($table, $field, 'allowregistrationsfromdate');
+		}
+		
+		// add field alwaysshowdescription
+		$field = new xmldb_field('alwaysshowdescription', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'duedate');
+		
+		// Conditionally launch add field alwaysshowdescription.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+		    	
+    	// organizer savepoint reached
+    	upgrade_mod_savepoint(true, 2013112900, 'organizer');
+    }
+    
+    if ($oldversion < 2013112901){
+    	$table = new xmldb_table('organizer');
+    	
+    	$field = new xmldb_field('duedate', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, false, null, '0', 'allowregistrationsfromdate');
+    	$dbman->change_field_notnull($table,$field);
+    	
+    	$field = new xmldb_field('allowregistrationsfromdate', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, false, null, '0', 'emailteachers');
+    	$dbman->change_field_notnull($table,$field);
+    	
+    	// organizer savepoint reached
+    	upgrade_mod_savepoint(true, 2013112901, 'organizer');
+    }
 
     return true;
 }

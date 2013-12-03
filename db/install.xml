@@ -13,10 +13,11 @@
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="intro" NEXT="timemodified"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="introformat" NEXT="isgrouporganizer"/>
         <FIELD NAME="isgrouporganizer" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timemodified" NEXT="emailteachers"/>
-        <FIELD NAME="emailteachers" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="isgrouporganizer" NEXT="enablefrom"/>
-        <FIELD NAME="enablefrom" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="emailteachers" NEXT="enableuntil"/>
-        <FIELD NAME="enableuntil" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="enablefrom" NEXT="relativedeadline"/>
-        <FIELD NAME="relativedeadline" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="enableuntil" NEXT="grade"/>
+        <FIELD NAME="emailteachers" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="isgrouporganizer" NEXT="allowregistrationsfromdate"/>
+        <FIELD NAME="allowregistrationsfromdate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="emailteachers" NEXT="duedate"/>
+        <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="allowregistrationsfromdate" NEXT="alwaysshowdescription"/>
+        <FIELD NAME="alwaysshowdescription" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="duedate" NEXT="relativedeadline"/> 
+        <FIELD NAME="relativedeadline" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="alwaysshowdescription" NEXT="grade"/>
         <FIELD NAME="grade" TYPE="number" LENGTH="11" NOTNULL="true" SEQUENCE="false" DECIMALS="5" PREVIOUS="relativedeadline"/>
       </FIELDS>
       <KEYS>

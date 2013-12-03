@@ -309,7 +309,7 @@ if ($action == ORGANIZER_ACTION_ADD) {
     	
     	$organizer = $DB->get_record('organizer', array('id'=>$cm->instance));
 
-        organizer_display_printable_table($organizer->enablefrom, $organizer->enableuntil, $data->cols, $data->slots, $ppp, $data->textsize,
+        organizer_display_printable_table($organizer->allowregistrationsfromdate, $organizer->duedate, $data->cols, $data->slots, $ppp, $data->textsize,
                 $data->pageorientation, $data->headerfooter, $course->shortname . '-' . $organizer->name);
         redirect($redirecturl);
 

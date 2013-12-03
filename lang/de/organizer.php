@@ -46,10 +46,14 @@ $string['duration_help'] = 'Bestimmt die Dauer der Termine. Alle festgelegten Ze
 $string['location'] = 'Ort';
 $string['location_help'] = 'Name des Ortes wo die Termine stattfinden';
 $string['introeditor_error'] = 'Eine Beschreibung des Terminplaners muss vorhanden sein!';
-$string['timeavailable'] = 'Verfügbar ab';
-$string['timeavailable_help'] = "Kreuzen Sie diese Option an um Studierenden den Zugang zu diesem Terminplaner
-    erst ab einem bestimmten Zeitpunkt zu ermöglichen.";
+$string['allowsubmissionsfromdate'] = 'Anmeldebeginn';
+$string['allowsubmissionsfromdate_help'] = "Kreuzen Sie diese Option an um Studierenden den Zugang zu diesem Terminplaner erst ab einem bestimmten Zeitpunkt zu ermöglichen.";
+$string['allowsubmissionsfromdatesummary'] = 'Anmeldungen möglich ab <strong>{$a}</strong>';
+$string['allowsubmissionsanddescriptionfromdatesummary'] = 'Die Terminplanerdetails und die Registrierung stehen zur Verfügung ab <strong>{$a}</strong>';
 $string['duedate'] = 'Abgabetermin';
+$string['availability'] = 'Verfügbarkeit';
+$string['alwaysshowdescription'] = 'Beschreibung immer anzeigen';
+$string['alwaysshowdescription_help'] = 'Wenn diese Option deaktiviert ist, wird die Aufgabenbeschreibung für Teilnehmer/innen nur während des Anmeldezeitraums angezeigt.';
 $string['warning_groupingid'] = 'Gruppenmodus eingeschaltet. Sie müssen eine gültige Gruppierung auswählen.';
 $string['addappointment'] = 'Termin hinzufügen';
 $string['taballapp'] = 'Termine';
@@ -60,7 +64,7 @@ $string['emailteachers'] = 'E-Mail Benachrichtigung an Lehrende versenden';
 $string['emailteachers_help'] = "Mitteilungen an Lehrende bezüglich der Erstanmeldung der Studierenden sind
     normalerweise unterdrückt. Kreuzen Sie diese Option an um diese zu Ermöglichen. Bitte beachten Sie, dass
     die Mitteilungen bezüglich der Um- und Abmeldungen der Studierenden immer gesendet werden.";
-$string['absolutedeadline'] = 'Endgültige Deadline';
+$string['absolutedeadline'] = 'Anmeldeende';
 $string['locationlinkenable'] = 'Automatische Verlinkung zum Terminort';
 $string['locationlink'] = 'Link URL des Ortes';
 $string['locationlink_help'] = 'Geben Sie hier die volle Webadresse an, die beim Link zum Ort verwendet werden soll. Diese Seite sollte zumindest Informationen enthalten wie der Ort des Termins erreicht werden kann. Die volle Adresse (inklusive http://) wird benötigt.';
@@ -711,7 +715,7 @@ $string['multimember'] = 'Teilnehmer dürfen nicht binnen einer Gruppierung zu m
 $string['multimemberspecific'] = 'Teilnehmer {$a->username} {$a->idnumber} hat sich für mehr als eine Gruppe angemeldet! ({$a->groups})';
 $string['groupwarning'] = 'Prüfen Sie die Gruppeneinstellungen unten!';
 
-$string['enableuntilerror'] = 'Endgültige Deadline darf nicht vor dem Verfügbarkeitsdatum definiert werden!';
+$string['duedateerror'] = 'Endgültige Deadline darf nicht vor dem Verfügbarkeitsdatum definiert werden!';
 $string['invalidgrouping'] = 'Sie müssen eine gültige Gruppierung auswählen!';
 
 $string['maillink'] = 'Der Terminplaner ist unter <a href="{$a}">diesem</a> Link verfügbar.';

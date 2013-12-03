@@ -30,7 +30,7 @@ require_once(dirname(__FILE__) . '/lib.php');
 require_once(dirname(__FILE__) . '/mtablepdf.php');
 require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
-function organizer_display_printable_table($timeavailable, $timedue, $columns, $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
+function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, $columns, $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
         $headerfooter = true, $filename = '') {
     global $USER;
 
@@ -141,7 +141,7 @@ function organizer_display_printable_table($timeavailable, $timedue, $columns, $
     $mpdftable->setRowsperPage($entriesperpage);
     $mpdftable->ShowHeaderFooter($headerfooter);
     $mpdftable->SetFontSize($textsize);
-    $mpdftable->setHeaderText(get_string('course') . ':', "{$course->idnumber} {$course->fullname}", get_string('availablefrom', 'organizer').':', userdate($timeavailable), get_string('date') . ':', userdate(time()),
+    $mpdftable->setHeaderText(get_string('course') . ':', "{$course->idnumber} {$course->fullname}", get_string('availablefrom', 'organizer').':', userdate($allowsubmissionsfromdate), get_string('date') . ':', userdate(time()),
     							get_string('modulename', 'organizer') . ':', $organizer->name, $duetitle, $due, '', '');
     $mpdftable->setTitles($titles);
     $mpdftable->setColumnFormat($columnformats);

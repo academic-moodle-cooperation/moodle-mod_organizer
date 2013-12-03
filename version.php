@@ -27,6 +27,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version = 2012122602; // If version == 0 then module will not be installed
+$module->version = 2013112901; // If version == 0 then module will not be installed
 $module->requires = 2012120300; // Requires this Moodle version
 $module->cron = 300; // Period for cron to check this module (secs)

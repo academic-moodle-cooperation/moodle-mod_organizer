@@ -46,10 +46,15 @@ $string['duration_help'] = 'Defines the duration of the appointments. All define
 $string['location'] = 'Location';
 $string['location_help'] = 'Type the name of the location the appointments will take place at';
 $string['introeditor_error'] = 'Organizer description must be given!';
-$string['timeavailable'] = 'Available from';
-$string['timeavailable_help'] = "Check this if you want to make this organizer
-    available to students after a certain point in time.";
+$string['allowsubmissionsfromdate'] = 'Registration start';
+$string['allowsubmissionsfromdate_help'] = "Check this if you want to make this organizer available to students after a certain point in time.";
+$string['allowsubmissionsfromdatesummary'] = 'This organizer will accept registrations from <strong>{$a}</strong>';
+$string['allowsubmissionsanddescriptionfromdatesummary'] = 'The organizer details and registration form will be available from <strong>{$a}</strong>';
 $string['duedate'] = 'Due date';
+$string['availability'] = 'Availability';
+
+$string['alwaysshowdescription'] = 'Always show description';
+$string['alwaysshowdescription_help'] = 'If disabled, the Assignment Description above will only become visible to students at the "Registration start" date.';
 $string['warning_groupingid'] = 'Group mode enabled. You must select a valid grouping.';
 $string['addappointment'] = 'Add appointment';
 $string['taballapp'] = 'Appointments';
@@ -60,7 +65,7 @@ $string['emailteachers'] = 'Send email notifications to teachers';
 $string['emailteachers_help'] = "Notifications for teachers when a student first registrations for a timeslot
     are normally supressed to avoid spamming. Check this to enable the organizer to send such e-mail notifications
     to teachers. Note that the notifications for unregistering and changing slots are always sent.";
-$string['absolutedeadline'] = 'Absolute deadline';
+$string['absolutedeadline'] = 'Registration end';
 $string['locationlinkenable'] = 'location info autolink';
 $string['locationlink'] = 'Location link URL';
 $string['locationlink_help'] = 'Type here the full address of the website you want the location link to refer to. This site should at least contain information on how to reach the location. Please type in the full address (including http://)';
@@ -755,7 +760,7 @@ $string['multimember'] = 'Users cannot belong to multiple groups within the same
 $string['multimemberspecific'] = 'User {$a->username} {$a->idnumber} is registered in more than one group! ({$a->groups})';
 $string['groupwarning'] = 'Check the group options below!';
 
-$string['enableuntilerror'] = 'Absolute deadline cannot be set before the availability date!';
+$string['duedateerror'] = 'Absolute deadline cannot be set before the availability date!';
 $string['invalidgrouping'] = 'You must select a valid grouping!';
 
 $string['maillink'] = 'The organizer is available <a href="{$a}">here</a>.';
