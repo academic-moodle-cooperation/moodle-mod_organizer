@@ -219,8 +219,33 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
         $mpdftable->addRow($row);
         $rowspan--;
     }
-
+    
+    
+    $format = optional_param('format', 'pdf', PARAM_TEXT);
+       
+    switch($format){
+    	case 'xlsx':
+    		$mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_XLSX);
+    		break;
+    	case 'xls':
+    		$mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_XLS);
+    		break;
+    	case 'ods':
+    		$mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_ODS);
+    		break;
+    	case 'csv_comma':
+    		$mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_CSV_COMMA);
+    		break;
+    	case 'csv_tab':
+    		$mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_CSV_TAB);
+    		break;
+    	default:
+    		$mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_PDF);
+    		break;
+    }
+    
     $mpdftable->generate($filename);
+    die();
 }
 
 function fetch_table_entries($slots,$orderby="") {

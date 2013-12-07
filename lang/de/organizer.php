@@ -199,7 +199,7 @@ $string['btn_remind'] = 'Erinnerung senden';
 $string['btn_save'] = 'Kommentar speichern';
 $string['btn_send'] = 'Senden';
 
-$string['pdfsubmit'] = 'PDF herunterladen';
+$string['downloadfile'] = 'Datei herunterladen';
 $string['teacherinvisible'] = 'Lehrende nicht sichtbar';
 
 $string['img_title_evaluated'] = 'Der Slot ist bewertet';
@@ -688,7 +688,15 @@ $string['deletekeep'] = 'Die folgenden Termine werden abgesagt, die angemeldeten
 
 $string['atlocation'] = 'in';
 
-$string['printoptions'] = 'Druckeinstellungen';
+$string['exportsettings'] = 'Exporteinstellungen';
+$string['format'] = 'Format';
+$string['format_pdf'] = 'PDF';
+$string['format_xls'] = 'XLS';
+$string['format_xlsx'] = 'XLSX';
+$string['format_ods'] = 'ODS';
+$string['format_csv_tab'] = 'CSV (tab)';
+$string['format_csv_comma'] = 'CSV (;)';
+$string['pdfsettings'] = 'PDF Einstellungen';
 $string['numentries'] = 'Einträge pro Seite';
 $string['numentries_help'] = 'Wenn in Ihrem Kurs sehr viele Teilnehmer/innen eingeschrieben sind, können Sie mittels der Einstellung "Optimal" die Aufteilung der Listeneinträge pro Seite entsprechend der gewählten Schriftgröße und Seitenausrichtung optimieren.';
 $string['stroptimal'] = 'optimal';

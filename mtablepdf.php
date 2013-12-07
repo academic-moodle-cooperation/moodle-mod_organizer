@@ -33,6 +33,16 @@ class MTablePDF extends pdf{
     const fontsize_small = 8;
     const fontsize_medium = 10;
     const fontsize_large = 12;
+    
+    const OUTPUT_FORMAT_PDF = 0;
+    const OUTPUT_FORMAT_XLSX = 1;
+    const OUTPUT_FORMAT_XLS = 2;
+    const OUTPUT_FORMAT_ODS = 3;
+    const OUTPUT_FORMAT_CSV_COMMA = 4;
+    const OUTPUT_FORMAT_CSV_TAB = 5;
+    
+    private $outputformat =  MTablePDF::OUTPUT_FORMAT_PDF;
+    
 
     private $orientation = MTablePDF::portrait;
     private $rowsperpage = 0;
@@ -187,6 +197,12 @@ class MTablePDF extends pdf{
         
         return false;
     }
+    
+    
+    public function setOutputFormat($format){
+    	$this->outputformat = $format;
+    }
+    
     /**
     * Defines how many rows are printed on each page
     * @param int $i > 0
@@ -282,10 +298,43 @@ class MTablePDF extends pdf{
         $this->showheaderfooter = $showheaderfooter;
     }
 
+    
+    /*
+     * Generate the file
+     * */
+    public function generate($filename){
+
+    	if($filename == ''){
+    		$filename = userdate(time());
+    	}
+    	
+    	$filename = clean_filename($filename);
+    	
+    	switch($this->outputformat){
+    		case MTablePDF::OUTPUT_FORMAT_XLS:
+    			$this->get_xls($filename);
+    			break;
+    		case MTablePDF::OUTPUT_FORMAT_XLSX:
+    			$this->get_xlsx($filename);
+    			break;
+    		case MTablePDF::OUTPUT_FORMAT_ODS:
+    			$this->get_ods($filename);
+    			break;
+    		case MTablePDF::OUTPUT_FORMAT_CSV_COMMA:
+    			$this->get_csv($filename,';');
+    			break;
+    		case MTablePDF::OUTPUT_FORMAT_CSV_TAB:
+    			$this->get_csv($filename);
+    			break;
+    		default:
+    			$this->get_pdf($filename);
+    	}
+    }
+    
     /**
-     * Generate the pdf
+     * Generate pdf
      */
-    public function generate($filename = ''){
+    private function get_pdf($filename){
         $pdf = $this;
 
         // Add a page.
@@ -599,5 +648,198 @@ class MTablePDF extends pdf{
         }else{
         	$pdf->Output();
         }        
+    }
+    
+    
+    
+    
+    
+    
+
+    
+    /**
+     * fills workbook (either XLS or ODS) with data
+     *
+     * @param MoodleExcelWorkbook $workbook workbook to put data into
+     */
+    public function fill_workbook(&$workbook) {
+    	global $DB;
+    	if (is_a($workbook, 'MoodleExcelWorkbook')) {
+    		$column_width = array( 53.6, 82.4); // Unit: mm!
+    	} else {
+    		$column_width = array(386, 594); // Unit: px!
+    	}
+    	$time = time();
+    	$time = userdate($time);
+    	$worksheet = $workbook->add_worksheet($time);
+    
+    	$hidden = false;
+    	$worksheet->set_column(0, 0, $column_width[0], null, $hidden);
+    	$worksheet->set_column(1, 1, $column_width[1], null, $hidden);
+   
+    	$headline_prop = array(    'size' => 12,
+    			'bold' => 1,
+    			'HAlign' => 'center',
+    			'bottom' => 1,
+    			'VAlign' => 'vcenter');
+    	$headline_format = $workbook->add_format($headline_prop);
+    	$headline_format->set_left(1);
+    	$headline_format->set_align('center');
+    	$headline_format->set_align('vcenter');
+    	$headline_first = $workbook->add_format($headline_prop);
+    	$headline_first->set_align('center');
+    	$headline_first->set_align('vcenter');
+    	unset($headline_prop['bottom']);
+    	$hdrleft = $workbook->add_format($headline_prop);
+    	$hdrleft->set_align('right');
+    	$hdrleft->set_align('vcenter');
+    	unset($headline_prop['bold']);
+    	$hdrright = $workbook->add_format($headline_prop);
+    	$hdrright->set_align('left');
+    	$hdrright->set_align('vcenter');
+    
+    	$text_prop = array(   'size' => 10,
+    			'align' => 'left');
+    	$text = $workbook->add_format($text_prop);
+    	$text->set_left(1);
+    	$text->set_align('vcenter');
+    	$text_first = $workbook->add_format($text_prop);
+    	$text_first->set_align('vcenter');
+    
+    	
+    	$line = 0;
+    	
+    	//write header
+    	for($i=0;$i<count($this->header);$i+=2){    		
+    		$worksheet->write_string($line, 0, $this->header[$i], $hdrleft);
+    		$worksheet->write_string($line, 1, $this->header[$i+1], $hdrright);
+    		$line++;
+    	}
+    	$line++;
+    	
+    	
+    	// table header
+    	$i = 0;
+    	$first = true;
+    	foreach ($this->titles as $key => $header) {
+    		if($first) {
+    			$worksheet->write_string($line, $i, $header, $headline_first);
+    			$first = false;
+    		} else {
+    			$worksheet->write_string($line, $i, $header, $headline_format);
+    			$first = false;
+    		}
+    		$i++;
+    	}
+    	
+    	// data
+    	$prev = $this->data[0];
+    	foreach($this->data as $row) {
+    		$first = true;
+    		$line++;
+    		$i = 0;
+    		foreach ($row as $idx => $cell) {
+    			if(is_null($cell['data'])){
+    				$cell['data'] = $prev[$idx]['data'];
+    			}
+    			
+    			if($first) {
+    				$worksheet->write_string($line, $i, $cell['data'], $text_first);
+    				$first = false;
+    			} else {
+    				$worksheet->write_string($line, $i, $cell['data'], $text);
+    			}
+
+    			$prev[$idx] = $cell;
+    			$i++;
+    		}
+    	}
+    }
+
+    public function get_xls($filename) {
+    	global $CFG;
+    
+    	require_once($CFG->libdir . "/excellib.class.php");
+    	
+    	$workbook = new MoodleExcelWorkbook("-");
+    
+    	$this->fill_workbook($workbook);
+    
+    	$workbook->send($filename.'.xls');
+    	$workbook->close();
+    }
+
+    public function get_xlsx($filename) {
+    	global $CFG;
+
+    	require_once($CFG->libdir . "/excellib.class.php");
+
+    	$workbook = new MoodleExcelWorkbook("-", 'Excel2007');
+    
+    	$this->fill_workbook($workbook);
+    
+    	$workbook->send($filename);
+    	$workbook->close();
+    }
+
+    public function get_ods($filename) {
+    	global $CFG;
+    
+    	require_once($CFG->libdir . "/odslib.class.php");
+    	   	 
+    	$workbook = new MoodleODSWorkbook("-");
+    
+    	$this->fill_workbook($workbook);
+    
+    	$workbook->send($filename.'.ods');
+    	$workbook->close();
+    }
+    
+    public function get_csv($filename, $sep = "\t") {
+    	$lines = array();
+
+    	// course information
+    	for($i=0;$i<count($this->header);$i+=2){
+    		$lines[] = $this->header[$i] . $sep . $this->header[$i+1];
+    	}
+    	 
+    	// table header
+    	$lines[] = join($sep, $this->titles);
+    
+    	$prev = $this->data[0];
+    	
+    	// data
+    	foreach($this->data as $row){
+    		$r = array();
+    		foreach($row as $idx => $cell){
+    			if(is_null($cell['data'])){
+    				$cell['data'] = $prev[$idx]['data'];
+    			}
+    			
+    			$r[] = $cell['data'];
+    			$prev[$idx] = $cell;
+    		}
+    		
+    		$lines[] = join($sep,$r);
+    	}
+
+    	$filecontent = implode("\n", $lines);
+    	
+    	if($filename != ''){
+    		if(substr($filename,strlen($filename)-4) != ".csv"){
+    			$filename .= '.csv';
+    		}
+    		 
+    		$filename = clean_filename($filename);
+    	}
+
+    	ob_clean();
+    	header('Content-Type: text/plain');
+    	header('Content-Length: ' . strlen($filecontent));
+    	header('Content-Disposition: attachment; filename="'.$filename.'"; filename*="'.
+    			rawurlencode($filename));
+    			header('Content-Transfer-Encoding: binary');
+    			header('Content-Encoding: utf-8');
+    			echo $filecontent;die();
     }
 }

@@ -209,7 +209,7 @@ $string['btn_remind'] = 'Send reminder';
 $string['btn_save'] = 'Save comment';
 $string['btn_send'] = 'Send';
 
-$string['pdfsubmit'] = 'Download PDF';
+$string['downloadfile'] = 'Download file';
 $string['teacherinvisible'] = 'Teacher invisible';
 
 $string['img_title_evaluated'] = 'The slot is evaluated';
@@ -733,7 +733,15 @@ $string['deletekeep'] = 'The following appointments will be cancelled. Registere
 
 $string['atlocation'] = 'at';
 
-$string['printoptions'] = 'Print settings';
+$string['exportsettings'] = 'Export settings';
+$string['format'] = 'Format';
+$string['format_pdf'] = 'PDF';
+$string['format_xls'] = 'XLS';
+$string['format_xlsx'] = 'XLSX';
+$string['format_ods'] = 'ODS';
+$string['format_csv_tab'] = 'CSV (tab)';
+$string['format_csv_comma'] = 'CSV (;)';
+$string['pdfsettings'] = 'PDF settings';
 $string['numentries'] = 'Entries shown per page';
 $string['numentries_help'] = 'Choose "optimal" to optimize the distribution of list entries according to the chosen textsize and page orientation, if there are plenty of participants registered in your course';
 $string['stroptimal'] = 'optimal';

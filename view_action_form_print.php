@@ -90,8 +90,18 @@ class organizer_print_slots_form extends moodleform {
        
 
         
-        $mform->addElement('header', 'print_settings_header', get_string('printoptions', 'organizer'));        
+        $mform->addElement('header', 'export_settings_header', get_string('exportsettings', 'organizer'));        
         
+        $exportformats = array(
+        		'pdf'=>get_string('format_pdf','organizer'),
+        		'xlsx'=>get_string('format_xlsx','organizer'),
+        		'xls'=>get_string('format_xls','organizer'),
+        		'ods'=>get_string('format_ods','organizer'),
+        		'csv_tab'=>get_string('format_csv_tab','organizer'),
+        		'csv_comma'=>get_string('format_csv_comma','organizer'));
+        $mform->addElement('select','format',get_string('format','organizer'),$exportformats);
+        
+        $mform->addElement('static','pdf_settings',get_string('pdfsettings','organizer'));
         
     	$entriesperpage = get_user_preferences('organizer_printperpage', 20);
     	$printperpage_optimal = get_user_preferences('organizer_printperpage_optimal', 0);
@@ -115,18 +125,21 @@ class organizer_print_slots_form extends moodleform {
         $mform->addHelpButton('printperpagegrp','numentries','organizer');
         
         $mform->disabledIf('entriesperpage','printperpage_optimal','checked');
+        $mform->disabledIf('printperpagegrp', 'format','neq','pdf');
 
         $mform->addElement('select', 'textsize', get_string('textsize', 'organizer'),
                 array('8' => get_string('font_small', 'organizer'), '10' => get_string('font_medium', 'organizer'),
                         '12' => get_string('font_large', 'organizer')));
         
         $mform->setDefault('textsize', $textsize);
+        $mform->disabledIf('textsize', 'format','neq','pdf');
 
         $mform->addElement('select', 'pageorientation', get_string('pageorientation', 'organizer'),
                 array('P' => get_string('orientationportrait', 'organizer'),
                         'L' => get_string('orientationlandscape', 'organizer')));
         
         $mform->setDefault('pageorientation', $pageorientation);
+        $mform->disabledIf('pageorientation', 'format','neq','pdf');
 
 
         $mform->addElement('advcheckbox', 'headerfooter', get_string('headerfooter', 'organizer'), null, null,
@@ -134,9 +147,10 @@ class organizer_print_slots_form extends moodleform {
         $mform->setType('headerfooter', PARAM_BOOL);
         $mform->setDefault('headerfooter', $headerfooter);
         $mform->addHelpButton('headerfooter','headerfooter','organizer');
+        $mform->disabledIf('headerfooter', 'format','neq','pdf');
 
         $buttonarray = array();
-        $buttonarray[] = &$mform->createElement('submit', 'pdfsubmit', get_string('pdfsubmit', 'organizer'));
+        $buttonarray[] = &$mform->createElement('submit', 'downloadfile', get_string('downloadfile', 'organizer'));
         $buttonarray[] = &$mform->createElement('cancel', 'cancel', get_string('print_return', 'organizer'));
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
