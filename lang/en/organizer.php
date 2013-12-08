@@ -548,6 +548,12 @@ $string['edit_notify:student:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, the details of the appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.
 
+Teacher: {$a->slot_teacher}
+Location: {$a->slot_location}
+Max. participants: {$a->slot_maxparticipants}
+Comments:
+{$a->slot_comments}
+		
 TUWEL Messaging System';
 $string['edit_notify:student:smallmessage'] = 'The details of the appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.';
 
@@ -558,6 +564,12 @@ $string['edit_notify:student:group:fullmessage'] =
 'Hello {$a->receivername}!
 
 As a part of the course {$a->courseid} {$a->coursefullname}, the details of the group appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.
+
+Teacher: {$a->slot_teacher}
+Location: {$a->slot_location}
+Max. participants: {$a->slot_maxparticipants}
+Comments:
+{$a->slot_comments}
 
 TUWEL Messaging System';
 $string['edit_notify:student:group:smallmessage'] = 'The details of the group appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.';
@@ -570,6 +582,12 @@ $string['edit_notify:teacher:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, the details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.
 
+Teacher: {$a->slot_teacher}
+Location: {$a->slot_location}
+Max. participants: {$a->slot_maxparticipants}
+Comments:
+{$a->slot_comments}
+
 TUWEL Messaging System';
 $string['edit_notify:teacher:smallmessage'] = 'The details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.';
 
@@ -580,6 +598,12 @@ $string['edit_notify:teacher:group:fullmessage'] =
 'Hello {$a->receivername}!
 
 As a part of the course {$a->courseid} {$a->coursefullname}, the details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.
+
+Teacher: {$a->slot_teacher}
+Location: {$a->slot_location}
+Max. participants: {$a->slot_maxparticipants}
+Comments:
+{$a->slot_comments}
 
 TUWEL Messaging System';
 $string['edit_notify:teacher:group:smallmessage'] = 'The details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.';

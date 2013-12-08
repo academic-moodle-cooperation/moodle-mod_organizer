@@ -490,6 +490,12 @@ $string['edit_notify:student:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, sind die Details des Termins mit {$a->sendername} am {$a->date} um {$a->time} verändert worden.
 
+Lehrende/r: {$a->slot_teacher}
+Ort: {$a->slot_location}
+Höchstanzahl der Teilnehmer/innen: {$a->slot_maxparticipants}
+Kommentar:
+{$a->slot_comments}
+
 TUWEL Messaging System';
 $string['edit_notify:student:smallmessage'] = 'Die Details des Termins mit {$a->sendername} am {$a->date} um {$a->time} sind verändert worden.';
 
@@ -500,6 +506,12 @@ $string['edit_notify:student:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, sind die Details des Gruppentermins mit {$a->sendername} am {$a->date} um {$a->time} verändert worden.
 
+Lehrende/r: {$a->slot_teacher}
+Ort: {$a->slot_location}
+Höchstanzahl der Teilnehmer/innen: {$a->slot_maxparticipants}
+Kommentar:
+{$a->slot_comments}
+
 TUWEL Messaging System';
 $string['edit_notify:student:group:smallmessage'] = 'Die Details des Gruppentermins mit {$a->sendername} am {$a->date} um {$a->time} sind verändert worden.';
 
@@ -509,6 +521,12 @@ $string['edit_notify:teacher:subject'] = '[{$a->courseid}{$a->courseshortname} /
 $string['edit_notify:teacher:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, sind die Details des Zeitslots am {$a->date} um {$a->time} von {$a->sendername} verändert worden.
+
+Lehrende/r: {$a->slot_teacher}
+Ort: {$a->slot_location}
+Höchstanzahl der Teilnehmer/innen: {$a->slot_maxparticipants}
+Kommentar:
+{$a->slot_comments}
 
 TUWEL Messaging System';
 $string['edit_notify:teacher:smallmessage'] = 'Die Details des Zeitslots am {$a->date} um {$a->time} sind von {$a->sendername} verändert worden.';
