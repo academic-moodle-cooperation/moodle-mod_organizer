@@ -183,6 +183,13 @@ function xmldb_organizer_upgrade($oldversion) {
     	// organizer savepoint reached
     	upgrade_mod_savepoint(true, 2013112901, 'organizer');
     }
+    
+    if ($oldversion < 2013122300){
+    	$DB->execute('UPDATE mdl_log SET url = RIGHT(url,LOCATE("/",REVERSE(url))-1) WHERE module="organizer" and url LIKE "http://%"');
+    	
+    	// organizer savepoint reached
+    	upgrade_mod_savepoint(true, 2013122300, 'organizer');
+    }
 
     return true;
 }
