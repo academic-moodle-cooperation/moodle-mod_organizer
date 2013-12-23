@@ -761,7 +761,7 @@ class MTablePDF extends pdf{
     
     	require_once($CFG->libdir . "/excellib.class.php");
     	
-    	$workbook = new MoodleExcelWorkbook("-");
+    	$workbook = new MoodleExcelWorkbook("-",'excel5');
     
     	$this->fill_workbook($workbook);
     
