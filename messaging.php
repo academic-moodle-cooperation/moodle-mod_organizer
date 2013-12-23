@@ -18,7 +18,7 @@ define('ORGANIZER_ENABLE_MESSAGING', 1);
 
 require_once(dirname(__FILE__) . '/locallib.php');
 
-function organizer_send_message($sender, $receiver, $slot, $type, $digest = null) {
+function organizer_send_message($sender, $receiver, $slot, $type, $digest = null,$customdata = array()) {
     global $DB;
 
     if ($type == 'register_reminder:student') {
@@ -108,6 +108,12 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $message->fullmessage = get_string("$type:fullmessage", 'organizer', $strings);
     $message->fullmessagehtml = organizer_make_html(get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm,
             $course);
+    
+    if(isset($customdata['custommessage'])){
+    	$message->fullmessage = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessage);
+    	$message->fullmessagehtml = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessagehtml);
+    }
+    
     $message->smallmessage = get_string("$type:smallmessage", 'organizer', $strings);
 
     if (ORGANIZER_ENABLE_MESSAGING) {

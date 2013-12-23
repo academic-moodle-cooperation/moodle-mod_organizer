@@ -440,6 +440,7 @@ if ($action == ORGANIZER_ACTION_ADD) {
     }
 
     redirect($redirecturl);
+/*
 } else if ($action == ORGANIZER_ACTION_REMIND) {
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     $count = 0;
@@ -469,13 +470,16 @@ if ($action == ORGANIZER_ACTION_ADD) {
     $redirecturl = $redirecturl->out();
 
     redirect($redirecturl);
+    */
 } else if ($action == ORGANIZER_ACTION_REMINDALL) {
     add_to_log($course->id, 'organizer', 'remindall', "{$logurl}", $organizer->name, $cm->id);
 
     $mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
+    $recipient = optional_param('recipient', null, PARAM_INT);
+    
     if ($data = $mform->get_data()) {
-        $count = organizer_remind_all();
+        $count = organizer_remind_all($recipient,$data->message_custommessage['text']);
 
         $redirecturl->param('data[count]', $count);
         if ($count == 1) {
@@ -566,12 +570,14 @@ function organizer_display_form(moodleform $mform, $title, $addcalendar = true) 
     die();
 }
 
-function organizer_remind_all() {
+function organizer_remind_all($recipient = null,$custommessage = "") {
     global $DB;
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
-    if ($cm->groupingid == 0) {
+    if($recipient != null){
+    	$entries = $DB->get_records_list('user', 'id', array($recipient));
+	} else if ($cm->groupingid == 0) {
         $entries = get_enrolled_users($context, 'mod/organizer:register');
     } else {
         $query = "SELECT u.* FROM {user} u
@@ -594,7 +600,7 @@ function organizer_remind_all() {
     $count = 0;
     foreach ($entries as $entry) {
         if (!in_array($entry->id, $nonrecepients)) {
-            organizer_prepare_and_send_message(array('user' => $entry->id, 'organizer' => $organizer),
+            organizer_prepare_and_send_message(array('user' => $entry->id, 'organizer' => $organizer,'custommessage'=>$custommessage),
                     'register_reminder:student'); // ---------------------------------------- MESSAGE!!!
             $count++;
         }
@@ -675,7 +681,7 @@ function organizer_prepare_and_send_message($data, $type) {
             }
             break;
         case 'register_reminder:student':
-            return organizer_send_message(intval($USER->id), intval($data['user']), $data['organizer'], $type);
+            return organizer_send_message(intval($USER->id), intval($data['user']), $data['organizer'], $type,null,array('custommessage'=>$data['custommessage']));
         default:
             print_error('Not debugged yet!');
     }
