@@ -148,19 +148,19 @@ function xmldb_organizer_upgrade($oldversion) {
 		$table = new xmldb_table('organizer');
 
 		// rename enableuntil field to duedate
-		$field = new xmldb_field('enableuntil', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'enablefrom');
+		$field = new xmldb_field('enableuntil', XMLDB_TYPE_INTEGER, '10', false, false, false, '0', 'enablefrom');
 		if ($dbman->field_exists($table, $field)){
 			$dbman->rename_field($table, $field, 'duedate');
 		}
 		
 		// rename enablefrom to allowsubmissionsfromdate
-		$field = new xmldb_field('enablefrom', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'emailteachers');
+		$field = new xmldb_field('enablefrom', XMLDB_TYPE_INTEGER, '10', false, false, false, '0', 'emailteachers');
 		if ($dbman->field_exists($table, $field)){
 			$dbman->rename_field($table, $field, 'allowregistrationsfromdate');
 		}
 		
 		// add field alwaysshowdescription
-		$field = new xmldb_field('alwaysshowdescription', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'duedate');
+		$field = new xmldb_field('alwaysshowdescription', XMLDB_TYPE_INTEGER, '2', false, false, false, '0', 'duedate');
 		
 		// Conditionally launch add field alwaysshowdescription.
 		if (!$dbman->field_exists($table, $field)) {
