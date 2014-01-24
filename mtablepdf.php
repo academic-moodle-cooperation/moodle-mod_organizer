@@ -170,6 +170,23 @@ class MTablePDF extends pdf{
             $this->SetFontSize($oldfontsize);
         }
     }
+    
+    /**
+     * If showheaderfooter is selected
+     * Displays the number and total number of pages in the footer
+     */
+    public function Footer(){ 	
+    	if ($this->showheaderfooter) {
+    		// Set font.
+    		$this->SetFont('', '');
+    		 
+    		// Position at 15 mm from bottom
+    		$this->SetY(-15);
+    		
+    		// Page number
+    		$this->Cell(0, 10, $this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M'); 
+    	}
+    }
 
     /**
      * Sets the titles for the columns in the pdf
