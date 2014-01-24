@@ -23,7 +23,7 @@ require_once($CFG->libdir . '/pdflib.php');
 
 /**
  * @author Andreas Windbichler
- * @version 11.07.2013
+ * @version 24.01.2014
  *
  */
 class MTablePDF extends pdf{
@@ -175,16 +175,16 @@ class MTablePDF extends pdf{
      * If showheaderfooter is selected
      * Displays the number and total number of pages in the footer
      */
-    public function Footer(){ 	
+    public function Footer(){
     	if ($this->showheaderfooter) {
     		// Set font.
     		$this->SetFont('', '');
     		 
     		// Position at 15 mm from bottom
     		$this->SetY(-15);
-    		
+    
     		// Page number
-    		$this->Cell(0, 10, $this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M'); 
+    		$this->Cell(0, 10, $this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
     	}
     }
 
@@ -681,18 +681,10 @@ class MTablePDF extends pdf{
      */
     public function fill_workbook(&$workbook) {
     	global $DB;
-    	if (is_a($workbook, 'MoodleExcelWorkbook')) {
-    		$column_width = array( 53.6, 82.4); // Unit: mm!
-    	} else {
-    		$column_width = array(386, 594); // Unit: px!
-    	}
+
     	$time = time();
     	$time = userdate($time);
     	$worksheet = $workbook->add_worksheet($time);
-    
-    	$hidden = false;
-    	$worksheet->set_column(0, 0, $column_width[0], null, $hidden);
-    	$worksheet->set_column(1, 1, $column_width[1], null, $hidden);
    
     	$headline_prop = array(    'size' => 12,
     			'bold' => 1,
