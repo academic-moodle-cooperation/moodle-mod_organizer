@@ -362,12 +362,14 @@ $string['organizer:viewregistrations'] = 'View status of student registrations';
 
 $string['messageprovider:test'] = 'Organizer Test Message';
 $string['messageprovider:appointment_reminder:student'] = 'Organizer appointment reminder';
+$string['messageprovider:appointment_reminder:teacher'] = 'Organizer appointment reminder (Teacher)';
 $string['messageprovider:manual_reminder:student'] = 'Organizer manual appointment reminder';
-$string['messageprovider:appointment_reminder:teacher'] = 'Organizer appointment reminder';
 $string['messageprovider:eval_notify:student'] = 'Organizer evaluation notification';
+$string['messageprovider:register_notify:teacher'] = 'Organizer registration notification';
 $string['messageprovider:group_registration_notify:student'] = 'Organizer groupregistration notification';
 $string['messageprovider:register_reminder:student'] = 'Organizer registration reminder';
 $string['messageprovider:edit_notify:student'] = 'Organizer changes';
+$string['messageprovider:edit_notify:teacher'] = 'Organizer changes (Teacher)';
 $string['messageprovider:slotdeleted_notify:student'] = 'Orgnizer slots cancled';
 
 $string['reg_status_organizer_expired'] = 'Organizer expired';

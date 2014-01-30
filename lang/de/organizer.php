@@ -351,12 +351,14 @@ $string['organizer:viewregistrations'] = 'Status der Anmeldung von Student/innen
 
 $string['messageprovider:test'] = 'Terminplaner Test Nachricht';
 $string['messageprovider:appointment_reminder:student'] = 'Terminplaner Terminerinnerung';
+$string['messageprovider:appointment_reminder:teacher'] = 'Terminplaner Terminerinnerung (Lehrende/r)';
 $string['messageprovider:manual_reminder:student'] = 'Terminplaner manuele Terminerinnerung';
-$string['messageprovider:appointment_reminder:teacher'] = 'Terminplaner Terminerinnerung';
 $string['messageprovider:eval_notify:student'] = 'Terminplaner Bewertungsbenachrichtigung';
+$string['messageprovider:register_notify:teacher'] = 'Terminplaner Registrierungsbenachrichtigung';
 $string['messageprovider:group_registration_notify:student'] = 'Terminplaner Gruppenregistrierung Benachrichtigung';
 $string['messageprovider:register_reminder:student'] = 'Terminplaner Registrierungserinnerung';
 $string['messageprovider:edit_notify:student'] = 'Terminplaner änderungen';
+$string['messageprovider:edit_notify:teacher'] = 'Terminplaner änderungen (Lehrende/r)';
 $string['messageprovider:slotdeleted_notify:student'] = 'Terminplaner Slot absagen';
 
 /* Message templates following.
