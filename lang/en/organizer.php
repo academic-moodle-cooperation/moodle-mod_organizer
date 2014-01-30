@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['modulename'] = 'Organizer';
 $string['modulenameplural'] = 'Organizers';
 $string['modulename_help'] = 'Organizers enable the teacher to make appointments with students by creating time slots which students can register to.';
-$string['organizername'] = 'Name';
+$string['organizername'] = 'Organizer name';
 $string['organizer'] = 'Organizer';
 $string['pluginadministration'] = 'Organizer administration';
 $string['pluginname'] = 'Organizer';

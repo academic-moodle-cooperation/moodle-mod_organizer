@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['modulename'] = 'Terminplaner';
 $string['modulenameplural'] = 'Terminplaner';
 $string['modulename_help'] = 'Terminplaner ermöglichen es den Lehrenden Termine bzw. Zeitfenster für Studierende bereitzustellen.';
-$string['organizername'] = 'Name';
+$string['organizername'] = 'Name des Organizers';
 $string['organizer'] = 'Terminplaner';
 $string['pluginadministration'] = 'Terminplaner Administration';
 $string['pluginname'] = 'Terminplaner';
