@@ -55,12 +55,13 @@ function organizer_add_instance($organizer) {
         unset($organizer->allowregistrationsfromdate);
     }
 
-    if (isset($organizer->duedate) && $organizer->duedate == 0) {
-        unset($organizer->duedate);
-    }
-
     $organizer->id = $DB->insert_record('organizer', $organizer);
 
+    // NOTE: ugly fix because duedate is set to be not null
+    if (isset($organizer->duedate) && $organizer->duedate == 0) {
+    	$DB->execute('UPDATE {organizer} SET duedate = NULL WHERE id = :id', array('id' => $organizer->id));
+    }
+    
     organizer_grade_item_update($organizer);
 
     return $organizer->id;
@@ -87,6 +88,7 @@ function organizer_update_instance($organizer) {
 
     if (isset($organizer->duedate) && $organizer->duedate == 0) {
         unset($organizer->duedate);
+        // NOTE: ugly fix because duedate is set to be not null
         $DB->execute('UPDATE {organizer} SET duedate = NULL WHERE id = :id', array('id' => $organizer->id));
     }
 
