@@ -203,9 +203,57 @@ if ($action == ORGANIZER_ACTION_ADD) {
 
     if ($data = $mform->get_data()) {
         if (isset($slots)) {
+        	$notified = 0;
             foreach ($slots as $slotid) {
-                organizer_delete_appointment_slot($slotid);
+                $notified += organizer_delete_appointment_slot($slotid);
             }
+            
+            $slots_deleted = count($slots);
+            
+            $slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
+           
+            
+            // count_records_sql doesnt work
+           	$appointments_total = $DB->get_record_sql('SELECT COUNT(*) as total
+				FROM {organizer_slots} org
+				JOIN {organizer_slot_appointments} app ON org.id = app.slotid
+				WHERE org.organizerid=?',array($organizer->id));
+           	$appointments_total = $appointments_total->total;
+           	
+            if($organizer->isgrouporganizer){
+            	$redirecturl->param('messages[]','message_info_slots_deleted_group');
+            	
+            	$groups = groups_get_all_groups($course->id, 0, $cm->groupingid);
+            	$registrants_total = count($groups);
+            	
+            	$places_total = count($slots);
+            	
+            }else{
+            	$redirecturl->param('messages[0]','message_info_slots_deleted');
+            	
+            	$slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
+            	$places_total = 0;
+            	foreach ($slots as $slot) {
+            		$places_total += $slot->maxparticipants;
+            	}
+            	
+            	$registrants_total = count(get_enrolled_users($context, 'mod/organizer:register'));
+            }
+            
+            $free_total = $places_total - $appointments_total;
+            $notregistered = $registrants_total - $appointments_total;
+            
+            
+            $redirecturl->param('data[deleted]',$slots_deleted);
+            $redirecturl->param('data[notified]',$notified); // anzahl benachrichtigter studenten
+            $redirecturl->param('data[freeslots]',$free_total); // freie slots
+            $redirecturl->param('data[notregistered]',$notregistered); // anzahl noch nicht angemeldeter studenten
+            
+            $prefix = ($notregistered > $free_total) ? 'warning' : 'info';
+            $suffix = ($organizer->isgrouporganizer) ? '_group' :'';
+            
+            $redirecturl->param('messages[1]','message_' . $prefix . '_available' . $suffix);
+            
         }
         redirect($redirecturl);
     } else if ($mform->is_cancelled()) {
@@ -261,7 +309,7 @@ if ($action == ORGANIZER_ACTION_ADD) {
     	
     	$organizer = $DB->get_record('organizer', array('id'=>$cm->instance));
 
-        organizer_display_printable_table($organizer->enablefrom, $organizer->enableuntil, $data->cols, $data->slots, $ppp, $data->textsize,
+        organizer_display_printable_table($organizer->allowregistrationsfromdate, $organizer->duedate, $data->cols, $data->slots, $ppp, $data->textsize,
                 $data->pageorientation, $data->headerfooter, $course->shortname . '-' . $organizer->name);
         redirect($redirecturl);
 
@@ -392,6 +440,7 @@ if ($action == ORGANIZER_ACTION_ADD) {
     }
 
     redirect($redirecturl);
+/*
 } else if ($action == ORGANIZER_ACTION_REMIND) {
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     $count = 0;
@@ -421,13 +470,16 @@ if ($action == ORGANIZER_ACTION_ADD) {
     $redirecturl = $redirecturl->out();
 
     redirect($redirecturl);
+    */
 } else if ($action == ORGANIZER_ACTION_REMINDALL) {
     add_to_log($course->id, 'organizer', 'remindall', "{$logurl}", $organizer->name, $cm->id);
 
     $mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
+    $recipient = optional_param('recipient', null, PARAM_INT);
+    
     if ($data = $mform->get_data()) {
-        $count = organizer_remind_all();
+        $count = organizer_remind_all($recipient,$data->message_custommessage['text']);
 
         $redirecturl->param('data[count]', $count);
         if ($count == 1) {
@@ -518,12 +570,14 @@ function organizer_display_form(moodleform $mform, $title, $addcalendar = true) 
     die();
 }
 
-function organizer_remind_all() {
+function organizer_remind_all($recipient = null,$custommessage = "") {
     global $DB;
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
-    if ($cm->groupingid == 0) {
+    if($recipient != null){
+    	$entries = $DB->get_records_list('user', 'id', array($recipient));
+	} else if ($cm->groupingid == 0) {
         $entries = get_enrolled_users($context, 'mod/organizer:register');
     } else {
         $query = "SELECT u.* FROM {user} u
@@ -546,7 +600,7 @@ function organizer_remind_all() {
     $count = 0;
     foreach ($entries as $entry) {
         if (!in_array($entry->id, $nonrecepients)) {
-            organizer_prepare_and_send_message(array('user' => $entry->id, 'organizer' => $organizer),
+            organizer_prepare_and_send_message(array('user' => $entry->id, 'organizer' => $organizer,'custommessage'=>$custommessage),
                     'register_reminder:student'); // ---------------------------------------- MESSAGE!!!
             $count++;
         }
@@ -627,7 +681,7 @@ function organizer_prepare_and_send_message($data, $type) {
             }
             break;
         case 'register_reminder:student':
-            return organizer_send_message(intval($USER->id), intval($data['user']), $data['organizer'], $type);
+            return organizer_send_message(intval($USER->id), intval($data['user']), $data['organizer'], $type,null,array('custommessage'=>$data['custommessage']));
         default:
             print_error('Not debugged yet!');
     }

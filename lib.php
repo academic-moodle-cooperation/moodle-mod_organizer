@@ -51,16 +51,17 @@ function organizer_add_instance($organizer) {
     global $DB;
 
     $organizer->timemodified = time();
-    if (isset($organizer->enablefrom) && $organizer->enablefrom == 0) {
-        unset($organizer->enablefrom);
-    }
-
-    if (isset($organizer->enableuntil) && $organizer->enableuntil == 0) {
-        unset($organizer->enableuntil);
+    if (isset($organizer->allowregistrationsfromdate) && $organizer->allowregistrationsfromdate == 0) {
+        unset($organizer->allowregistrationsfromdate);
     }
 
     $organizer->id = $DB->insert_record('organizer', $organizer);
 
+    // NOTE: ugly fix because duedate is set to be not null
+    if (isset($organizer->duedate) && $organizer->duedate == 0) {
+    	$DB->execute('UPDATE {organizer} SET duedate = NULL WHERE id = :id', array('id' => $organizer->id));
+    }
+    
     organizer_grade_item_update($organizer);
 
     return $organizer->id;
@@ -80,14 +81,15 @@ function organizer_update_instance($organizer) {
     $organizer->id = $organizer->instance;
     $organizer->timemodified = time();
 
-    if (isset($organizer->enablefrom) && $organizer->enablefrom == 0) {
-        unset($organizer->enablefrom);
-        $DB->execute('UPDATE {organizer} SET enablefrom = NULL WHERE id = :id', array('id' => $organizer->id));
+    if (isset($organizer->allowregistrationsfromdate) && $organizer->allowregistrationsfromdate == 0) {
+        unset($organizer->allowregistrationsfromdate);
+        $DB->execute('UPDATE {organizer} SET allowregistrationsfromdate = NULL WHERE id = :id', array('id' => $organizer->id));
     }
 
-    if (isset($organizer->enableuntil) && $organizer->enableuntil == 0) {
-        unset($organizer->enableuntil);
-        $DB->execute('UPDATE {organizer} SET enableuntil = NULL WHERE id = :id', array('id' => $organizer->id));
+    if (isset($organizer->duedate) && $organizer->duedate == 0) {
+        unset($organizer->duedate);
+        // NOTE: ugly fix because duedate is set to be not null
+        $DB->execute('UPDATE {organizer} SET duedate = NULL WHERE id = :id', array('id' => $organizer->id));
     }
 
     organizer_grade_item_update($organizer);
@@ -245,7 +247,7 @@ function organizer_reset_userdata($data) {
     }
 
     if ($data->timeshift) {
-        $ok = shift_course_mod_dates('organizer', array('enablefrom', 'enableuntil'), $data->timeshift, $data->courseid);
+        $ok = shift_course_mod_dates('organizer', array('allowregistrationsfromdate', 'duedate'), $data->timeshift, $data->courseid);
         $status[] = array('component' => $componentstr, 'item' => get_string('timeshift', 'organizer'), 
                 'error' => !$ok);
     }
@@ -611,11 +613,11 @@ function organizer_get_overview_student($organizer, $forindex = false) {
 
             $str .= "<{$element} {$class}>$missedapp</{$element}>";
 
-            if (isset($organizer->enableuntil)) {
+            if (isset($organizer->duedate)) {
                 $a = new stdClass();
-                $a->date = userdate($organizer->enableuntil, get_string('fulldatetemplate', 'organizer'));
-                $a->time = userdate($organizer->enableuntil, get_string('timetemplate', 'organizer'));
-                if ($organizer->enableuntil > time()) {
+                $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
+                $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
+                if ($organizer->duedate > time()) {
                     $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
                 } else {
                     $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
@@ -647,11 +649,11 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $noregslot = get_string('mymoodle_no_reg_slot', 'organizer');
             $str .= "<{$element} {$class}>$noregslot</{$element}>";
 
-            if (isset($organizer->enableuntil)) {
+            if (isset($organizer->duedate)) {
                 $a = new stdClass();
-                $a->date = userdate($organizer->enableuntil, get_string('fulldatetemplate', 'organizer'));
-                $a->time = userdate($organizer->enableuntil, get_string('timetemplate', 'organizer'));
-                if ($organizer->enableuntil > time()) {
+                $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
+                $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
+                if ($organizer->duedate > time()) {
                     $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
                 } else {
                     $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
@@ -685,11 +687,11 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             }
 
             $str .= "<{$element} {$class}>$missedapp</{$element}>";
-            if (isset($organizer->enableuntil)) {
+            if (isset($organizer->duedate)) {
                 $a = new stdClass();
-                $a->date = userdate($organizer->enableuntil, get_string('fulldatetemplate', 'organizer'));
-                $a->time = userdate($organizer->enableuntil, get_string('timetemplate', 'organizer'));
-                if ($organizer->enableuntil > time()) {
+                $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
+                $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
+                if ($organizer->duedate > time()) {
                     $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
                 } else {
                     $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
@@ -720,11 +722,11 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $noregslot = get_string('mymoodle_no_reg_slot', 'organizer');
             $str .= "<{$element} {$class}>$noregslot</{$element}>";
 
-            if (isset($organizer->enableuntil)) {
+            if (isset($organizer->duedate)) {
                 $a = new stdClass();
-                $a->date = userdate($organizer->enableuntil, get_string('fulldatetemplate', 'organizer'));
-                $a->time = userdate($organizer->enableuntil, get_string('timetemplate', 'organizer'));
-                if ($organizer->enableuntil > time()) {
+                $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
+                $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
+                if ($organizer->duedate > time()) {
                     $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
                 } else {
                     $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
@@ -995,7 +997,40 @@ function organizer_supports($feature) {
             return true;
         case FEATURE_BACKUP_MOODLE2:
             return true;
+		case FEATURE_SHOW_DESCRIPTION:
+			return true;
         default:
             return null;
     }
+}
+
+/**
+ * Add a get_coursemodule_info function in case any organizer type wants to add 'extra' information
+ * for the course (see resource).
+ *
+ * Given a course_module object, this function returns any "extra" information that may be needed
+ * when printing this activity in a course listing.  See get_array_of_activities() in course/lib.php.
+ *
+ * @param stdClass $coursemodule The coursemodule object (record).
+ * @return cached_cm_info An object on information that the courses
+ *                        will know about (most noticeably, an icon).
+ */
+function organizer_get_coursemodule_info($coursemodule) {
+	global $CFG, $DB;
+
+	$dbparams = array('id'=>$coursemodule->instance);
+	$fields = 'id, name, alwaysshowdescription, allowregistrationsfromdate, intro, introformat';
+	if (! $organizer = $DB->get_record('organizer', $dbparams, $fields)) {
+		return false;
+	}
+
+	$result = new cached_cm_info();
+	$result->name = $organizer->name;
+	if ($coursemodule->showdescription) {
+		if ($organizer->alwaysshowdescription || time() > $organizer->allowregistrationsfromdate) {
+			// Convert intro to html. Do not filter cached version, filters run at display time.
+			$result->content = format_module_intro('organizer', $organizer, $coursemodule->id, false);
+		}
+	}
+	return $result;
 }

@@ -32,7 +32,11 @@ function organizer_make_infobox($params, $organizer, $context) {
     user_preference_allow_ajax_update('mod_organizer_showfreeslotsonly', PARAM_BOOL);
     $PAGE->requires->js_init_call('M.mod_organizer.init_infobox');
 
-    $output = organizer_make_description_section($organizer);
+    $output = '';
+    if($organizer->alwaysshowdescription ||  time() > $organizer->allowregistrationsfromdate){
+    	$output = organizer_make_description_section($organizer);
+    }
+    
     switch($params['mode']) {
         case ORGANIZER_TAB_APPOINTMENTS_VIEW:
         break;
@@ -116,12 +120,12 @@ function organizer_make_description_section($organizer) {
             $output .= '<p> ' . get_string('grouporganizer_desc_nogroup', 'organizer') . '</p>';
         }
     }
-    if (isset($organizer->enableuntil)) {
+    if (isset($organizer->duedate)) {
         $output .= '<hr />';
         $a = new stdClass();
-        $a->date = userdate($organizer->enableuntil, get_string('fulldatetemplate', 'organizer'));
-        $a->time = userdate($organizer->enableuntil, get_string('timetemplate', 'organizer'));
-        if ($organizer->enableuntil > time()) {
+        $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
+        $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
+        if ($organizer->duedate > time()) {
             $output .= '<p>' . get_string('infobox_organizer_expires', 'organizer', $a) . '</p>';
         } else {
             $output .= '<p>' . get_string('infobox_organizer_expired', 'organizer', $a) . '</p>';

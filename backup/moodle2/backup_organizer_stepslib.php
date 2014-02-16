@@ -35,7 +35,7 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
         // Define each element separated
         $organizer = new backup_nested_element('organizer', array('id'),
                 array('course', 'name', 'intro', 'introformat', 'timemodified', 'isgrouporganizer', 'emailteachers',
-                        'enablefrom', 'enableuntil', 'relativedeadline', 'grade'));
+                        'allowregistrationsfromdate', 'duedate', 'relativedeadline', 'grade'));
 
         $slots = new backup_nested_element('slots');
         $slot = new backup_nested_element('slot', array('id'),

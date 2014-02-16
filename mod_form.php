@@ -56,7 +56,7 @@ class mod_organizer_mod_form extends moodleform_mod {
     }
 
     public function definition() {
-        global $PAGE, $CFG;
+        global $PAGE, $CFG, $DB;
 
         $organizerconfig = get_config('organizer');
 
@@ -72,25 +72,33 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        $this->add_intro_editor();
-
-        $mform->addRule('introeditor', get_string('introeditor_error', 'organizer'), 'required', null, 'client');
+        $this->add_intro_editor($organizerconfig->requiremodintro);
 
         //------ MY ELEMENTS -----------------------------------------------------------
+        
+        $mform->addElement('header','availability',get_string('availability','organizer'));
 
-        $mform->addElement('date_time_selector', 'enablefrom', get_string('timeavailable', 'organizer'),
+        $mform->addElement('date_time_selector', 'allowregistrationsfromdate', get_string('allowsubmissionsfromdate', 'organizer'),
                 array('optional' => true));
-        $mform->setDefault('enablefrom', mktime(0, 0, 0, date('m'), date('d'), date('y')));
-        $mform->setType('enablefrom', PARAM_INT);
-        $mform->addHelpButton('enablefrom', 'timeavailable', 'organizer');
+        $mform->setDefault('allowregistrationsfromdate', mktime(0, 0, 0, date('m'), date('d'), date('y')));
+        $mform->setType('allowregistrationsfromdate', PARAM_INT);
+        $mform->addHelpButton('allowregistrationsfromdate', 'allowsubmissionsfromdate', 'organizer');
 
-        $mform->addElement('date_time_selector', 'enableuntil', get_string('absolutedeadline', 'organizer'),
+        $mform->addElement('date_time_selector', 'duedate', get_string('absolutedeadline', 'organizer'),
                 array('optional' => true));
-        $mform->setDefault('enableuntil', mktime(0, 0, 0, date('m'), date('d'), date('y') + 1) - (5 * 60));
-        $mform->setType('enableuntil', PARAM_INT);
-        $mform->addHelpButton('enableuntil', 'absolutedeadline', 'organizer');
+        $mform->setDefault('duedate', mktime(0, 0, 0, date('m'), date('d'), date('y') + 1) - (5 * 60));
+        $mform->setType('duedate', PARAM_INT);
+        $mform->addHelpButton('duedate', 'absolutedeadline', 'organizer');
+        
+        $mform->addElement('advcheckbox', 'alwaysshowdescription', get_string('alwaysshowdescription', 'organizer'), '');
+        $mform->addHelpButton('alwaysshowdescription', 'alwaysshowdescription','organizer');
+        $mform->setDefault('alwaysshowdescription', 1);
+        $mform->disabledIf('alwaysshowdescription', 'allowregistrationsfromdate[enabled]', 'notchecked');
 
+        $mform->setExpanded('availability');
+        
         $this->standard_grading_coursemodule_elements();
+        
         $mform->setDefault('grade', $organizerconfig->maximumgrade);
 
         $mform->addElement('header', 'organizercommon', get_string('organizercommon', 'organizer'));
@@ -118,20 +126,49 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         if ($organizerconfig->absolutedeadline != 'never') {
             $absdefault = strtotime($organizerconfig->absolutedeadline);
-            $mform->setDefault('enableuntil', $absdefault);
+            $mform->setDefault('duedate', $absdefault);
         }
         $this->standard_coursemodule_elements();
         $warning = $mform->createElement('static', '', '', '<span id="groupingid_warning">' . get_string('warning_groupingid', 'organizer') . '</span>');
         $mform->insertElementBefore($warning, 'groupingid');
         $this->add_action_buttons();
+        
+        // Add warning popup/noscript tag, if grades are changed by user.
+        $hasgrade = false;
+        if (!empty($this->_instance)) {
+        	$hasgrade = $DB->record_exists_sql('SELECT *
+					FROM {organizer_slots} slots
+					JOIN {organizer_slot_appointments} apps
+					ON slots.id = apps.slotid
+					WHERE slots.organizerid=? and NOT grade IS NULL',
+        			array($this->_instance));
+        }
+        
+        if ($mform->elementExists('grade') && $hasgrade) {
+        	$module = array(
+        			'name' => 'mod_organizer',
+        			'fullpath' => '/mod/organizer/module.js',
+        			'requires' => array('node', 'event'),
+        			'strings' => array(array('changegradewarning', 'mod_organizer'))
+        	);
+        	$PAGE->requires->js_init_call('M.mod_organizer.init_grade_change', null, false, $module);
+        
+        	// Add noscript tag in case.
+        	$noscriptwarning = $mform->createElement('static',
+        			'warning',
+        			null,
+        			html_writer::tag('noscript',
+        					get_string('changegradewarning', 'mod_organizer')));
+        	$mform->insertElementBefore($noscriptwarning, 'grade');
+        }
     }
-
+    
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-
-        if ($data['enablefrom'] && $data['enableuntil']) {
-            if ($data['enablefrom'] > $data['enableuntil']) {
-                $errors['enableuntil'] = get_string('enableuntilerror', 'organizer');
+        
+        if ($data['allowregistrationsfromdate'] && $data['duedate']) {
+            if ($data['allowregistrationsfromdate'] > $data['duedate']) {
+                $errors['duedate'] = get_string('duedateerror', 'organizer');
             }
         }
 

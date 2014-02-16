@@ -33,7 +33,7 @@ M.mod_organizer.init_mod_form = function (Y, activatecheckbox) {
 	Y.one('#id_isgrouporganizer').on('change', check_group_members_only);
 	
 	if (activatecheckbox && !Y.one('.error')) {
-		Y.one('#id_enableuntil_enabled').simulate('click');
+		Y.one('#id_duedate_enabled').simulate('click');
 	}
 }
 
@@ -406,3 +406,15 @@ M.mod_organizer.init_organizer_print_slots_form_old = function (Y) {
 M.mod_organizer.fix_calendar_styles = function (Y) {
 	Y.one('#region-post').addClass('path-calendar');
 }
+
+M.mod_organizer.init_grade_change = function(Y) {
+    var gradenode = Y.one('#id_grade');
+    if (gradenode) {
+        var originalvalue = gradenode.get('value');
+        gradenode.on('change', function() {
+            if (gradenode.get('value') != originalvalue) {
+                alert(M.str.mod_organizer.changegradewarning);
+            }
+        });
+    }
+};

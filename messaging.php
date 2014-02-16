@@ -18,7 +18,7 @@ define('ORGANIZER_ENABLE_MESSAGING', 1);
 
 require_once(dirname(__FILE__) . '/locallib.php');
 
-function organizer_send_message($sender, $receiver, $slot, $type, $digest = null) {
+function organizer_send_message($sender, $receiver, $slot, $type, $digest = null,$customdata = array()) {
     global $DB;
 
     if ($type == 'register_reminder:student') {
@@ -58,12 +58,28 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $strings->coursefullname = $course->fullname;
     $strings->courseshortname = $course->shortname;
     $strings->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
+    
+    if($namesplit[0] == "edit_notify"){
+    	$strings->slot_teacher = $slot->teachervisible == 1 ? fullname($DB->get_record('user', array('id' => $slot->teacherid))) : get_string('teacherinvisible','organizer');
+    	$strings->slot_location = organizer_location_link($slot);
+    	$strings->slot_maxparticipants = $slot->maxparticipants;
+    	$strings->slot_comments = $slot->comments;
+    }
+
+    $courseurl = new moodle_url('/mod/organizer/view.php',array('id'=>$cm->id));
+    $strings->courselink = html_writer::link($courseurl, $course->fullname);
 
     if ($organizer->isgrouporganizer) {
         if (strpos($type, 'register_notify') !== false || strpos($type, 'group_registration_notify') !== false) {
-            $group = groups_get_group(reset(reset(groups_get_user_groups($organizer->course, $sender->id))));
+        	$group = groups_get_user_groups($organizer->course, $sender->id);
+        	$group = reset($group);
+        	$group = reset($group);
+        	$group = groups_get_group($group);
         } else {
-            $group = groups_get_group(reset(reset(groups_get_user_groups($organizer->course, $receiver->id))));
+        	$group = groups_get_user_groups($organizer->course, $receiver->id);
+        	$group = reset($group);
+        	$group = reset($group);
+        	$group = groups_get_group($group);
         }
         $strings->groupname = $group->name;
         $type .= ":group";
@@ -92,6 +108,12 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $message->fullmessage = get_string("$type:fullmessage", 'organizer', $strings);
     $message->fullmessagehtml = organizer_make_html(get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm,
             $course);
+    
+    if(isset($customdata['custommessage'])){
+    	$message->fullmessage = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessage);
+    	$message->fullmessagehtml = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessagehtml);
+    }
+    
     $message->smallmessage = get_string("$type:smallmessage", 'organizer', $strings);
 
     if (ORGANIZER_ENABLE_MESSAGING) {

@@ -56,10 +56,10 @@ class organizer_delete_slots_form extends moodleform {
 
             foreach ($slots as $slot) {
                 $slot = new organizer_slot($slot);
+                $deletableslots = true;
+                $mform->addElement('hidden', 'slots[]', $slot->id);
+                $mform->setType('slots[]', PARAM_INT);
                 if (!$slot->has_participants()) {
-                    $deletableslots = true;
-                    $mform->addElement('hidden', 'slots[]', $slot->id);
-                    $mform->setType('slots[]', PARAM_INT);
                     $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
                     $stime = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
                     $etime = userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
@@ -100,12 +100,7 @@ class organizer_delete_slots_form extends moodleform {
         }
 
         $buttonarray = array();
-        if ($deletableslots) {
-            $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_delete', 'organizer'));
-        } else {
-            $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_delete', 'organizer'),
-                    array('disabled'));
-        }
+        $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_delete', 'organizer'));
         $buttonarray[] = &$mform->createElement('cancel');
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);

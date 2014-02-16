@@ -82,8 +82,8 @@ foreach ($courses as $course) {
             $organizer->timemodified = $scheduler->timemodified > 0 ? $scheduler->timemodified : 0;
             $organizer->isgrouporganizer = ORGANIZER_DEFAULT_ORGANIZER_ISGROUPORGANIZER;
             $organizer->emailteachers = $scheduler->emailteachers;
-            $organizer->enablefrom = null;
-            $organizer->enableuntil = $scheduler->changeuntil > 0 ? $scheduler->changeuntil : null;
+            $organizer->allowregistrationsfromdate = null;
+            $organizer->duedate = $scheduler->changeuntil > 0 ? $scheduler->changeuntil : null;
             $organizer->relativedeadline = $scheduler->changebefore > 0 ? $scheduler->changebefore
                     : ORGANIZER_DEFAULT_ORGANIZER_RELATIVEDEADLINE;
             $organizer->grade = ORGANIZER_DEFAULT_ORGANIZER_GRADE;

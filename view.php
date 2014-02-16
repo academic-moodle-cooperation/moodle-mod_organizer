@@ -41,7 +41,7 @@ require_login($instance->course, false, $instance->cm);
 $params = organizer_load_params($instance);
 
 $url = organizer_create_url($params);
-$logurl = organizer_create_url($params, true);
+$logurl = 'view.php?id=' . $params['id'] . '&mode=' . $params['mode'];
 
 $PAGE->set_url($url);
 $PAGE->set_title($instance->organizer->name);
