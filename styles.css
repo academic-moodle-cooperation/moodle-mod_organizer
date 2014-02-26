@@ -1,0 +1,133 @@
+/**
+ * styles.css
+ *
+ * @package       mod_organizer
+ * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Andreas Windbichler
+ * @author        Ivan Šakić
+ * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+ 
+ #organizer_main_cointainer table tr.past_due td {
+    background-color: #F0F0F0 !important;
+}
+
+#organizer_main_cointainer table tr.affected_slot td {
+    background-color: LightGreen !important;
+}
+
+#organizer_main_cointainer table tr.unavailable td {
+    color: gray !important;
+}
+
+#organizer_main_cointainer table.overview {
+    width: 100% !important;
+}
+
+#organizer_main_cointainer table.overview td {
+	border: 1px solid #BBB !important;
+}
+
+#organizer_main_cointainer fieldset.preview {
+	width: 97.3%;
+}
+
+#organizer_main_cointainer div.datapreviewtitle{
+	margin-bottom:-2em;
+	font-weight:bold;
+	margin-left: 1.5em;
+}
+
+/*fix here sn */
+#organizer_main_cointainer div.forced_scroll {
+	border: solid 1px #ddd;
+    overflow-x: scroll;
+    margin-left:10px;
+    margin-right:10px;
+    padding-top:2em;
+}
+
+#organizer_main_cointainer div.forced_scroll table {
+	min-width: 1024px;
+	margin: 1em;
+}
+
+#organizer_main_cointainer div.forced_scroll td {
+	white-space: nowrap;
+}
+
+#organizer_main_cointainer table.legend td {
+    vertical-align: middle !important;
+}
+
+#organizer_main_cointainer tr.registered_slot td {
+    background-color: LightGreen !important;
+}
+
+#organizer_main_cointainer div.singlebutton button {
+    margin: 20px 5px;
+}
+
+#organizer_main_cointainer span.countdown_normal {
+    background-color: LightGreen;
+}
+
+#organizer_main_cointainer span.countdown_hurry {
+    background-color: Yellow;
+}
+
+#organizer_main_cointainer span.countdown_critical {
+    background-color: rgb(255,204,153);
+}
+
+#organizer_main_cointainer span.countdown_passed {
+    background-color: #F0F0F0;
+}
+
+#organizer_main_cointainer span.nobreak {
+	white-space: nowrap;	
+}
+
+#organizer_main_cointainer div.organizerinfo {
+	width: 50% !important;
+}
+
+#organizer_main_cointainer table.print-preview td {
+	border: 1px solid #BBB !important;
+	border-collapse: collapse;
+}
+
+#organizer_main_cointainer table.coloredrows th {
+    white-space:nowrap;
+}
+
+#organizer_main_cointainer table.coloredrows .r0 {
+    background-color: #f0f0f0;
+    white-space:nowrap
+}
+
+#organizer_main_cointainer table.coloredrows .r1 {
+    background-color: #fafafa;
+    white-space:nowrap
+}
+
+#page-mod-organizer-view div#organizer_popup_header div.title h2{
+	width:100%;
+}
+
+#organizer_main_cointainer fieldset#id_slotdetails input[readonly='readonly'] {
+    background: #ffffff; 
+    color: #6d6d6d; 
+    border: 1px solid #afafaf;
+    cursor:default;
+}
+
+#organizer_main_cointainer a.action{
+	white-space:nowrap;
+}
+
+#organizer_main_cointainer a.disabled{
+	color:grey;
+}
