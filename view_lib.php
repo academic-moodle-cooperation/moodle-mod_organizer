@@ -722,7 +722,7 @@ function organizer_organizer_get_status_table_entries($params) {
         FROM {organizer_slot_appointments} a INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON u.id = a2.userid
         WHERE u.id $insql
-        GROUP BY u.id
+        GROUP BY u.id, a2.id
         $orderby";
 
     return $DB->get_records_sql($query, $par);
