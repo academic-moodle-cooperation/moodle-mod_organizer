@@ -105,10 +105,20 @@ function organizer_add_appointment_slots($data) {
     if (!isset($data->finalslots)) {
         return $count;
     }
+    
+    $timezone = new DateTimeZone(date_default_timezone_get());
+
 
     foreach ($data->finalslots as $slot) {
         if (!$slot['selected']) {
             continue;
+        }
+        
+        $transitions = $timezone->getTransitions($slot['date'],$slot['date']+$slot['from']);
+        $dstoffset = 0;
+        
+        foreach($transitions as $trans){
+        	$dstoffset += $trans['isdst'] ? ($trans['offset']) : (+$trans['offset']); 
         }
 
         $newslot = new stdClass();
@@ -131,7 +141,16 @@ function organizer_add_appointment_slots($data) {
         }
 
         for ($time = $slot['from']; $time + $data->duration <= $slot['to']; $time += $data->duration) {
-            $newslot->starttime = $slot['date'] + $time;
+        	$t = new DateTime();
+        	$t->setTimestamp($slot['date']); // sets the day
+        	       	
+        	$h = $time / 3600 % 24;
+        	$m = $time / 60 % 60;
+        	$s = $time % 60;
+
+        	$t->setTime($h, $m, $s); // set time of day
+        	
+        	$newslot->starttime = $t->getTimestamp();
 
             $newslot->id = $DB->insert_record('organizer_slots', $newslot);
 
