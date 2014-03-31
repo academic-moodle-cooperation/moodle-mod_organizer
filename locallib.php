@@ -1,28 +1,29 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of mod_organizer for Moodle - http://moodle.org/
 //
-// Moodle is free software: you can redistribute it and/or modify
+// It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Moodle is distributed in the hope that it will be useful,
+// It is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Internal library of functions for module organizer
+ * locallib.php
  *
- * All the organizer specific functions, needed to implement the module
- * logic, should go here. Never include this file from your lib.php!
- *
- * @package   mod_organizer
- * @copyright 2011 Ivan Šakić <ivan.sakic3@gmail.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package       mod_organizer
+ * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Andreas Windbichler
+ * @author        Ivan Šakić
+ * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -104,10 +105,20 @@ function organizer_add_appointment_slots($data) {
     if (!isset($data->finalslots)) {
         return $count;
     }
+    
+    $timezone = new DateTimeZone(date_default_timezone_get());
+
 
     foreach ($data->finalslots as $slot) {
         if (!$slot['selected']) {
             continue;
+        }
+        
+        $transitions = $timezone->getTransitions($slot['date'],$slot['date']+$slot['from']);
+        $dstoffset = 0;
+        
+        foreach($transitions as $trans){
+        	$dstoffset += $trans['isdst'] ? ($trans['offset']) : (+$trans['offset']); 
         }
 
         $newslot = new stdClass();
@@ -130,7 +141,16 @@ function organizer_add_appointment_slots($data) {
         }
 
         for ($time = $slot['from']; $time + $data->duration <= $slot['to']; $time += $data->duration) {
-            $newslot->starttime = $slot['date'] + $time;
+        	$t = new DateTime();
+        	$t->setTimestamp($slot['date']); // sets the day
+        	       	
+        	$h = $time / 3600 % 24;
+        	$m = $time / 60 % 60;
+        	$s = $time % 60;
+
+        	$t->setTime($h, $m, $s); // set time of day
+        	
+        	$newslot->starttime = $t->getTimestamp();
 
             $newslot->id = $DB->insert_record('organizer_slots', $newslot);
 
