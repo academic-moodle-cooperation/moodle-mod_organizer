@@ -28,6 +28,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version = 2014032400; // If version == 0 then module will not be installed
+$module->version  = 2014033100;
+$module->release   = "2014-03-31"; 	  // User-friendly version number
+$module->maturity  = MATURITY_STABLE;
 $module->requires = 2012120300; // Requires this Moodle version
+$module->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics)
 $module->cron = 300; // Period for cron to check this module (secs)
