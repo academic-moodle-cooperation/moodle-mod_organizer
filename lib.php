@@ -285,7 +285,8 @@ function organizer_get_user_grade($organizer, $userid = 0) {
                 INNER JOIN {organizer_slots} s ON a.slotid = s.id
                 WHERE s.organizerid = :organizerid AND a.userid = :userid
                 ORDER BY id DESC';
-        $result = reset($DB->get_records_sql($query, $params));
+        $arr = $DB->get_records_sql($query, $params);
+        $result = reset($arr);
         return array($result->userid => $result);
     } else {
         //tscpr: Why keep this query and this whole else-branch if we don't use it?
