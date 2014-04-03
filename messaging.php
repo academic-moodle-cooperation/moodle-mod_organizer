@@ -45,7 +45,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $module = $DB->get_record('modules', array('name' => 'organizer'));
     $cm = $DB->get_record('course_modules', array('module' => $module->id, 'instance' => $organizer->id));
     $course = $DB->get_record('course', array('id' => $cm->course));
-    $context = get_context_instance(CONTEXT_COURSE, $cm->course);
+    $context = context_course::instance($cm->course);
     $roles = get_user_roles($context, $receiver->id);
 
     $now = time();

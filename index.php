@@ -101,7 +101,7 @@ foreach ($organizers as $organizer) {
     $row[] = $organizer->intro;
 
     $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
+    $context = context_module::instance($cm->id, MUST_EXIST);
     if (has_capability('mod/organizer:viewregistrations', $context)) {
         $a = organizer_get_counters($organizer);
         if ($organizer->isgrouporganizer) {

@@ -475,7 +475,7 @@ function organizer_get_counters($organizer) {
     } else {
         $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
-        $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
+        $context = context_module::instance($cm->id, MUST_EXIST);
 
         $students = get_enrolled_users($context, 'mod/organizer:register');
 
