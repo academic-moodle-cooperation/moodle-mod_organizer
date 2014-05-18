@@ -785,6 +785,7 @@ $string['textsize'] = 'Textsize';
 $string['pageorientation'] = 'Page orientation';
 $string['orientationportrait'] = 'portrait';
 $string['orientationlandscape'] = 'landscape';
+$string['pdf_notactive'] = 'not active';
 
 $string['headerfooter'] = 'Print header/footer';
 $string['headerfooter_help'] = 'Print header/footer if checked';
