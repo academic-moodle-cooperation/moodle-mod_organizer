@@ -254,6 +254,6 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
         $output .= html_writer::end_tag('tbody') . "\n";
     }
     $output .= html_writer::end_tag('table') . "\n";
-
+    $output = html_writer::tag('div', $output, array('style' => 'overflow: auto; width: 100%'));
     return $output;
 }
