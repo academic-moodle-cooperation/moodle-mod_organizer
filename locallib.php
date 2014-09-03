@@ -698,7 +698,7 @@ function organizer_get_course_module_data() {
         print_error('You must specify a course_module ID or an instance ID');
     }
 
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
+    $context = context_module::instance($cm->id, MUST_EXIST);
 
     return array($cm, $course, $organizer, $context);
 }
@@ -724,7 +724,7 @@ function organizer_get_course_module_data_new() {
         print_error('You must specify a course_module ID or an instance ID');
     }
 
-    $instance->context = get_context_instance(CONTEXT_MODULE, $instance->cm->id, MUST_EXIST);
+    $instance->context = context_module::instance($instance->cm->id, MUST_EXIST);
 
     return $instance;
 }

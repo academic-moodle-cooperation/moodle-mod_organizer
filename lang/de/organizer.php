@@ -740,6 +740,7 @@ $string['orientationlandscape'] = 'Querformat';
 $string['headerfooter'] = 'Kopf-/Fußzeilen';
 $string['headerfooter_help'] = 'Inkludiere Kopf-/Fußzeile';
 $string['printpreview'] = 'Druckvorschau (erste 10 Einträge)';
+$string['pdf_notactive'] = 'nicht aktiviert';
 
 $string['datapreviewtitle'] = 'Datenvorschau';
 $string['datapreviewtitle_help'] = "Klicken Sie in der Vorschau auf [+] bzw. [-], um die zu druckenden Spalten ein- bzw. auszublenden.";

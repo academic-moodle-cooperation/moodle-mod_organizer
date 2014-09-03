@@ -140,21 +140,17 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
     	$dosort = "";
     }
     
-    if($timedue == NULL){
-    	$duetitle = "";
-    	$due = "";
-    }else{
-    	$duetitle = get_string('duedate', 'organizer').':';
-    	$due = userdate($timedue);
-    }
+    
+    $allowsubmissionsfromdate = $allowsubmissionsfromdate ? userdate($allowsubmissionsfromdate) : get_string('pdf_notactive', 'organizer');
+    $timedue = $timedue ? userdate($timedue) : get_string('pdf_notactive', 'organizer');
 
     $mpdftable = new MTablePDF($orientation, $columnwitdh);
     $mpdftable->SetTitle(get_string('modulename', 'organizer') . " " . $organizer->name . " - " . get_string('printout', 'organizer'));
     $mpdftable->setRowsperPage($entriesperpage);
     $mpdftable->ShowHeaderFooter($headerfooter);
     $mpdftable->SetFontSize($textsize);
-    $mpdftable->setHeaderText(get_string('course') . ':', "{$course->idnumber} {$course->fullname}", get_string('availablefrom', 'organizer').':', userdate($allowsubmissionsfromdate), get_string('date') . ':', userdate(time()),
-    							get_string('modulename', 'organizer') . ':', $organizer->name, $duetitle, $due, '', '');
+    $mpdftable->setHeaderText(get_string('course') . ':', "{$course->idnumber} {$course->fullname}", get_string('availablefrom', 'organizer').':', $allowsubmissionsfromdate, get_string('date') . ':', userdate(time()),
+    							get_string('modulename', 'organizer') . ':', $organizer->name, get_string('duedate', 'organizer').':', $timedue, '', '');
     $mpdftable->setTitles($titles);
     $mpdftable->setColumnFormat($columnformats);
     $entries = fetch_table_entries($slots, $dosort);

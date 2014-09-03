@@ -431,7 +431,10 @@ M.mod_organizer.init_organizer_print_slots_form_old = function (Y) {
 }
 
 M.mod_organizer.fix_calendar_styles = function (Y) {
-	Y.one('#region-post').addClass('path-calendar');
+	var t = Y.one('#region-post');
+    if (t != null) {
+        t.addClass('path-calendar');
+    }
 }
 
 M.mod_organizer.init_grade_change = function(Y) {

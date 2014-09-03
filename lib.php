@@ -285,7 +285,8 @@ function organizer_get_user_grade($organizer, $userid = 0) {
                 INNER JOIN {organizer_slots} s ON a.slotid = s.id
                 WHERE s.organizerid = :organizerid AND a.userid = :userid
                 ORDER BY id DESC';
-        $result = reset($DB->get_records_sql($query, $params));
+        $arr = $DB->get_records_sql($query, $params);
+        $result = reset($arr);
         return array($result->userid => $result);
     } else {
         //tscpr: Why keep this query and this whole else-branch if we don't use it?
@@ -475,7 +476,7 @@ function organizer_get_counters($organizer) {
     } else {
         $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
-        $context = get_context_instance(CONTEXT_MODULE, $cm->id, MUST_EXIST);
+        $context = context_module::instance($cm->id, MUST_EXIST);
 
         $students = get_enrolled_users($context, 'mod/organizer:register');
 
