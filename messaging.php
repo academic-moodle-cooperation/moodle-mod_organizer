@@ -49,8 +49,8 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $roles = get_user_roles($context, $receiver->id);
 
     $now = time();
-    if (!$cm->visible || ($cm->availablefrom && $cm->availablefrom > $now) ||
-            ($cm->availableuntil && $cm->availableuntil < $now) || count($roles) == 0) {
+    if (!$cm->visible || (isset($cm->availablefrom) && $cm->availablefrom && $cm->availablefrom > $now) ||
+            (isset($cm->availableuntil) && $cm->availableuntil && $cm->availableuntil < $now) || count($roles) == 0) {
         return false;
     }
 
