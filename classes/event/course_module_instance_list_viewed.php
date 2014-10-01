@@ -15,22 +15,13 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * versionn.php
+ * The course_module_instance_list_viewed event.
  *
  * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+namespace mod_organizer\event;
 defined('MOODLE_INTERNAL') || die();
-
-$module->version  = 2014092507;
-$module->release   = "2014-03-31"; 	  // User-friendly version number
-$module->maturity  = MATURITY_STABLE;
-$module->requires = 2012120300; // Requires this Moodle version
-$module->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics)
-$module->cron = 300; // Period for cron to check this module (secs)
+class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed {
+}

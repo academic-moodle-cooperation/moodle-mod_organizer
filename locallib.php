@@ -753,7 +753,3 @@ function organizer_fetch_my_group() {
     $group = $DB->get_record_sql($query, $params);
     return $group;
 }
-
-function organizer_log_action($action, $logurl, $instance) {
-    add_to_log($instance->course->id, 'organizer', $action, "{$logurl}", $instance->organizer->name, $instance->cm->id);
-}

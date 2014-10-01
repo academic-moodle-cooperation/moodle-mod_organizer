@@ -53,6 +53,20 @@ $string['allowsubmissionsfromdatesummary'] = 'Anmeldungen möglich ab <strong>{$
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'Die Terminplanerdetails und die Registrierung stehen zur Verfügung ab <strong>{$a}</strong>';
 $string['duedate'] = 'Abgabetermin';
 $string['availability'] = 'Verfügbarkeit';
+
+$string['eventslotviewed'] = 'Termine angezeigt.';
+$string['eventregistrationsviewed'] = 'Anmeldungen angezeigt.';
+$string['eventslotcreated'] = 'Neuer Termin angelegt.';
+$string['eventslotupdated'] = 'Termin bearbeitet.';
+$string['eventslotdeleted'] = 'Termin abgesagt.';
+$string['eventslotviewed'] = 'Termin angezeigt.';
+$string['eventappoinementadded'] = 'Student hat sich zu einem Termin angemeldet.';
+$string['eventappoinementcommented'] = 'Termin wurde kommentiert.';
+$string['eventappointmentevaluated'] = 'Termin wurde bewertet.';
+$string['eventappoinementremoved'] = 'Stundet wurde von einem Termin abgemeldet.';
+$string['eventappointremindersent'] = 'Terminerinnerung zu Anmeldung zu einem Termin gesendet.';
+$string['eventappointlistprinted'] = 'Terminliste wurde gedruckt.';
+
 $string['alwaysshowdescription'] = 'Beschreibung immer anzeigen';
 $string['alwaysshowdescription_help'] = 'Wenn diese Option deaktiviert ist, wird die Aufgabenbeschreibung für Teilnehmer/innen nur während des Anmeldezeitraums angezeigt.';
 $string['warning_groupingid'] = 'Gruppenmodus eingeschaltet. Sie müssen eine gültige Gruppierung auswählen.';

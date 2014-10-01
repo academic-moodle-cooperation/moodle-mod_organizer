@@ -90,7 +90,13 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 
 if ($action == ORGANIZER_ACTION_ADD) {
     require_capability('mod/organizer:addslots', $context);
-    add_to_log($course->id, 'organizer', 'add', "{$logurl}", $organizer->name, $cm->id);
+    
+    $event = \mod_organizer\event\slot_created::create(array(
+    		'objectid' => $PAGE->cm->id,
+    		'context' => $PAGE->context
+    ));
+    $event->trigger();
+
     $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
 
     if ($data = $mform->get_data()) {
@@ -125,7 +131,12 @@ if ($action == ORGANIZER_ACTION_ADD) {
     print_error('If you see this, something went wrong with add action!');
 } else if ($action == ORGANIZER_ACTION_EDIT) {
     require_capability('mod/organizer:editslots', $context);
-    add_to_log($course->id, 'organizer', 'edit', "{$logurl}", $organizer->name, $cm->id);
+
+    $event = \mod_organizer\event\slot_updated::create(array(
+    		'objectid' => $PAGE->cm->id,
+    		'context' => $PAGE->context
+    ));
+    $event->trigger();
 
     if (!$slots) {
         $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
@@ -159,7 +170,12 @@ if ($action == ORGANIZER_ACTION_ADD) {
     print_error('If you see this, something went wrong with edit action!');
 } else if ($action == ORGANIZER_ACTION_EVAL) {
     require_capability('mod/organizer:evalslots', $context);
-    add_to_log($course->id, 'organizer', 'eval', "{$logurl}", $organizer->name, $cm->id);
+    
+    $event = \mod_organizer\event\appointment_evaluated::create(array(
+    		'objectid' => $PAGE->cm->id,
+    		'context' => $PAGE->context
+    ));
+    $event->trigger();
 
     if (!$slots) {
         $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
@@ -191,7 +207,12 @@ if ($action == ORGANIZER_ACTION_ADD) {
     print_error('If you see this, something went wrong with edit action!');
 } else if ($action == ORGANIZER_ACTION_DELETE) {
     require_capability('mod/organizer:deleteslots', $context);
-    add_to_log($course->id, 'organizer', 'delete', "{$logurl}", $organizer->name, $cm->id);
+    
+    $event = \mod_organizer\event\slot_deleted::create(array(
+    		'objectid' => $PAGE->cm->id,
+    		'context' => $PAGE->context
+    ));
+    $event->trigger();
 
     if (!$slots) {
         $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
@@ -267,8 +288,12 @@ if ($action == ORGANIZER_ACTION_ADD) {
     print_error('If you see this, something went wrong with delete action!');
 } else if ($action == ORGANIZER_ACTION_PRINT) {
     require_capability('mod/organizer:printslots', $context);
-
-    add_to_log($course->id, 'organizer', 'print', "{$logurl}", $organizer->name, $cm->id);
+    
+    $event = \mod_organizer\event\appointment_list_printed::create(array(
+    		'objectid' => $PAGE->cm->id,
+    		'context' => $PAGE->context
+    ));
+    $event->trigger();
 
     $slots = optional_param_array('slots', NULL, PARAM_INT);
     
@@ -341,7 +366,12 @@ if ($action == ORGANIZER_ACTION_ADD) {
 
 } else if ($action == ORGANIZER_ACTION_COMMENT) {
     require_capability('mod/organizer:comment', $context);
-    add_to_log($course->id, 'organizer', 'comment', "{$logurl}", $organizer->name, $cm->id);
+    
+    $event = \mod_organizer\event\appointment_commented::create(array(
+    		'objectid' => $PAGE->cm->id,
+    		'context' => $PAGE->context
+    ));
+    $event->trigger();
 
     if (!organizer_security_check_slots($slot)) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
@@ -361,7 +391,12 @@ if ($action == ORGANIZER_ACTION_ADD) {
     print_error('If you see this, something went wrong with delete action!');
 } else if ($action == ORGANIZER_ACTION_REGISTER) {
     require_capability('mod/organizer:register', $context);
-    add_to_log($course->id, 'organizer', 'register', "{$logurl}", $organizer->name, $cm->id);
+
+    $event = \mod_organizer\event\appointment_added::create(array(
+    		'objectid' => $PAGE->cm->id,
+    		'context' => $PAGE->context
+    ));
+    $event->trigger();
 
     if (!organizer_security_check_slots($slot)) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
@@ -391,7 +426,12 @@ if ($action == ORGANIZER_ACTION_ADD) {
     redirect($redirecturl);
 } else if ($action == ORGANIZER_ACTION_UNREGISTER) {
     require_capability('mod/organizer:unregister', $context);
-    add_to_log($course->id, 'organizer', 'unregister', "{$logurl}", $organizer->name, $cm->id);
+
+    $event = \mod_organizer\event\appointment_removed::create(array(
+    		'objectid' => $PAGE->cm->id,
+    		'context' => $PAGE->context
+    ));
+    $event->trigger();
 
     if (!organizer_security_check_slots($slot)) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
@@ -415,7 +455,18 @@ if ($action == ORGANIZER_ACTION_ADD) {
 } else if ($action == ORGANIZER_ACTION_REREGISTER) {
     require_capability('mod/organizer:register', $context);
     require_capability('mod/organizer:unregister', $context);
-    add_to_log($course->id, 'organizer', 'reregister', "{$logurl}", $organizer->name, $cm->id);
+
+    $event = \mod_organizer\event\appointment_removed::create(array(
+    		'objectid' => $PAGE->cm->id,
+    		'context' => $PAGE->context
+    ));
+    $event->trigger();
+
+    $event = \mod_organizer\event\appointment_added::create(array(
+    		'objectid' => $PAGE->cm->id,
+    		'context' => $PAGE->context
+    ));
+    $event->trigger();
 
     if (!organizer_security_check_slots($slot)) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
@@ -475,7 +526,12 @@ if ($action == ORGANIZER_ACTION_ADD) {
     redirect($redirecturl);
     */
 } else if ($action == ORGANIZER_ACTION_REMINDALL) {
-    add_to_log($course->id, 'organizer', 'remindall', "{$logurl}", $organizer->name, $cm->id);
+
+	$event = \mod_organizer\event\appointment_reminder_sent::create(array(
+			'objectid' => $PAGE->cm->id,
+			'context' => $PAGE->context
+	));
+	$event->trigger();
 
     $mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 

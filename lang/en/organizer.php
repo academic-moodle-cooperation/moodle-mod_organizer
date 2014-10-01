@@ -54,6 +54,19 @@ $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The organizer detail
 $string['duedate'] = 'Due date';
 $string['availability'] = 'Availability';
 
+$string['eventslotviewed'] = 'Appointments tab viewed.';
+$string['eventregistrationsviewed'] = 'Registrations tab viewed.';
+$string['eventslotcreated'] = 'New slots created.';
+$string['eventslotupdated'] = 'Slot updated.';
+$string['eventslotdeleted'] = 'Slot deleted.';
+$string['eventslotviewed'] = 'Slots viewed.';
+$string['eventappoinementadded'] = 'Student registered to a slot.';
+$string['eventappoinementcommented'] = 'Appoinement has been commented.';
+$string['eventappointmentevaluated'] = 'Appointment has been evaluated.';
+$string['eventappoinementremoved'] = 'Student unregistered from a slot.';
+$string['eventappointremindersent'] = 'Appointment reminder sent.';
+$string['eventappointlistprinted'] = 'Appoinement list has been printed.';
+
 $string['alwaysshowdescription'] = 'Always show description';
 $string['alwaysshowdescription_help'] = 'If disabled, the Assignment Description above will only become visible to students at the "Registration start" date.';
 $string['warning_groupingid'] = 'Group mode enabled. You must select a valid grouping.';
