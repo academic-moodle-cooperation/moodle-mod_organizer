@@ -34,7 +34,7 @@ class appointment_reminder_sent extends \core\event\base {
     }
  
     public static function get_name() {
-        return get_string('eventappointremindersent', 'mod_organizer');
+        return get_string('eventappointmentremindersent', 'mod_organizer');
     }
  
     public function get_description() {

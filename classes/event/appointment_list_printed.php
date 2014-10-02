@@ -34,7 +34,7 @@ class appointment_list_printed extends \core\event\base {
     }
  
     public static function get_name() {
-        return get_string('eventappointlistprinted', 'mod_organizer');
+        return get_string('eventappointmentlistprinted', 'mod_organizer');
     }
  
     public function get_description() {
