@@ -15,7 +15,7 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * versionn.php
+ * version.php
  *
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
@@ -28,7 +28,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version  = 2014092507;
+$module->version  = 2014101500;
 $module->release   = "2014-03-31"; 	  // User-friendly version number
 $module->maturity  = MATURITY_STABLE;
 $module->requires = 2012120300; // Requires this Moodle version

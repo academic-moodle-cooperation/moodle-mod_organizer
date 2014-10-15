@@ -15,7 +15,7 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * backop/moodle2/backup_organizer_stepslib.php
+ * backup/moodle2/backup_organizer_stepslib.php
  *
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
