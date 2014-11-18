@@ -83,7 +83,7 @@ switch ($params['mode']) {
             ));
             $event->trigger();
             
-            echo organizer_generate_appointments_view($params, $instance);
+            echo organizer_generate_appointments_view($params, $instance,$popups);
         } else {
             print_error('You do not have the permission to view this page!');
         }
@@ -97,7 +97,7 @@ switch ($params['mode']) {
         	$event->add_record_snapshot('course', $PAGE->course);
         	$event->trigger();
         	
-            echo organizer_generate_student_view($params, $instance);
+            echo organizer_generate_student_view($params, $instance,$popups);
         } else {
             print_error('You do not have the permission to view this page!');
         }
@@ -110,7 +110,7 @@ switch ($params['mode']) {
             ));
             $event->trigger();
         	
-            echo organizer_generate_registration_status_view($params, $instance);
+            echo organizer_generate_registration_status_view($params, $instance,$popups);
         } else {
             print_error('You do not have the permission to view this page!');
         }
@@ -129,9 +129,9 @@ die;
 
 //---------------- UTILITY FUNCTIONS -------------------------------------------
 
-function organizer_register_popup($title, $content) {
+function organizer_register_popup($title, $content,&$popups) {
     static $id = 0;
-    global $popups;
+
     if (!isset($popups[$title])) {
         $popups[$title] = array();
     }
