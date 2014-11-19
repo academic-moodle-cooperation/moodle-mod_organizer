@@ -959,11 +959,11 @@ function organizer_teacher_data($params, $slot,&$popups) {
 
     if (isset($slot->teachercomments)) {
         if ($slot->teachercomments != '') {
-            $output .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_COMMENT, $slot->teachercomments,$popups);
+            $output .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_COMMENT, s($slot->teachercomments),$popups);
         }
     } else {
         if ($slot->comments != '') {
-            $output .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_COMMENT, $slot->comments,$popups);
+            $output .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_COMMENT, s($slot->comments),$popups);
         }
     }
 
