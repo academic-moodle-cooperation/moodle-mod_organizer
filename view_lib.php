@@ -489,7 +489,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                             $cell = $row->cells[] = new html_table_cell(organizer_organizer_get_participant_list_infobox($params, $slot));
                         } else {
                             $cell = $row->cells[] = new html_table_cell(
-                                    organizer_get_participant_list($params, $slot, $app));
+                                    organizer_get_participant_list($params, $slot, $app,$popups));
                         }
                         break;
                     case 'teacher':
@@ -820,7 +820,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                         }
                         $cell = $row->cells[] = new html_table_cell($list);
                     } else {
-                        $cell = $row->cells[] = new html_table_cell(organizer_reg_organizer_app_details($organizer, $entry->id));
+                        $cell = $row->cells[] = new html_table_cell(organizer_reg_organizer_app_details($organizer, $entry->id,$popups));
                     }
 
                     break;
@@ -851,14 +851,14 @@ function organizer_get_participant_entry($entry) {
     return organizer_get_name_link($entry->id) . " {$icon}<br/>({$entry->idnumber})";
 }
 
-function organizer_app_details($params, $appointment) {
+function organizer_app_details($params, $appointment,&$popups) {
     global $USER;
     if (!isset($appointment)) {
         return '';
     }
 
     $list = ' ' . ($appointment->comments != '' ?
-            organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $appointment->comments) :
+            organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $appointment->comments,$popups) :
             organizer_get_img('pix/transparent.png', '', ''));
     $list .= ' ' . organizer_get_attended_icon($appointment);
 
@@ -868,7 +868,7 @@ function organizer_app_details($params, $appointment) {
     }
 
     $list .= ' ' . ($appointment->feedback != '' ? 
-            organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback) :
+            organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback,$popups) :
             organizer_get_img('pix/transparent.png', '', ''));
 
     return $list;
@@ -974,7 +974,7 @@ function organizer_teacher_data($params, $slot,&$popups) {
     return $output;
 }
 
-function organizer_reg_organizer_app_details($organizer, $userid) {
+function organizer_reg_organizer_app_details($organizer, $userid,&$popups) {
     $appointment = organizer_get_last_user_appointment($organizer, $userid, false);
     if ($appointment) {
         $list = '';
@@ -985,7 +985,7 @@ function organizer_reg_organizer_app_details($organizer, $userid) {
             $list .= organizer_display_grade($organizer, $appointment->grade);
         }
         $list .= ' ' . (isset($appointment->feedback) && $appointment->feedback != '' ?
-                organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback) : '');
+                organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback,$popups) : '');
     } else {
         $list = '-';
     }
@@ -1083,7 +1083,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
     return $output;
 }
 
-function organizer_organizer_get_participant_list_infobox($params, $slot, $userid = 0) {
+function organizer_organizer_get_participant_list_infobox($params, $slot, $userid = 0,&$popups) {
     global $DB, $USER;
 
     if ($userid == null) {
@@ -1102,7 +1102,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
                 $output .= $name . ($idnumber ? " ($idnumber) " : " ");
                 $output .= ($app->userid == $app->applicantid) ? 
                         organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
-                $output .= '<div style="float: right;">' . organizer_app_details($params, $app, true) .
+                $output .= '<div style="float: right;">' . organizer_app_details($params, $app, $popups) .
                         '</div><div style="clear: both;"></div>';
             } else if (!$slot->isanonymous) {
                 $output .= $name . ($idnumber ? " ($idnumber) " : " ");
@@ -1153,7 +1153,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
     return $output;
 }
 
-function organizer_get_participant_list($params, $slot, $app) {
+function organizer_get_participant_list($params, $slot, $app,&$popups) {
     global $DB, $USER;
 
     $slotx = new organizer_slot($slot);
@@ -1259,7 +1259,7 @@ function organizer_get_participant_list($params, $slot, $app) {
                                     'pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
                 }
                 $list .= '</div>';
-                $list .= '<div style="float: right;">' . organizer_app_details($params, $appointment)
+                $list .= '<div style="float: right;">' . organizer_app_details($params, $appointment,$popups)
                         . '</div><div style="clear: both;"></div>';
             }
             $content .= $list;
