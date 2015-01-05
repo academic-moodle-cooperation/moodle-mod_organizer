@@ -486,7 +486,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                         break;
                     case 'participants':
                         if ($showonlyregslot) {
-                            $cell = $row->cells[] = new html_table_cell(organizer_organizer_get_participant_list_infobox($params, $slot));
+                            $cell = $row->cells[] = new html_table_cell(organizer_organizer_get_participant_list_infobox($params, $slot, false, $popups));
                         } else {
                             $cell = $row->cells[] = new html_table_cell(
                                     organizer_get_participant_list($params, $slot, $app,$popups));
@@ -1123,7 +1123,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
         $name = organizer_get_name_link($userid);
         $idnumber = organizer_get_user_idnumber($userid);
         $output = $name . ($idnumber ? " ($idnumber) " : " ") . '<div style="float: right;">' .
-                organizer_app_details($params, $app) .
+                organizer_app_details($params, $app, $popups) .
                 '</div><div style="clear: both;"></div>';
         
         $count = count($DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id)));
