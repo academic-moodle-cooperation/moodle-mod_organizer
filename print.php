@@ -25,7 +25,7 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+/*
 define('ORGANIZER_CELL_HEIGHT', 8);
 define('ORGANIZER_MARGIN_LEFT', 10);
 define('ORGANIZER_MARGIN_RIGHT', 10);
@@ -308,4 +308,4 @@ function fetch_table_entries($slots,$orderby="") {
 
     $params = array_merge($params, $inparams);
     return $DB->get_records_sql($query, $params);
-}
+}*/

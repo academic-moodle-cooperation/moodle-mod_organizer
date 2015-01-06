@@ -102,8 +102,7 @@ function organizer_make_messages_section($params) {
 function organizer_make_reminder_section($params, $context) {
     global $OUTPUT;
     if (has_capability("mod/organizer:sendreminders", $context, null, true)) {
-        $sendurl = new moodle_url('view_action.php',
-                array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'remindall'));
+        $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id']));
         $output = '<div name="button_bar" class="buttons mdl-align">';
         $output .= get_string('remindall_desc', 'organizer') . '<br />';
         $output .= $OUTPUT->single_button($sendurl, get_string("btn_send", 'organizer'), 'post');

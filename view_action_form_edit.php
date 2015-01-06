@@ -28,6 +28,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+
+define('ORGANIZER_SPACING', '&nbsp;&nbsp;'); //TODO remove this
+
 // required for the form rendering
 
 require_once("$CFG->libdir/formslib.php");

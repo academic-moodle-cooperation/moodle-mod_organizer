@@ -28,6 +28,10 @@
 
 function organizer_get_last_user_appointment($organizer, $userid = null, $mergegroupapps = true, $getevaluated = false) {
     global $DB, $USER;
+    
+    if(!isset($organizer->id)){
+    	echo "ERROR";
+    }
 
     if ($userid == null) {
         $userid = $USER->id;
@@ -72,7 +76,7 @@ function organizer_get_last_user_appointment($organizer, $userid = null, $mergeg
             $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
         }
     }
-
+    
     return $app;
 }
 

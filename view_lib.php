@@ -46,6 +46,23 @@ require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 require_once(dirname(__FILE__) . '/slotlib.php');
 require_once(dirname(__FILE__) . '/infobox.php');
 
+function organizer_display_form(moodleform $mform, $title, $addcalendar = true) {
+	global $OUTPUT;
+
+	if ($addcalendar) {
+		organizer_add_calendar();
+	}
+
+	echo $OUTPUT->header();
+	echo $OUTPUT->heading($title);
+	echo $OUTPUT->box_start('', 'organizer_main_cointainer');
+	$mform->display();
+	echo $OUTPUT->box_end();
+	echo $OUTPUT->footer();
+
+	die();
+}
+
 function organizer_add_calendar() {
     global $PAGE, $DB;
 
@@ -168,7 +185,7 @@ function organizer_begin_form($params) {
     $output = '<form name="viewform" action="' . $url->out() . '" method="post">';
     $output .= '<input type="hidden" name="id" value="' . $params['id'] . '" />';
     $output .= '<input type="hidden" name="mode" value="' . $params['mode'] . '" />';
-    $output .= '<input type="hidden" name="sesskey" value="' . sesskey() . '" />';
+//     $output .= '<input type="hidden" name="sesskey" value="' . sesskey() . '" />';
 
     return $output;
 }
@@ -207,13 +224,42 @@ function organizer_generate_tab_row($params, $context) {
     }
 }
 
-function organizer_generate_button_bar($params, $organizer, $context) {
+function organizer_generate_button_bar($params, $organizer, $context) {//TODO remove old stuff //TODO disable buttons if necessary
     $actions = array('add', 'edit', 'delete', 'print', 'eval');
 
     $organizerexpired = isset($organizer->duedate) && $organizer->duedate - time() < 0;
     $disable = array($organizerexpired, $organizerexpired, $organizerexpired, false, false);
 
     $output = '<div name="button_bar" class="buttons mdl-align">';
+    
+    if(has_capability("mod/organizer:addslots",$context,null,true)){
+//     	$slotaddsurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
+//     	$output .= html_writer::link($slotaddsurl, get_string('btn_add', 'organizer'));
+    	$output .= '<a href="slots_add.php?id=' . $params['id'] . '">';
+    	$output .= '<input type="button" value="' . get_string('btn_add', 'organizer') . '" />';
+    	$output .= '</a>';
+    }
+    
+    if(has_capability("mod/organizer:editslots",$context,null,true)){
+    	$sloteditsurl = new moodle_url('/mod/organizer/slots_edit.php', array('id' => $params['id']));
+    	$output .= '<input type="submit" value="' . get_string('btn_edit', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $sloteditsurl . '\');" />';
+    }
+    
+    if(has_capability("mod/organizer:deleteslots",$context,null,true)){
+    	$slotsdeleteurl = new moodle_url('/mod/organizer/slots_delete.php', array('id' => $params['id']));
+    	$output .= '<input type="submit" value="' . get_string('btn_delete', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsdeleteurl . '\');" />';
+    }
+    
+    if(has_capability("mod/organizer:printslots",$context,null,true)){
+    	$slotsprinturl = new moodle_url('/mod/organizer/slots_print.php', array('id' => $params['id']));
+    	$output .= '<input type="submit" value="' . get_string('btn_print', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsprinturl . '\');" />';
+    }
+    
+	if (has_capability("mod/organizer:evalslots", $context, null, true)) {
+		$slotsevalurl = new moodle_url('/mod/organizer/slots_eval.php', array('id' => $params['id']));
+		$output .= '<input type="submit" value="' . get_string('btn_eval', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsevalurl . '\');" />';
+    }   
+    
     foreach ($actions as $id => $action) {
         if (has_capability("mod/organizer:{$action}slots", $context, null, true)) {
             $output .= '<div class="singlebutton"><button type="submit" name="action" value="' . $action . '" '
@@ -995,12 +1041,16 @@ function organizer_reg_organizer_app_details($organizer, $userid,&$popups) {
 
 function organizer_teacher_action_new($params, $entry, $context) {
     global $OUTPUT;
-
-    $evalurl = new moodle_url('/mod/organizer/view_action.php',
-            array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'eval', 'slots[]' => $entry->slotid, 'sesskey'=>sesskey()));
-
-    $remindurl = new moodle_url('/mod/organizer/view_action.php',
-            array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'remindall', 'user' => $entry->id, 'sesskey'=>sesskey()));
+//TODO remove this old line
+//     $evalurl = new moodle_url('/mod/organizer/view_action.php',
+//             array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'eval', 'slots[]' => $entry->slotid, 'sesskey'=>sesskey()));
+    $evalurl = new moodle_url('/mod/organizer/slots_edit.php',
+    		array('id' => $params['id'], 'slots[]' => $entry->slotid));
+//TODO remove this old line
+//     $remindurl = new moodle_url('/mod/organizer/view_action.php',
+//             array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'remindall', 'user' => $entry->id, 'sesskey'=>sesskey()));
+    $remindurl = new moodle_url('/mod/organizer/send_reminder.php',
+    		array('id' => $params['id'], 'user' => $entry->id));
 
     $buttons = array();
     
