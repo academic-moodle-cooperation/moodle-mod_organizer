@@ -88,32 +88,7 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
-if ($action == ORGANIZER_ACTION_COMMENT) {
-    require_capability('mod/organizer:comment', $context);
-    
-    $event = \mod_organizer\event\appointment_commented::create(array(
-    		'objectid' => $PAGE->cm->id,
-    		'context' => $PAGE->context
-    ));
-    $event->trigger();
-
-    if (!organizer_security_check_slots($slot)) {
-        print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
-    }
-
-    $mform = new organizer_comment_slot_form(null, array('id' => $cm->id, 'mode' => $mode, 'slot' => $slot));
-
-    if ($data = $mform->get_data()) {
-        $app = $DB->get_record('organizer_slot_appointments', array('slotid' => $slot, 'userid' => $USER->id));
-        organizer_update_comments($app->id, $data->comments);
-        redirect($redirecturl);
-    } else if ($mform->is_cancelled()) {
-        redirect($redirecturl);
-    } else {
-        organizer_display_form($mform, get_string('title_comment', 'organizer'));
-    }
-    print_error('If you see this, something went wrong with delete action!');
-} else if ($action == ORGANIZER_ACTION_REGISTER) {
+if ($action == ORGANIZER_ACTION_REGISTER) {
     require_capability('mod/organizer:register', $context);
 
     $event = \mod_organizer\event\appointment_added::create(array(

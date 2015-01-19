@@ -225,29 +225,26 @@ function organizer_generate_tab_row($params, $context) {
 }
 
 function organizer_generate_button_bar($params, $organizer, $context) {//TODO remove old stuff //TODO disable buttons if necessary
-    $actions = array('add', 'edit', 'delete', 'print', 'eval');
-
     $organizerexpired = isset($organizer->duedate) && $organizer->duedate - time() < 0;
-    $disable = array($organizerexpired, $organizerexpired, $organizerexpired, false, false);
 
     $output = '<div name="button_bar" class="buttons mdl-align">';
     
     if(has_capability("mod/organizer:addslots",$context,null,true)){
-//     	$slotaddsurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
-//     	$output .= html_writer::link($slotaddsurl, get_string('btn_add', 'organizer'));
-    	$output .= '<a href="slots_add.php?id=' . $params['id'] . '">';
-    	$output .= '<input type="button" value="' . get_string('btn_add', 'organizer') . '" />';
+    	$slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
+    	
+    	$output .= '<a href="' . $slotsaddurl . '">';
+    	$output .= '<input type="button" value="' . get_string('btn_add', 'organizer') . '" ' . ($organizerexpired ? 'disabled ' : '') . '/>';
     	$output .= '</a>';
     }
     
     if(has_capability("mod/organizer:editslots",$context,null,true)){
     	$sloteditsurl = new moodle_url('/mod/organizer/slots_edit.php', array('id' => $params['id']));
-    	$output .= '<input type="submit" value="' . get_string('btn_edit', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $sloteditsurl . '\');" />';
+    	$output .= '<input type="submit" value="' . get_string('btn_edit', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $sloteditsurl . '\');" ' . ($organizerexpired ? 'disabled ' : '') . '/>';
     }
     
     if(has_capability("mod/organizer:deleteslots",$context,null,true)){
     	$slotsdeleteurl = new moodle_url('/mod/organizer/slots_delete.php', array('id' => $params['id']));
-    	$output .= '<input type="submit" value="' . get_string('btn_delete', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsdeleteurl . '\');" />';
+    	$output .= '<input type="submit" value="' . get_string('btn_delete', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsdeleteurl . '\');" ' . ($organizerexpired ? 'disabled ' : '') . '/>';
     }
     
     if(has_capability("mod/organizer:printslots",$context,null,true)){
@@ -258,15 +255,8 @@ function organizer_generate_button_bar($params, $organizer, $context) {//TODO re
 	if (has_capability("mod/organizer:evalslots", $context, null, true)) {
 		$slotsevalurl = new moodle_url('/mod/organizer/slots_eval.php', array('id' => $params['id']));
 		$output .= '<input type="submit" value="' . get_string('btn_eval', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsevalurl . '\');" />';
-    }   
-    
-    foreach ($actions as $id => $action) {
-        if (has_capability("mod/organizer:{$action}slots", $context, null, true)) {
-            $output .= '<div class="singlebutton"><button type="submit" name="action" value="' . $action . '" '
-                    . ($disable[$id] ? 'disabled' : '') . '/>' . get_string("btn_$action", 'organizer')
-                    . '</button></div>';
-        }
     }
+
     $output .= '</div>';
 
     return $output;
@@ -1478,7 +1468,7 @@ function organizer_slot_reg_status($organizer, $slot) {
 }
 
 function organizer_student_action($params, $slot) {
-    global $DB;
+    global $DB, $OUTPUT;
 
     $slotx = new organizer_slot($slot);
 
@@ -1520,10 +1510,19 @@ function organizer_student_action($params, $slot) {
         $disabled |= $slotfull || !$canregister || $ismyslot;
         $action = $ismyslot ? 'unregister' : 'register';
     }
-
+    
     if ($ismyslot || organizer_is_my_slot($slotx)) {
+    	$comment_url = new moodle_url('/mod/organizer/comment_edit.php',
+    			array('id' => $params['id'], 'slot' => $slotx->id));
+    	 
+    	$comment_btn_disabled = $organizerdisabled || !$slotx->organizer_user_has_access();
+    	 
+    	$comment_btn = $OUTPUT->single_button($comment_url, get_string("btn_comment", 'organizer'), 'post',
+    			array('disabled' => $comment_btn_disabled));
+    	
+    	
         return organizer_get_reg_button($action, $slotx->id, $params, $disabled) . '<br/>'
-                . organizer_get_reg_button('comment', $slotx->id, $params, $organizerdisabled || !$slotx->organizer_user_has_access());
+        		. $comment_btn;
     } else {
         return organizer_get_reg_button($action, $slotx->id, $params, $disabled);
     }
