@@ -200,6 +200,19 @@ function xmldb_organizer_upgrade($oldversion) {
     	// organizer savepoint reached
     	upgrade_mod_savepoint(true, 2014032400, 'organizer');
     }
+    
+    if ($oldversion < 2015012004) {
+    
+        // Changing precision of field grade on table organizer to INT(10), like in all the other modules
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('grade', XMLDB_TYPE_INTEGER, '10');
+    
+        // Launch change of precision, sign and the default value for field grade
+        $dbman->change_field_precision($table, $field);
+
+        // organizer savepoint reached
+        upgrade_mod_savepoint(true, 2015012004, 'organizer');
+    }
 
     return true;
 }
