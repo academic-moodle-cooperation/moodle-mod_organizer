@@ -34,7 +34,6 @@ require_once(dirname(__FILE__) . '/view_lib.php');
 list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
-// require_sesskey();
 
 $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ACTION);
