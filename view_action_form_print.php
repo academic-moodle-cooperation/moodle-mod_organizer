@@ -273,7 +273,7 @@ class organizer_print_slots_form extends moodleform {
         
         
         $data = &$this->_customdata;
-        $entries = fetch_table_entries($data['slots'],$sort . ' ' . $order);
+        $entries = organizer_fetch_table_entries($data['slots'],$sort . ' ' . $order);
         
         $rows = array();
         $rowspan = 0;

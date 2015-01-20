@@ -753,3 +753,57 @@ function organizer_fetch_my_group() {
     $group = $DB->get_record_sql($query, $params);
     return $group;
 }
+
+function organizer_fetch_table_entries($slots,$orderby="") {
+	global $DB;
+
+	list($insql, $inparams) = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
+
+	$params = array();
+	$query = "SELECT CONCAT(s.id, COALESCE(a.id, 0)) AS mainid,
+	s.id AS slotid,
+	a.id,
+	a.attended,
+	a.grade,
+	a.feedback,
+	a.comments,
+	s.starttime,
+	s.duration,
+	s.location,
+	s.comments AS teachercomments,
+	u.firstname,
+	u.lastname,
+	u.idnumber,
+	u2.firstname AS teacherfirstname,
+	u2.lastname AS teacherlastname,
+	g.name AS groupname,
+	CASE (SELECT COUNT(a2.slotid) FROM {organizer_slot_appointments} a2 WHERE a2.slotid = a.slotid)
+	WHEN 0 THEN 1
+	ELSE (SELECT COUNT(a2.slotid) FROM {organizer_slot_appointments} a2 WHERE a2.slotid = a.slotid)
+	END AS rowspan
+
+	FROM {organizer_slots} s
+	LEFT JOIN {organizer_slot_appointments} a ON a.slotid = s.id
+	LEFT JOIN {user} u ON a.userid = u.id
+	LEFT JOIN {user} u2 ON s.teacherid = u2.id
+	LEFT JOIN {groups} g ON a.groupid = g.id
+
+	WHERE s.id $insql
+	";
+
+
+	if($orderby == " " || $orderby == ""){
+		$query .=     "ORDER BY s.starttime ASC,
+        u.lastname ASC,
+        u.firstname ASC,
+        teacherlastname ASC,
+        teacherfirstname ASC";
+	}else{
+		$query .= "ORDER BY " . $orderby;
+	}
+
+
+
+	$params = array_merge($params, $inparams);
+	return $DB->get_records_sql($query, $params);
+}

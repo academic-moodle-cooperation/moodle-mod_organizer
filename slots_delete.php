@@ -71,12 +71,6 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 
 require_capability('mod/organizer:deleteslots', $context);
 
-$event = \mod_organizer\event\slot_deleted::create(array(
-		'objectid' => $PAGE->cm->id,
-		'context' => $PAGE->context
-));
-$event->trigger();
-
 if (!$slots) {
 	$redirecturl->param('messages[]', 'message_warning_no_slots_selected');
 	redirect($redirecturl);
@@ -99,6 +93,11 @@ if ($data = $mform->get_data()) {
 		
 		$slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
 	   
+		$event = \mod_organizer\event\slot_deleted::create(array(
+				'objectid' => $PAGE->cm->id,
+				'context' => $PAGE->context
+		));
+		$event->trigger();
 		
 		// count_records_sql doesnt work
 	   	$appointments_total = $DB->get_record_sql('SELECT COUNT(*) as total

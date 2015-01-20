@@ -69,12 +69,6 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 
 require_capability('mod/organizer:addslots', $context);
     
-$event = \mod_organizer\event\slot_created::create(array(
-	'objectid' => $PAGE->cm->id,
-	'context' => $PAGE->context
-));
-$event->trigger();
-
 $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
 
 if ($data = $mform->get_data()) {
@@ -85,6 +79,12 @@ if ($data = $mform->get_data()) {
 		if ($count == 0) {
 			$redirecturl->param('messages[]', 'message_warning_no_slots_added');
 		} else {
+			$event = \mod_organizer\event\slot_created::create(array(
+					'objectid' => $PAGE->cm->id,
+					'context' => $PAGE->context
+			));
+			$event->trigger();
+			
 			$redirecturl->param('data[count]', $count);
 			if ($count == 1) {
 				$redirecturl->param('messages[]', 'message_info_slots_added_sg');

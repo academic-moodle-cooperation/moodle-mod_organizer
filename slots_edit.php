@@ -70,12 +70,6 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 
 require_capability('mod/organizer:editslots', $context);
 
-$event = \mod_organizer\event\slot_updated::create(array(
-		'objectid' => $PAGE->cm->id,
-		'context' => $PAGE->context
-));
-$event->trigger();
-
 if (!$slots) {
 	$redirecturl->param('messages[]', 'message_warning_no_slots_selected');
 	redirect($redirecturl);
@@ -99,6 +93,12 @@ if ($data = $mform->get_data()) {
 		$newurl .= '&slots[]=' . $slotid;
 	}
 
+	$event = \mod_organizer\event\slot_updated::create(array(
+			'objectid' => $PAGE->cm->id,
+			'context' => $PAGE->context
+	));
+	$event->trigger();
+	
 	redirect($newurl);
 } else if ($mform->is_cancelled()) {
 	redirect($redirecturl);

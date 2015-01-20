@@ -46,7 +46,7 @@ class slot_viewed extends \core\event\base {
     }
  
     public function get_url() {
-        return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid, 'mode'=>1));
+        return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
     }
  
     public function get_legacy_logdata() {

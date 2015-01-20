@@ -91,12 +91,6 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 if ($action == ORGANIZER_ACTION_REGISTER) {
     require_capability('mod/organizer:register', $context);
 
-    $event = \mod_organizer\event\appointment_added::create(array(
-    		'objectid' => $PAGE->cm->id,
-    		'context' => $PAGE->context
-    ));
-    $event->trigger();
-
     if (!organizer_security_check_slots($slot)) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
     }
@@ -110,6 +104,12 @@ if ($action == ORGANIZER_ACTION_REGISTER) {
     $success = organizer_register_appointment($slot, $groupid);
 
     if ($success) {
+    	$event = \mod_organizer\event\appointment_added::create(array(
+    			'objectid' => $PAGE->cm->id,
+    			'context' => $PAGE->context
+    	));
+    	$event->trigger();
+    	
         organizer_prepare_and_send_message($slot, 'register_notify:teacher:register'); // ---------------------------------------- MESSAGE!!!
         if ($group) {
             organizer_prepare_and_send_message($slot, 'group_registration_notify:student:register');
@@ -155,18 +155,6 @@ if ($action == ORGANIZER_ACTION_REGISTER) {
     require_capability('mod/organizer:register', $context);
     require_capability('mod/organizer:unregister', $context);
 
-    $event = \mod_organizer\event\appointment_removed::create(array(
-    		'objectid' => $PAGE->cm->id,
-    		'context' => $PAGE->context
-    ));
-    $event->trigger();
-
-    $event = \mod_organizer\event\appointment_added::create(array(
-    		'objectid' => $PAGE->cm->id,
-    		'context' => $PAGE->context
-    ));
-    $event->trigger();
-
     if (!organizer_security_check_slots($slot)) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
     }
@@ -180,6 +168,18 @@ if ($action == ORGANIZER_ACTION_REGISTER) {
     $success = organizer_reregister_appointment($slot, $groupid);
 
     if ($success) {
+    	$event = \mod_organizer\event\appointment_removed::create(array(
+    			'objectid' => $PAGE->cm->id,
+    			'context' => $PAGE->context
+    	));
+    	$event->trigger();
+    	
+    	$event = \mod_organizer\event\appointment_added::create(array(
+    			'objectid' => $PAGE->cm->id,
+    			'context' => $PAGE->context
+    	));
+    	$event->trigger();
+    	
         organizer_prepare_and_send_message($slot, 'register_notify:teacher:reregister');
         if ($group) {
             organizer_prepare_and_send_message($slot, 'group_registration_notify:student:reregister');

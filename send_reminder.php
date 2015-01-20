@@ -69,12 +69,6 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
-	$event = \mod_organizer\event\appointment_reminder_sent::create(array(
-			'objectid' => $PAGE->cm->id,
-			'context' => $PAGE->context
-	));
-$event->trigger();
-
 $mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
 $recipient = optional_param('recipient', null, PARAM_INT);
@@ -88,6 +82,12 @@ if ($data = $mform->get_data()) {
 	} else {
 		$redirecturl->param('messages[]', 'message_info_reminders_sent_pl');
 	}
+	
+	$event = \mod_organizer\event\appointment_reminder_sent::create(array(
+			'objectid' => $PAGE->cm->id,
+			'context' => $PAGE->context
+	));
+	$event->trigger();
 
 	$redirecturl = $redirecturl->out();
 	redirect($redirecturl);
