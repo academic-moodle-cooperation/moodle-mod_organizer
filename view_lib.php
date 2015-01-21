@@ -894,7 +894,7 @@ function organizer_app_details($params, $appointment,&$popups) {
     }
 
     $list = ' ' . ($appointment->comments != '' ?
-            organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $appointment->comments,$popups) :
+            organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, s($appointment->comments),$popups) :
             organizer_get_img('pix/transparent.png', '', ''));
     $list .= ' ' . organizer_get_attended_icon($appointment);
 

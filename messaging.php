@@ -75,7 +75,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     	$strings->slot_teacher = $slot->teachervisible == 1 ? fullname($DB->get_record('user', array('id' => $slot->teacherid))) : get_string('teacherinvisible','organizer');
     	$strings->slot_location = organizer_location_link($slot);
     	$strings->slot_maxparticipants = $slot->maxparticipants;
-    	$strings->slot_comments = $slot->comments;
+    	$strings->slot_comments = s($slot->comments);
     }
 
     $courseurl = new moodle_url('/mod/organizer/view.php',array('id'=>$cm->id));
