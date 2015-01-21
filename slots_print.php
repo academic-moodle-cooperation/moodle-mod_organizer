@@ -31,6 +31,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_action_form_print.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
+require_once(dirname(__FILE__) . '/mtablepdf.php');
 
 //--------------------------------------------------------------------------------------------------
 
