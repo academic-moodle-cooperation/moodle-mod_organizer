@@ -100,7 +100,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         
         $this->standard_grading_coursemodule_elements();
         
-        $mform->setDefault('grade', $organizerconfig->maximumgrade);
+        //$mform->setDefault('grade', $organizerconfig->maximumgrade);
 
         $mform->addElement('header', 'organizercommon', get_string('organizercommon', 'organizer'));
 

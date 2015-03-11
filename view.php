@@ -76,25 +76,41 @@ $popups = array();
 echo $OUTPUT->box_start('', 'organizer_main_cointainer');
 switch ($params['mode']) {
     case ORGANIZER_TAB_APPOINTMENTS_VIEW:
-        if (has_capability('mod/organizer:viewallslots', $instance->context)) {
-            organizer_log_action('allview', $logurl, $instance);
-            echo organizer_generate_appointments_view($params, $instance);
+        if (has_capability('mod/organizer:viewallslots', $instance->context)) {       
+            $event = \mod_organizer\event\slot_viewed::create(array(
+            		'objectid' => $PAGE->cm->id,
+            		'context' => $PAGE->context
+            ));
+            $event->trigger();
+            
+            echo organizer_generate_appointments_view($params, $instance,$popups);
         } else {
             print_error('You do not have the permission to view this page!');
         }
         break;
     case ORGANIZER_TAB_STUDENT_VIEW:
         if (has_capability('mod/organizer:viewstudentview', $instance->context)) {
-            organizer_log_action('studview', $logurl, $instance);
-            echo organizer_generate_student_view($params, $instance);
+        	$event = \mod_organizer\event\course_module_viewed::create(array(
+        			'objectid' => $PAGE->cm->instance,
+        			'context' => $PAGE->context,
+        	));
+        	$event->add_record_snapshot('course', $PAGE->course);
+        	$event->trigger();
+        	
+            echo organizer_generate_student_view($params, $instance,$popups);
         } else {
             print_error('You do not have the permission to view this page!');
         }
         break;
     case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
-        if (has_capability('mod/organizer:viewregistrations', $instance->context)) {
-            organizer_log_action('statusview', $logurl, $instance);
-            echo organizer_generate_registration_status_view($params, $instance);
+        if (has_capability('mod/organizer:viewregistrations', $instance->context)) {                        
+            $event = \mod_organizer\event\registrations_viewed::create(array(
+            		'objectid' => $PAGE->cm->id,
+            		'context' => $PAGE->context
+            ));
+            $event->trigger();
+        	
+            echo organizer_generate_registration_status_view($params, $instance,$popups);
         } else {
             print_error('You do not have the permission to view this page!');
         }
@@ -113,9 +129,9 @@ die;
 
 //---------------- UTILITY FUNCTIONS -------------------------------------------
 
-function organizer_register_popup($title, $content) {
+function organizer_register_popup($title, $content,&$popups) {
     static $id = 0;
-    global $popups;
+
     if (!isset($popups[$title])) {
         $popups[$title] = array();
     }

@@ -30,7 +30,6 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/custom_table_renderer.php');
-require_once(dirname(__FILE__) . '/print.php');
 
 class organizer_print_slots_form extends moodleform {
 
@@ -273,7 +272,7 @@ class organizer_print_slots_form extends moodleform {
         
         
         $data = &$this->_customdata;
-        $entries = fetch_table_entries($data['slots'],$sort . ' ' . $order);
+        $entries = organizer_fetch_table_entries($data['slots'],$sort . ' ' . $order);
         
         $rows = array();
         $rowspan = 0;

@@ -42,10 +42,6 @@ class organizer_comment_slot_form extends moodleform {
 
         $mform->addElement('hidden', 'id', $data['id']);
         $mform->setType('id', PARAM_INT);
-        $mform->addElement('hidden', 'mode', $data['mode']);
-        $mform->setType('mode', PARAM_INT);
-        $mform->addElement('hidden', 'action', 'comment');
-        $mform->setType('action', PARAM_ACTION);
 
         $mform->addElement('hidden', 'slot', $data['slot']);
         $mform->setType('slot', PARAM_INT);

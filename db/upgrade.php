@@ -39,20 +39,6 @@ function xmldb_organizer_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager();
-
-    if ($oldversion < 2014032400) {
-    
-    	$table = new xmldb_table('organizer');
-    	 
-    	$field = new xmldb_field('duedate', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, false, null, '0', 'allowregistrationsfromdate');
-    	$dbman->change_field_notnull($table,$field);
-    	 
-    	$field = new xmldb_field('allowregistrationsfromdate', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, false, null, '0', 'emailteachers');
-    	$dbman->change_field_notnull($table,$field);
-    	
-    	// organizer savepoint reached
-    	upgrade_mod_savepoint(true, 2014032400, 'organizer');
-    }
     
     if ($oldversion < 2012081404) {
 
@@ -199,6 +185,33 @@ function xmldb_organizer_upgrade($oldversion) {
     	
     	// organizer savepoint reached
     	upgrade_mod_savepoint(true, 2013122300, 'organizer');
+    }
+    
+    if ($oldversion < 2014032400) {
+    
+    	$table = new xmldb_table('organizer');
+    
+    	$field = new xmldb_field('duedate', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, false, null, '0', 'allowregistrationsfromdate');
+    	$dbman->change_field_notnull($table,$field);
+    
+    	$field = new xmldb_field('allowregistrationsfromdate', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, false, null, '0', 'emailteachers');
+    	$dbman->change_field_notnull($table,$field);
+    	 
+    	// organizer savepoint reached
+    	upgrade_mod_savepoint(true, 2014032400, 'organizer');
+    }
+    
+    if ($oldversion < 2015012004) {
+    
+        // Changing precision of field grade on table organizer to INT(10), like in all the other modules
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('grade', XMLDB_TYPE_INTEGER, '10');
+    
+        // Launch change of precision, sign and the default value for field grade
+        $dbman->change_field_precision($table, $field);
+
+        // organizer savepoint reached
+        upgrade_mod_savepoint(true, 2015012004, 'organizer');
     }
 
     return true;

@@ -18,7 +18,7 @@
         <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="allowregistrationsfromdate" NEXT="alwaysshowdescription"/>
         <FIELD NAME="alwaysshowdescription" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="duedate" NEXT="relativedeadline"/> 
         <FIELD NAME="relativedeadline" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="alwaysshowdescription" NEXT="grade"/>
-        <FIELD NAME="grade" TYPE="number" LENGTH="11" NOTNULL="true" SEQUENCE="false" DECIMALS="5" PREVIOUS="relativedeadline"/>
+        <FIELD NAME="grade" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="relativedeadline"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

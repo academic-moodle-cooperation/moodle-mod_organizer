@@ -15,22 +15,44 @@
 // If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php
+ * event/slot_updated.php
  *
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @author        Andreas Windbichler
- * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_organizer\event;
 defined('MOODLE_INTERNAL') || die();
-
-$module->version  = 2015012100;
-$module->release   = "2014-01-21"; 	  // User-friendly version number
-$module->maturity  = MATURITY_STABLE;
-$module->requires = 2014041100; // Requires this Moodle version
-$module->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics)
-$module->cron = 300; // Period for cron to check this module (secs)
+/**
+ * The slots_updated event class.
+ **/
+class slot_updated extends \core\event\base {
+    protected function init() {
+        $this->data['crud'] = 'c'; // c(reate), r(ead), u(pdate), d(elete)
+        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
+        $this->data['objecttable'] = 'organizer_slots';
+    }
+ 
+    public static function get_name() {
+        return get_string('eventslotupdated', 'mod_organizer');
+    }
+ 
+    public function get_description() {
+    	return "The user with id {$this->userid} updated slots from the organizer activity " .
+            "with the course module id {$this->contextinstanceid}.";
+    }
+ 
+    public function get_url() {
+        return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
+    }
+ 
+    public function get_legacy_logdata() {
+        // Override if you are migrating an add_to_log() call.
+        return array($this->courseid, 'mod_organizer', 'edit',
+            $this->objectid, $this->contextinstanceid);
+    }
+}

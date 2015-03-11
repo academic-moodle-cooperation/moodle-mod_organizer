@@ -31,7 +31,7 @@ require_once(dirname(__FILE__) . '/legend.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/slotlib.php');
 
-function organizer_make_infobox($params, $organizer, $context) {
+function organizer_make_infobox($params, $organizer, $context,&$popups) {
     global $PAGE;
     user_preference_allow_ajax_update('mod_organizer_showpasttimeslots', PARAM_BOOL);
     user_preference_allow_ajax_update('mod_organizer_showmyslotsonly', PARAM_BOOL);
@@ -47,7 +47,7 @@ function organizer_make_infobox($params, $organizer, $context) {
         case ORGANIZER_TAB_APPOINTMENTS_VIEW:
         break;
         case ORGANIZER_TAB_STUDENT_VIEW:
-            $output .= organizer_make_myapp_section($params, $organizer, organizer_get_last_user_appointment($organizer));
+            $output .= organizer_make_myapp_section($params, $organizer, organizer_get_last_user_appointment($organizer),$popups);
         break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             $output .= organizer_make_reminder_section($params, $context);
@@ -102,8 +102,7 @@ function organizer_make_messages_section($params) {
 function organizer_make_reminder_section($params, $context) {
     global $OUTPUT;
     if (has_capability("mod/organizer:sendreminders", $context, null, true)) {
-        $sendurl = new moodle_url('view_action.php',
-                array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'remindall'));
+        $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id']));
         $output = '<div name="button_bar" class="buttons mdl-align">';
         $output .= get_string('remindall_desc', 'organizer') . '<br />';
         $output .= $OUTPUT->single_button($sendurl, get_string("btn_send", 'organizer'), 'post');
@@ -142,7 +141,7 @@ function organizer_make_description_section($organizer) {
     }
     return organizer_make_section('infobox_description', $output);
 }
-function organizer_make_myapp_section($params, $organizer, $app) {
+function organizer_make_myapp_section($params, $organizer, $app,&$popups) {
     global $DB;
     if ($app) {
         $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
@@ -152,7 +151,7 @@ function organizer_make_myapp_section($params, $organizer, $app) {
         $table->id = 'my_slot_overview';
         $table->attributes['class'] = 'generaltable boxaligncenter overview';
         $table->head = organizer_generate_table_header($columns, $sortable, $params);
-        $table->data = organizer_generate_table_content($columns, $params, $organizer, true, false);
+        $table->data = organizer_generate_table_content($columns, $params, $organizer, $popups, true, false);
         $table->align = $align;
         $output = organizer_render_table_with_footer($table, false);
         $output = preg_replace('/<th /', '<th style="width: 0%;" ', $output); // Afterburner fix - try to fix it using css!
