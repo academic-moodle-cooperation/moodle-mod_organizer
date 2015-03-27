@@ -567,6 +567,18 @@ $string['register_reminder:student:smallmessage'] = 'Bitte melden Sie sich für 
 
 //--------------------------------------------------------------------------------------------------
 
+$string['register_reminder:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Anmeldungserinnerung';
+$string['register_reminder:group:fullmessage'] = 'Hallo {$a->receivername}!
+
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Ihre Gruppe {$a->groupname} entweder noch nicht für einen Zeitslot angemeldet, oder denjenigen verpasst für den Sie sich angemeldet hat.
+
+{$a->custommessage}
+
+TUWEL Messaging System';
+$string['register_reminder:group:smallmessage'] = 'Bitte melden Sie sich für einen neuen Zeitslot an.';
+
+//--------------------------------------------------------------------------------------------------
+
 $string['register_reminder:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Anmeldungserinnerung';
 $string['register_reminder:student:group:fullmessage'] = 'Hallo {$a->receivername}!
 

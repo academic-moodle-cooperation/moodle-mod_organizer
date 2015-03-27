@@ -644,6 +644,18 @@ $string['register_reminder:student:smallmessage'] = 'Please register to a new ti
 
 //--------------------------------------------------------------------------------------------------
 
+$string['register_reminder:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
+$string['register_reminder:group:fullmessage'] =
+'Hello {$a->receivername}!
+
+As a part of the course {$a->courseid} {$a->coursefullname}, your group {$a->groupname} either still hasn\'t registered to any time slot, or you\'ve missed the one you did register to.
+
+{$a->custommessage}
+
+TUWEL Messaging System';
+$string['register_reminder:group:smallmessage'] = 'Please register your group to a new time slot.';
+//--------------------------------------------------------------------------------------------------
+
 $string['register_reminder:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
 $string['register_reminder:student:group:fullmessage'] =
 'Hello {$a->receivername}!

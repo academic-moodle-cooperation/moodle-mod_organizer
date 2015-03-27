@@ -41,7 +41,7 @@ require_login($course, false, $cm);
 
 $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ACTION);
-$user = optional_param('user', null, PARAM_INT);
+$recipient = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = optional_param_array('slots', array(), PARAM_INT);
 $app = optional_param('app', null, PARAM_INT);
@@ -69,7 +69,39 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
-$mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
+// get recipients
+if($recipient != null){
+	$recipients = array();	
+	
+	if($cm->groupmode == 0){
+		$recipients = $DB->get_records_list('user', 'id', array($recipient));
+	}else{
+		$recipients = groups_get_members($recipient, $fields='u.id,u.idnumber', $sort='lastname ASC');
+	}
+	
+	$counter = count($recipients);
+	
+}else{
+	// send reminders to all students without an appointment
+	$counter = 0;
+	$recipients = array();
+	 
+	$entries = organizer_organizer_get_status_table_entries(array('sort' => ''));
+	 
+	// filter all not registered and not attended
+	foreach ($entries as $entry) {
+		if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED || $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP) {
+			$counter++;
+			$recipients[] = $entry;
+		}
+	}
+}
+
+
+
+
+
+$mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots, 'recipients'=> $recipients));
 
 $recipient = optional_param('recipient', null, PARAM_INT);
     
