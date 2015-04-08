@@ -28,7 +28,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version  = 2015040100;
+$module->version  = 2015040800;
 $module->release   = "2014-01-21"; 	  // User-friendly version number
 $module->maturity  = MATURITY_STABLE;
 $module->requires = 2014041100; // Requires this Moodle version
