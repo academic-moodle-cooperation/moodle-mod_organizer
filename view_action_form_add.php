@@ -427,7 +427,7 @@ class organizer_add_slots_form extends moodleform {
         $dayslot[] = $mform->createElement('advcheckbox', "{$name}[selected]", '', ORGANIZER_SPACING, null, array(0, 1));
         $mform->setDefault("{$name}[selected]", 0);
         $dayslot[] = $mform->createElement('static', '', '',
-                get_string("day_$day", 'organizer') . get_string('slotfrom', 'organizer'));
+                get_string("day_$day", 'organizer') . ' ' . get_string('slotfrom', 'organizer'));
         $dayslot[] = $mform->createElement('hidden', "{$name}[day]", $day);
         $dayslot[] = $mform->createElement('select', "{$name}[from]", '', $this->pickeroptions);
         $mform->setDefault("{$name}[from]", 8 * 3600);
