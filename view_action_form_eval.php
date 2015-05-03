@@ -127,7 +127,7 @@ class organizer_evaluate_slots_form extends moodleform {
                 $user = $DB->get_record('user', array('id' => $app->userid));
                 $name = "apps[{$app->id}]";
 
-                $lastapp = organizer_get_last_user_appointment($slot->organizerid, $app->userid);
+                $lastapp = organizer_get_last_user_appointment($organizer, $app->userid);
                 if ($lastapp->id != $app->id) {
                     $link = new moodle_url('/mod/organizer/view_action.php',
                             array('id' => $data['id'], 'mode' => $data['mode'], 'action' => 'eval',
