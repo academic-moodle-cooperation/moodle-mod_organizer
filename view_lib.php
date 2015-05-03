@@ -231,10 +231,7 @@ function organizer_generate_button_bar($params, $organizer, $context) {//TODO re
     
     if(has_capability("mod/organizer:addslots",$context,null,true)){
     	$slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
-    	
-    	$output .= '<a href="' . $slotsaddurl . '">';
-    	$output .= '<input type="button" value="' . get_string('btn_add', 'organizer') . '" ' . ($organizerexpired ? 'disabled ' : '') . '/>';
-    	$output .= '</a>';
+    	$output .= '<input type="submit" value="' . get_string('btn_add', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsaddurl . '\');" ' . ($organizerexpired ? 'disabled ' : '') . '/>';
     }
     
     if(has_capability("mod/organizer:editslots",$context,null,true)){
