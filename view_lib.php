@@ -849,7 +849,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                         $list = '';
                         foreach ($members as $member) {
                             $list .= '<br />';
-                            $list .= organizer_reg_organizer_app_details($organizer, $member);
+                            $list .= organizer_reg_organizer_app_details($organizer, $member, $popups);
                         }
                         $cell = $row->cells[] = new html_table_cell($list);
                     } else {
