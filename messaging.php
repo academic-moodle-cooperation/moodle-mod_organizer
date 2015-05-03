@@ -93,7 +93,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
         	$group = reset($group);
         	$group = groups_get_group($group);
         }
-        $strings->groupname = $group->name;
+        $strings->groupname = isset($group->name) ? $group->name : "groupname";
         $type .= ":group";
     }
     
