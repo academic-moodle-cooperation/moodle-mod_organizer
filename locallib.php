@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * locallib.php
@@ -39,12 +39,12 @@ if (!function_exists('sem_get')) {
         return fopen($CFG->dataroot . '/temp/mod/organizer/organizer_' . $key . '.sem', 'w+');
     }
 
-    function sem_acquire($sem_id) {
-        return flock($sem_id, LOCK_EX);
+    function sem_acquire($semid) {
+        return flock($semid, LOCK_EX);
     }
 
-    function sem_release($sem_id) {
-        return flock($sem_id, LOCK_UN);
+    function sem_release($semid) {
+        return flock($semid, LOCK_UN);
     }
 }
 
@@ -105,20 +105,19 @@ function organizer_add_appointment_slots($data) {
     if (!isset($data->finalslots)) {
         return $count;
     }
-    
-    $timezone = new DateTimeZone(date_default_timezone_get());
 
+    $timezone = new DateTimeZone(date_default_timezone_get());
 
     foreach ($data->finalslots as $slot) {
         if (!$slot['selected']) {
             continue;
         }
-        
-        $transitions = $timezone->getTransitions($slot['date'],$slot['date']+$slot['from']);
+
+        $transitions = $timezone->getTransitions($slot['date'], $slot['date'] + $slot['from']);
         $dstoffset = 0;
-        
-        foreach($transitions as $trans){
-        	$dstoffset += $trans['isdst'] ? ($trans['offset']) : (+$trans['offset']); 
+
+        foreach ($transitions as $trans) {
+            $dstoffset += $trans['isdst'] ? ($trans['offset']) : ( + $trans['offset']);
         }
 
         $newslot = new stdClass();
@@ -141,16 +140,16 @@ function organizer_add_appointment_slots($data) {
         }
 
         for ($time = $slot['from']; $time + $data->duration <= $slot['to']; $time += $data->duration) {
-        	$t = new DateTime();
-        	$t->setTimestamp($slot['date']); // sets the day
-        	       	
-        	$h = $time / 3600 % 24;
-        	$m = $time / 60 % 60;
-        	$s = $time % 60;
+            $t = new DateTime();
+            $t->setTimestamp($slot['date']); // Sets the day.
 
-        	$t->setTime($h, $m, $s); // set time of day
-        	
-        	$newslot->starttime = $t->getTimestamp();
+            $h = $time / 3600 % 24;
+            $m = $time / 60 % 60;
+            $s = $time % 60;
+
+            $t->setTime($h, $m, $s); // Set time of day.
+
+            $newslot->starttime = $t->getTimestamp();
 
             $newslot->id = $DB->insert_record('organizer_slots', $newslot);
 
@@ -232,8 +231,8 @@ function organizer_add_event_slot($cmid, $slot) {
     $event = new stdClass();
     $event->name = get_string('eventtitle', 'organizer', $a);
     $event->description = get_string('eventtemplate', 'organizer', $a);
-    if($slot->comments != ""){
-    	$event->description .= get_string('eventtemplatecomment','organizer',$slot->comments);
+    if ($slot->comments != "") {
+        $event->description .= get_string('eventtemplatecomment', 'organizer', $slot->comments);
     }
     $event->format = 1;
     $event->courseid = 0;
@@ -382,11 +381,11 @@ function organizer_update_appointment_slot($data) {
     }
 
     if ($data->mod_availablefrom == 1) {
-    	if(is_array($data->availablefrom)){
-    		$slot->availablefrom = 0;
-    	}else{
-    		$slot->availablefrom = $data->availablefrom;
-    	}
+        if (is_array($data->availablefrom)) {
+            $slot->availablefrom = 0;
+        } else {
+            $slot->availablefrom = $data->availablefrom;
+        }
         $modified = true;
     }
 
@@ -476,31 +475,27 @@ function organizer_delete_appointment_slot($id) {
 
     $eventid = $DB->get_field('organizer_slots', 'eventid', array('id' => $id));
 
-    // if student is registered to this slot, send a message
-    $appointments = $DB->get_records('organizer_slot_appointments',array('slotid'=>$id));
-    
-    $notified_users = 0;
-    
-    if(count($appointments)>0){
-    	// someone was allready registered to this slot
+    // If student is registered to this slot, send a message.
+    $appointments = $DB->get_records('organizer_slot_appointments', array('slotid' => $id));
 
-	    $slot = new organizer_slot($id);
-	    
-	    
-	    foreach($appointments as $appointment){
-	    	
-	    	$reciever = intval($appointment->userid);
-	    	
-		    organizer_send_message($USER,$reciever,$slot,'slotdeleted_notify:student');
-		    $notified_users++;
-	    }
+    $notifiedusers = 0;
+
+    if (count($appointments) > 0) {
+        // Someone was allready registered to this slot.
+        $slot = new organizer_slot($id);
+
+        foreach ($appointments as $appointment) {
+            $reciever = intval($appointment->userid);
+            organizer_send_message($USER, $reciever, $slot, 'slotdeleted_notify:student');
+            $notifiedusers++;
+        }
     }
-    
+
     $DB->delete_records('event', array('id' => $eventid));
-    $DB->delete_records('organizer_slot_appointments', array('slotid'=>$id));
+    $DB->delete_records('organizer_slot_appointments', array('slotid' => $id));
     $DB->delete_records('organizer_slots', array('id' => $id));
 
-    return $notified_users;
+    return $notifiedusers;
 }
 
 function organizer_register_appointment($slotid, $groupid = 0) {
@@ -624,7 +619,7 @@ function organizer_unregister_appointment($slotid, $groupid) {
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-    organizer_add_event_slot($cm->id, $slot); //FIXME!!!
+    organizer_add_event_slot($cm->id, $slot); // FIXME!!!
 
     return $ok;
 }
@@ -634,7 +629,7 @@ function organizer_unregister_single_appointment($slotid, $userid) {
 
     $app = $DB->get_record('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid));
 
-    // TODO: remove the participant from the list on the other event
+    // TODO: remove the participant from the list on the other event.
     $DB->delete_records('event', array('id' => $app->eventid));
 
     if (isset($app->attended)) {
@@ -683,8 +678,8 @@ function organizer_evaluate_slots($data) {
 function organizer_get_course_module_data() {
     global $DB;
 
-    $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
-    $n = optional_param('o', 0, PARAM_INT); // organizer instance ID - it should be named as the first character of the module
+    $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or.
+    $n = optional_param('o', 0, PARAM_INT); // Organizer instance ID - it should be named as the first character of the module.
 
     if ($id) {
         $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
@@ -706,8 +701,8 @@ function organizer_get_course_module_data() {
 function organizer_get_course_module_data_new() {
     global $DB;
 
-    $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
-    $n = optional_param('o', 0, PARAM_INT); // organizer instance ID - it should be named as the first character of the module
+    $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or.
+    $n = optional_param('o', 0, PARAM_INT); // Organizer instance ID - it should be named as the first character of the module.
 
     $instance = new stdClass();
 
@@ -745,65 +740,62 @@ function organizer_fetch_my_group() {
 
     $params = array('groupingid' => $cm->groupingid, 'userid' => $USER->id);
     $query = "SELECT {groups}.* FROM {groups}
-        		INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
-        		INNER JOIN {groups_members} ON {groups}.id = {groups_members}.groupid
-        		WHERE {groupings_groups}.groupingid = :groupingid
-        		AND {groups_members}.userid = :userid
-        		ORDER BY {groups}.name ASC";
+                INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
+                INNER JOIN {groups_members} ON {groups}.id = {groups_members}.groupid
+                WHERE {groupings_groups}.groupingid = :groupingid
+                AND {groups_members}.userid = :userid
+                ORDER BY {groups}.name ASC";
     $group = $DB->get_record_sql($query, $params);
     return $group;
 }
 
-function organizer_fetch_table_entries($slots,$orderby="") {
-	global $DB;
+function organizer_fetch_table_entries($slots, $orderby="") {
+    global $DB;
 
-	list($insql, $inparams) = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
+    list($insql, $inparams) = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
 
-	$params = array();
-	$query = "SELECT CONCAT(s.id, COALESCE(a.id, 0)) AS mainid,
-	s.id AS slotid,
-	a.id,
-	a.attended,
-	a.grade,
-	a.feedback,
-	a.comments,
-	s.starttime,
-	s.duration,
-	s.location,
-	s.comments AS teachercomments,
-	u.firstname,
-	u.lastname,
-	u.idnumber,
-	u2.firstname AS teacherfirstname,
-	u2.lastname AS teacherlastname,
-	g.name AS groupname,
-	CASE (SELECT COUNT(a2.slotid) FROM {organizer_slot_appointments} a2 WHERE a2.slotid = a.slotid)
-	WHEN 0 THEN 1
-	ELSE (SELECT COUNT(a2.slotid) FROM {organizer_slot_appointments} a2 WHERE a2.slotid = a.slotid)
-	END AS rowspan
+    $params = array();
+    $query = "SELECT CONCAT(s.id, COALESCE(a.id, 0)) AS mainid,
+    s.id AS slotid,
+    a.id,
+    a.attended,
+    a.grade,
+    a.feedback,
+    a.comments,
+    s.starttime,
+    s.duration,
+    s.location,
+    s.comments AS teachercomments,
+    u.firstname,
+    u.lastname,
+    u.idnumber,
+    u2.firstname AS teacherfirstname,
+    u2.lastname AS teacherlastname,
+    g.name AS groupname,
+    CASE (SELECT COUNT(a2.slotid) FROM {organizer_slot_appointments} a2 WHERE a2.slotid = a.slotid)
+    WHEN 0 THEN 1
+    ELSE (SELECT COUNT(a2.slotid) FROM {organizer_slot_appointments} a2 WHERE a2.slotid = a.slotid)
+    END AS rowspan
 
-	FROM {organizer_slots} s
-	LEFT JOIN {organizer_slot_appointments} a ON a.slotid = s.id
-	LEFT JOIN {user} u ON a.userid = u.id
-	LEFT JOIN {user} u2 ON s.teacherid = u2.id
-	LEFT JOIN {groups} g ON a.groupid = g.id
+    FROM {organizer_slots} s
+    LEFT JOIN {organizer_slot_appointments} a ON a.slotid = s.id
+    LEFT JOIN {user} u ON a.userid = u.id
+    LEFT JOIN {user} u2 ON s.teacherid = u2.id
+    LEFT JOIN {groups} g ON a.groupid = g.id
 
-	WHERE s.id $insql
-	";
+    WHERE s.id $insql
+    ";
 
-
-	if($orderby == " " || $orderby == ""){
-		$query .=     "ORDER BY s.starttime ASC,
+    if ($orderby == " " || $orderby == "") {
+        $query .= "ORDER BY s.starttime ASC,
         u.lastname ASC,
         u.firstname ASC,
         teacherlastname ASC,
         teacherfirstname ASC";
-	}else{
-		$query .= "ORDER BY " . $orderby;
-	}
+    } else {
+        $query .= "ORDER BY " . $orderby;
+    }
 
-
-
-	$params = array_merge($params, $inparams);
-	return $DB->get_records_sql($query, $params);
+    $params = array_merge($params, $inparams);
+    return $DB->get_records_sql($query, $params);
 }

@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * backup/moodle2/backup_organizer_stepslib.php
@@ -36,7 +36,7 @@
 class backup_organizer_activity_structure_step extends backup_activity_structure_step {
 
     protected function define_structure() {
-        // Define each element separated
+        // Define each element separated.
         $organizer = new backup_nested_element('organizer', array('id'),
                 array('course', 'name', 'intro', 'introformat', 'timemodified', 'isgrouporganizer', 'emailteachers',
                         'allowregistrationsfromdate', 'duedate', 'relativedeadline', 'grade'));
@@ -52,17 +52,17 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
                 array('slotid', 'userid', 'groupid', 'applicantid', 'registrationtime', 'attended', 'grade',
                         'feedback', 'comments', 'eventid', 'notified', 'allownewappointments'));
 
-        // Build the tree
+        // Build the tree.
         $organizer->add_child($slots);
         $slots->add_child($slot);
 
         $slot->add_child($appointments);
         $appointments->add_child($appointment);
 
-        // Define sources
+        // Define sources.
         $organizer->set_source_table('organizer', array('id' => backup::VAR_ACTIVITYID));
 
-        // To know if we are including userinfo
+        // To know if we are including userinfo.
         $userinfo = $this->get_setting_value('userinfo');
         if ($userinfo) {
             $slot->set_source_table('organizer_slots', array('organizerid' => backup::VAR_PARENTID));
@@ -75,7 +75,7 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
         $appointment->annotate_ids('user', 'applicantid');
         $appointment->annotate_ids('group', 'groupid');
 
-        // Return the root element (organizer), wrapped into standard activity structure
+        // Return the root element (organizer), wrapped into standard activity structure.
         return $this->prepare_activity_structure($organizer);
     }
 }

@@ -12,17 +12,17 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * view_action.php
  *
- * @package	   mod_organizer
- * @author		Andreas Windbichler
- * @author		Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author		Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @copyright	 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license	   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package       mod_organizer
+ * @author        Andreas Windbichler
+ * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -30,8 +30,6 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_action_form_edit.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
-
-//--------------------------------------------------------------------------------------------------
 
 list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
@@ -57,9 +55,9 @@ $PAGE->set_title($organizer->name);
 $PAGE->set_heading($course->fullname);
 
 $jsmodule = array(
-		'name' => 'mod_organizer',
-		'fullpath' => '/mod/organizer/module.js',
-		'requires' => array('node', 'event', 'node-screen', 'panel', 'node-event-delegate'),
+        'name' => 'mod_organizer',
+        'fullpath' => '/mod/organizer/module.js',
+        'requires' => array('node', 'event', 'node-screen', 'panel', 'node-event-delegate'),
 );
 $PAGE->requires->js_module($jsmodule);
 
@@ -70,39 +68,39 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 require_capability('mod/organizer:editslots', $context);
 
 if (!$slots) {
-	$redirecturl->param('messages[]', 'message_warning_no_slots_selected');
-	redirect($redirecturl);
+    $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+    redirect($redirecturl);
 }
 
 if (!organizer_security_check_slots($slots)) {
-	print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
+    print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
 }
 
 $mform = new organizer_edit_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots),
-		'post', '', array('name' => 'form_edit'));
+        'post', '', array('name' => 'form_edit'));
 
 if ($data = $mform->get_data()) {
-	$slotids = organizer_update_appointment_slot($data);
+    $slotids = organizer_update_appointment_slot($data);
 
-	organizer_prepare_and_send_message($data, 'edit_notify:teacher');
-	organizer_prepare_and_send_message($data, 'edit_notify:student'); // ---------------------------------------- MESSAGE!!!
+    organizer_prepare_and_send_message($data, 'edit_notify:teacher');
+    organizer_prepare_and_send_message($data, 'edit_notify:student'); // Message.
 
-	$newurl = $redirecturl->out();
-	foreach ($slotids as $slotid) {
-		$newurl .= '&slots[]=' . $slotid;
-	}
+    $newurl = $redirecturl->out();
+    foreach ($slotids as $slotid) {
+        $newurl .= '&slots[]=' . $slotid;
+    }
 
-	$event = \mod_organizer\event\slot_updated::create(array(
-			'objectid' => $PAGE->cm->id,
-			'context' => $PAGE->context
-	));
-	$event->trigger();
-	
-	redirect($newurl);
+    $event = \mod_organizer\event\slot_updated::create(array(
+            'objectid' => $PAGE->cm->id,
+            'context' => $PAGE->context
+    ));
+    $event->trigger();
+
+    redirect($newurl);
 } else if ($mform->is_cancelled()) {
-	redirect($redirecturl);
+    redirect($redirecturl);
 } else {
-	organizer_display_form($mform, get_string('title_edit', 'organizer'));
+    organizer_display_form($mform, get_string('title_edit', 'organizer'));
 }
 print_error('If you see this, something went wrong with edit action!');
 

@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * slotlib.php
@@ -28,7 +28,7 @@
 
 function organizer_get_last_user_appointment($organizer, $userid = null, $mergegroupapps = true, $getevaluated = false) {
     global $DB, $USER;
-    
+
     if ($userid == null) {
         $userid = $USER->id;
     }
@@ -72,7 +72,7 @@ function organizer_get_last_user_appointment($organizer, $userid = null, $mergeg
             $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
         }
     }
-    
+
     return $app;
 }
 
@@ -140,13 +140,13 @@ class organizer_slot {
             $this->slot = $DB->get_record('organizer_slots', array('id' => $slot));
         } else {
             $this->slot = $slot;
-            
-            if(!isset($this->slot->organizerid)){
-            	$this->slot->organizerid = $DB->get_field('organizer_slots', 'organizerid', array('id'=>$slot->slotid));
+
+            if (!isset($this->slot->organizerid)) {
+                $this->slot->organizerid = $DB->get_field('organizer_slots', 'organizerid', array('id' => $slot->slotid));
             }
-            
-            if(!isset($this->slot->maxparticipants)){
-            	$this->slot->maxparticipants = $DB->get_field('organizer_slots', 'maxparticipants', array('id'=>$slot->slotid));
+
+            if (!isset($this->slot->maxparticipants)) {
+                $this->slot->maxparticipants = $DB->get_field('organizer_slots', 'maxparticipants', array('id' => $slot->slotid));
             }
         }
 

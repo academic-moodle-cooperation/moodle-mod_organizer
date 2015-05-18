@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * index.php
@@ -26,13 +26,13 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/// Replace organizer with the name of your module and remove this line
+// Replace organizer with the name of your module and remove this line.
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/lib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
-$id = required_param('id', PARAM_INT);   // course
+$id = required_param('id', PARAM_INT);   // Course.
 
 if (! $course = $DB->get_record('course', array('id' => $id))) {
     error('Course ID is incorrect');
@@ -42,11 +42,11 @@ require_course_login($course);
 $PAGE->set_pagelayout('incourse');
 
 $event = \mod_organizer\event\course_module_instance_list_viewed::create(array(
-		'context' => context_course::instance($course->id)
+        'context' => context_course::instance($course->id)
 ));
 $event->trigger();
 
-/// Print the header
+// Print the header.
 
 $PAGE->set_url('/mod/organizer/index.php', array('id' => $course->id));
 $PAGE->navbar->add(get_string("modulenameplural", "organizer"));
@@ -54,7 +54,7 @@ $PAGE->set_title($course->fullname);
 $PAGE->set_heading($course->shortname);
 echo $OUTPUT->header();
 
-/// Get all the appropriate data
+// Get all the appropriate data.
 
 if (! $organizers = get_all_instances_in_course('organizer', $course)) {
     echo $OUTPUT->heading(get_string('noorganizers', 'organizer'), 2);
@@ -88,10 +88,10 @@ $table->align[] = 'center';
 
 foreach ($organizers as $organizer) {
     if (!$organizer->visible) {
-        //Show dimmed if the mod is hidden
+        // Show dimmed if the mod is hidden.
         $link = '<a class="dimmed" href="view.php?id='.$organizer->coursemodule.'">'.format_string($organizer->name).'</a>';
     } else {
-        //Show normal if the mod is visible
+        // Show normal if the mod is visible.
         $link = '<a href="view.php?id='.$organizer->coursemodule.'">'.format_string($organizer->name).'</a>';
     }
 

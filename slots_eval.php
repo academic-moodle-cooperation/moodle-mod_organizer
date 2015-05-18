@@ -12,18 +12,18 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * view_action.php
  *
- * @package	   mod_organizer
- * @author		Andreas Windbichler
- * @author		Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author		Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author		Ivan Šakić
- * @copyright	 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license	   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package       mod_organizer
+ * @author        Andreas Windbichler
+ * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Ivan Šakić
+ * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -31,8 +31,6 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_action_form_eval.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
-
-//--------------------------------------------------------------------------------------------------
 
 list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
@@ -58,9 +56,9 @@ $PAGE->set_title($organizer->name);
 $PAGE->set_heading($course->fullname);
 
 $jsmodule = array(
-		'name' => 'mod_organizer',
-		'fullpath' => '/mod/organizer/module.js',
-		'requires' => array('node', 'event', 'node-screen', 'panel', 'node-event-delegate'),
+        'name' => 'mod_organizer',
+        'fullpath' => '/mod/organizer/module.js',
+        'requires' => array('node', 'event', 'node-screen', 'panel', 'node-event-delegate'),
 );
 $PAGE->requires->js_module($jsmodule);
 
@@ -71,37 +69,37 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 require_capability('mod/organizer:evalslots', $context);
 
 if (!$slots) {
-	$redirecturl->param('messages[]', 'message_warning_no_slots_selected');
-	redirect($redirecturl);
+    $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+    redirect($redirecturl);
 }
 
 if (!organizer_security_check_slots($slots)) {
-	print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
+    print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
 }
 
 $mform = new organizer_evaluate_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
 if ($data = $mform->get_data()) {
-	$slotids = organizer_evaluate_slots($data);
+    $slotids = organizer_evaluate_slots($data);
 
-	organizer_prepare_and_send_message($data, 'eval_notify:student'); // ---------------------------------------- MESSAGE!!!
+    organizer_prepare_and_send_message($data, 'eval_notify:student'); // Message.
 
-	$newurl = $redirecturl->out();
-	foreach ($slotids as $slotid) {
-		$newurl .= '&slots[]=' . $slotid;
-	}
-	
-	$event = \mod_organizer\event\appointment_evaluated::create(array(
-			'objectid' => $PAGE->cm->id,
-			'context' => $PAGE->context
-	));
-	$event->trigger();
+    $newurl = $redirecturl->out();
+    foreach ($slotids as $slotid) {
+        $newurl .= '&slots[]=' . $slotid;
+    }
 
-	redirect($newurl);
+    $event = \mod_organizer\event\appointment_evaluated::create(array(
+            'objectid' => $PAGE->cm->id,
+            'context' => $PAGE->context
+    ));
+    $event->trigger();
+
+    redirect($newurl);
 } else if ($mform->is_cancelled()) {
-	redirect($redirecturl);
+    redirect($redirecturl);
 } else {
-	organizer_display_form($mform, get_string('title_eval', 'organizer'));
+    organizer_display_form($mform, get_string('title_eval', 'organizer'));
 }
 print_error('If you see this, something went wrong with edit action!');
 

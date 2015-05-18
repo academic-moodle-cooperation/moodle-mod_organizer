@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * backup/moodle2/backup_organizer_activity_task.class.php
@@ -27,7 +27,7 @@
  */
 
 require_once($CFG->dirroot
-        . '/mod/organizer/backup/moodle2/backup_organizer_stepslib.php'); // Because it exists (must)
+        . '/mod/organizer/backup/moodle2/backup_organizer_stepslib.php'); // Because it exists (must).
 
 /**
  * organizer backup task that provides all the settings and steps to perform one
@@ -39,14 +39,14 @@ class backup_organizer_activity_task extends backup_activity_task {
      * Define (add) particular settings this activity can have
      */
     protected function define_my_settings() {
-        // No particular settings for this activity
+        // No particular settings for this activity.
     }
 
     /**
      * Define (add) particular steps this activity can have
      */
     protected function define_my_steps() {
-        // Organizer only has one structure step
+        // Organizer only has one structure step.
         $this->add_step(new backup_organizer_activity_structure_step('organizer_structure', 'organizer.xml'));
     }
 
@@ -59,11 +59,11 @@ class backup_organizer_activity_task extends backup_activity_task {
 
         $base = preg_quote($CFG->wwwroot, "/");
 
-        // Link to the list of organizers
+        // Link to the list of organizers.
         $search = "/(" . $base . "\/mod\/organizer\/index.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@ORGANIZERINDEX*$2@$', $content);
 
-        // Link to organizer view by moduleid
+        // Link to organizer view by moduleid.
         $search = "/(" . $base . "\/mod\/organizer\/view.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@ORGANIZERVIEWBYID*$2@$', $content);
 

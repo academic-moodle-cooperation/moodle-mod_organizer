@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * event/registrations_viewed.php
@@ -32,23 +32,23 @@ defined('MOODLE_INTERNAL') || die();
  **/
 class registrations_viewed extends \core\event\base {
     protected function init() {
-        $this->data['crud'] = 'c'; // c(reate), r(ead), u(pdate), d(elete)
+        $this->data['crud'] = 'c'; // Options: c(reate), r(ead), u(pdate), d(elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'organizer';
     }
- 
+
     public static function get_name() {
         return get_string('eventregistrationsviewed', 'mod_organizer');
     }
- 
+
     public function get_description() {
         return "The user with id {$this->userid} viewed registrations tab with the course module id {$this->objectid}.";
     }
- 
+
     public function get_url() {
-        return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid, 'mode'=>3));
+        return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid, 'mode' => 3));
     }
- 
+
     public function get_legacy_logdata() {
         // Override if you are migrating an add_to_log() call.
         return array($this->courseid, 'mod_organizer', 'statusview',

@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * version.php
@@ -28,9 +28,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version  = 2015051300;
-$module->release   = "2015-05-13"; 	  // User-friendly version number
-$module->maturity  = MATURITY_STABLE;
-$module->requires = 2014041100; // Requires this Moodle version
-$module->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics)
-$module->cron = 300; // Period for cron to check this module (secs)
+$module->version = 2015052100;
+$module->release = "2015-05-21"; // User-friendly version number.
+$module->maturity = MATURITY_STABLE;
+$module->requires = 2014041100; // Requires this Moodle version.
+$module->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics).
+$module->cron = 300; // Period for cron to check this module (secs).

@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * settings.php
@@ -38,7 +38,7 @@ if ($reports = get_plugin_list('organizer')) {
     foreach ($reports as $report => $reportdir) {
         if (file_exists("$reportdir/settings.php")) {
             $strreportname = get_string($report . 'report', 'organizer_' . $report);
-            // Deal with reports which are lacking the language string
+            // Deal with reports which are lacking the language string.
             if ($strreportname[0] == '[') {
                 $textlib = textlib_get_instance();
                 $strreportname = $textlib->strtotitle($report . ' report');
@@ -60,67 +60,67 @@ $organizersettings = new admin_settingpage('modsettingorganizer', $pagetitle, 'm
 // Introductory explanation that all the settings are defaults for the add quiz form.
 $organizersettings->add(new admin_setting_heading('organizerintro', '', get_string('configintro', 'organizer')));
 
-// Set modintro required (default) or optional
+// Set modintro required (default) or optional.
 $organizersettings->add(new admin_setting_configcheckbox('organizer/requiremodintro',
-		get_string('requiremodintro', 'organizer'), get_string('configrequiremodintro', 'organizer'), 1));
+        get_string('requiremodintro', 'organizer'), get_string('configrequiremodintro', 'organizer'), 1));
 
-// Maximum grade
+// Maximum grade.
 $organizersettings->add(
         new admin_setting_configtext('organizer/maximumgrade', get_string('maximumgrade'),
                 get_string('configmaximumgrade', 'organizer'), 10, PARAM_INT));
 
-// E-mail teachers
+// E-mail teachers.
 $pickeroptions = array();
 $pickeroptions[ORGANIZER_MESSAGES_NONE] = get_string('messages_none', 'organizer');
 $pickeroptions[ORGANIZER_MESSAGES_RE_UNREG] = get_string('messages_re_unreg', 'organizer');
 $pickeroptions[ORGANIZER_MESSAGES_ALL] = get_string('messages_all', 'organizer');
 
-// Appointment digest
+// Appointment digest.
 $organizersettings->add(
         new admin_setting_configselect('organizer/emailteachers', get_string('configemailteachers_label', 'organizer'),
                 get_string('configemailteachers', 'organizer'), 1, $pickeroptions));
 
 $pickeroptions = array();
-$pickeroptions['never'] = get_string('configdontsend','organizer');
+$pickeroptions['never'] = get_string('configdontsend', 'organizer');
 for ($i = 0; $i < 24; $i++) {
     $pickeroptions[$i * 3600] = userdate($i * 3600, get_string('timetemplate', 'organizer'), 0);
 }
 
-// Appointment digest
+// Appointment digest.
 $organizersettings->add(
         new admin_setting_configselect('organizer/digest', get_string('configdigest_label', 'organizer'),
                 get_string('configdigest', 'organizer'), 'never', $pickeroptions));
 
 $abschoices = array();
-$abschoices['never'] = get_string('confignever','organizer');
-$abschoices['+1 week'] = '1 ' . get_string('configweek','organizer');
-$abschoices['+2 weeks'] = '2 ' . get_string('configweeks','organizer');
-$abschoices['+3 weeks'] = '3 ' . get_string('configweeks','organizer');
-$abschoices['+1 month'] = '1 ' . get_string('configmonth','organizer');
-$abschoices['+2 month'] = '2 ' . get_string('configmonths','organizer');
-$abschoices['+3 month'] = '3 ' . get_string('configmonths','organizer');
-$abschoices['+4 month'] = '4 ' . get_string('configmonths','organizer');
-$abschoices['+5 month'] = '5 ' . get_string('configmonths','organizer');
-$abschoices['+6 month'] = '6 ' . get_string('configmonths','organizer');
-$abschoices['+1 year'] = '1 ' . get_string('configyear','organizer');
+$abschoices['never'] = get_string('confignever', 'organizer');
+$abschoices['+1 week'] = '1 ' . get_string('configweek', 'organizer');
+$abschoices['+2 weeks'] = '2 ' . get_string('configweeks', 'organizer');
+$abschoices['+3 weeks'] = '3 ' . get_string('configweeks', 'organizer');
+$abschoices['+1 month'] = '1 ' . get_string('configmonth', 'organizer');
+$abschoices['+2 month'] = '2 ' . get_string('configmonths', 'organizer');
+$abschoices['+3 month'] = '3 ' . get_string('configmonths', 'organizer');
+$abschoices['+4 month'] = '4 ' . get_string('configmonths', 'organizer');
+$abschoices['+5 month'] = '5 ' . get_string('configmonths', 'organizer');
+$abschoices['+6 month'] = '6 ' . get_string('configmonths', 'organizer');
+$abschoices['+1 year'] = '1 ' . get_string('configyear', 'organizer');
 
 $organizersettings->add(
         new admin_setting_configselect('organizer/absolutedeadline', get_string('absolutedeadline', 'organizer'),
                 get_string('configabsolutedeadline', 'organizer'), 'never', $abschoices));
 
 $relchoices = array();
-$relchoices[60 * 1] 	= '1 ' . 	get_string('configminute','organizer') . ' ' . 	get_string('configahead','organizer');
-$relchoices[60 * 5] 	= '5 ' . 	get_string('configminutes','organizer') . ' ' . get_string('configahead','organizer');
-$relchoices[60 * 15] 	= '15 ' . 	get_string('configminutes','organizer') . ' ' . get_string('configahead','organizer');
-$relchoices[60 * 30] 	= '30 ' . 	get_string('configminutes','organizer') . ' ' . get_string('configahead','organizer');
-$relchoices[3600 * 1] 	= '1 ' . 	get_string('confighour','organizer') . ' ' . 	get_string('configahead','organizer');
-$relchoices[3600 * 2] 	= '2 ' . 	get_string('confighours','organizer') . ' ' . 	get_string('configahead','organizer');
-$relchoices[3600 * 3] 	= '3 ' . 	get_string('confighours','organizer') . ' ' . 	get_string('configahead','organizer');
-$relchoices[3600 * 6] 	= '6 ' . 	get_string('confighours','organizer') . ' ' . 	get_string('configahead','organizer');
-$relchoices[3600 * 12] 	= '12 ' . 	get_string('confighours','organizer') . ' ' . 	get_string('configahead','organizer');
-$relchoices[3600 * 18] 	= '18 ' .	get_string('confighours','organizer') . ' ' . 	get_string('configahead','organizer');
-$relchoices[86400 * 1] 	= '1 ' . 	get_string('configday','organizer') . ' ' . 	get_string('configahead','organizer');
-$relchoices[86400 * 2] 	= '2 ' . 	get_string('configdays','organizer') . ' ' . 	get_string('configahead','organizer');
+$relchoices[60 * 1]     = '1 ' .     get_string('configminute', 'organizer') . ' ' .     get_string('configahead', 'organizer');
+$relchoices[60 * 5]     = '5 ' .     get_string('configminutes', 'organizer') . ' ' . get_string('configahead', 'organizer');
+$relchoices[60 * 15]     = '15 ' .     get_string('configminutes', 'organizer') . ' ' . get_string('configahead', 'organizer');
+$relchoices[60 * 30]     = '30 ' .     get_string('configminutes', 'organizer') . ' ' . get_string('configahead', 'organizer');
+$relchoices[3600 * 1]     = '1 ' .     get_string('confighour', 'organizer') . ' ' .     get_string('configahead', 'organizer');
+$relchoices[3600 * 2]     = '2 ' .     get_string('confighours', 'organizer') . ' ' .     get_string('configahead', 'organizer');
+$relchoices[3600 * 3]     = '3 ' .     get_string('confighours', 'organizer') . ' ' .     get_string('configahead', 'organizer');
+$relchoices[3600 * 6]     = '6 ' .     get_string('confighours', 'organizer') . ' ' .     get_string('configahead', 'organizer');
+$relchoices[3600 * 12]     = '12 ' .     get_string('confighours', 'organizer') . ' ' .     get_string('configahead', 'organizer');
+$relchoices[3600 * 18]     = '18 ' .    get_string('confighours', 'organizer') . ' ' .     get_string('configahead', 'organizer');
+$relchoices[86400 * 1]     = '1 ' .     get_string('configday', 'organizer') . ' ' .     get_string('configahead', 'organizer');
+$relchoices[86400 * 2]     = '2 ' .     get_string('configdays', 'organizer') . ' ' .     get_string('configahead', 'organizer');
 
 $organizersettings->add(
         new admin_setting_configselect('organizer/relativedeadline', get_string('relativedeadline', 'organizer'),
@@ -135,7 +135,7 @@ if (empty($reportsbyname)) {
             new admin_category('modsettingsquizcat', get_string('modulename', 'quiz'), !$module->visible));
     $ADMIN->add('modsettingsquizcat', $organizersettings);
 
-    // Add the report pages for the settings.php files in sub directories of mod/quiz/report
+    // Add the report pages for the settings.php files in sub directories of mod/quiz/report.
     foreach ($reportsbyname as $strreportname => $report) {
         $reportname = $report;
 
@@ -148,4 +148,4 @@ if (empty($reportsbyname)) {
     }
 }
 
-$settings = null; // we do not want standard settings link
+$settings = null; // We do not want standard settings link.

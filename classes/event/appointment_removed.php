@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * event/appointment_removed.php
@@ -32,24 +32,24 @@ defined('MOODLE_INTERNAL') || die();
  **/
 class appointment_removed extends \core\event\base {
     protected function init() {
-        $this->data['crud'] = 'd'; // c(reate), r(ead), u(pdate), d(elete)
+        $this->data['crud'] = 'd'; // Options: c(reate), r(ead), u(pdate), d(elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'organizer_slot_appointments';
     }
- 
+
     public static function get_name() {
         return get_string('eventappointmentremoved', 'mod_organizer');
     }
- 
+
     public function get_description() {
-    	return "The user with id {$this->userid} unregistered from a slot of organizer activity " .
+        return "The user with id {$this->userid} unregistered from a slot of organizer activity " .
             "with the course module id {$this->contextinstanceid}.";
     }
- 
+
     public function get_url() {
         return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
     }
- 
+
     public function get_legacy_logdata() {
         // Override if you are migrating an add_to_log() call.
         return array($this->courseid, 'mod_organizer', 'unregister',

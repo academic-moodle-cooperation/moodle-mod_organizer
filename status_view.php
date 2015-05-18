@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * status_view.php
@@ -153,7 +153,8 @@ function organizer_get_status_table_entries_group($params) {
         INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid ORDER BY s.starttime DESC) a2 ON g.id = a2.groupid
         WHERE g.id $insql
-        GROUP BY g.id,g.name,status,a2.starttime,a2.duration,a2.location,a2.teacherid,a2.applicantid,a2.comments,a2.teachervisible,a2.slotid 
+        GROUP BY g.id, g.name, status, a2.starttime, a2.duration, a2.location, a2.teacherid,
+            a2.applicantid, a2.comments, a2.teachervisible, a2.slotid
         $orderby";
     return $DB->get_records_sql($query, $par);
 }
@@ -228,7 +229,8 @@ function organizer_get_status_table_entries($params) {
         FROM {organizer_slot_appointments} a INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid ORDER BY s.starttime DESC) a2 ON u.id = a2.userid
         WHERE u.id $insql
-        GROUP BY u.id,u.firstname,u.lastname,u.idnumber,status,a2.starttime,a2.duration,a2.attended,a2.location,a2.grade,a2.comments,a2.feedback,a2.teacherid, a2.userid,a2.teachervisible,a2.slotid 
+        GROUP BY u.id, u.firstname, u.lastname, u.idnumber, status, a2.starttime, a2.duration, a2.attended,
+            a2.location, a2.grade, a2.comments, a2.feedback, a2.teacherid, a2.userid, a2.teachervisible, a2.slotid
         $orderby";
     return $DB->get_records_sql($query, $par);
 }

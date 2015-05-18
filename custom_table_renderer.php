@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * custom_table_renderer.php
@@ -27,11 +27,11 @@
  */
 
 function organizer_render_table_with_footer(html_table $table, $printfooter = true, $overrideevenodd = false) {
-    // prepare table data and populate missing properties with reasonable defaults
+    // Prepare table data and populate missing properties with reasonable defaults.
     if (!empty($table->align)) {
         foreach ($table->align as $key => $aa) {
             if ($aa) {
-                $table->align[$key] = 'text-align:'. fix_align_rtl($aa) .';';  // Fix for RTL languages
+                $table->align[$key] = 'text-align:'. fix_align_rtl($aa) .';';  // Fix for RTL languages.
             } else {
                 $table->align[$key] = null;
             }
@@ -76,7 +76,7 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
         $table->attributes['class'] .= ' boxalign' . $table->tablealign;
     }
 
-    // explicitly assigned properties override those defined via $table->attributes
+    // Explicitly assigned properties override those defined via $table->attributes.
     $table->attributes['class'] = trim($table->attributes['class']);
     $attributes = array_merge($table->attributes, array(
             'id'            => $table->id,
@@ -101,7 +101,7 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
             $lastkey = end($keys);
 
             foreach ($table->head as $key => $heading) {
-                // Convert plain string headings into html_table_cell objects
+                // Convert plain string headings into html_table_cell objects.
                 if (!($heading instanceof html_table_cell)) {
                     $headingtext = $heading;
                     $heading = new html_table_cell();
@@ -148,9 +148,9 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
 
         if (empty($table->data)) {
             // For valid XHTML strict every table must contain either a valid tr
-            // or a valid tbody... both of which must contain a valid td
+            // or a valid tbody... both of which must contain a valid td.
             $output .= html_writer::start_tag('tbody', array('class' => 'empty'));
-            $output .= html_writer::tag('tr', html_writer::tag('td', '', array('colspan'=>count($table->head))));
+            $output .= html_writer::tag('tr', html_writer::tag('td', '', array('colspan' => count($table->head))));
             $output .= html_writer::end_tag('tbody');
         }
     }
@@ -167,7 +167,7 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                     html_writer::tag('div', '', array('class' => 'tabledivider')),
                     array('colspan' => $countcols));
             } else {
-                // Convert array rows to html_table_rows and cell strings to html_table_cell objects
+                // Convert array rows to html_table_rows and cell strings to html_table_cell objects.
                 if (!($row instanceof html_table_row)) {
                     $newrow = new html_table_row();
 
@@ -187,7 +187,7 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                 if (!$overrideevenodd) {
                     $row->attributes['class'] .= ' r' . $oddeven;
                 }
-                
+
                 if ($key == $lastrowkey) {
                     $row->attributes['class'] .= ' lastrow';
                 }
@@ -203,10 +203,10 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                 $keys2 = array_keys($row->cells);
                 $lastkey = end($keys2);
 
-                $gotlastkey = false; //flag for sanity checking
+                $gotlastkey = false; // Flag for sanity checking.
                 foreach ($row->cells as $key => $cell) {
                     if ($gotlastkey) {
-                        //This should never happen. Why do we have a cell after the last cell?
+                        // This should never happen. Why do we have a cell after the last cell?
                         mtrace("A cell with key ($key) was found after the last key ($lastkey)");
                     }
 
