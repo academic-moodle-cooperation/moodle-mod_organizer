@@ -372,20 +372,7 @@ class organizer_edit_slots_form extends moodleform {
         if ($data['mod_location'] != 0 && (!isset($data['location']) || $data['location'] === '')) {
             $errors['locationgroup'] = get_string('err_location', 'organizer');
         }
-        
-        $collisions = $this->_check_collision($data['slots'],$data['teacherid']);
-        
-        if(count($collisions) > 0){
-        	$errors['teachergrp'] = get_string('collision','organizer') . "<br/>";
 
-        	foreach($collisions as $collision){
-        		$errors['teachergrp'] .= '&nbsp;&nbsp;- <strong>' . $collision->name . '</strong> from '
-        			. userdate($collision->starttime,get_string('timetemplate', 'organizer')) . ' to '
-        			. userdate($collision->starttime + $collision->duration,get_string('timetemplate', 'organizer')) . '<br />';
-        	}
-        	
-        }
-        
         return $errors;
     }
     

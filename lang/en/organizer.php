@@ -146,6 +146,7 @@ $string['title_add'] = 'Add new appointment slots';
 $string['title_comment'] = 'Edit your comments';
 $string['title_delete'] = 'Delete selected time slots';
 $string['createsubmit'] = 'Create time slots';
+$string['confirm_conflicts'] = 'Are you sure that you want to ignore the collisions and want to create the time slots?';
 $string['reviewsubmit'] = 'Review time slots';
 $string['edit_submit'] = 'Commit changes';
 $string['rewievslotsheader'] = 'Review time slots';

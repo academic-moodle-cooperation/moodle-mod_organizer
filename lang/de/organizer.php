@@ -148,6 +148,7 @@ $string['title_add'] = 'Neue Terminslots hinzufügen';
 $string['title_comment'] = 'Eigene Kommentare bearbeiten';
 $string['title_delete'] = 'Ausgewählte Zeitslots löschen';
 $string['createsubmit'] = 'Zeitslots erstellen';
+$string['confirm_conflicts'] = 'Sind Sie sicher, dass Sie die Terminkollisionen übergehen möchten und die Zeitslots anlegen möchten?';
 $string['reviewsubmit'] = 'Zeitslots ansehen';
 $string['edit_submit'] = 'Änderungen speichern';
 $string['rewievslotsheader'] = 'Zeitslots ansehen';

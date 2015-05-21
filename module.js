@@ -71,6 +71,27 @@ M.mod_organizer.init_add_form = function (Y) {
 		togglebox.on('change', toggle_available_from);
 	}
 
+	var form1 = Y.one('#mform1');
+	
+	if(form1){
+		form1.on('submit', function (e) {
+			sender = Y.one(document.activeElement);
+			
+			if (sender.get('name') == "createslots"){
+
+				conflicts = Y.one("input[type=hidden][name=conflicts]").get('value');
+				
+				if (conflicts > 0){
+					val = confirm(M.util.get_string('confirm_conflicts', 'organizer'));
+					
+					if(!val){
+						e.preventDefault();
+					}
+				}
+			}
+		});
+	}
+
 	function toggle_available_from() {
 		Y.one("select[name^=availablefrom]").set('disabled', togglebox.get('checked'));
 		Y.one("input[type=text][name^=availablefrom]").set('disabled', togglebox.get('checked'));

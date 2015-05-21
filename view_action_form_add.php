@@ -501,10 +501,9 @@ class organizer_add_slots_form extends moodleform {
 
                             $collisions = $this->_check_collision($slot, $date, $events);
                             $collcount += count($collisions);
-                            $disabled = count($collisions) ? true : false;
 
                             $dayslot = $this->_create_slot_review_group($date, $id, $slot['from'], $slot['to'],
-                                    $duration, $unit, $disabled);
+                                    $duration, $unit);
                             $mform->insertElementBefore(
                                     $mform->createElement('group', "reviewgroup{$id}", '', $dayslot, ORGANIZER_SPACING, false),
                                     'other');
@@ -526,11 +525,8 @@ class organizer_add_slots_form extends moodleform {
                                                         . userdate($event->timestart + $event->timeduration,
                                                                 get_string('timetemplate', 'organizer')) . '<br />'),
                                         'other');
-                                $disabled = true;
                             }
-                            if (!$disabled) {
-                                $totalslots += intval(($slot['to'] - $slot['from']) / ($duration * $unit));
-                            }
+                            $totalslots += intval(($slot['to'] - $slot['from']) / ($duration * $unit));
 
                             $dayempty = false;
 
@@ -579,8 +575,12 @@ class organizer_add_slots_form extends moodleform {
         }
 
         $mform->insertElementBefore($mform->createElement('html', $html), 'other');
+        
+        if($collcount > 0){
+        	$mform->addElement('hidden', "conflicts", true);
+        }
 
-        return count($collcount) == 0;
+        return true;
     }
 
     private function _create_slot_review_group($date, $id, $from, $to, $duration, $unit, $disabled = false) {
@@ -758,10 +758,14 @@ class organizer_add_slots_form extends moodleform {
         $jsmodule = array(
                 'name' => 'mod_organizer',
                 'fullpath' => '/mod/organizer/module.js',
-                'requires' => array('node', 'node-scroll-info', 'scrollview-base'),
+                'requires' => array('node', 'node-scroll-info', 'scrollview-base')
         );
         
         $PAGE->requires->js_init_call('M.mod_organizer.init_add_form', null, false, $jsmodule);
+        
+        $PAGE->requires->strings_for_js(array(
+        		'confirm_conflicts'
+        ), 'organizer');
 
         $mform = &$this->_form;
 
