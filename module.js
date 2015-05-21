@@ -426,15 +426,6 @@ M.mod_organizer.init_organizer_print_slots_form = function (Y) {
         });
     }
 
-        Y.all("[name=" + column + "_cell]").each(function(node) {
-            if (!unchecked) {
-                node.show();
-            } else {
-                node.hide();
-            }
-        });
-    }
-
     Y.one('.forced_scroll').delegate('click', toggle_column, 'table th img');
 }
 
