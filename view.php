@@ -40,8 +40,8 @@ $instance = organizer_get_course_module_data_new();
 
 require_login($instance->course, false, $instance->cm);
 
-$modinfo = get_fast_modinfo($course);
-$cm = $modinfo->get_cm($cm->id);
+$modinfo = get_fast_modinfo($instance->course);
+$cm = $modinfo->get_cm($instance->cm->id);
 if (empty($cm->uservisible)) {
     if ($cm->availableinfo) {
         // User cannot access the activity, but on the course page they will
