@@ -73,11 +73,25 @@ M.mod_organizer.init_add_form = function (Y) {
 
     var form1 = Y.one('#mform1');
 
+    // for safari workaround
+    form1.all("input[type=submit]").on(['click','keypress'], function(e){        
+        var sender = Y.one(e.target);
+        var that = form1 = Y.one('#mform1');
+        that.setData("callerid",sender.get('name'));
+    });
+
     if(form1){
         form1.on('submit', function (e) {
-            sender = Y.one(document.activeElement);
+            var sender = Y.one(e.target);
 
-            if (sender.get('name') == "createslots"){
+            sendername = sender.get('name');
+
+            if(!sendername){
+                // safari workaround
+                sendername = sender.getData('callerid');
+            }
+
+            if (sendername == "createslots"){
 
                 conflicts = Y.one("input[type=hidden][name=conflicts]").get('value');
 
