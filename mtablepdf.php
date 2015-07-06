@@ -25,13 +25,13 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once("../../config.php");
+require_once('../../config.php');
 
 require_once($CFG->libdir . '/pdflib.php');
 
 /**
  * @author Andreas Windbichler
- * @version 21.05.2015
+ * @version 25.06.2015
  *
  */
 class MTablePDF extends pdf{
@@ -59,6 +59,7 @@ class MTablePDF extends pdf{
     private $columnwidths = array();
     private $titles = null;
     private $columnformat;
+    private $headerformat = array('title' => array(), 'desc' => array());
 
     private $data = array();
 
@@ -666,34 +667,35 @@ class MTablePDF extends pdf{
         $time = userdate($time);
         $worksheet = $workbook->add_worksheet($time);
 
-        $headlineprop = array(    'size' => 12,
-                'bold' => 1,
-                'HAlign' => 'center',
-                'bottom' => 1,
-                'VAlign' => 'vcenter');
+        $headlineprop = array('size' => 12,
+            'bold' => 1,
+            'bottom' => 1,
+            'align' => 'center',
+            'v_align' => 'vcenter');
         $headlineformat = $workbook->add_format($headlineprop);
         $headlineformat->set_left(1);
-        $headlineformat->set_align('center');
-        $headlineformat->set_align('vcenter');
         $headlinefirst = $workbook->add_format($headlineprop);
-        $headlinefirst->set_align('center');
-        $headlinefirst->set_align('vcenter');
         unset($headlineprop['bottom']);
-        $hdrleft = $workbook->add_format($headlineprop);
-        $hdrleft->set_align('right');
-        $hdrleft->set_align('vcenter');
+        if (!empty($this->headerformat['title'])) {
+            $hdrleft = $workbook->add_format($this->headerformat['title']);
+        } else {
+            $hdrleft = $workbook->add_format($headlineprop);
+            $hdrleft->set_align('right');
+        }
         unset($headlineprop['bold']);
-        $hdrright = $workbook->add_format($headlineprop);
-        $hdrright->set_align('left');
-        $hdrright->set_align('vcenter');
+        if (!empty($this->headerformat['desc'])) {
+            $hdrright = $workbook->add_format($this->headerformat['desc']);
+        } else {
+            $hdrright = $workbook->add_format($headlineprop);
+            $hdrright->set_align('left');
+        }
 
-        $textprop = array(   'size' => 10,
-                'align' => 'left');
+        $textprop = array('size' => 10,
+            'align' => 'left',
+            'v_align' => 'vcenter');
         $text = $workbook->add_format($textprop);
         $text->set_left(1);
-        $text->set_align('vcenter');
         $textfirst = $workbook->add_format($textprop);
-        $textfirst->set_align('vcenter');
 
         $line = 0;
 
@@ -730,17 +732,26 @@ class MTablePDF extends pdf{
                     $cell['data'] = $prev[$idx]['data'];
                 }
 
-                if ($first) {
-                    $worksheet->write_string($line, $i, $cell['data'], $textfirst);
-                    $first = false;
+                if (array_key_exists('format', $cell)) {
+                    $worksheet->write_string($line, $i, $cell['data'], $workbook->add_format($cell['format']));
                 } else {
-                    $worksheet->write_string($line, $i, $cell['data'], $text);
+                    if ($first) {
+                        $worksheet->write_string($line, $i, $cell['data'], $textfirst);
+                        $first = false;
+                    } else {
+                        $worksheet->write_string($line, $i, $cell['data'], $text);
+                    }
                 }
 
                 $prev[$idx] = $cell;
                 $i++;
             }
         }
+    }
+
+    public function set_headerformat($headertitleformat, $headerdescformat) {
+             $this->headerformat['title'] = $headertitleformat;
+             $this->headerformat['desc'] = $headerdescformat;
     }
 
     public function get_xls($filename) {
