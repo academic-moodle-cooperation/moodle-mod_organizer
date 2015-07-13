@@ -122,7 +122,7 @@ function organizer_generate_student_view($params, $instance,&$popups) {
 	    $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
 	    $align = array('left', 'left', 'left', 'left', 'center', 'center');
 	    $sortable = array('datetime', 'location', 'teacher');
-	
+
 	    $table = new html_table();
 	    $table->id = 'slot_overview';
 	    $table->attributes['class'] = 'generaltable boxaligncenter overview';
@@ -132,7 +132,7 @@ function organizer_generate_student_view($params, $instance,&$popups) {
 
 	    $output .= organizer_render_table_with_footer($table);
     }else{
-    	
+
     	if($instance->organizer->alwaysshowdescription){
     		$message = get_string('allowsubmissionsfromdatesummary','organizer',userdate($instance->organizer->allowregistrationsfromdate));
     	}else{
@@ -146,7 +146,7 @@ function organizer_generate_student_view($params, $instance,&$popups) {
 
 function organizer_generate_registration_status_view($params, $instance,&$popups) {
     $output = organizer_generate_tab_row($params, $instance->context);
-    
+
     $output .= organizer_make_infobox($params, $instance->organizer, $instance->context,$popups);
 
     $columns = array('status');
@@ -228,30 +228,27 @@ function organizer_generate_button_bar($params, $organizer, $context) {//TODO re
     $organizerexpired = isset($organizer->duedate) && $organizer->duedate - time() < 0;
 
     $output = '<div name="button_bar" class="buttons mdl-align">';
-    
+
     if(has_capability("mod/organizer:addslots",$context,null,true)){
     	$slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
-    	
-    	$output .= '<a href="' . $slotsaddurl . '">';
-    	$output .= '<input type="button" value="' . get_string('btn_add', 'organizer') . '" ' . ($organizerexpired ? 'disabled ' : '') . '/>';
-    	$output .= '</a>';
+    	$output .= '<input type="submit" value="' . get_string('btn_add', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsaddurl . '\');" ' . ($organizerexpired ? 'disabled ' : '') . '/>';
     }
-    
+
     if(has_capability("mod/organizer:editslots",$context,null,true)){
     	$sloteditsurl = new moodle_url('/mod/organizer/slots_edit.php', array('id' => $params['id']));
     	$output .= '<input type="submit" value="' . get_string('btn_edit', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $sloteditsurl . '\');" ' . ($organizerexpired ? 'disabled ' : '') . '/>';
     }
-    
+
     if(has_capability("mod/organizer:deleteslots",$context,null,true)){
     	$slotsdeleteurl = new moodle_url('/mod/organizer/slots_delete.php', array('id' => $params['id']));
     	$output .= '<input type="submit" value="' . get_string('btn_delete', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsdeleteurl . '\');" ' . ($organizerexpired ? 'disabled ' : '') . '/>';
     }
-    
+
     if(has_capability("mod/organizer:printslots",$context,null,true)){
     	$slotsprinturl = new moodle_url('/mod/organizer/slots_print.php', array('id' => $params['id']));
     	$output .= '<input type="submit" value="' . get_string('btn_print', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsprinturl . '\');" />';
     }
-    
+
 	if (has_capability("mod/organizer:evalslots", $context, null, true)) {
 		$slotsevalurl = new moodle_url('/mod/organizer/slots_eval.php', array('id' => $params['id']));
 		$output .= '<input type="submit" value="' . get_string('btn_eval', 'organizer') . '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsevalurl . '\');" />';
@@ -680,7 +677,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON g.id = a2.groupid
         WHERE g.id $insql
-        GROUP BY g.id,g.name,status,a2.starttime,a2.duration,a2.location,a2.teacherid,a2.applicantid,a2.comments,a2.teachervisible,a2.slotid 
+        GROUP BY g.id,g.name,status,a2.starttime,a2.duration,a2.location,a2.teacherid,a2.applicantid,a2.comments,a2.teachervisible,a2.slotid
         $orderby";
 
     return $DB->get_records_sql($query, $par);
@@ -760,7 +757,7 @@ function organizer_organizer_get_status_table_entries($params) {
         WHERE u.id $insql
         GROUP BY u.id, a2.id,u.firstname,u.lastname,u.idnumber,status,a2.starttime, a2.duration, a2.attended, a2.location, a2.locationlink,
         a2.grade, a2.comments, a2.teachercomments, a2.feedback, a2.teacherid,
-        a2.userid, a2.teachervisible, a2.slotid, a2.allownewappointments 
+        a2.userid, a2.teachervisible, a2.slotid, a2.allownewappointments
         $orderby";
 
     return $DB->get_records_sql($query, $par);
@@ -881,7 +878,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
 }
 
 function organizer_get_participant_entry($entry) {
-    $icon = ' ' . (isset($entry->comments) && $entry->comments != '' ? 
+    $icon = ' ' . (isset($entry->comments) && $entry->comments != '' ?
             organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments) :
             organizer_get_img('pix/transparent.png', '', ''));
     return organizer_get_name_link($entry->id) . " {$icon}<br/>({$entry->idnumber})";
@@ -903,7 +900,7 @@ function organizer_app_details($params, $appointment,&$popups) {
         $list .= ' ' . organizer_display_grade($organizer, $appointment->grade); /// OVER HERE
     }
 
-    $list .= ' ' . ($appointment->feedback != '' ? 
+    $list .= ' ' . ($appointment->feedback != '' ?
             organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback,$popups) :
             organizer_get_img('pix/transparent.png', '', ''));
 
@@ -953,40 +950,63 @@ function organizer_teacher_data($params, $slot,&$popups) {
     WHERE a.slotid = :slotid";
     $param = array('slotid' => $slot->id);
     $appointments = $DB->get_records_sql($query, $param);
-    
-    
+
+
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
-    
+
+
+
     $canregister = has_capability('mod/organizer:register', $context, null, false);
+
     $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
+
     $canreregister = $canregister && $canunregister;
-    
+
     $slotx = new organizer_slot($slot);
+
 
     $wasownslot = false;
+
     foreach ($appointments as $someapp) {
+
     	if ($someapp->userid == $USER->id) {
+
     		$wasownslot = true;
+
     		break;
+
     	}
+
     }
-    
+
+
     $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
+
     $slotdisabled = $slotx->is_past_due() || $slotx->is_past_deadline();
+
     $myslotpending = $wasownslot && $slotx->is_past_deadline() && !$slotx->is_evaluated();
+
     $slotfull = $slotx->is_full();
-    
+
+
+
     $showteacher = $myslotpending || $organizerdisabled || $slotdisabled || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
-   
+
+
+
     if ($wasownslot) {
+
     	if (!$slotdisabled) {
+
    			$showteacher |= !$canunregister || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
+
     	}
+
     }
-    
+
     $slotx = new organizer_slot($slot);
-    
+
     if($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW || $slot->teachervisible || $showteacher){
     	$output = organizer_get_name_link($slot->teacherid);
     }else{
@@ -1043,7 +1063,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
     		array('id' => $params['id'], 'user' => $entry->id));
 
     $buttons = array();
-    
+
     switch ($entry->status) {
         case ORGANIZER_APP_STATUS_ATTENDED:
         	$button = new stdClass();
@@ -1091,7 +1111,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
         	$button->url = $remindurl;
         	$button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true);
         	$buttons[] = $button;
-        	
+
         	$button = new stdClass();
         	$button->text = get_string("btn_reeval", 'organizer');
         	$button->url = $evalurl;
@@ -1109,9 +1129,9 @@ function organizer_teacher_action_new($params, $entry, $context) {
         default:
             print_error("Wrong status code: $entry->status");
     }
-    
+
     $output = "";
-    
+
     foreach($buttons as $button){
     	if($button->disabled){
     		$output .= '<a href="#" class="action disabled">' . $button->text . '</a>';
@@ -1119,7 +1139,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
     		$output .= '<a href="' . $button->url . '" class="action">' . $button->text . '</a>';
     	}
     }
-    
+
     return $output;
 }
 
@@ -1140,7 +1160,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
             $idnumber = organizer_get_user_idnumber($app->userid);
             if ($app->userid == $userid) {
                 $output .= $name . ($idnumber ? " ($idnumber) " : " ");
-                $output .= ($app->userid == $app->applicantid) ? 
+                $output .= ($app->userid == $app->applicantid) ?
                         organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
                 $output .= '<div style="float: right;">' . organizer_app_details($params, $app, $popups) .
                         '</div><div style="clear: both;"></div>';
@@ -1151,7 +1171,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
                 $output .= '<div style="float: right;"></div><div style="clear: both;"></div>';
             }
         }
-        
+
         if (count($apps) == 0) {
             $output .= "<em>" . get_string('group_slot_available', 'organizer') . "</em>";
         } else {
@@ -1165,12 +1185,12 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
         $output = $name . ($idnumber ? " ($idnumber) " : " ") . '<div style="float: right;">' .
                 organizer_app_details($params, $app, $popups) .
                 '</div><div style="clear: both;"></div>';
-        
+
         $count = count($DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id)));
         $a = new stdClass();
         $a->numtakenplaces = $count;
         $a->totalplaces = $slot->maxparticipants;
-        
+
         if ($slot->maxparticipants - $count != 0) {
             if ($count == 1) {
                 $output .= "<em>" . get_string('places_taken_sg', 'organizer', $a) . "</em>";
@@ -1187,9 +1207,9 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
             }
         }
     }
-    
+
     $output .= $slot->isanonymous ? ' ' . organizer_get_img('pix/anon.png', 'anonymous', get_string('slot_anonymous', 'organizer')) : '';
-    
+
     return $output;
 }
 
@@ -1237,7 +1257,7 @@ function organizer_get_participant_list($params, $slot, $app,&$popups) {
     $studentview = $params['mode'] == ORGANIZER_TAB_STUDENT_VIEW;
     $ismyslot = $isownslot || $wasownslot;
     $groupmode = organizer_is_group_mode();
-    
+
     if ($studentview) {
         if ($slot->isanonymous) {
             if ($ismyslot) {
@@ -1261,7 +1281,7 @@ function organizer_get_participant_list($params, $slot, $app,&$popups) {
             } else {
                 $content = '';
             }
-            
+
             foreach($appointments as $appointment) {
                 $idnumber = organizer_get_user_idnumber($appointment->userid);
                 $content .= organizer_get_name_link($appointment->userid) .
@@ -1510,17 +1530,17 @@ function organizer_student_action($params, $slot) {
         $disabled |= $slotfull || !$canregister || $ismyslot;
         $action = $ismyslot ? 'unregister' : 'register';
     }
-    
+
     if ($ismyslot || organizer_is_my_slot($slotx)) {
     	$comment_url = new moodle_url('/mod/organizer/comment_edit.php',
     			array('id' => $params['id'], 'slot' => $slotx->id));
-    	 
+
     	$comment_btn_disabled = $organizerdisabled || !$slotx->organizer_user_has_access();
-    	 
+
     	$comment_btn = $OUTPUT->single_button($comment_url, get_string("btn_comment", 'organizer'), 'post',
     			array('disabled' => $comment_btn_disabled));
-    	
-    	
+
+
         return organizer_get_reg_button($action, $slotx->id, $params, $disabled) . '<br/>'
         		. $comment_btn;
     } else {
