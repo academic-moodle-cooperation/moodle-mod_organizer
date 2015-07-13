@@ -543,7 +543,7 @@ class organizer_add_slots_form extends moodleform {
             if ($dayempty) {
                 $mform->insertElementBefore(
                         $mform->createElement('html',
-                                get_string('noslots', 'organizer') . get_string("day_$day", 'organizer')), 'other');
+                                get_string('noslots', 'organizer') . " " . get_string("day_$day", 'organizer')), 'other');
             }
             $mform->insertElementBefore($mform->createElement('html', '<hr />'), 'other');
         }
