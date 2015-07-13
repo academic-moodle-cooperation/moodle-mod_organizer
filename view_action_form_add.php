@@ -145,20 +145,20 @@ class organizer_add_slots_form extends moodleform {
     	$mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
     	$mform->closeHeaderBefore('buttonar');
     }
-    
+
     public function definition_after_data() {
         $mform = &$this->_form;
 		$this->step = 1;
-		
+
         if (isset($mform->_submitValues['reviewslots'])) {
             $noerrors = $this->_validation_step1($mform->_submitValues);
 
-            if (!$noerrors) {            	
+            if (!$noerrors) {
                 $this->_add_slot_fields();
 
                 $buttons = &$mform->getElement('buttonar')->getElements();
                 $this->_hide_button($buttons[1]);
-            } else { 	
+            } else {
                 $this->_add_review_slots();
                 $this->_add_dummy_fields_for_back();
 
@@ -315,7 +315,7 @@ class organizer_add_slots_form extends moodleform {
         $fields = array('teacherid','notificationtime','teachervisible','isanonymous',
         		'location','locationlink','comments','startdate',
         		'enddate','duration','availablefrom','maxparticipants');
-        
+
         foreach($fields as $field){
         	$mform->getElement($field)->freeze();
         }
@@ -427,7 +427,7 @@ class organizer_add_slots_form extends moodleform {
         $dayslot[] = $mform->createElement('advcheckbox', "{$name}[selected]", '', ORGANIZER_SPACING, null, array(0, 1));
         $mform->setDefault("{$name}[selected]", 0);
         $dayslot[] = $mform->createElement('static', '', '',
-                get_string("day_$day", 'organizer') . get_string('slotfrom', 'organizer'));
+                get_string("day_$day", 'organizer') . " ". get_string('slotfrom', 'organizer'));
         $dayslot[] = $mform->createElement('hidden', "{$name}[day]", $day);
         $dayslot[] = $mform->createElement('select', "{$name}[from]", '', $this->pickeroptions);
         $mform->setDefault("{$name}[from]", 8 * 3600);
@@ -622,7 +622,7 @@ class organizer_add_slots_form extends moodleform {
     /**
      * This is necessary to facilitate validation and proper handling of incoming
      * data by QuickForm. These fields are never actually rendered.
-     * @param type $button 
+     * @param type $button
      */
     private function _add_dummy_fields() {
         $mform = &$this->_form;
@@ -760,7 +760,7 @@ class organizer_add_slots_form extends moodleform {
                 'fullpath' => '/mod/organizer/module.js',
                 'requires' => array('node', 'node-scroll-info', 'scrollview-base'),
         );
-        
+
         $PAGE->requires->js_init_call('M.mod_organizer.init_add_form', null, false, $jsmodule);
 
         $mform = &$this->_form;
