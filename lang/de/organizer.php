@@ -407,7 +407,7 @@ $string['register_notify:teacher:register:fullmessage'] = 'Hallo {$a->receiverna
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Student/in {$a->sendername} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_notify:teacher:register:smallmessage'] = 'Student/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.';
 
 // Section.
@@ -417,7 +417,7 @@ $string['register_notify:teacher:reregister:fullmessage'] = 'Hallo {$a->receiver
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Student/in {$a->sendername} für den neuen Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_notify:teacher:reregister:smallmessage'] = 'Student/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.';
 
 // Section.
@@ -427,7 +427,7 @@ $string['register_notify:teacher:unregister:fullmessage'] = 'Hallo {$a->receiver
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Student/in {$a->sendername} vom Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_notify:teacher:unregister:smallmessage'] = 'Student/in {$a->sendername} hat sich vom Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.';
 
 // Section.
@@ -437,7 +437,7 @@ $string['register_notify:teacher:register:group:fullmessage'] = 'Hallo {$a->rece
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Student/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_notify:teacher:register:group:smallmessage'] = 'Student/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.';
 
 // Section.
@@ -447,7 +447,7 @@ $string['register_notify:teacher:reregister:group:fullmessage'] = 'Hallo {$a->re
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Student/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_notify:teacher:reregister:group:smallmessage'] = 'Student/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.';
 
 // Section.
@@ -457,7 +457,7 @@ $string['register_notify:teacher:unregister:group:fullmessage'] = 'Hallo {$a->re
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Student/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_notify:teacher:unregister:group:smallmessage'] = 'Student/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.';
 
 // Section.
@@ -467,7 +467,7 @@ $string['eval_notify:student:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Termin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location} bewertet worden.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['eval_notify:student:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im {$a->location} ist bewertet worden.';
 
 // Section.
@@ -479,7 +479,7 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Termin mit {$a
 
 Die LVA-Leitung des Kurses ermölicht Ihnen sich nochmals im Terminpalner {$a->organizername} zu einem noch freien Termin anzumelden.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['eval_notify_newappointment:student:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im {$a->location} ist bewertet worden.';
 
 // Section.
@@ -489,7 +489,7 @@ $string['eval_notify:student:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Gruppentermin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location} bewertet worden.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['eval_notify:student:group:smallmessage'] = 'Ihr Gruppentermin am {$a->date} um {$a->time} im {$a->location} ist bewertet worden.';
 
 // Section.
@@ -502,7 +502,7 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Gruppentermin 
 
 Die LVA-Leitung des Kurses erm�glicht Ihnen sich nochmals im Terminpalner {$a->coursefullname} zu einem noch freien Termin anzumelden.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['eval_notify_newappointment:student:group:smallmessage'] = 'Ihr Gruppentermin am {$a->date} um {$a->time} im {$a->location} ist bewertet worden.';
 
 // Section.
@@ -519,7 +519,7 @@ Höchstanzahl der Teilnehmer/innen: {$a->slot_maxparticipants}
 Kommentar:
 {$a->slot_comments}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['edit_notify:student:smallmessage'] = 'Die Details des Termins mit {$a->sendername} am {$a->date} um {$a->time} sind verändert worden.';
 
 // Section.
@@ -535,7 +535,7 @@ Höchstanzahl der Teilnehmer/innen: {$a->slot_maxparticipants}
 Kommentar:
 {$a->slot_comments}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['edit_notify:student:group:smallmessage'] = 'Die Details des Gruppentermins mit {$a->sendername} am {$a->date} um {$a->time} sind verändert worden.';
 
 // Section.
@@ -551,7 +551,7 @@ Höchstanzahl der Teilnehmer/innen: {$a->slot_maxparticipants}
 Kommentar:
 {$a->slot_comments}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['edit_notify:teacher:smallmessage'] = 'Die Details des Zeitslots am {$a->date} um {$a->time} sind von {$a->sendername} verändert worden.';
 
 // Section.
@@ -563,7 +563,7 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie sich entwede
 
 {$a->custommessage}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_reminder:student:smallmessage'] = 'Bitte melden Sie sich für einen neuen Zeitslot an.';
 
 // Section.
@@ -575,7 +575,7 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Ihre Gruppe {
 
 {$a->custommessage}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_reminder:group:smallmessage'] = 'Bitte melden Sie sich für einen neuen Zeitslot an.';
 
 // Section.
@@ -587,7 +587,7 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Ihre Gruppe {
 
 {$a->custommessage}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_reminder:student:group:smallmessage'] = 'Bitte melden Sie sich für einen neuen Zeitslot an.';
 
 // Section.
@@ -596,7 +596,7 @@ $string['group_registration_notify:student:register:group:fullmessage'] = 'Hallo
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat {$a->sendername} Ihre Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['group_registration_notify:student:register:group:smallmessage'] = '{$a->sendername} hat Ihre Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} angemeldet.';
 
 // Section.
@@ -606,7 +606,7 @@ $string['group_registration_notify:student:reregister:group:fullmessage'] = 'Hal
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat {$a->sendername} Ihre Gruppe {$a->groupname} für einen neuen Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['group_registration_notify:student:reregister:group:smallmessage'] = '{$a->sendername} hat Ihre Gruppe {$a->groupname} für einen neuen Zeitslot am {$a->date} um {$a->time} umgemeldet.';
 
 // Section.
@@ -616,7 +616,7 @@ $string['group_registration_notify:student:unregister:group:fullmessage'] = 'Hal
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat {$a->sendername} Ihre Gruppe {$a->groupname} vom Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['group_registration_notify:student:unregister:group:smallmessage'] = '{$a->sendername} hat Ihre Gruppe {$a->groupname} vom Zeitslot am {$a->date} um {$a->time} abgemeldet.';
 
 // Section.
@@ -627,7 +627,7 @@ $string['appointment_reminder:teacher:digest:fullmessage'] = 'Hallo {$a->receive
 Sie haben heute folgende Termine:
 {$a->digest}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['appointment_reminder:teacher:digest:smallmessage'] = 'Sie haben heute Termine!';
 
 // Section.
@@ -637,7 +637,7 @@ $string['appointment_reminder:teacher:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie einen Termin mit Student/innen am {$a->date} um {$a->time} im {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['appointment_reminder:teacher:smallmessage'] = 'Sie haben einen Termin mit Student/innen am {$a->date} um {$a->time} im {$a->location}.';
 
 // Section.
@@ -649,7 +649,7 @@ Sie haben morgen folgende Termine:
 
 {$a->digest}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['appointment_reminder:teacher:digest:smallmessage'] = 'Sie haben eine zusammenfassende Nachricht bezüglich Ihre morgigen Termine erhalten.';
 
 // Section.
@@ -661,7 +661,7 @@ Sie haben morgen folgende Termine:
 
 {$a->digest}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['appointment_reminder:teacher:group:digest:smallmessage'] = 'Sie haben eine zusammenfassende Nachricht bezüglich Ihre morgigen Termine erhalten.';
 
 // Section.
@@ -671,7 +671,7 @@ $string['appointment_reminder:student:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie einen Termin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['appointment_reminder:student:smallmessage'] = 'Sie haben einen Termin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location}.';
 
 // Section.
@@ -681,7 +681,7 @@ $string['appointment_reminder:student:group:fullmessage'] = 'Hallo {$a->receiver
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie einen Gruppentermin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['appointment_reminder:student:group:smallmessage'] = 'Sie haben einen Gruppentermin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location}.';
 
 $string['reg_status_organizer_expired'] = 'Terminplaner abgelaufen';
