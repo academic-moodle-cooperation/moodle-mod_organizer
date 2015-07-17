@@ -1039,9 +1039,9 @@ function organizer_reg_organizer_app_details($organizer, $userid, &$popups) {
 
 function organizer_teacher_action_new($params, $entry, $context) {
     global $OUTPUT;
-    $evalurl = new moodle_url('/mod/organizer/slots_edit.php',
-            array('id' => $params['id'], 'slots[]' => $entry->slotid));
-    $remindurl = new moodle_url('/mod/organizer/send_reminder.php',
+	$evalurl = new moodle_url('/mod/organizer/slots_eval.php', 
+			array('id' => $params['id'], 'slots[]' => $entry->slotid));   
+	$remindurl = new moodle_url('/mod/organizer/send_reminder.php',
             array('id' => $params['id'], 'user' => $entry->id));
 
     $buttons = array();
