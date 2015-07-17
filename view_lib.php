@@ -1404,7 +1404,8 @@ function organizer_slot_status($params, $slot) {
     $slotdueempty = !$slotpastdeadline && !$slothasparticipants;
     $slotdue = !$slotpastdeadline && $slothasparticipants;
 
-	$actionurl = new moodle_url('/mod/organizer/slots_eval.php', array('id' => $params['id']));
+	$actionurl = new moodle_url('/mod/organizer/slots_eval.php', 
+			array('id' => $params['id'], 'slot' => $slotx->id));   
 
     if ($slotevaluated) {
         return '<a href="' . $actionurl->out(false) . '">'
