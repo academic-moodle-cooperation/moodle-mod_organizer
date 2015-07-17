@@ -597,9 +597,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
         $defaultrow = $rows[] = new html_table_row();
         if (!$showonlyregslot) {
             if ($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
-                $url = new moodle_url('/mod/organizer/view_action.php',
-                        array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'add',
-                                'sesskey' => sesskey()));
+				$url = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
                 $a = new stdClass();
                 $a->link = $url->out();
                 $message = get_string('no_slots_defined_teacher', 'organizer', $a);
