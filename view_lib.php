@@ -588,9 +588,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
         $defaultrow = $rows[] = new html_table_row();
         if (!$showonlyregslot) {
             if ($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
-                $url = new moodle_url('/mod/organizer/view_action.php',
-                        array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'add',
-                                'sesskey' => sesskey()));
+				$url = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
                 $a = new stdClass();
                 $a->link = $url->out();
                 $message = get_string('no_slots_defined_teacher', 'organizer', $a);
@@ -1031,8 +1029,8 @@ function organizer_teacher_action_new($params, $entry, $context) {
 //TODO remove this old line
 //     $evalurl = new moodle_url('/mod/organizer/view_action.php',
 //             array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'eval', 'slots[]' => $entry->slotid, 'sesskey'=>sesskey()));
-    $evalurl = new moodle_url('/mod/organizer/slots_edit.php',
-    		array('id' => $params['id'], 'slots[]' => $entry->slotid));
+	$evalurl = new moodle_url('/mod/organizer/slots_eval.php', 
+			array('id' => $params['id'], 'slots[]' => $entry->slotid));   
 //TODO remove this old line
 //     $remindurl = new moodle_url('/mod/organizer/view_action.php',
 //             array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'remindall', 'user' => $entry->id, 'sesskey'=>sesskey()));
@@ -1386,9 +1384,8 @@ function organizer_slot_status($params, $slot) {
     $slotdueempty = !$slotpastdeadline && !$slothasparticipants;
     $slotdue = !$slotpastdeadline && $slothasparticipants;
 
-    $actionurl = new moodle_url('/mod/organizer/view_action.php',
-            array('id' => $params['id'], 'mode' => $params['mode'], 'action' => 'eval', 'slots[]' => $slot->id,
-                    'sesskey' => sesskey()));
+	$actionurl = new moodle_url('/mod/organizer/slots_eval.php', 
+			array('id' => $params['id'], 'slot' => $slotx->id));   
 
     if ($slotevaluated) {
         return '<a href="' . $actionurl->out(false) . '">'
