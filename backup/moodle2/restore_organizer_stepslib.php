@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * backup/moodle2/restore_organizer_stepslib.php
@@ -61,7 +61,7 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
         $data->duedate = $this->apply_date_offset($data->duedate);
         $data->timemodified = $this->apply_date_offset($data->timemodified);
 
-        if ($data->grade < 0) { // scale found, get mapping
+        if ($data->grade < 0) { // Scale found, get mapping.
             $data->grade = -($this->get_mappingid('scale', abs($data->grade)));
         }
 

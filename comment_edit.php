@@ -12,17 +12,17 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * view_action.php
  *
- * @package	   mod_organizer
- * @author		Andreas Windbichler
- * @author		Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author		Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @copyright	 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license	   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package       mod_organizer
+ * @author        Andreas Windbichler
+ * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -31,20 +31,11 @@ require_once(dirname(__FILE__) . '/view_action_form_comment.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
-//--------------------------------------------------------------------------------------------------
-
 list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
-// require_sesskey();
 
-//$mode = optional_param('mode', null, PARAM_INT);
-//$action = optional_param('action', null, PARAM_ACTION);
-//$user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
-//$slots = optional_param_array('slots', array(), PARAM_INT);
-//$app = optional_param('app', null, PARAM_INT);
-//$tsort = optional_param('tsort', null, PARAM_ALPHA);
 
 $url = new moodle_url('/mod/organizer/comment_edit.php');
 $url->param('id', $cm->id);
@@ -55,43 +46,42 @@ $PAGE->set_title($organizer->name);
 $PAGE->set_heading($course->fullname);
 
 $jsmodule = array(
-		'name' => 'mod_organizer',
-		'fullpath' => '/mod/organizer/module.js',
-		'requires' => array('node', 'event', 'node-screen', 'panel', 'node-event-delegate'),
+        'name' => 'mod_organizer',
+        'fullpath' => '/mod/organizer/module.js',
+        'requires' => array('node', 'event', 'node-screen', 'panel', 'node-event-delegate'),
 );
 $PAGE->requires->js_module($jsmodule);
 
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id));
 
-$logurl = new moodle_url('/mod/organizer/comment_edit.php', array('id' =>$cm->id));
+$logurl = new moodle_url('/mod/organizer/comment_edit.php', array('id' => $cm->id));
 
 require_capability('mod/organizer:comment', $context);
 
 if (!organizer_security_check_slots($slot)) {
-	print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
+    print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
 }
 
 $mform = new organizer_comment_slot_form(null, array('id' => $cm->id, 'slot' => $slot));
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
-	
-	$app = $DB->get_record('organizer_slot_appointments', array('slotid' => $slot, 'userid' => $USER->id));
 
-	organizer_update_comments($app->id, $data->comments);
-	
-	$event = \mod_organizer\event\appointment_commented::create(array(
-			'objectid' => $PAGE->cm->id,
-			'context' => $PAGE->context
-	));
-	$event->trigger();
-	
-	redirect($redirecturl);
+    $app = $DB->get_record('organizer_slot_appointments', array('slotid' => $slot, 'userid' => $USER->id));
+
+    organizer_update_comments($app->id, $data->comments);
+
+    $event = \mod_organizer\event\appointment_commented::create(array(
+            'objectid' => $PAGE->cm->id,
+            'context' => $PAGE->context
+    ));
+    $event->trigger();
+
+    redirect($redirecturl);
 } else if ($mform->is_cancelled()) {
-	redirect($redirecturl);
+    redirect($redirecturl);
 } else {
-	organizer_display_form($mform, get_string('title_comment', 'organizer'));
+    organizer_display_form($mform, get_string('title_comment', 'organizer'));
 }
 print_error('If you see this, something went wrong with delete action!');
-
 
 die;

@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * lang/en/organizer.php
@@ -96,7 +96,7 @@ $string['availablegrouplist'] = 'Available groups';
 $string['selectedgrouplist'] = 'Selected groups';
 $string['slotperiodstarttime'] = 'Start date';
 $string['slotperiodendtime'] = 'End date';
-$string['slotperiodheader'] = 'Generate slots for daterange';
+$string['slotperiodheader'] = 'Generate slots for date range';
 $string['slotperiodheader_help'] = 'Specify the starting and the ending date to which the daily time frames (section below) will apply.';
 $string['slottimeframesheader'] = 'Specific time frames';
 $string['slottimeframesheader_help'] = 'This section allows for weekday-based definition of time frames which will be filled with appointment slots with properties specified above. There can be more than one time frame per day. If a time frame on Monday is selected, it will generate time slots for every Monday between the starting and the ending date (inclusive).';
@@ -146,6 +146,7 @@ $string['title_add'] = 'Add new appointment slots';
 $string['title_comment'] = 'Edit your comments';
 $string['title_delete'] = 'Delete selected time slots';
 $string['createsubmit'] = 'Create time slots';
+$string['confirm_conflicts'] = 'Are you sure that you want to ignore the collisions and want to create the time slots?';
 $string['reviewsubmit'] = 'Review time slots';
 $string['edit_submit'] = 'Commit changes';
 $string['rewievslotsheader'] = 'Review time slots';
@@ -172,7 +173,7 @@ $string['th_lastname'] = 'Last name';
 $string['th_actions'] = 'Action';
 $string['th_status'] = 'Status';
 $string['th_comments'] = 'Comments';
-$string['th_appdetails'] = 'Details'; //TODO
+$string['th_appdetails'] = 'Details';
 $string['th_group'] = 'Group';
 $string['th_datetimedeadline'] = 'Date & time';
 $string['th_evaluated'] = 'Eval';
@@ -424,7 +425,7 @@ $string['modformwarningplural'] = 'These fields cannot be edited as there are ap
 
 /* Message templates following.
  * Please note that the following strings are available:
- * 	   sendername, receivername, courseshortname, courselongname, courseid, organizername,
+ *     sendername, receivername, courseshortname, courselongname, courseid, organizername,
  *     date, time, location, groupname, courselink
  * If more strings are required, add them to the $strings object in messaging.php
  */
@@ -445,7 +446,7 @@ Note that you have no longer an appointment in the organizer {$a->organizername}
 Please follow the link to make a new appointment: {$a->courselink}';
 $string['slotdeleted_notify:student:group:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->organizername} was cancled.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['register_notify:teacher:register:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student registered';
 $string['register_notify:teacher:register:fullmessage'] =
@@ -453,10 +454,10 @@ $string['register_notify:teacher:register:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sendername} has registered for the time slot on {$a->date} at {$a->time} in {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_notify:teacher:register:smallmessage'] = 'Student {$a->sendername} has registered for the time slot on {$a->date} at {$a->time} in {$a->location}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['register_notify:teacher:reregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student re-registered';
 $string['register_notify:teacher:reregister:fullmessage'] =
@@ -464,10 +465,10 @@ $string['register_notify:teacher:reregister:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sendername} has re-registered for the new time slot on {$a->date} at {$a->time} in {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_notify:teacher:reregister:smallmessage'] = 'Student {$a->sendername} has re-registered for the time slot on {$a->date} at {$a->time} in {$a->location}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['register_notify:teacher:unregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student unregistered';
 $string['register_notify:teacher:unregister:fullmessage'] =
@@ -475,10 +476,10 @@ $string['register_notify:teacher:unregister:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sendername} has unregistered from the time slot on {$a->date} at {$a->time} in {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_notify:teacher:unregister:smallmessage'] = 'Student {$a->sendername} has unregistered from the time slot on {$a->date} at {$a->time} in {$a->location}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['register_notify:teacher:register:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group registered';
 $string['register_notify:teacher:register:group:fullmessage'] =
@@ -486,10 +487,10 @@ $string['register_notify:teacher:register:group:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sendername} has registered the group {$a->groupname} for the time slot on {$a->date} at {$a->time} in {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_notify:teacher:register:group:smallmessage'] = 'Student {$a->sendername} has registered the group {$a->groupname} for the time slot on {$a->date} at {$a->time} in {$a->location}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['register_notify:teacher:reregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group re-registered';
 $string['register_notify:teacher:reregister:group:fullmessage'] =
@@ -497,10 +498,10 @@ $string['register_notify:teacher:reregister:group:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sendername} has re-registered the group {$a->groupname} for the new time slot on {$a->date} at {$a->time} in {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_notify:teacher:reregister:group:smallmessage'] = 'Student {$a->sendername} has re-registered the group {$a->groupname} for the time slot on {$a->date} at {$a->time} in {$a->location}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['register_notify:teacher:unregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group unregistered';
 $string['register_notify:teacher:unregister:group:fullmessage'] =
@@ -508,10 +509,10 @@ $string['register_notify:teacher:unregister:group:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sendername} has unregistered the group {$a->groupname} from the time slot on {$a->date} at {$a->time} in {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_notify:teacher:unregister:group:smallmessage'] = 'Student {$a->sendername} has unregistered the group {$a->groupname} from the time slot on {$a->date} at {$a->time} in {$a->location}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['eval_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify:student:fullmessage'] =
@@ -519,10 +520,10 @@ $string['eval_notify:student:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, your appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 
 $string['eval_notify:student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['eval_notify_newappointment:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 
@@ -533,11 +534,11 @@ As a part of the course {$a->courseid} {$a->coursefullname}, your appointment wi
 
 Teachers of the course enable you to re-register to any available slot in the organizer {$a->organizername}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 
 $string['eval_notify_newappointment:student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['eval_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify:student:group:fullmessage'] =
@@ -545,10 +546,10 @@ $string['eval_notify:student:group:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, your group appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['eval_notify:student:group:smallmessage'] = 'Your group appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['eval_notify_newappointment:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify_newappointment:student:group:fullmessage'] =
@@ -558,10 +559,10 @@ As a part of the course {$a->courseid} {$a->coursefullname}, your group appointm
 
 Teachers of the course enable you to re-register to any available slot in the organizer {$a->coursefullname}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['eval_notify_newappointment:student:group:smallmessage'] = 'Your group appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['edit_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify:student:fullmessage'] =
@@ -574,11 +575,11 @@ Location: {$a->slot_location}
 Max. participants: {$a->slot_maxparticipants}
 Comments:
 {$a->slot_comments}
-		
-TUWEL Messaging System';
+
+Moodle Messaging System';
 $string['edit_notify:student:smallmessage'] = 'The details of the appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['edit_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify:student:group:fullmessage'] =
@@ -592,10 +593,10 @@ Max. participants: {$a->slot_maxparticipants}
 Comments:
 {$a->slot_comments}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['edit_notify:student:group:smallmessage'] = 'The details of the group appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['edit_notify:teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify:teacher:fullmessage'] =
@@ -609,10 +610,10 @@ Max. participants: {$a->slot_maxparticipants}
 Comments:
 {$a->slot_comments}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['edit_notify:teacher:smallmessage'] = 'The details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['edit_notify:teacher:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify:teacher:group:fullmessage'] =
@@ -626,10 +627,10 @@ Max. participants: {$a->slot_maxparticipants}
 Comments:
 {$a->slot_comments}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['edit_notify:teacher:group:smallmessage'] = 'The details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['register_reminder:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
 $string['register_reminder:student:fullmessage'] =
@@ -638,11 +639,11 @@ $string['register_reminder:student:fullmessage'] =
 As a part of the course {$a->courseid} {$a->coursefullname}, you either still haven\'t registered to any time slot, or you\'ve missed the one you did register to.
 
 {$a->custommessage}
-		
-TUWEL Messaging System';
+
+Moodle Messaging System';
 $string['register_reminder:student:smallmessage'] = 'Please register to a new time slot.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['register_reminder:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
 $string['register_reminder:group:fullmessage'] =
@@ -652,9 +653,9 @@ As a part of the course {$a->courseid} {$a->coursefullname}, your group {$a->gro
 
 {$a->custommessage}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_reminder:group:smallmessage'] = 'Please register your group to a new time slot.';
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['register_reminder:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
 $string['register_reminder:student:group:fullmessage'] =
@@ -664,20 +665,20 @@ As a part of the course {$a->courseid} {$a->coursefullname}, your group {$a->gro
 
 {$a->custommessage}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['register_reminder:student:group:smallmessage'] = 'Please register your group to a new time slot.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 $string['group_registration_notify:student:register:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group registered';
 $string['group_registration_notify:student:register:group:fullmessage'] =
 'Hello {$a->receivername}!
 
 As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} has registered your group {$a->groupname} to the time slot on {$a->date} at {$a->time} in {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['group_registration_notify:student:register:group:smallmessage'] = '{$a->sendername} has registered your group {$a->groupname} to the time slot on {$a->date} at {$a->time}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['group_registration_notify:student:reregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group re-registered';
 $string['group_registration_notify:student:reregister:group:fullmessage'] =
@@ -685,10 +686,10 @@ $string['group_registration_notify:student:reregister:group:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} has re-registered your group {$a->groupname} to a new time slot on {$a->date} at {$a->time} in {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['group_registration_notify:student:reregister:group:smallmessage'] = '{$a->sendername} has re-registered your group {$a->groupname} to a new time slot on {$a->date} at {$a->time}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['group_registration_notify:student:unregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group unregistered';
 $string['group_registration_notify:student:unregister:group:fullmessage'] =
@@ -696,10 +697,10 @@ $string['group_registration_notify:student:unregister:group:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} has unregistered your group {$a->groupname} from the time slot on {$a->date} at {$a->time} in {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['group_registration_notify:student:unregister:group:smallmessage'] = '{$a->sendername} has unregistered your group {$a->groupname} from the time slot on {$a->date} at {$a->time}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['appointment_reminder:teacher:digest:subject'] = 'Appointment reminder';
 $string['appointment_reminder:teacher:digest:fullmessage'] =
@@ -708,10 +709,10 @@ $string['appointment_reminder:teacher:digest:fullmessage'] =
 Today you have the following appointments:
 {$a->digest}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['appointment_reminder:teacher:digest:smallmessage'] = 'You have appointments today!';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['appointment_reminder:teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment reminder';
 $string['appointment_reminder:teacher:fullmessage'] =
@@ -719,10 +720,10 @@ $string['appointment_reminder:teacher:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, you have an appointment with students on {$a->date} at {$a->time} in {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['appointment_reminder:teacher:smallmessage'] = 'You have an appointment with students on {$a->date} at {$a->time} in {$a->location}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['appointment_reminder:teacher:digest:subject'] = 'Appointment digest';
 $string['appointment_reminder:teacher:digest:fullmessage'] =
@@ -732,10 +733,10 @@ Tomorrow you have the following appointments:
 
 {$a->digest}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['appointment_reminder:teacher:digest:smallmessage'] = 'You have received a digest message of your appointments tomorrow.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['appointment_reminder:teacher:group:digest:subject'] = 'Appointment digest';
 $string['appointment_reminder:teacher:group:digest:fullmessage'] =
@@ -745,10 +746,10 @@ Tomorrow you have the following appointments:
 
 {$a->digest}
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['appointment_reminder:teacher:group:digest:smallmessage'] = 'You have received a digest message of your appointments tomorrow.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['appointment_reminder:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment reminder';
 $string['appointment_reminder:student:fullmessage'] =
@@ -756,10 +757,10 @@ $string['appointment_reminder:student:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, you have an appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['appointment_reminder:student:smallmessage'] = 'You have an appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.';
 
-//--------------------------------------------------------------------------------------------------
+// Section.
 
 $string['appointment_reminder:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group appointment reminder';
 $string['appointment_reminder:student:group:fullmessage'] =
@@ -767,21 +768,14 @@ $string['appointment_reminder:student:group:fullmessage'] =
 
 As a part of the course {$a->courseid} {$a->coursefullname}, you have a group appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.
 
-TUWEL Messaging System';
+Moodle Messaging System';
 $string['appointment_reminder:student:group:smallmessage'] = 'You have a group appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.';
 
-//================================================================================================================================================================
-// TRANSLATED STRINGS
-
-//================================================================================================================================================================
-// NEWLY ADDED STRINGS - PLEASE MOVE THEM UP AS THEY'RE TRANSLATED //TODO
 $string['teachercomment_title'] = 'Teacher comments';
 $string['studentcomment_title'] = 'Student comments';
 $string['teacherfeedback_title'] = 'Teacher feedback';
 $string['relative_deadline_before'] = 'before the appointment';
 $string['relative_deadline_now'] = 'Starting now';
-
-//NEW STRINGS AS OF 17.8.2012 ARE BELOW
 
 $string['nogroup'] = 'No group';
 $string['noparticipants'] = 'No participants';
@@ -835,7 +829,7 @@ $string['invalidgrouping'] = 'You must select a valid grouping!';
 
 $string['maillink'] = 'The organizer is available <a href="{$a}">here</a>.';
 
-//-----------------------------------
+// Section.
 
 $string['eventnoparticipants'] = 'no participants';
 $string['eventteacheranonymous'] = 'an anonymous teacher';

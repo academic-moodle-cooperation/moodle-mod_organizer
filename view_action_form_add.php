@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * view_action_form_add.php
@@ -42,123 +42,122 @@ class organizer_add_slots_form extends moodleform {
     private $pickeroptions;
 
     protected function definition() {
-    	global $USER;
-    
-    	$this->_init_arrays();
-    	$this->_add_scroll_fix();
-    
-    	$mform = &$this->_form;
-    	$data = &$this->_customdata;
-    
-    	$mform->addElement('hidden', 'id', $data['id']);
-    	$mform->setType('id', PARAM_INT);
-    	$mform->addElement('hidden', 'mode', $data['mode']);
-    	$mform->setType('mode', PARAM_INT);
-    	$mform->addElement('hidden', 'action', 'add');
-    	$mform->setType('action', PARAM_ACTION);
-    
-    	$mform->addElement('header', 'slotdetails', get_string('slotdetails', 'organizer'));
-    
-    	$mform->addElement('select', 'teacherid', get_string('teacher', 'organizer'), $this->_get_teacher_list());
-    	$mform->setType('teacherid', PARAM_INT);
-    	$mform->setDefault('teacherid', $USER->id);
-    	$mform->addHelpButton('teacherid', 'teacherid', 'organizer');
-    
-    	$mform->addElement('checkbox', 'teachervisible', get_string('teachervisible', 'organizer'));
-    	$mform->setType('teachervisible', PARAM_BOOL);
-    	$mform->setDefault('teachervisible', 1);
-    	$mform->addHelpButton('teachervisible', 'teachervisible', 'organizer');
-    
-    	$mform->addElement('checkbox', 'isanonymous', get_string('isanonymous', 'organizer'));
-    	$mform->setType('isanonymous', PARAM_BOOL);
-    	$mform->addHelpButton('isanonymous', 'isanonymous', 'organizer');
-    
-    	$mform->addElement('text', 'location', get_string('location', 'organizer'), array('size' => '64'));
-    	$mform->setType('location', PARAM_TEXT);
-    	$mform->addRule('location', get_string('err_location', 'organizer'), 'required');
-    	$mform->addHelpButton('location', 'location', 'organizer');
-    
-    	$mform->addElement('text', 'locationlink', get_string('locationlink', 'organizer'), array('size' => '64'));
-    	$mform->setType('locationlink', PARAM_URL);
-    	$mform->addHelpButton('locationlink', 'locationlink', 'organizer');
-    
-    	$mform->addElement('duration', 'duration', get_string('duration', 'organizer'),
-    			array('optional' => false, 'defaultunit' => 60));
-    	$mform->setType('duration', PARAM_INT);
-    	$mform->setDefault('duration', 900);
-    	$duration = $mform->getElement('duration')->getElements();
-    	$duration[1]->removeOption(1);
-    	$duration[1]->removeOption(86400);
-    	$duration[1]->removeOption(604800);
-    	$mform->addHelpButton('duration', 'duration', 'organizer');
-    
-    
-    	$mform->addElement('text', 'maxparticipants', get_string('maxparticipants', 'organizer'), array('size' => '3'));
-    	$mform->setType('maxparticipants', PARAM_INT);
-    	$mform->setDefault('maxparticipants', 1);
-    	$mform->addHelpButton('maxparticipants', 'maxparticipants', 'organizer');
-    
-    	global $DB;
-    	$cm = get_coursemodule_from_id('organizer', $data['id'], 0, false, MUST_EXIST);
-    	$organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
-    	if ($organizer->isgrouporganizer) {
-    		$mform->addElement('hidden','isgrouporganizer','1');
-    		$mform->setType('isgrouporganizer', PARAM_BOOL);
-    		 
-    		$mform->freeze('maxparticipants');
-    		$mform->disabledIf('maxparticipants', 'isgrouporganizer');
-    	}
-    
-    	$mform->addElement('duration', 'notificationtime', get_string('notificationtime', 'organizer'),
-    			array('optional' => false, 'defaultunit' => 86400));
-    	$mform->setType('notificationtime', PARAM_INT);
-    	$mform->setDefault('notificationtime', 86400);
-    	$notificationtime = $mform->getElement('notificationtime')->getElements();
-    	$notificationtime[1]->removeOption(1);
-    	$mform->addHelpButton('notificationtime', 'notificationtime', 'organizer');
-    
-    	$mform->addElement('header', 'slotperiod', get_string('slotperiodheader', 'organizer'));
-    	$mform->addHelpButton('slotperiod', 'slotperiodheader', 'organizer');
-    
-    	$mform->addElement('date_selector', 'startdate', get_string('slotperiodstarttime', 'organizer'));
-    	$mform->setType('startdate', PARAM_INT);
-    	$mform->setDefault('startdate', time());
-    
-    	$mform->addElement('date_selector', 'enddate', get_string('slotperiodendtime', 'organizer'));
-    	$mform->setType('enddate', PARAM_INT);
-    	$mform->setDefault('enddate', mktime(null, null, null, date("m"), date("d") + 6, date("Y")));
-    
-    	$mform->addElement('header', 'other', get_string('otherheader', 'organizer'));
-    
-    	$mform->addElement('textarea', 'comments', get_string('appointmentcomments', 'organizer'),
-    			array('wrap' => 'virtual', 'rows' => '10', 'cols' => '60'));
-    	$mform->setType('comments', PARAM_RAW);
-    	$mform->addHelpButton('comments', 'appointmentcomments', 'organizer');
-    
-    	$buttonarray = array();
-    
-    	$buttonarray[] = &$mform->createElement('submit', 'reviewslots', get_string('reviewsubmit', 'organizer'));
-    	$buttonarray[] = &$mform->createElement('submit', 'createslots', get_string('createsubmit', 'organizer'));
-    	$buttonarray[] = &$mform->createElement('submit', 'back', get_string('back', 'organizer'));
-    	$buttonarray[] = &$mform->createElement('cancel');
-    
-    	$mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
-    	$mform->closeHeaderBefore('buttonar');
+        global $USER;
+
+        $this->_init_arrays();
+        $this->_add_scroll_fix();
+
+        $mform = &$this->_form;
+        $data = &$this->_customdata;
+
+        $mform->addElement('hidden', 'id', $data['id']);
+        $mform->setType('id', PARAM_INT);
+        $mform->addElement('hidden', 'mode', $data['mode']);
+        $mform->setType('mode', PARAM_INT);
+        $mform->addElement('hidden', 'action', 'add');
+        $mform->setType('action', PARAM_ACTION);
+
+        $mform->addElement('header', 'slotdetails', get_string('slotdetails', 'organizer'));
+
+        $mform->addElement('select', 'teacherid', get_string('teacher', 'organizer'), $this->_get_teacher_list());
+        $mform->setType('teacherid', PARAM_INT);
+        $mform->setDefault('teacherid', $USER->id);
+        $mform->addHelpButton('teacherid', 'teacherid', 'organizer');
+
+        $mform->addElement('checkbox', 'teachervisible', get_string('teachervisible', 'organizer'));
+        $mform->setType('teachervisible', PARAM_BOOL);
+        $mform->setDefault('teachervisible', 1);
+        $mform->addHelpButton('teachervisible', 'teachervisible', 'organizer');
+
+        $mform->addElement('checkbox', 'isanonymous', get_string('isanonymous', 'organizer'));
+        $mform->setType('isanonymous', PARAM_BOOL);
+        $mform->addHelpButton('isanonymous', 'isanonymous', 'organizer');
+
+        $mform->addElement('text', 'location', get_string('location', 'organizer'), array('size' => '64'));
+        $mform->setType('location', PARAM_TEXT);
+        $mform->addRule('location', get_string('err_location', 'organizer'), 'required');
+        $mform->addHelpButton('location', 'location', 'organizer');
+
+        $mform->addElement('text', 'locationlink', get_string('locationlink', 'organizer'), array('size' => '64'));
+        $mform->setType('locationlink', PARAM_URL);
+        $mform->addHelpButton('locationlink', 'locationlink', 'organizer');
+
+        $mform->addElement('duration', 'duration', get_string('duration', 'organizer'),
+                array('optional' => false, 'defaultunit' => 60));
+        $mform->setType('duration', PARAM_INT);
+        $mform->setDefault('duration', 900);
+        $duration = $mform->getElement('duration')->getElements();
+        $duration[1]->removeOption(1);
+        $duration[1]->removeOption(86400);
+        $duration[1]->removeOption(604800);
+        $mform->addHelpButton('duration', 'duration', 'organizer');
+
+        $mform->addElement('text', 'maxparticipants', get_string('maxparticipants', 'organizer'), array('size' => '3'));
+        $mform->setType('maxparticipants', PARAM_INT);
+        $mform->setDefault('maxparticipants', 1);
+        $mform->addHelpButton('maxparticipants', 'maxparticipants', 'organizer');
+
+        global $DB;
+        $cm = get_coursemodule_from_id('organizer', $data['id'], 0, false, MUST_EXIST);
+        $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+        if ($organizer->isgrouporganizer) {
+            $mform->addElement('hidden', 'isgrouporganizer', '1');
+            $mform->setType('isgrouporganizer', PARAM_BOOL);
+
+            $mform->freeze('maxparticipants');
+            $mform->disabledIf('maxparticipants', 'isgrouporganizer');
+        }
+
+        $mform->addElement('duration', 'notificationtime', get_string('notificationtime', 'organizer'),
+                array('optional' => false, 'defaultunit' => 86400));
+        $mform->setType('notificationtime', PARAM_INT);
+        $mform->setDefault('notificationtime', 86400);
+        $notificationtime = $mform->getElement('notificationtime')->getElements();
+        $notificationtime[1]->removeOption(1);
+        $mform->addHelpButton('notificationtime', 'notificationtime', 'organizer');
+
+        $mform->addElement('header', 'slotperiod', get_string('slotperiodheader', 'organizer'));
+        $mform->addHelpButton('slotperiod', 'slotperiodheader', 'organizer');
+
+        $mform->addElement('date_selector', 'startdate', get_string('slotperiodstarttime', 'organizer'));
+        $mform->setType('startdate', PARAM_INT);
+        $mform->setDefault('startdate', time());
+
+        $mform->addElement('date_selector', 'enddate', get_string('slotperiodendtime', 'organizer'));
+        $mform->setType('enddate', PARAM_INT);
+        $mform->setDefault('enddate', mktime(null, null, null, date("m"), date("d") + 6, date("Y")));
+
+        $mform->addElement('header', 'other', get_string('otherheader', 'organizer'));
+
+        $mform->addElement('textarea', 'comments', get_string('appointmentcomments', 'organizer'),
+                array('wrap' => 'virtual', 'rows' => '10', 'cols' => '60'));
+        $mform->setType('comments', PARAM_RAW);
+        $mform->addHelpButton('comments', 'appointmentcomments', 'organizer');
+
+        $buttonarray = array();
+
+        $buttonarray[] = &$mform->createElement('submit', 'reviewslots', get_string('reviewsubmit', 'organizer'));
+        $buttonarray[] = &$mform->createElement('submit', 'createslots', get_string('createsubmit', 'organizer'));
+        $buttonarray[] = &$mform->createElement('submit', 'back', get_string('back', 'organizer'));
+        $buttonarray[] = &$mform->createElement('cancel');
+
+        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->closeHeaderBefore('buttonar');
     }
-    
+
     public function definition_after_data() {
         $mform = &$this->_form;
-		$this->step = 1;
-		
+        $this->step = 1;
+
         if (isset($mform->_submitValues['reviewslots'])) {
             $noerrors = $this->_validation_step1($mform->_submitValues);
 
-            if (!$noerrors) {            	
+            if (!$noerrors) {
                 $this->_add_slot_fields();
 
                 $buttons = &$mform->getElement('buttonar')->getElements();
                 $this->_hide_button($buttons[1]);
-            } else { 	
+            } else {
                 $this->_add_review_slots();
                 $this->_add_dummy_fields_for_back();
 
@@ -187,137 +186,137 @@ class organizer_add_slots_form extends moodleform {
     }
 
     public function validation($data, $files) {
-    	$errors = parent::validation($data, $files);
+        $errors = parent::validation($data, $files);
 
-    	if (!$this->_converts_to_int($data['maxparticipants']) || $data['maxparticipants'] <= 0) {
-    		$errors['maxparticipants'] = get_string('err_posint', 'organizer');
-    	}
-    
-    	// check if duration is a full minute
-    	if($data['duration'] % 60 != 0){
-    		$errors['duration'] = get_string('err_fullminute', 'organizer');
-    	}
-    
-    	if (!$this->_converts_to_int($data['notificationtime']) || $data['notificationtime'] <= 0) {
-    		$errors['notificationtime'] = get_string('err_posint', 'organizer');
-    	}
-    
-    	if (!isset($data['now']) && (!$this->_converts_to_int($data['availablefrom']) || $data['availablefrom'] <= 0)) {
-    		$errors['availablefromgroup'] = get_string('err_posint', 'organizer');
-    	}
-    
-    	if ($data['startdate'] != 0 && $data['enddate'] != 0) {
-    		$today = mktime(0, 0, 0, date("m", time()), date("d", time()), date("Y", time()));
-    		if ($data['startdate'] < $today) {
-    			$errors['startdate'] = get_string('err_startdate', 'organizer') . ' ('
-    					. userdate($today, get_string('datetemplate', 'organizer')) . ')';
-    		}
-    		if ($data['startdate'] > $data['enddate']) {
-    			$errors['enddate'] = get_string('err_enddate', 'organizer');
-    		}
-    	}
-    
-    	if (isset($data['newslots'])) {
-    		$invalidslots = array();
-    		$slots = $data['newslots'];
-    
-    		$slotcount = 0;
-    
-    		for ($i = 0; $i < count($slots); $i++) {
-    			$slot = $slots[$i];
-    			if ($slot['selected'] && ($slot['from'] >= $slot['to'])) {
-    				$errors['slotgroup' . $i] = get_string('err_fromto', 'organizer');
-    				$invalidslots[] = $i;
-    			}
-    			if ($slot['selected']) {
-    				$slotcount++;
-    			}
-    		}
-    
-    		for ($i = 0; $i < count($slots); $i++) {
-    			$currentslot = $slots[$i];
-    			if (in_array($i, $invalidslots)) {
-    				continue;
-    			}
-    			$message = ' ';
-    			for ($j = 0; $j < $i; $j++) {
-    				$otherslot = $slots[$j];
-    				if (!in_array($j, $invalidslots) && $currentslot['day'] == $otherslot['day']
-    				&& ($this->_between($currentslot['from'], $otherslot['from'], $otherslot['to'])
-    						|| $this->_between($currentslot['to'], $otherslot['from'], $otherslot['to'])
-    						|| $this->_between($otherslot['from'], $currentslot['from'], $currentslot['to'])
-    						|| $this->_between($otherslot['to'], $currentslot['from'], $currentslot['to']))) {
-    
-    					$message .= '(' . $this->pickeroptions[$otherslot['from']] . '-'
-    							. $this->pickeroptions[$otherslot['to']] . '), ';
-    				}
-    			}
-    			if ($message != ' ' && $currentslot['selected']) {
-    				$message = substr($message, 0, strlen($message) - 2);
-    				$errors['slotgroup' . $i] = get_string('err_collision', 'organizer') . $message;
-    			}
-    		}
-    	}
-	
-    	return $errors;
+        if (!$this->_converts_to_int($data['maxparticipants']) || $data['maxparticipants'] <= 0) {
+            $errors['maxparticipants'] = get_string('err_posint', 'organizer');
+        }
+
+        // Check if duration is a full minute.
+        if ($data['duration'] % 60 != 0) {
+            $errors['duration'] = get_string('err_fullminute', 'organizer');
+        }
+
+        if (!$this->_converts_to_int($data['notificationtime']) || $data['notificationtime'] <= 0) {
+            $errors['notificationtime'] = get_string('err_posint', 'organizer');
+        }
+
+        if (!isset($data['now']) && (!$this->_converts_to_int($data['availablefrom']) || $data['availablefrom'] <= 0)) {
+            $errors['availablefromgroup'] = get_string('err_posint', 'organizer');
+        }
+
+        if ($data['startdate'] != 0 && $data['enddate'] != 0) {
+            $today = mktime(0, 0, 0, date("m", time()), date("d", time()), date("Y", time()));
+            if ($data['startdate'] < $today) {
+                $errors['startdate'] = get_string('err_startdate', 'organizer') . ' ('
+                        . userdate($today, get_string('datetemplate', 'organizer')) . ')';
+            }
+            if ($data['startdate'] > $data['enddate']) {
+                $errors['enddate'] = get_string('err_enddate', 'organizer');
+            }
+        }
+
+        if (isset($data['newslots'])) {
+            $invalidslots = array();
+            $slots = $data['newslots'];
+
+            $slotcount = 0;
+
+            for ($i = 0; $i < count($slots); $i++) {
+                $slot = $slots[$i];
+                if ($slot['selected'] && ($slot['from'] >= $slot['to'])) {
+                    $errors['slotgroup' . $i] = get_string('err_fromto', 'organizer');
+                    $invalidslots[] = $i;
+                }
+                if ($slot['selected']) {
+                    $slotcount++;
+                }
+            }
+
+            for ($i = 0; $i < count($slots); $i++) {
+                $currentslot = $slots[$i];
+                if (in_array($i, $invalidslots)) {
+                    continue;
+                }
+                $message = ' ';
+                for ($j = 0; $j < $i; $j++) {
+                    $otherslot = $slots[$j];
+                    if (!in_array($j, $invalidslots) && $currentslot['day'] == $otherslot['day']
+                    && ($this->_between($currentslot['from'], $otherslot['from'], $otherslot['to'])
+                            || $this->_between($currentslot['to'], $otherslot['from'], $otherslot['to'])
+                            || $this->_between($otherslot['from'], $currentslot['from'], $currentslot['to'])
+                            || $this->_between($otherslot['to'], $currentslot['from'], $currentslot['to']))) {
+
+                        $message .= '(' . $this->pickeroptions[$otherslot['from']] . '-'
+                                . $this->pickeroptions[$otherslot['to']] . '), ';
+                    }
+                }
+                if ($message != ' ' && $currentslot['selected']) {
+                    $message = substr($message, 0, strlen($message) - 2);
+                    $errors['slotgroup' . $i] = get_string('err_collision', 'organizer') . $message;
+                }
+            }
+        }
+
+        return $errors;
     }
 
     private function _validation_step1($data) {
-    	if(isset($data['isgrouporganizer']) && $data['isgrouporganizer'] == 0 &&
-    		(!$this->_converts_to_int($data['maxparticipants']) || $data['maxparticipants'] <= 0)){
-    		return false;
-    	}
-    	
-    	if ($data['location'] == '' 
-    	|| !($data['duration']['number'] * $data['duration']['timeunit'] % 60 == 0)
-    	|| $data['duration']['number'] <= 0 || !$this->_converts_to_int($data['notificationtime']['number'])
-    	|| $data['notificationtime']['number'] <= 0) {
-    		return false;
-    	}
-    
-    	if (isset($data['availablefrom']) && is_array($data['availablefrom'])) {
-    		if (!$this->_converts_to_int($data['availablefrom']['number']) || $data['availablefrom']['number'] <= 0) {
-    			return false;
-    		}
-    	}
-    
-    	if (isset($data['newslots'])) {
-    		$slots = $data['newslots'];
-    
-    		for ($i = 0; $i < count($slots); $i++) {
-    			$slot = $slots[$i];
-    			if ($slot['selected'] && ($slot['from'] >= $slot['to'])) {
-    				return false;
-    			}
-    		}
-    
-    		for ($i = 0; $i < count($slots); $i++) {
-    			$currentslot = $slots[$i];
-    			for ($j = 0; $j < $i; $j++) {
-    				$otherslot = $slots[$j];
-    				if ($currentslot['day'] == $otherslot['day']
-    				&& ($this->_between($currentslot['from'], $otherslot['from'], $otherslot['to'])
-    						|| $this->_between($currentslot['to'], $otherslot['from'], $otherslot['to'])
-    						|| $this->_between($otherslot['from'], $currentslot['from'], $currentslot['to'])
-    						|| $this->_between($otherslot['to'], $currentslot['from'], $currentslot['to']))) {
-    
-    					return false;
-    				}
-    			}
-    		}
-    	}
-    	return true;
+        if (isset($data['isgrouporganizer']) && $data['isgrouporganizer'] == 0 &&
+            (!$this->_converts_to_int($data['maxparticipants']) || $data['maxparticipants'] <= 0)) {
+            return false;
+        }
+
+        if ($data['location'] == ''
+        || !($data['duration']['number'] * $data['duration']['timeunit'] % 60 == 0)
+        || $data['duration']['number'] <= 0 || !$this->_converts_to_int($data['notificationtime']['number'])
+        || $data['notificationtime']['number'] <= 0) {
+            return false;
+        }
+
+        if (isset($data['availablefrom']) && is_array($data['availablefrom'])) {
+            if (!$this->_converts_to_int($data['availablefrom']['number']) || $data['availablefrom']['number'] <= 0) {
+                return false;
+            }
+        }
+
+        if (isset($data['newslots'])) {
+            $slots = $data['newslots'];
+
+            for ($i = 0; $i < count($slots); $i++) {
+                $slot = $slots[$i];
+                if ($slot['selected'] && ($slot['from'] >= $slot['to'])) {
+                    return false;
+                }
+            }
+
+            for ($i = 0; $i < count($slots); $i++) {
+                $currentslot = $slots[$i];
+                for ($j = 0; $j < $i; $j++) {
+                    $otherslot = $slots[$j];
+                    if ($currentslot['day'] == $otherslot['day']
+                    && ($this->_between($currentslot['from'], $otherslot['from'], $otherslot['to'])
+                            || $this->_between($currentslot['to'], $otherslot['from'], $otherslot['to'])
+                            || $this->_between($otherslot['from'], $currentslot['from'], $currentslot['to'])
+                            || $this->_between($otherslot['to'], $currentslot['from'], $currentslot['to']))) {
+
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     private function _freeze_fields() {
         $mform = &$this->_form;
 
-        $fields = array('teacherid','notificationtime','teachervisible','isanonymous',
-        		'location','locationlink','comments','startdate',
-        		'enddate','duration','availablefrom','maxparticipants');
-        
-        foreach($fields as $field){
-        	$mform->getElement($field)->freeze();
+        $fields = array('teacherid', 'notificationtime', 'teachervisible', 'isanonymous',
+                'location', 'locationlink', 'comments', 'startdate',
+                'enddate', 'duration', 'availablefrom', 'maxparticipants');
+
+        foreach ($fields as $field) {
+            $mform->getElement($field)->freeze();
         }
     }
 
@@ -427,7 +426,7 @@ class organizer_add_slots_form extends moodleform {
         $dayslot[] = $mform->createElement('advcheckbox', "{$name}[selected]", '', ORGANIZER_SPACING, null, array(0, 1));
         $mform->setDefault("{$name}[selected]", 0);
         $dayslot[] = $mform->createElement('static', '', '',
-                get_string("day_$day", 'organizer') . get_string('slotfrom', 'organizer'));
+                get_string("day_$day", 'organizer') . ' ' . get_string('slotfrom', 'organizer'));
         $dayslot[] = $mform->createElement('hidden', "{$name}[day]", $day);
         $dayslot[] = $mform->createElement('select', "{$name}[from]", '', $this->pickeroptions);
         $mform->setDefault("{$name}[from]", 8 * 3600);
@@ -501,10 +500,9 @@ class organizer_add_slots_form extends moodleform {
 
                             $collisions = $this->_check_collision($slot, $date, $events);
                             $collcount += count($collisions);
-                            $disabled = count($collisions) ? true : false;
 
                             $dayslot = $this->_create_slot_review_group($date, $id, $slot['from'], $slot['to'],
-                                    $duration, $unit, $disabled);
+                                    $duration, $unit);
                             $mform->insertElementBefore(
                                     $mform->createElement('group', "reviewgroup{$id}", '', $dayslot, ORGANIZER_SPACING, false),
                                     'other');
@@ -526,11 +524,8 @@ class organizer_add_slots_form extends moodleform {
                                                         . userdate($event->timestart + $event->timeduration,
                                                                 get_string('timetemplate', 'organizer')) . '<br />'),
                                         'other');
-                                $disabled = true;
                             }
-                            if (!$disabled) {
-                                $totalslots += intval(($slot['to'] - $slot['from']) / ($duration * $unit));
-                            }
+                            $totalslots += intval(($slot['to'] - $slot['from']) / ($duration * $unit));
 
                             $dayempty = false;
 
@@ -543,7 +538,7 @@ class organizer_add_slots_form extends moodleform {
             if ($dayempty) {
                 $mform->insertElementBefore(
                         $mform->createElement('html',
-                                get_string('noslots', 'organizer') . get_string("day_$day", 'organizer')), 'other');
+                                get_string('noslots', 'organizer') . ' '. get_string("day_$day", 'organizer')), 'other');
             }
             $mform->insertElementBefore($mform->createElement('html', '<hr />'), 'other');
         }
@@ -580,7 +575,11 @@ class organizer_add_slots_form extends moodleform {
 
         $mform->insertElementBefore($mform->createElement('html', $html), 'other');
 
-        return count($collcount) == 0;
+        if ($collcount > 0) {
+            $mform->addElement('hidden', "conflicts", true);
+        }
+
+        return true;
     }
 
     private function _create_slot_review_group($date, $id, $from, $to, $duration, $unit, $disabled = false) {
@@ -622,7 +621,7 @@ class organizer_add_slots_form extends moodleform {
     /**
      * This is necessary to facilitate validation and proper handling of incoming
      * data by QuickForm. These fields are never actually rendered.
-     * @param type $button 
+     * @param type $button
      */
     private function _add_dummy_fields() {
         $mform = &$this->_form;
@@ -758,10 +757,14 @@ class organizer_add_slots_form extends moodleform {
         $jsmodule = array(
                 'name' => 'mod_organizer',
                 'fullpath' => '/mod/organizer/module.js',
-                'requires' => array('node', 'node-scroll-info', 'scrollview-base'),
+                'requires' => array('node', 'node-scroll-info', 'scrollview-base')
         );
-        
+
         $PAGE->requires->js_init_call('M.mod_organizer.init_add_form', null, false, $jsmodule);
+
+        $PAGE->requires->strings_for_js(array(
+                'confirm_conflicts'
+        ), 'organizer');
 
         $mform = &$this->_form;
 

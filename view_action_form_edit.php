@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * view_action_form_edit.php
@@ -28,10 +28,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+define('ORGANIZER_SPACING', '&nbsp;&nbsp;'); // TODO Remove this.
 
-define('ORGANIZER_SPACING', '&nbsp;&nbsp;'); //TODO remove this
-
-// required for the form rendering
+// Required for the form rendering.
 
 require_once("$CFG->libdir/formslib.php");
 
@@ -45,16 +44,16 @@ class organizer_edit_slots_form extends moodleform {
                 'requires' => array('node', 'node-event-delegate'),
                 'strings' => array()
         );
-        
+
         $imagepaths = array(
                 'warning' => "{$CFG->wwwroot}/mod/organizer/pix/warning.png",
                 'changed' => "{$CFG->wwwroot}/mod/organizer/pix/warning2.png");
-        
+
         $PAGE->requires->strings_for_js(array(
-        		'warningtext1',
-        		'warningtext2'
+                'warningtext1',
+                'warningtext2'
         ), 'organizer');
-        
+
         $PAGE->requires->js_init_call('M.mod_organizer.init_edit_form', array($imagepaths), false, $jsmodule);
 
         $defaults = $this->_get_defaults();
@@ -118,7 +117,6 @@ class organizer_edit_slots_form extends moodleform {
                     unset($defaults['maxparticipants']);
                 }
             }
-            //*
             if (!isset($defaults['availablefrom']) && !$defset['availablefrom']) {
                 $defaults['availablefrom'] = $slot->availablefrom;
                 $defset['availablefrom'] = true;
@@ -130,7 +128,6 @@ class organizer_edit_slots_form extends moodleform {
                     unset($defaults['availablefrom']);
                 }
             }
-            //*/
             if (!isset($defaults['teachervisible']) && !$defset['teachervisible']) {
                 $defaults['teachervisible'] = $slot->teachervisible;
                 $defset['teachervisible'] = true;
@@ -206,11 +203,7 @@ class organizer_edit_slots_form extends moodleform {
         $mform->addElement('header', 'slotdetails', get_string('slotdetails', 'organizer'));
 
         $teachers = $this->_load_teachers($defaults);
-        /*
-        if (!isset($defaults['teacherid'])) {
-            $teachers[-1] = get_string('teacher_unchanged', 'organizer');
-        }
-        */
+
         $group = array();
         $group[] = $mform->createElement('select', 'teacherid', get_string('teacher', 'organizer'), $teachers);
 
@@ -221,12 +214,8 @@ class organizer_edit_slots_form extends moodleform {
 
         $mform->addGroup($group, 'teachergrp', get_string('teacher', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_teacherid', 0);
-        $mform->setType('mod_teacherid', PARAM_BOOL); 
-        /*
-        if (!isset($defaults['teacherid'])) {
-            $mform->setDefault('teacherid', -1);
-        }
-        */
+        $mform->setType('mod_teacherid', PARAM_BOOL);
+
         $group = array();
         $group[] = $mform->createElement('advcheckbox', 'teachervisible', get_string('teachervisible', 'organizer'),
                 null, null, array(0, 1));
@@ -257,7 +246,7 @@ class organizer_edit_slots_form extends moodleform {
                 $this->_warning_icon('location', isset($defaults['location'])));
 
         $mform->setType('location', PARAM_TEXT);
-        
+
         $mform->addGroup($group, 'locationgroup', get_string('location', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_location', 0);
         $mform->setType('mod_location', PARAM_BOOL);
@@ -267,7 +256,7 @@ class organizer_edit_slots_form extends moodleform {
                 array('size' => '64', 'group' => null));
         $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('locationlink', isset($defaults['locationlink'])));
-        
+
         $mform->setType('locationlink', PARAM_URL);
 
         $mform->addGroup($group, 'locationlinkgroup', get_string('locationlink', 'organizer'), ORGANIZER_SPACING, false);
@@ -291,7 +280,7 @@ class organizer_edit_slots_form extends moodleform {
             $mform->setType('maxparticipants', PARAM_INT);
             $mform->setType('mod_maxparticipants', PARAM_BOOL);
         }
-       
+
         $group = array();
         if ($defaults['now']) {
             $group[] = $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer'),
@@ -307,7 +296,7 @@ class organizer_edit_slots_form extends moodleform {
                 $this->_warning_icon('availablefrom', isset($defaults['availablefrom'])));
 
         $mform->setDefault('availablefrom', '');
-       	$mform->setDefault('availablefrom[now]', $defaults['now']);
+           $mform->setDefault('availablefrom[now]', $defaults['now']);
 
         $mform->addGroup($group, 'availablefromgroup', get_string('availablefrom', 'organizer'), ORGANIZER_SPACING, false);
 
@@ -372,47 +361,34 @@ class organizer_edit_slots_form extends moodleform {
         if ($data['mod_location'] != 0 && (!isset($data['location']) || $data['location'] === '')) {
             $errors['locationgroup'] = get_string('err_location', 'organizer');
         }
-        
-        $collisions = $this->_check_collision($data['slots'],$data['teacherid']);
-        
-        if(count($collisions) > 0){
-        	$errors['teachergrp'] = get_string('collision','organizer') . "<br/>";
 
-        	foreach($collisions as $collision){
-        		$errors['teachergrp'] .= '&nbsp;&nbsp;- <strong>' . $collision->name . '</strong> from '
-        			. userdate($collision->starttime,get_string('timetemplate', 'organizer')) . ' to '
-        			. userdate($collision->starttime + $collision->duration,get_string('timetemplate', 'organizer')) . '<br />';
-        	}
-        	
-        }
-        
         return $errors;
     }
-    
-    /*
-     * Checks if the teacher has allready an appointment at the time
-     */
-    private function _check_collision($slots, $teacherid){
-    	global $DB;
-    	
-    	$params = array();
-    	$params[] = $teacherid;
-    	$params[] = implode(",",$slots);
-    	$params[] = implode(",",$slots);
-    	
-    	$rs = $DB->get_records_sql('	
-			SELECT old.*, org.name
-			FROM {organizer_slots} AS upd
-			JOIN {organizer_slots} AS old ON upd.id <> old.id
-			JOIN {organizer} AS org ON old.organizerid = org.id
-			WHERE
-			(
-			    NOT ( upd.starttime + upd.duration <= old.starttime OR upd.starttime >= old.starttime + old.duration)
-			)
-			AND old.teacherid = ?
-			AND upd.id IN (?) AND old.id NOT IN(?)', $params);
 
-    	return $rs;
+    /*
+     * Checks if the teacher has allready an appointment at the time.
+     */
+    private function _check_collision($slots, $teacherid) {
+        global $DB;
+
+        $params = array();
+        $params[] = $teacherid;
+        $params[] = implode(",", $slots);
+        $params[] = implode(",", $slots);
+
+        $rs = $DB->get_records_sql('
+            SELECT old.*, org.name
+            FROM {organizer_slots} upd
+            JOIN {organizer_slots} old ON upd.id <> old.id
+            JOIN {organizer} org ON old.organizerid = org.id
+            WHERE
+            (
+                NOT ( upd.starttime + upd.duration <= old.starttime OR upd.starttime >= old.starttime + old.duration)
+            )
+            AND old.teacherid = ?
+            AND upd.id IN (?) AND old.id NOT IN(?)', $params);
+
+        return $rs;
     }
 
     private function _load_teachers() {

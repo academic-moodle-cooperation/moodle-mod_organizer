@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * view_action.php
@@ -32,12 +32,9 @@ require_once(dirname(__FILE__) . '/view_action_form_remind_all.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
-//--------------------------------------------------------------------------------------------------
-
 list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
-// require_sesskey();
 
 $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ACTION);
@@ -69,77 +66,78 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
-// get recipients
-if($recipient != null){
-	$recipients = array();	
-	
-	if($cm->groupmode == 0){
-		$recipients = $DB->get_records_list('user', 'id', array($recipient));
-	}else{
-		$recipients = groups_get_members($recipient, $fields='u.id,u.idnumber', $sort='lastname ASC');
-	}
-	
-	$counter = count($recipients);
-	
-}else{
-	// send reminders to all students without an appointment
-	$counter = 0;
-	$recipients = array();
-	 
-	$entries = organizer_organizer_get_status_table_entries(array('sort' => ''));
-	 
-	// filter all not registered and not attended
-	foreach ($entries as $entry) {
-		if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED || $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP) {
-			$counter++;
-			$recipients[] = $entry;
-		}
-	}
+// Get recipients.
+if ($recipient != null) {
+    $recipients = array();
+
+    if ($cm->groupmode == 0) {
+        $recipients = $DB->get_records_list('user', 'id', array($recipient));
+    } else {
+        $recipients = groups_get_members($recipient, $fields = 'u.id, u.idnumber', $sort = 'lastname ASC');
+    }
+
+    $counter = count($recipients);
+
+} else {
+    // Send reminders to all students without an appointment.
+    $counter = 0;
+    $recipients = array();
+
+    $entries = organizer_organizer_get_status_table_entries(array('sort' => ''));
+
+    // Filter all not registered and not attended.
+    foreach ($entries as $entry) {
+        if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED || $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP) {
+            $counter++;
+            $recipients[] = $entry;
+        }
+    }
 }
 
 
 
 
 
-$mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots, 'recipients'=> $recipients));
+$mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode,
+        'slots' => $slots, 'recipients' => $recipients));
 
 $recipient = optional_param('recipient', null, PARAM_INT);
-    
+
 if ($data = $mform->get_data()) {
-	$count = organizer_remind_all($recipient,$data->message_custommessage['text']);
+    $count = organizer_remind_all($recipient, $data->message_custommessage['text']);
 
-	$redirecturl->param('data[count]', $count);
-	if ($count == 1) {
-		$redirecturl->param('messages[]', 'message_info_reminders_sent_sg');
-	} else {
-		$redirecturl->param('messages[]', 'message_info_reminders_sent_pl');
-	}
-	
-	$event = \mod_organizer\event\appointment_reminder_sent::create(array(
-			'objectid' => $PAGE->cm->id,
-			'context' => $PAGE->context
-	));
-	$event->trigger();
+    $redirecturl->param('data[count]', $count);
+    if ($count == 1) {
+        $redirecturl->param('messages[]', 'message_info_reminders_sent_sg');
+    } else {
+        $redirecturl->param('messages[]', 'message_info_reminders_sent_pl');
+    }
 
-	$redirecturl = $redirecturl->out();
-	redirect($redirecturl);
+    $event = \mod_organizer\event\appointment_reminder_sent::create(array(
+            'objectid' => $PAGE->cm->id,
+            'context' => $PAGE->context
+    ));
+    $event->trigger();
+
+    $redirecturl = $redirecturl->out();
+    redirect($redirecturl);
 } else if ($mform->is_cancelled()) {
-	redirect($redirecturl);
+    redirect($redirecturl);
 } else {
-	organizer_display_form($mform, get_string('organizer_remind_all_title', 'organizer'));
+    organizer_display_form($mform, get_string('organizer_remind_all_title', 'organizer'));
 }
 print_error('If you see this, something went wrong with delete action!');
 
 die;
 
-function organizer_remind_all($recipient = null,$custommessage = "") {
+function organizer_remind_all($recipient = null, $custommessage = "") {
     global $DB;
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
-    if($recipient != null){
-    	$entries = $DB->get_records_list('user', 'id', array($recipient));
-	} else if ($cm->groupingid == 0) {
+    if ($recipient != null) {
+        $entries = $DB->get_records_list('user', 'id', array($recipient));
+    } else if ($cm->groupingid == 0) {
         $entries = get_enrolled_users($context, 'mod/organizer:register');
     } else {
         $query = "SELECT u.* FROM {user} u
@@ -162,8 +160,8 @@ function organizer_remind_all($recipient = null,$custommessage = "") {
     $count = 0;
     foreach ($entries as $entry) {
         if (!in_array($entry->id, $nonrecepients)) {
-            organizer_prepare_and_send_message(array('user' => $entry->id, 'organizer' => $organizer,'custommessage'=>$custommessage),
-                    'register_reminder:student'); // ---------------------------------------- MESSAGE!!!
+            organizer_prepare_and_send_message(array('user' => $entry->id, 'organizer' => $organizer,
+                'custommessage' => $custommessage), 'register_reminder:student');
             $count++;
         }
     }

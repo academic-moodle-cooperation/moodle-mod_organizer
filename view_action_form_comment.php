@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * view_action_form_comment.php
@@ -28,7 +28,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// required for the form rendering
+// Required for the form rendering.
 
 require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/slotlib.php');

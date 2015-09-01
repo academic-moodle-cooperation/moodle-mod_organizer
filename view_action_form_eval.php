@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * view_action_form_eval.php
@@ -40,9 +40,9 @@ class organizer_evaluate_slots_form extends moodleform {
                 'fullpath' => '/mod/organizer/module.js',
                 'requires' => array('node-base'),
         );
-        
+
         $PAGE->requires->js_init_call('M.mod_organizer.init_eval_form', null, false, $jsmodule);
-        
+
         $this->_sethiddenfields();
         $this->_form->addElement('header', 'slots', get_string('eval_header', 'organizer'));
         $this->_addbuttons();
@@ -127,7 +127,7 @@ class organizer_evaluate_slots_form extends moodleform {
                 $user = $DB->get_record('user', array('id' => $app->userid));
                 $name = "apps[{$app->id}]";
 
-                $lastapp = organizer_get_last_user_appointment($slot->organizerid, $app->userid);
+                $lastapp = organizer_get_last_user_appointment($organizer, $app->userid);
                 if ($lastapp->id != $app->id) {
                     $link = new moodle_url('/mod/organizer/view_action.php',
                             array('id' => $data['id'], 'mode' => $data['mode'], 'action' => 'eval',

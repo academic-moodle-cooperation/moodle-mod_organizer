@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * db/migrate.php
@@ -27,7 +27,7 @@
  */
 
 define('ORGANIZER_CHECK_USERS', 1);
-define('ORGANIZER_LIMIT_EXECUTION', 0); //all
+define('ORGANIZER_LIMIT_EXECUTION', 0); // All.
 define('ORGANIZER_COURSE_START', 0);
 define('ORGANIZER_COURSE_COUNT_LIMIT', 9999999999);
 
@@ -95,8 +95,8 @@ foreach ($courses as $course) {
             $organizer->emailteachers = $scheduler->emailteachers;
             $organizer->allowregistrationsfromdate = null;
             $organizer->duedate = $scheduler->changeuntil > 0 ? $scheduler->changeuntil : null;
-            $organizer->relativedeadline = $scheduler->changebefore > 0 ? $scheduler->changebefore
-                    : ORGANIZER_DEFAULT_ORGANIZER_RELATIVEDEADLINE;
+            $organizer->relativedeadline = $scheduler->changebefore > 0 ?
+                $scheduler->changebefore : ORGANIZER_DEFAULT_ORGANIZER_RELATIVEDEADLINE;
             $organizer->grade = ORGANIZER_DEFAULT_ORGANIZER_GRADE;
 
             echo "done.\n";
@@ -251,7 +251,7 @@ function add_course_module_x($cmold, $organizer) {
     $cm->course = $organizer->course;
     $cm->module = $DB->get_field('modules', 'id', array('name' => 'organizer'));
     $cm->instance = $organizer->id;
-    $cm->section = 0; // will be changed later
+    $cm->section = 0; // Will be changed later.
     $cm->idnumber = '';
     $cm->added = time();
     $cm->score = $cmold->score;

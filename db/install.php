@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * db/install.php
@@ -31,6 +31,5 @@
  */
 function xmldb_organizer_install() {
 
-    /// nothing to do here yet
-
+    // Nothing to do here yet.
 }

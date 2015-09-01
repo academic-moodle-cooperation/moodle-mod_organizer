@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * lib.php
@@ -49,15 +49,15 @@ function organizer_add_instance($organizer) {
 
     $organizer->timemodified = time();
     if (isset($organizer->allowregistrationsfromdate) && $organizer->allowregistrationsfromdate == 0) {
-        $organizer->allowregistrationsfromdate = NULL;
+        $organizer->allowregistrationsfromdate = null;
     }
-    
+
     if (isset($organizer->duedate) && $organizer->duedate == 0) {
-    	$organizer->duedate = NULL;
+        $organizer->duedate = null;
     }
 
     $organizer->id = $DB->insert_record('organizer', $organizer);
-        
+
     organizer_grade_item_update($organizer);
 
     return $organizer->id;
@@ -78,13 +78,12 @@ function organizer_update_instance($organizer) {
     $organizer->timemodified = time();
 
     if (isset($organizer->allowregistrationsfromdate) && $organizer->allowregistrationsfromdate == 0) {
-        $organizer->allowregistrationsfromdate = NULL;
-    }
-    
-    if (isset($organizer->duedate) && $organizer->duedate == 0) {
-    	$organizer->duedate = NULL;
+        $organizer->allowregistrationsfromdate = null;
     }
 
+    if (isset($organizer->duedate) && $organizer->duedate == 0) {
+        $organizer->duedate = null;
+    }
 
     organizer_grade_item_update($organizer);
 
@@ -142,7 +141,7 @@ function organizer_delete_instance($id) {
  * @todo Finish documenting this function
  */
 function organizer_user_outline($course, $user, $mod, $organizer) {
-    //tscpr: do we need this function if it's returning just nothing?
+    // Tscpr: do we need this function if it's returning just nothing?
     $return = new stdClass;
     $return->time = time();
     $return->info = '';
@@ -157,7 +156,7 @@ function organizer_user_outline($course, $user, $mod, $organizer) {
  * @todo Finish documenting this function
  */
 function organizer_user_complete($course, $user, $mod, $organizer) {
-    //tscpr: do we need this function if we don't support completions?
+    // Tscpr: do we need this function if we don't support completions?
     return false;
 }
 
@@ -170,14 +169,14 @@ function organizer_user_complete($course, $user, $mod, $organizer) {
  * @todo Finish documenting this function
  */
 function organizer_print_recent_activity($course, $viewfullnames, $timestart) {
-    return false; //  True if anything was printed, otherwise false
+    return false; // True if anything was printed, otherwise false.
 }
 
 function organizer_get_overview_link($organizer) {
     global $CFG;
 
     $class = $organizer->visible == 0 ? "dimmed" : "";
-    
+
     return '<div class="name">' . get_string('modulename', 'organizer') . ': <a class="' . $class . '" title="' . $organizer->name
             . '" href="' . $CFG->wwwroot . '/mod/organizer/view.php?id=' . $organizer->coursemodule . '">'
             . $organizer->name . '</a> </div>';
@@ -220,13 +219,13 @@ function organizer_reset_userdata($data) {
 
         foreach ($slots as $slot) {
             $DB->delete_records('event', array('id' => $slot->eventid));
-            //tscpr: Petr Skoda told us that $DB->delete_records will throw an exeption if it fails, otherwise it always succeeds...
+            // Tscpr: Petr Skoda told us that $DB->delete_records will throw an exeption if it fails, otherwise it always succeeds.
             $ok &= $DB->delete_records('organizer_slots', array('id' => $slot->id));
         }
 
         foreach ($appointments as $appointment) {
             $DB->delete_records('event', array('id' => $appointment->eventid));
-            //tscpr: Petr Skoda told us that $DB->delete_records will throw an exeption if it fails, otherwise it always succeeds...
+            // Tscpr: Petr Skoda told us that $DB->delete_records will throw an exeption if it fails, otherwise it always succeeds.
             $ok &= $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
         }
 
@@ -241,8 +240,9 @@ function organizer_reset_userdata($data) {
     }
 
     if ($data->timeshift) {
-        $ok = shift_course_mod_dates('organizer', array('allowregistrationsfromdate', 'duedate'), $data->timeshift, $data->courseid);
-        $status[] = array('component' => $componentstr, 'item' => get_string('timeshift', 'organizer'), 
+        $ok = shift_course_mod_dates('organizer',
+                array('allowregistrationsfromdate', 'duedate'), $data->timeshift, $data->courseid);
+        $status[] = array('component' => $componentstr, 'item' => get_string('timeshift', 'organizer'),
                 'error' => !$ok);
     }
 
@@ -289,7 +289,7 @@ function organizer_get_user_grade($organizer, $userid = 0) {
         $result = reset($arr);
         return array($result->userid => $result);
     } else {
-        //tscpr: Why keep this query and this whole else-branch if we don't use it?
+        // Tscpr: Why keep this query and this whole else-branch if we don't use it?
         $query = 'SELECT
                 a.id AS id,
                 a.userid AS userid,
@@ -301,7 +301,7 @@ function organizer_get_user_grade($organizer, $userid = 0) {
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.organizerid = :organizerid
             ORDER BY id DESC';
-        return array(); // unused
+        return array(); // Unused.
     }
 }
 
@@ -361,13 +361,13 @@ function organizer_display_grade($organizer, $grade) {
     $nograde = get_string('nograde');
     static $scalegrades = array();   // Cache scales for each organizer - they might have different scales!!
 
-    if ($organizer->grade >= 0) {    // Normal number
+    if ($organizer->grade >= 0) {    // Normal number.
         if ($grade == -1 || $grade == null) {
             return $nograde;
         } else {
             return organizer_clean_num($grade) . ' / ' . organizer_clean_num($organizer->grade);
         }
-    } else {    // Scale
+    } else {    // Scale.
         if (empty($scalegrades[$organizer->id])) {
             if ($scale = $DB->get_record('scale', array('id' => -($organizer->grade)))) {
                 $scalegrades[$organizer->id] = make_menu_from_list($scale->scale);
@@ -386,7 +386,7 @@ function organizer_display_grade($organizer, $grade) {
     }
 }
 
-//tscpr: we can strip the trailing _organizer in this function name...
+// Tscpr: we can strip the trailing _organizer in this function name...
 function organizer_make_grades_menu_organizer($gradingtype) {
     global $DB;
 
@@ -409,9 +409,9 @@ function organizer_make_grades_menu_organizer($gradingtype) {
 
 function organizer_clean_num($num) {
     $pos = strpos($num, '.');
-    if ($pos === false) { // it is integer number
+    if ($pos === false) { // It is integer number.
         return $num;
-    } else { // it is decimal number
+    } else { // It is decimal number.
         return rtrim(rtrim($num, '0'), '.');
     }
 }
@@ -527,7 +527,7 @@ function organizer_get_overview_teacher($organizer) {
             {organizer_slots}.teacherid = :uid AND
             {organizer_slots}.organizerid = :oid AND
             {organizer_slots}.starttime > :now
-            ORDER BY {organizer_slots}.starttime ASC', array('uid'=>$USER->id,'oid'=>$organizer->id,'now' => $now));
+            ORDER BY {organizer_slots}.starttime ASC', array('uid' => $USER->id, 'oid' => $organizer->id, 'now' => $now));
 
     $nextslot = reset($slot);
 
@@ -567,12 +567,12 @@ function organizer_get_overview_student($organizer, $forindex = false) {
     if (!$forindex) {
         $str = '<div class="assignment overview">';
         $str .= organizer_get_overview_link($organizer);
-		$class = "class=\"info organizerinfo\"";
-		$element = "div";
+        $class = "class=\"info organizerinfo\"";
+        $element = "div";
     } else {
         $str = '';
-		$class = "";
-		$element = "p";
+        $class = "";
+        $element = "p";
     }
 
     if ($organizer->isgrouporganizer) {
@@ -764,15 +764,15 @@ function organizer_print_overview($courses, &$htmlarray) {
     }
 }
 
-// FIXME replace this one with an alternative over capabilities
+// FIXME replace this one with an alternative over capabilities.
 function organizer_is_student_in_course($courseid, $userid) {
     global $DB;
 
     $stud = $DB->get_records_sql('SELECT * FROM {role_assignments}
-    		INNER JOIN {context} ON {role_assignments}.contextid = {context}.id
-    		WHERE {role_assignments}.roleid = 5
-    			AND {context}.instanceid = :courseid
-    			AND {role_assignments}.userid = :userid', array('courseid' => $courseid,
+            INNER JOIN {context} ON {role_assignments}.contextid = {context}.id
+            WHERE {role_assignments}.roleid = 5
+                AND {context}.instanceid = :courseid
+                AND {role_assignments}.userid = :userid', array('courseid' => $courseid,
                                                                 'userid'   => $userid));
     return count($stud) > 0;
 }
@@ -992,8 +992,8 @@ function organizer_supports($feature) {
             return true;
         case FEATURE_BACKUP_MOODLE2:
             return true;
-		case FEATURE_SHOW_DESCRIPTION:
-			return true;
+        case FEATURE_SHOW_DESCRIPTION:
+            return true;
         default:
             return null;
     }
@@ -1011,21 +1011,21 @@ function organizer_supports($feature) {
  *                        will know about (most noticeably, an icon).
  */
 function organizer_get_coursemodule_info($coursemodule) {
-	global $CFG, $DB;
+    global $CFG, $DB;
 
-	$dbparams = array('id'=>$coursemodule->instance);
-	$fields = 'id, name, alwaysshowdescription, allowregistrationsfromdate, intro, introformat';
-	if (! $organizer = $DB->get_record('organizer', $dbparams, $fields)) {
-		return false;
-	}
+    $dbparams = array('id' => $coursemodule->instance);
+    $fields = 'id, name, alwaysshowdescription, allowregistrationsfromdate, intro, introformat';
+    if (! $organizer = $DB->get_record('organizer', $dbparams, $fields)) {
+        return false;
+    }
 
-	$result = new cached_cm_info();
-	$result->name = $organizer->name;
-	if ($coursemodule->showdescription) {
-		if ($organizer->alwaysshowdescription || time() > $organizer->allowregistrationsfromdate) {
-			// Convert intro to html. Do not filter cached version, filters run at display time.
-			$result->content = format_module_intro('organizer', $organizer, $coursemodule->id, false);
-		}
-	}
-	return $result;
+    $result = new cached_cm_info();
+    $result->name = $organizer->name;
+    if ($coursemodule->showdescription) {
+        if ($organizer->alwaysshowdescription || time() > $organizer->allowregistrationsfromdate) {
+            // Convert intro to html. Do not filter cached version, filters run at display time.
+            $result->content = format_module_intro('organizer', $organizer, $coursemodule->id, false);
+        }
+    }
+    return $result;
 }

@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * view_action.php
@@ -26,32 +26,17 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// define('ORGANIZER_ACTION_ADD', 'add');
-// define('ORGANIZER_ACTION_EDIT', 'edit');
-// define('ORGANIZER_ACTION_DELETE', 'delete');
-// define('ORGANIZER_ACTION_EVAL', 'eval');
-// define('ORGANIZER_ACTION_PRINT', 'print');
 define('ORGANIZER_ACTION_REGISTER', 'register');
 define('ORGANIZER_ACTION_UNREGISTER', 'unregister');
 define('ORGANIZER_ACTION_REREGISTER', 'reregister');
-// define('ORGANIZER_ACTION_REMIND', 'remind');
-// define('ORGANIZER_ACTION_REMINDALL', 'remindall');
 define('ORGANIZER_ACTION_COMMENT', 'comment');
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
-// require_once(dirname(__FILE__) . '/view_action_form_add.php');
-// require_once(dirname(__FILE__) . '/view_action_form_eval.php');
-// require_once(dirname(__FILE__) . '/view_action_form_edit.php');
-// require_once(dirname(__FILE__) . '/view_action_form_delete.php');
 require_once(dirname(__FILE__) . '/view_action_form_comment.php');
 require_once(dirname(__FILE__) . '/view_action_form_print.php');
-// require_once(dirname(__FILE__) . '/view_action_form_remind_all.php');
-// require_once(dirname(__FILE__) . '/print.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
-
-//--------------------------------------------------------------------------------------------------
 
 list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
@@ -104,13 +89,13 @@ if ($action == ORGANIZER_ACTION_REGISTER) {
     $success = organizer_register_appointment($slot, $groupid);
 
     if ($success) {
-    	$event = \mod_organizer\event\appointment_added::create(array(
-    			'objectid' => $PAGE->cm->id,
-    			'context' => $PAGE->context
-    	));
-    	$event->trigger();
-    	
-        organizer_prepare_and_send_message($slot, 'register_notify:teacher:register'); // ---------------------------------------- MESSAGE!!!
+        $event = \mod_organizer\event\appointment_added::create(array(
+                'objectid' => $PAGE->cm->id,
+                'context' => $PAGE->context
+        ));
+        $event->trigger();
+
+        organizer_prepare_and_send_message($slot, 'register_notify:teacher:register'); // Message.
         if ($group) {
             organizer_prepare_and_send_message($slot, 'group_registration_notify:student:register');
         }
@@ -127,8 +112,8 @@ if ($action == ORGANIZER_ACTION_REGISTER) {
     require_capability('mod/organizer:unregister', $context);
 
     $event = \mod_organizer\event\appointment_removed::create(array(
-    		'objectid' => $PAGE->cm->id,
-    		'context' => $PAGE->context
+            'objectid' => $PAGE->cm->id,
+            'context' => $PAGE->context
     ));
     $event->trigger();
 
@@ -143,7 +128,7 @@ if ($action == ORGANIZER_ACTION_REGISTER) {
     $group = organizer_fetch_my_group();
     $groupid = $group ? $group->id : 0;
 
-    organizer_prepare_and_send_message($slot, 'register_notify:teacher:unregister'); // ---------------------------------------- MESSAGE!!!
+    organizer_prepare_and_send_message($slot, 'register_notify:teacher:unregister'); // Message.
     if ($group) {
         organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unregister');
     }
@@ -168,18 +153,18 @@ if ($action == ORGANIZER_ACTION_REGISTER) {
     $success = organizer_reregister_appointment($slot, $groupid);
 
     if ($success) {
-    	$event = \mod_organizer\event\appointment_removed::create(array(
-    			'objectid' => $PAGE->cm->id,
-    			'context' => $PAGE->context
-    	));
-    	$event->trigger();
-    	
-    	$event = \mod_organizer\event\appointment_added::create(array(
-    			'objectid' => $PAGE->cm->id,
-    			'context' => $PAGE->context
-    	));
-    	$event->trigger();
-    	
+        $event = \mod_organizer\event\appointment_removed::create(array(
+                'objectid' => $PAGE->cm->id,
+                'context' => $PAGE->context
+        ));
+        $event->trigger();
+
+        $event = \mod_organizer\event\appointment_added::create(array(
+                'objectid' => $PAGE->cm->id,
+                'context' => $PAGE->context
+        ));
+        $event->trigger();
+
         organizer_prepare_and_send_message($slot, 'register_notify:teacher:reregister');
         if ($group) {
             organizer_prepare_and_send_message($slot, 'group_registration_notify:student:reregister');
@@ -229,7 +214,8 @@ function organizer_organizer_student_action_allowed($action, $slot) {
     $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
     $slotfull = $slotx->is_full();
 
-    $disabled = $myslotpending || $organizerdisabled || $slotdisabled || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
+    $disabled = $myslotpending || $organizerdisabled ||
+        $slotdisabled || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
     if ($myslotexists) {
         if (!$slotdisabled) {
