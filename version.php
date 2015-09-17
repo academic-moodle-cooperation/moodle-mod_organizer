@@ -20,6 +20,7 @@
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Thomas Niedermaier
  * @author        Andreas Windbichler
  * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -28,8 +29,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version = 2015071702;
-$module->release = "2015-07-17"; // User-friendly version number.
+$module->version = 2015091700;
+$module->release = "2015-09-17"; // User-friendly version number.
 $module->maturity = MATURITY_STABLE;
 $module->requires = 2014041100; // Requires this Moodle version.
 $module->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics).
