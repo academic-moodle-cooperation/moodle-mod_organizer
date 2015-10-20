@@ -29,9 +29,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version = 2015091700;
-$module->release = "2015-09-17"; // User-friendly version number.
-$module->maturity = MATURITY_STABLE;
-$module->requires = 2014041100; // Requires this Moodle version.
-$module->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics).
-$module->cron = 300; // Period for cron to check this module (secs).
+$plugin->version = 2015102000;
+$plugin->release = "2015-10-20"; // User-friendly version number.
+$plugin->maturity = MATURITY_STABLE;
+$plugin->requires = 2014041100; // Requires this Moodle version.
+$plugin->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics).
+$plugin->cron = 300; // Period for cron to check this module (secs).
