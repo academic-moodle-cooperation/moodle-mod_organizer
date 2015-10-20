@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'Terminplaner';
 $string['modulenameplural'] = 'Terminplaner';
-$string['modulename_help'] = 'Terminplaner ermöglichen es den Lehrenden Termine bzw. Zeitfenster für Studierende bereitzustellen.';
+$string['modulename_help'] = 'Terminplaner ermöglichen es den Trainer/innen Termine bzw. Zeitfenster für die Teilnehmer/innen bereitzustellen.';
 $string['organizername'] = 'Name des Terminplaners';
 $string['organizer'] = 'Terminplaner';
 $string['pluginadministration'] = 'Terminplaner Administration';
@@ -48,7 +48,7 @@ $string['location'] = 'Ort';
 $string['location_help'] = 'Name des Ortes wo die Termine stattfinden';
 $string['introeditor_error'] = 'Eine Beschreibung des Terminplaners muss vorhanden sein!';
 $string['allowsubmissionsfromdate'] = 'Anmeldebeginn';
-$string['allowsubmissionsfromdate_help'] = "Kreuzen Sie diese Option an um Studierenden den Zugang zu diesem Terminplaner erst ab einem bestimmten Zeitpunkt zu ermöglichen.";
+$string['allowsubmissionsfromdate_help'] = "Kreuzen Sie diese Option an um den Teilnehmer/innen den Zugang zu diesem Terminplaner erst ab einem bestimmten Zeitpunkt zu ermöglichen.";
 $string['allowsubmissionsfromdatesummary'] = 'Anmeldungen möglich ab <strong>{$a}</strong>';
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'Die Terminplanerdetails und die Registrierung stehen zur Verfügung ab <strong>{$a}</strong>';
 $string['duedate'] = 'Abgabetermin';
@@ -60,7 +60,7 @@ $string['eventslotcreated'] = 'Neuer Termin angelegt.';
 $string['eventslotupdated'] = 'Termin bearbeitet.';
 $string['eventslotdeleted'] = 'Termin abgesagt.';
 $string['eventslotviewed'] = 'Termin angezeigt.';
-$string['eventappointmentadded'] = 'Student hat sich zu einem Termin angemeldet.';
+$string['eventappointmentadded'] = 'Teilnehmer/in hat sich zu einem Termin angemeldet.';
 $string['eventappointmentcommented'] = 'Termin wurde kommentiert.';
 $string['eventappointmentevaluated'] = 'Termin wurde bewertet.';
 $string['eventappointmentremoved'] = 'Stundet wurde von einem Termin abgemeldet.';
@@ -72,22 +72,22 @@ $string['alwaysshowdescription_help'] = 'Wenn diese Option deaktiviert ist, wird
 $string['warning_groupingid'] = 'Gruppenmodus eingeschaltet. Sie müssen eine gültige Gruppierung auswählen.';
 $string['addappointment'] = 'Termin hinzufügen';
 $string['taballapp'] = 'Termine';
-$string['tabstud'] = 'Studierendenansicht';
+$string['tabstud'] = 'Teilnehmer/innen Ansicht';
 $string['maxparticipants'] = 'Höchstanzahl der Teilnehmer/innen';
-$string['maxparticipants_help'] = 'Bestimmt die maximale Anzahl Student/innen die sich für die jeweiligen Slots registrieren können. Bei Gruppenterminplanern ist diese Anzahl immer auf eine Gruppe begrenzt.';
-$string['emailteachers'] = 'E-Mail Benachrichtigung an Lehrende versenden';
-$string['emailteachers_help'] = "Mitteilungen an Lehrende bezüglich der Erstanmeldung der Studierenden sind
+$string['maxparticipants_help'] = 'Bestimmt die maximale Anzahl Teilnehmer/innen die sich für die jeweiligen Slots registrieren können. Bei Gruppenterminplanern ist diese Anzahl immer auf eine Gruppe begrenzt.';
+$string['emailteachers'] = 'E-Mail Benachrichtigung an Trainer/in versenden';
+$string['emailteachers_help'] = "Mitteilungen an Trainer/in bezüglich der Erstanmeldung der Teilnehmer/innen sind
     normalerweise unterdrückt. Kreuzen Sie diese Option an um diese zu Ermöglichen. Bitte beachten Sie, dass
-    die Mitteilungen bezüglich der Um- und Abmeldungen der Studierenden immer gesendet werden.";
+    die Mitteilungen bezüglich der Um- und Abmeldungen der Teilnehmer/innen immer gesendet werden.";
 $string['absolutedeadline'] = 'Anmeldeende';
 $string['locationlinkenable'] = 'Automatische Verlinkung zum Terminort';
 $string['locationlink'] = 'Link URL des Ortes';
 $string['locationlink_help'] = 'Geben Sie hier die volle Webadresse an, die beim Link zum Ort verwendet werden soll. Diese Seite sollte zumindest Informationen enthalten wie der Ort des Termins erreicht werden kann. Die volle Adresse (inklusive http://) wird benötigt.';
 $string['absolutedeadline_help'] = "Ankreuzen um die Bestimmung einer absoluten Deadline zu ermöglichen.
-    Es sind nach diesem Zeitpunkt keinerlei Aktionen seitens der Studierenden mehr möglich.";
+    Es sind nach diesem Zeitpunkt keinerlei Aktionen seitens der Teilnehmer/innen mehr möglich.";
 $string['relativedeadline'] = 'Relative Deadline';
 $string['relativedeadline_help'] = "Die Deadline wird relativ zum jeweiligen Slot gesetzt.
-    Studierenden können sich nach Ablauf dieser Deadline nicht für diesen Slot anmelden oder abmelden.";
+    Teilnehmer/innen können sich nach Ablauf dieser Deadline nicht für diesen Slot anmelden oder abmelden.";
 $string['grade'] = 'Höchste Bewertung';
 $string['grade_help'] = 'Bestimmt die höchste erreichbare Bewertung für jeden Termin der beurteilt werden kann.';
 $string['changegradewarning'] = 'In diesem Terminplaner sind bereits Termine bewertet worden. Bei einer Änderung der Bewertungsskala sind Neuberechnungen der Bewertungen erforderlich. Sie müssen ggfs. die Neuberechnung gesondert starten.';
@@ -104,9 +104,9 @@ $string['slottimeframesheader'] = 'Zeitfenster angeben';
 $string['slottimeframesheader_help'] = 'Hier können Sie Zeitfenster auf Wochentagsbasis definieren die mit Terminslots befüllt werden, wie oben spezifiziert. Mehr als ein Zeitfenster pro Tag ist erlaubt. Ist ein Zeitfenster an einem Tag ausgewählt (zB Montag), so werden für jeden Montag im Datumszeitraum Zeitfenster und Termine erstellt.';
 $string['slotdetails'] = 'Slot Details';
 $string['back'] = 'Zurück';
-$string['teacherid'] = 'Lehrenden';
-$string['teacherid_help'] = 'Bitte Lehrenden auswählen, der die Termine leitet';
-$string['teacher'] = 'Lehrende/r';
+$string['teacherid'] = 'Trainer/in';
+$string['teacherid_help'] = 'Bitte Trainer/in auswählen, der/die die Termine leitet';
+$string['teacher'] = 'Trainer/in';
 $string['otherheader'] = 'Anderes';
 $string['day_0'] = 'Montag';
 $string['day_1'] = 'Dienstag';
@@ -137,13 +137,13 @@ $string['err_posint'] = 'Nur positive Werte erlaubt!';
 $string['err_fullminute'] = 'Die Dauer muss ganzen Minuten entsprechen.';
 $string['create'] = 'Erstellen';
 $string['availablefrom'] = 'Anfragen möglich ab';
-$string['availablefrom_help'] = 'Definieren Sie das Zeitfenster, während welches Student/innen sich für diese Slots anmelden können. Ersatzweise checken Sie die "Ab jetzt" Checkbox, um die Anmeldungen sofort zu ermöglichen.';
+$string['availablefrom_help'] = 'Definieren Sie das Zeitfenster, während welches Teilnehmer/innen sich für diese Slots anmelden können. Ersatzweise checken Sie die "Ab jetzt" Checkbox, um die Anmeldungen sofort zu ermöglichen.';
 $string['err_availablefromearly'] = 'Dieses Datum kann nicht vor dem Startdatum liegen!';
 $string['err_availablefromlate'] = 'Dieses Datum kann nicht nach dem Enddatum liegen!';
-$string['teachervisible'] = 'Lehrende sichtbar';
-$string['teachervisible_help'] = 'Kreuzen Sie diese Option an um Student/innen zu erlauben den zugewiesenen Lehrenden dieses Zeitslots einzusehen.';
+$string['teachervisible'] = 'Trainer/in sichtbar';
+$string['teachervisible_help'] = 'Kreuzen Sie diese Option an um Teilnehmer/innen zu erlauben den zugewiesenen Trainer oder die zugewiesene Trainer/in dieses Zeitslots einzusehen.';
 $string['notificationtime'] = 'Relative Terminerinnerung';
-$string['notificationtime_help'] = 'Bestimmt wie weit im vorhinein der Student an den Termin erinnert wird.';
+$string['notificationtime_help'] = 'Bestimmt wie weit im vorhinein der/die Teilnehmer/in an den Termin erinnert wird.';
 $string['title_add'] = 'Neue Terminslots hinzufügen';
 $string['title_comment'] = 'Eigene Kommentare bearbeiten';
 $string['title_delete'] = 'Ausgewählte Zeitslots löschen';
@@ -156,13 +156,13 @@ $string['noslots'] = 'Keine Slots für ';
 $string['err_noslots'] = 'Keine Slots ausgewählt!';
 $string['err_comments'] = 'Beschreibung notwendig!';
 $string['isanonymous'] = 'Anonym';
-$string['isanonymous_help'] = 'Kreuzen Sie diese Option an, um zu verhindern, dass für den Zeitslot angemeldete Studierenden die Informationen anderer angemeldeter Studierenden einsehen können.';
-$string['remindall_desc'] = 'Erinnerungen an alle Student/innen ohne Termin versenden';
+$string['isanonymous_help'] = 'Kreuzen Sie diese Option an, um zu verhindern, dass die für den Zeitslot angemeldeten Teilnehmer/innen die Informationen anderer angemeldeter Teilnehmer/innen einsehen können.';
+$string['remindall_desc'] = 'Erinnerungen an alle Teilnehmer/innen ohne Termin versenden';
 $string['infobox_showmyslotsonly'] = 'Nur meine Slots anzeigen';
 $string['th_datetime'] = 'Datum & Zeit';
 $string['th_duration'] = 'Dauer';
 $string['th_location'] = 'Ort';
-$string['th_teacher'] = 'Lehrende/r';
+$string['th_teacher'] = 'Trainer/in';
 $string['th_participants'] = 'Teilnehmer/innen';
 $string['th_participant'] = 'Teilnehmer/innen';
 $string['th_attended'] = 'Teilg.';
@@ -183,7 +183,7 @@ $string['th_groupname'] = 'Gruppe';
 $string['teacher_unchanged'] = '-- unverändert --';
 $string['warningtext1'] = 'Ausgewählte Slots enthalten andere Werte als dieses Feld!';
 $string['warningtext2'] = 'WARNUNG! Die Inhalte dieses Feldes sind verändert worden!';
-$string['teacher'] = 'Lehrende/r';
+$string['teacher'] = 'Trainer/in';
 $string['tabstatus'] = 'Registrierungsstatus';
 $string['title_edit'] = 'Ausgewählte Zeitslots bearbeiten';
 $string['select_all_slots'] = 'Alle sichtbaren Slots auswählen';
@@ -216,7 +216,7 @@ $string['btn_save'] = 'Kommentar speichern';
 $string['btn_send'] = 'Senden';
 
 $string['downloadfile'] = 'Datei herunterladen';
-$string['teacherinvisible'] = 'Lehrende nicht sichtbar';
+$string['teacherinvisible'] = 'Trainer/in nicht sichtbar';
 
 $string['img_title_evaluated'] = 'Der Slot ist bewertet';
 $string['img_title_pending'] = 'Ausstehende Bewertung des Slots';
@@ -228,16 +228,16 @@ $string['places_taken'] = '{$a->numtakenplaces} Plätze vergeben';
 $string['places_taken_pl'] = '{$a->numtakenplaces}/{$a->totalplaces} Plätze vergeben';
 $string['places_taken_sg'] = '{$a->numtakenplaces}/{$a->totalplaces} Platz vergeben';
 
-$string['addslots_placesinfo'] = 'Diese Aktion erstellt {$a->numplaces} neue mögliche Plätze, was zu einer Gesamtanzahl von {$a->totalplaces} möglichen Plätzen für {$a->numstudents} Studierenden führt.';
+$string['addslots_placesinfo'] = 'Diese Aktion erstellt {$a->numplaces} neue mögliche Plätze, was zu einer Gesamtanzahl von {$a->totalplaces} möglichen Plätzen für {$a->numstudents} Teilnehmer/innen führt.';
 $string['addslots_placesinfo_group'] = 'Diese Aktion erstellt {$a->numplaces} neue mögliche Plätze, was zu einer Gesamtanzahl von {$a->totalplaces} möglichen Plätzen für {$a->numgroups} Gruppen führt.';
 
-$string['mymoodle_registered'] = '{$a->registered}/{$a->total} Student/innen haben sich für einen Termin angemeldet';
-$string['mymoodle_attended'] = '{$a->attended}/{$a->total} Student/innen haben an einem Termin teilgenommen';
+$string['mymoodle_registered'] = '{$a->registered}/{$a->total} Teilnehmer/innen haben sich für einen Termin angemeldet';
+$string['mymoodle_attended'] = '{$a->attended}/{$a->total} Teilnehmer/innen haben an einem Termin teilgenommen';
 $string['mymoodle_registered_group'] = '{$a->registered}/{$a->total} Gruppen haben sich für einem Termin angemeldet';
 $string['mymoodle_attended_group'] = '{$a->attended}/{$a->total} Gruppen haben an einem Termin teilgenommen';
 
-$string['mymoodle_registered_short'] = '{$a->registered}/{$a->total} Student/innen angemeldet';
-$string['mymoodle_attended_short'] = '{$a->attended}/{$a->total} Student/innen teilgenommen';
+$string['mymoodle_registered_short'] = '{$a->registered}/{$a->total} Teilnehmer/innen angemeldet';
+$string['mymoodle_attended_short'] = '{$a->attended}/{$a->total} Teilnehmer/innen teilgenommen';
 $string['mymoodle_registered_group_short'] = '{$a->registered}/{$a->total} Gruppen angemeldet';
 $string['mymoodle_attended_group_short'] = '{$a->attended}/{$a->total} Gruppen teilgenommen';
 
@@ -304,9 +304,9 @@ $string['message_warning_available'] = '<span style="color:red;">Warnung</span> 
 $string['message_warning_available_group'] = '<span style="color:red;">Warnung</span> Es stehen noch {$a->freeslots} freie Slots für insgesamt {$a->notregistered} Gruppen ohne Termin zur Verfügung.';
 
 
-$string['grouporganizer_desc_nogroup'] = 'Dies ist ein Gruppenorganizer. Student/innen können hier Ihre Gruppen für Termine anmelden. Alle Gruppenmitglieder können die Anmeldung ändern und kommentieren.';
+$string['grouporganizer_desc_nogroup'] = 'Dies ist ein Gruppenorganizer. Teilnehmer/innen können hier Ihre Gruppen für Termine anmelden. Alle Gruppenmitglieder können die Anmeldung ändern und kommentieren.';
 $string['grouporganizer_desc_hasgroup'] = 'Dies ist ein Gruppenorganizer. Das Betätigen des Anmeldebuttons meldet Sie und alle Mitglieder Ihrer Gruppe {$a->groupname} für diesen Slot an. Alle Gruppenmitglieder können die Anmeldung ändern und kommentieren.';
-$string['status_no_entries'] = 'Für diesen Terminplaner sind keine Student/innen angemeldet.';
+$string['status_no_entries'] = 'Für diesen Terminplaner sind keine Teilnehmer/innen angemeldet.';
 $string['infobox_link'] = 'Anzeigen/Verbergen';
 $string['eval_not_occured'] = 'Dieser Slot hat noch nicht stattgefunden';
 $string['eval_no_participants'] = 'Dieser Slot hatte keine Teilnehmer/innen';
@@ -318,11 +318,11 @@ $string['deleteorganizergrades'] = 'Alle Bewertungen im Gradebook löschen';
 $string['configintro'] = 'Die Werte die Sie hier einstellen, bestimmen die Standardwerte, die im Einstellungsformular aufscheinen, wenn Sie einen neuen Terminplaner erstellen.';
 $string['requiremodintro'] = 'Beschreibung notwendig';
 $string['configrequiremodintro'] = 'Deaktivieren Sie diese Option, wenn die Eingabe von Beschreibungen für jede Aktivität nicht verpflichtend sein soll.';
-$string['configmaximumgrade'] = 'Voreinstellung für den Wert im Feld "Höchste Bewertung" beim Erstellen eines neuen Terminplaners. Diese Einstellung entspricht dem Beurteilungsmaximum, das ein Student erhalten kann.';
+$string['configmaximumgrade'] = 'Voreinstellung für den Wert im Feld "Höchste Bewertung" beim Erstellen eines neuen Terminplaners. Diese Einstellung entspricht dem Beurteilungsmaximum, das ein/e Teilnehmer/in erhalten kann.';
 $string['configabsolutedeadline'] = 'Voreinstellung für den Offset der Datums- und Zeitauswahl, ausgehend vom jetzigen Zeitpunkt.';
 $string['configrelativedeadline'] = 'Voreinstellung für den Zeitpunkt an dem Teilnehmer/innen vor einem Termin davon in Kenntnis gesetzt werden sollten.';
-$string['configdigest'] = 'Zusammenfassung der Termine für den jeweils nächsten Tag an Lehrende versenden.';
-$string['configemailteachers'] = 'E-Mail Benachrichtigungen an Lehrenden bezüglich Änderungen der Anmeldungsstatus';
+$string['configdigest'] = 'Zusammenfassung der Termine für den jeweils nächsten Tag an Trainer/in versenden.';
+$string['configemailteachers'] = 'E-Mail Benachrichtigungen an Trainer/in bezüglich Änderungen der Anmeldungsstatus';
 $string['configlocationlink'] = 'Link zu Suchmaschine, die den Weg zum Zielort zeigt. Setzen Sie $searchstring in die URL ein, die die Anfrage bearbeitet.';
 $string['confignever'] = 'Nie';
 $string['configdontsend'] = 'Nicht senden';
@@ -354,27 +354,27 @@ $string['organizer:addslots'] = 'Neue Zeitslots hinzufügen';
 $string['organizer:editslots'] = 'Vorhandene Zeitslots bearbeiten';
 $string['organizer:evalslots'] = 'Abgeschlossene Zeitslots bewerten';
 $string['organizer:deleteslots'] = 'Vorhandene Zeitslots löschen';
-$string['organizer:sendreminders'] = 'Anmeldungserinnerungen an Student/innen senden';
+$string['organizer:sendreminders'] = 'Anmeldungserinnerungen an Teilnehmer/innen senden';
 $string['organizer:printslots'] = 'Vorhandene Zeitslots drucken';
-$string['organizer:receivemessagesstudent'] = 'Nachrichten wie als Student/in empfangen';
-$string['organizer:receivemessagesteacher'] = 'Nachrichten wie als Lehrende/r empfangen';
+$string['organizer:receivemessagesstudent'] = 'Nachrichten wie als Teilnehmer/in empfangen';
+$string['organizer:receivemessagesteacher'] = 'Nachrichten wie als Trainer/in empfangen';
 $string['organizer:register'] = 'Für einen Zeitslot anmelden';
 $string['organizer:unregister'] = 'Von Zeitslot abmelden';
-$string['organizer:viewallslots'] = 'Alle Zeitslots als Lehrende/r ansehen';
-$string['organizer:viewmyslots'] = 'Eigene Zeitslots als Lehrende/r ansehen';
-$string['organizer:viewstudentview'] = 'Alle Zeitslots als Student/in ansehen';
-$string['organizer:viewregistrations'] = 'Status der Anmeldung von Student/innen ansehen';
+$string['organizer:viewallslots'] = 'Alle Zeitslots als Trainer/in ansehen';
+$string['organizer:viewmyslots'] = 'Eigene Zeitslots als Trainer/in ansehen';
+$string['organizer:viewstudentview'] = 'Alle Zeitslots als Teilnehmer/in ansehen';
+$string['organizer:viewregistrations'] = 'Status der Anmeldung von Teilnehmer/innen ansehen';
 
 $string['messageprovider:test'] = 'Terminplaner Test Nachricht';
 $string['messageprovider:appointment_reminder:student'] = 'Terminplaner Terminerinnerung';
-$string['messageprovider:appointment_reminder:teacher'] = 'Terminplaner Terminerinnerung (Lehrende/r)';
+$string['messageprovider:appointment_reminder:teacher'] = 'Terminplaner Terminerinnerung (Trainer/in)';
 $string['messageprovider:manual_reminder:student'] = 'Terminplaner manuele Terminerinnerung';
 $string['messageprovider:eval_notify:student'] = 'Terminplaner Bewertungsbenachrichtigung';
 $string['messageprovider:register_notify:teacher'] = 'Terminplaner Registrierungsbenachrichtigung';
 $string['messageprovider:group_registration_notify:student'] = 'Terminplaner Gruppenregistrierung Benachrichtigung';
 $string['messageprovider:register_reminder:student'] = 'Terminplaner Registrierungserinnerung';
 $string['messageprovider:edit_notify:student'] = 'Terminplaner änderungen';
-$string['messageprovider:edit_notify:teacher'] = 'Terminplaner änderungen (Lehrende/r)';
+$string['messageprovider:edit_notify:teacher'] = 'Terminplaner änderungen (Trainer/in)';
 $string['messageprovider:slotdeleted_notify:student'] = 'Terminplaner Slot absagen';
 
 /* Message templates following.
@@ -402,63 +402,63 @@ $string['slotdeleted_notify:student:group:smallmessage'] = 'Ihr Termin am {$a->d
 
 // Section.
 
-$string['register_notify:teacher:register:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student/in angemeldet';
+$string['register_notify:teacher:register:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in angemeldet';
 $string['register_notify:teacher:register:fullmessage'] = 'Hallo {$a->receivername}!
 
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Student/in {$a->sendername} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Teilnehmer/in {$a->sendername} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.
 
 Moodle Messaging System';
-$string['register_notify:teacher:register:smallmessage'] = 'Student/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.';
+$string['register_notify:teacher:register:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.';
 
 // Section.
 
-$string['register_notify:teacher:reregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student/in umgemeldet';
+$string['register_notify:teacher:reregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in umgemeldet';
 $string['register_notify:teacher:reregister:fullmessage'] = 'Hallo {$a->receivername}!
 
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Student/in {$a->sendername} für den neuen Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Teilnehmer/in {$a->sendername} für den neuen Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.
 
 Moodle Messaging System';
-$string['register_notify:teacher:reregister:smallmessage'] = 'Student/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.';
+$string['register_notify:teacher:reregister:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.';
 
 // Section.
 
-$string['register_notify:teacher:unregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student/in abgemeldet';
+$string['register_notify:teacher:unregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in abgemeldet';
 $string['register_notify:teacher:unregister:fullmessage'] = 'Hallo {$a->receivername}!
 
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Student/in {$a->sendername} vom Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Teilnehmer/in {$a->sendername} vom Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.
 
 Moodle Messaging System';
-$string['register_notify:teacher:unregister:smallmessage'] = 'Student/in {$a->sendername} hat sich vom Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.';
+$string['register_notify:teacher:unregister:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich vom Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.';
 
 // Section.
 
 $string['register_notify:teacher:register:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe angemeldet';
 $string['register_notify:teacher:register:group:fullmessage'] = 'Hallo {$a->receivername}!
 
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Student/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Teilnehmer/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.
 
 Moodle Messaging System';
-$string['register_notify:teacher:register:group:smallmessage'] = 'Student/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.';
+$string['register_notify:teacher:register:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.';
 
 // Section.
 
 $string['register_notify:teacher:reregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group umgemeldet';
 $string['register_notify:teacher:reregister:group:fullmessage'] = 'Hallo {$a->receivername}!
 
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Student/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Teilnehmer/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.
 
 Moodle Messaging System';
-$string['register_notify:teacher:reregister:group:smallmessage'] = 'Student/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.';
+$string['register_notify:teacher:reregister:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.';
 
 // Section.
 
 $string['register_notify:teacher:unregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe abgemeldet';
 $string['register_notify:teacher:unregister:group:fullmessage'] = 'Hallo {$a->receivername}!
 
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Student/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Teilnehmer/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.
 
 Moodle Messaging System';
-$string['register_notify:teacher:unregister:group:smallmessage'] = 'Student/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.';
+$string['register_notify:teacher:unregister:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.';
 
 // Section.
 
@@ -513,7 +513,7 @@ $string['edit_notify:student:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, sind die Details des Termins mit {$a->sendername} am {$a->date} um {$a->time} verändert worden.
 
-Lehrende/r: {$a->slot_teacher}
+Trainer/in: {$a->slot_teacher}
 Ort: {$a->slot_location}
 Höchstanzahl der Teilnehmer/innen: {$a->slot_maxparticipants}
 Kommentar:
@@ -529,7 +529,7 @@ $string['edit_notify:student:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, sind die Details des Gruppentermins mit {$a->sendername} am {$a->date} um {$a->time} verändert worden.
 
-Lehrende/r: {$a->slot_teacher}
+Trainer/in: {$a->slot_teacher}
 Ort: {$a->slot_location}
 Höchstanzahl der Teilnehmer/innen: {$a->slot_maxparticipants}
 Kommentar:
@@ -545,7 +545,7 @@ $string['edit_notify:teacher:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, sind die Details des Zeitslots am {$a->date} um {$a->time} von {$a->sendername} verändert worden.
 
-Lehrende/r: {$a->slot_teacher}
+Trainer/in: {$a->slot_teacher}
 Ort: {$a->slot_location}
 Höchstanzahl der Teilnehmer/innen: {$a->slot_maxparticipants}
 Kommentar:
@@ -635,10 +635,10 @@ $string['appointment_reminder:teacher:digest:smallmessage'] = 'Sie haben heute T
 $string['appointment_reminder:teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Terminerinnerung';
 $string['appointment_reminder:teacher:fullmessage'] = 'Hallo {$a->receivername}!
 
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie einen Termin mit Student/innen am {$a->date} um {$a->time} im {$a->location}.
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie einen Termin mit Teilnehmer/innen am {$a->date} um {$a->time} im {$a->location}.
 
 Moodle Messaging System';
-$string['appointment_reminder:teacher:smallmessage'] = 'Sie haben einen Termin mit Student/innen am {$a->date} um {$a->time} im {$a->location}.';
+$string['appointment_reminder:teacher:smallmessage'] = 'Sie haben einen Termin mit Teilnehmer/innen am {$a->date} um {$a->time} im {$a->location}.';
 
 // Section.
 
@@ -711,7 +711,7 @@ $string['legend_organizer_expired'] = 'Terminplaner abgelaufen';
 $string['legend_anonymous'] = 'Anonymer Slot';
 
 $string['legend_group_applicant'] = 'Anmelder/in der Gruppe';
-$string['legend_comments'] = 'Kommentare der Studierenden/Lehrenden';
+$string['legend_comments'] = 'Kommentare Teilnehmer/innen oder Trainer/innen';
 $string['legend_feedback'] = 'Feedback';
 $string['legend_not_occured'] = 'Termin hat noch nicht stattgefunden';
 
@@ -724,12 +724,12 @@ $string['reg_status'] = 'Status der Registrierung';
 
 $string['recipientname'] = '&lt;Empfängername&gt;';
 
-$string['modformwarningsingular'] = 'Dieses Feld kann nicht bearbeitet werden, da es in diesem Terminplaner schon angemeldete Student/innen gibt!';
-$string['modformwarningplural'] = 'Diese Felder können nicht bearbeitet werden, da es in diesem Terminplaner schon angemeldete Student/innen gibt!';
+$string['modformwarningsingular'] = 'Dieses Feld kann nicht bearbeitet werden, da es in diesem Terminplaner schon angemeldete Teilnehmer/innen gibt!';
+$string['modformwarningplural'] = 'Diese Felder können nicht bearbeitet werden, da es in diesem Terminplaner schon angemeldete Teilnehmer/innen gibt!';
 
-$string['teachercomment_title'] = 'Kommentare Lehrender';
-$string['studentcomment_title'] = 'Kommentare Studierender';
-$string['teacherfeedback_title'] = 'Rückmeldung Lehrender';
+$string['teachercomment_title'] = 'Kommentare Trainer/innen';
+$string['studentcomment_title'] = 'Kommentare Teilnehmer/innen';
+$string['teacherfeedback_title'] = 'Rückmeldung Trainer/innen';
 $string['relative_deadline_before'] = 'vor dem Termin';
 $string['relative_deadline_now'] = 'Ab sofort';
 
@@ -793,7 +793,7 @@ $string['eventwith'] = 'mit';
 $string['eventwithout'] = '';
 
 $string['eventnoparticipants'] = 'ohne Teilnehmer/innen';
-$string['eventteacheranonymous'] = 'einem anonymen Lehrenden';
+$string['eventteacheranonymous'] = 'einem/einer anonymen Trainer/in';
 
 $string['eventtitle'] = '{$a->coursename} / {$a->organizername}: {$a->appwith}';
 
