@@ -243,4 +243,16 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         return $memberships;
     }
+	
+    public function standard_grading_coursemodule_elements() {
+        global $CFG;
+        $mform =& $this->_form;
+        parent::standard_grading_coursemodule_elements();
+
+        $organizerconfig = get_config('organizer');
+        if (isset($organizerconfig->maximumgrade)) {
+	  		$mform->setDefault('grade', $organizerconfig->maximumgrade);
+        }
+    }
+
 }
