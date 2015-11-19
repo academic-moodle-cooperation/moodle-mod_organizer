@@ -466,7 +466,7 @@ class organizer_add_slots_form extends moodleform {
         if (isset($mform->_submitValues['now'])) {
             $mform->insertElementBefore(
                     $mform->createElement('static', 'availablefromdummy', get_string('availablefrom', 'organizer'),
-                            'Starting now'), 'notificationtime');
+                            get_string('relative_deadline_now', 'organizer')), 'notificationtime');
             $mform->addHelpButton('availablefromdummy', 'availablefrom', 'organizer');
             $mform->addElement('hidden', 'availablefrom', 0);
         } else {
@@ -653,7 +653,7 @@ class organizer_add_slots_form extends moodleform {
         if (isset($mform->_submitValues['now'])) {
             $mform->insertElementBefore(
                     $mform->createElement('static', 'availablefromdummy', get_string('availablefrom', 'organizer'),
-                            'Starting now'), 'notificationtime');
+                            get_string('relative_deadline_now', 'organizer')), 'notificationtime');
             $mform->addElement('hidden', 'availablefrom', 0);
             $mform->addElement('hidden', 'now', 1);
         } else {
