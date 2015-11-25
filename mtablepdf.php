@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_organizer for Moodle - http://moodle.org/
+// This file is part of mtablepdf for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 /**
  * mtablepdf.php
  *
- * @package       mod_organizer
+ * @package       mtablepdf
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @author        Andreas Windbichler
