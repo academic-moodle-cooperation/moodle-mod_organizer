@@ -792,7 +792,7 @@ function organizer_fetch_table_entries($slots, $orderby="") {
     ";
 
     if ($orderby == " " || $orderby == "") {
-        $query .= "ORDER BY s.starttime ASC,
+        $query .= "ORDER BY s.starttime ASC, s.id,
         u.lastname ASC,
         u.firstname ASC,
         teacherlastname ASC,
