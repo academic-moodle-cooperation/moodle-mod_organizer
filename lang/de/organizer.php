@@ -793,7 +793,7 @@ $string['eventappwith:single'] = 'Einzeltermin';
 $string['eventappwith:group'] = 'Gruppentermin';
 
 $string['eventwith'] = 'mit';
-$string['eventwithout'] = 'mit';
+$string['eventwithout'] = '';
 
 $string['eventnoparticipants'] = 'ohne Teilnehmer/innen';
 $string['eventteacheranonymous'] = 'einem/einer anonymen Trainer/in';
