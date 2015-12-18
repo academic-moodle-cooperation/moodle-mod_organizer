@@ -19,6 +19,7 @@
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author	  Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author        Andreas Windbichler
  * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -75,6 +76,7 @@ INSTALLATION
     
 CHANGELOG
 ================================================================================
+    *) 17.12.2015 Bug "Print-view" fixed, standard moodle-rolenames in lang-files, '$plugin' instead of '$module' in version.php, broken links fixed, mtablePDF upgraded  
     *) 23.9.2013 Bugs fixed
     *) 23.9.2013 compatibility for Moodle 2.5
     *) 24.5.2012 Version 2012052400 released.
