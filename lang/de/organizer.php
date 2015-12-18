@@ -63,7 +63,7 @@ $string['eventslotviewed'] = 'Termin angezeigt.';
 $string['eventappointmentadded'] = 'Teilnehmer/in hat sich zu einem Termin angemeldet.';
 $string['eventappointmentcommented'] = 'Termin wurde kommentiert.';
 $string['eventappointmentevaluated'] = 'Termin wurde bewertet.';
-$string['eventappointmentremoved'] = 'Stundet wurde von einem Termin abgemeldet.';
+$string['eventappointmentremoved'] = 'Teilnehmer/in wurde von einem Termin abgemeldet.';
 $string['eventappointmentremindersent'] = 'Terminerinnerung zu Anmeldung zu einem Termin gesendet.';
 $string['eventappointmentlistprinted'] = 'Terminliste wurde gedruckt.';
 
@@ -141,7 +141,7 @@ $string['availablefrom_help'] = 'Definieren Sie das Zeitfenster, während welche
 $string['err_availablefromearly'] = 'Dieses Datum kann nicht vor dem Startdatum liegen!';
 $string['err_availablefromlate'] = 'Dieses Datum kann nicht nach dem Enddatum liegen!';
 $string['teachervisible'] = 'Trainer/in sichtbar';
-$string['teachervisible_help'] = 'Kreuzen Sie diese Option an um Teilnehmer/innen zu erlauben den zugewiesenen Trainer oder die zugewiesene Trainer/in dieses Zeitslots einzusehen.';
+$string['teachervisible_help'] = 'Kreuzen Sie diese Option an um Teilnehmer/innen zu erlauben den zugewiesenen Trainer oder die zugewiesene Trainerin dieses Zeitslots einzusehen.';
 $string['notificationtime'] = 'Relative Terminerinnerung';
 $string['notificationtime_help'] = 'Bestimmt wie weit im vorhinein der/die Teilnehmer/in an den Termin erinnert wird.';
 $string['title_add'] = 'Neue Terminslots hinzufügen';
@@ -171,7 +171,7 @@ $string['th_feedback'] = 'Feedback';
 $string['th_details'] = 'Status';
 $string['th_idnumber'] = 'Matrikelnummer';
 $string['th_firstname'] = 'Vorname';
-$string['th_lastname'] = 'Nachnahme';
+$string['th_lastname'] = 'Nachname';
 $string['th_actions'] = 'Aktion';
 $string['th_status'] = 'Status';
 $string['th_comments'] = 'Kommentare';
@@ -373,8 +373,8 @@ $string['messageprovider:eval_notify:student'] = 'Terminplaner Bewertungsbenachr
 $string['messageprovider:register_notify:teacher'] = 'Terminplaner Registrierungsbenachrichtigung';
 $string['messageprovider:group_registration_notify:student'] = 'Terminplaner Gruppenregistrierung Benachrichtigung';
 $string['messageprovider:register_reminder:student'] = 'Terminplaner Registrierungserinnerung';
-$string['messageprovider:edit_notify:student'] = 'Terminplaner änderungen';
-$string['messageprovider:edit_notify:teacher'] = 'Terminplaner änderungen (Trainer/in)';
+$string['messageprovider:edit_notify:student'] = 'Terminplaner Änderungen';
+$string['messageprovider:edit_notify:teacher'] = 'Terminplaner Änderungen (Trainer/in)';
 $string['messageprovider:slotdeleted_notify:student'] = 'Terminplaner Slot absagen';
 
 /* Message templates following.
@@ -477,7 +477,7 @@ $string['eval_notify_newappointment:student:fullmessage'] = 'Hallo {$a->receiver
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Termin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location} bewertet worden.
 
-Die LVA-Leitung des Kurses ermölicht Ihnen sich nochmals im Terminpalner {$a->organizername} zu einem noch freien Termin anzumelden.
+Die Trainer/innen des Kurses ermöglichen Ihnen, sich nochmals im Terminplaner {$a->organizername} zu einem noch freien Termin anzumelden.
 
 Moodle Messaging System';
 $string['eval_notify_newappointment:student:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im {$a->location} ist bewertet worden.';
@@ -500,7 +500,7 @@ $string['eval_notify_newappointment:student:group:fullmessage'] = 'Hallo {$a->re
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Gruppentermin mit {$a->sendername} am {$a->date} um {$a->time} im {$a->location} bewertet worden.
 
-Die LVA-Leitung des Kurses erm�glicht Ihnen sich nochmals im Terminpalner {$a->coursefullname} zu einem noch freien Termin anzumelden.
+Die Trainer/innen des Kurses ermöglichen Ihnen, sich nochmals im Terminplaner {$a->coursefullname} zu einem noch freien Termin anzumelden.
 
 Moodle Messaging System';
 $string['eval_notify_newappointment:student:group:smallmessage'] = 'Ihr Gruppentermin am {$a->date} um {$a->time} im {$a->location} ist bewertet worden.';
@@ -790,7 +790,7 @@ $string['eventappwith:single'] = 'Einzeltermin';
 $string['eventappwith:group'] = 'Gruppentermin';
 
 $string['eventwith'] = 'mit';
-$string['eventwithout'] = '';
+$string['eventwithout'] = 'mit';
 
 $string['eventnoparticipants'] = 'ohne Teilnehmer/innen';
 $string['eventteacheranonymous'] = 'einem/einer anonymen Trainer/in';
