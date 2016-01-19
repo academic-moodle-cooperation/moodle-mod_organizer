@@ -494,7 +494,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
             if (!$slotx->is_full()) {
                 $row->attributes['class'] .= ' free_slot';
             } else {
-                if ($showonlyfreeslots) {
+                if (!($showonlyregslot) && $showonlyfreeslots) {
                     $row->style = 'display: none;';
                     $hidden = true;
                 }
