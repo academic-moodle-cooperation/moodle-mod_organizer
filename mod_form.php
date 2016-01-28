@@ -73,7 +73,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        $this->standard_intro_elements();
+        $this->organizer_standard_intro_elements();
 
         // MY ELEMENTS.
         $mform->addElement('header', 'availability', get_string('availability', 'organizer'));
@@ -112,6 +112,14 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->setType('isgrouporganizer', PARAM_INT);
         $mform->addGroup($group, 'isgrouporganizergroup', get_string('isgrouporganizer', 'organizer'), null, false);
         $mform->addHelpButton('isgrouporganizergroup', 'isgrouporganizer', 'organizer');
+
+        // Waiting list
+		$queuegroup = array();
+        $queuegroup[] = $mform->createElement('advcheckbox', 'queue',
+        		get_string('queue', 'organizer'), null, null, array(0, 1));
+        $mform->setType('queue', PARAM_INT);
+        $mform->addGroup($queuegroup, 'queuegroup', get_string('queue', 'organizer'), null, false);
+        $mform->addHelpButton('queuegroup', 'queue', 'organizer');
 
         $pickeroptions = array();
         $pickeroptions[0] = get_string('messages_none', 'organizer');
@@ -255,7 +263,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         }
     }
 
-    public function standard_intro_elements() {
+    public function organizer_standard_intro_elements() {
         global $CFG;
         $mform =& $this->_form;
         parent::standard_intro_elements();

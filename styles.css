@@ -37,6 +37,10 @@
     color: gray !important;
 }
 
+#organizer_main_cointainer table tr.queueing td {
+    background-color: Yellow !important;
+}
+
 #organizer_main_cointainer table.overview {
     width: 100% !important;
 }

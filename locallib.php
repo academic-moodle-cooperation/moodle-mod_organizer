@@ -470,6 +470,7 @@ function organizer_security_check_apps($apps) {
     return count($apps) == count($records);
 }
 
+// Waiting list
 function organizer_delete_appointment_slot($id) {
     global $DB, $USER;
 
@@ -502,35 +503,145 @@ function organizer_delete_appointment_slot($id) {
     return $notifiedusers;
 }
 
-function organizer_register_appointment($slotid, $groupid = 0) {
-    global $DB, $USER;
+function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
+    global $DB;
 
-    $semaphore = sem_get($slotid);
-    sem_acquire($semaphore);
+    if($groupid) {
+        if (!$queueentry = $DB->get_record('organizer_slot_queues', array('slotid' => $slotid, 'groupid' => $groupid))) {
+            return false;
+        } else {
+			$deleted = $DB->delete_records('event', array('id' => $queueentry->eventid));
+            $deleted = $DB->delete_records('organizer_slot_queues', array('slotid' => $slotid, 'groupid' => $groupid));
+        }
+    } else {
+		if (!$queueentry = $DB->get_record('organizer_slot_queues', array('slotid' => $slotid, 'userid' => $userid))) {
+			return false;
+		} else {
+			$deleted = $DB->delete_records('event', array('id' => $queueentry->eventid));
+			$deleted = $DB->delete_records('organizer_slot_queues', array('slotid' => $slotid, 'userid' => $userid));
+		}
+	}
 
-    $slot = new organizer_slot($slotid);
-    if ($slot->is_full()) {
-        return false;
-    }
+    return $deleted;
+}
+
+function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid = 0) {
+	global $DB, $USER;
+
+	if (!$userid) {
+		$userid = $USER->id;
+	}
+
+   	$organizer = $slotobj->get_organizer();
+  	if (!$organizer->queue) {
+       	return false;
+   	}
+    $slotid = $slotobj->get_slot()->id;
 
     $ok = true;
+    if ($organizer->isgrouporganizer && $groupid) {
+        $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = :groupid",
+                array('groupid' => $groupid));
+
+        foreach ($memberids as $memberid) {
+            $ok = organizer_queue_single_appointment($slotid, $memberid, $userid, $groupid);
+        }
+    } else {
+        $ok = organizer_queue_single_appointment($slotid, $userid);
+    }
+
+    // TODO  create new event for queueing
+	//    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+	//    organizer_add_event_slot($cm->id, $slotobj->get_slot());
+
+    return $ok;
+}
+
+function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sendmessage = false) {
+    global $DB, $USER, $CFG;
+
+    if (!$userid) {
+        $userid = $USER->id;
+    }
+    
+	$slot = new organizer_slot($slotid);
+    if ($slot->is_full()) {
+    	return organizer_add_to_queue($slot, $groupid, $userid);  // Waiting list
+    }
+	
+	$semaphore = sem_get($slotid);
+    sem_acquire($semaphore);
+
+    $ok = true;
+    $recipents = array();
     if (organizer_is_group_mode()) {
         $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
 
         foreach ($memberids as $memberid) {
-            $ok ^= organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid);
+            $ok = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid);
+            $recipents[] = $memberid;
         }
     } else {
-        $ok ^= organizer_register_single_appointment($slotid, $USER->id);
+        $ok = organizer_register_single_appointment($slotid, $userid);
+        $recipents[] = $userid;
+    }
+
+    if ($sendmessage) {
+        $mail = get_mailer();
+        $mail->Subject = get_string('queuesubject', 'organizer');
+        $mail->Body = get_string('queuebody', 'organizer');
+        if ($slot->get_slot()->teachervisible) {
+            $teacher = $DB->get_record('user', array('id' => $slot->get_slot()->teacherid));
+            $mail->From = $teacher->email;
+            $mail->FromName = fullname($teacher);
+        } else {
+            $mail->From = $CFG->noreplyaddress;
+        }
+        foreach ($recipents as $userid) {
+            $address = $DB->get_field('user', 'email', array('id' => $userid));
+            $mail->addAddress($address);
+        }
+        $mail->send();
     }
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
     organizer_add_event_slot($cm->id, $slot);
     sem_release($semaphore);
+	
+	$ok = organizer_remove_queuentries($userid, $organizer->id);
 
     return $ok;
 }
+
+function organizer_remove_queuentries($userid, $organizerid) {
+    global $DB;
+
+	$deleted = 0;
+	if (organizer_is_group_mode()) {
+		if($group = organizer_fetch_my_group()) {
+			$params = array('organizerid' => $organizerid, 'groupid' => $group->id);
+			$query = "SELECT b.id FROM {organizer_slots} a
+			INNER JOIN {organizer_slot_queues} b ON a.id = b.slotid
+			WHERE a.organizerid = :organizerid AND b.groupid = :groupid";
+			$entries = $DB->get_records_sql($query, $params);
+			foreach($entries as $entry) {
+				$deleted += $DB->delete_records('organizer_slot_queues', array('id' => $entry->id));
+			}
+		}
+	} else {
+		$params = array('organizerid' => $organizerid, 'userid' => $userid);
+		$query = "SELECT b.id FROM {organizer_slots} a
+		INNER JOIN {organizer_slot_queues} b ON a.id = b.slotid
+		WHERE a.organizerid = :organizerid AND b.userid = :userid";
+		$entries = $DB->get_records_sql($query, $params);
+		foreach($entries as $entry) {
+			$deleted += $DB->delete_records('organizer_slot_queues', array('id' => $entry->id));
+		}
+	}
+	return $deleted;
+}
+
 
 function organizer_register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0) {
     global $DB;
@@ -555,6 +666,31 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     return $appointment->id;
 }
 
+// Waiting list
+function organizer_queue_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0) {
+    global $DB;
+
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+
+    $appointment = new stdClass();
+    $appointment->slotid = $slotid;
+    $appointment->userid = $userid;
+    $appointment->groupid = $groupid;
+    $appointment->applicantid = $applicantid ? $applicantid : $userid;
+    $appointment->notified = 0;
+    $appointment->attended = null;
+    $appointment->grade = null;
+    $appointment->feedback = '';
+    $appointment->comments = '';
+
+    $appointment->eventid = organizer_add_event_appointment($cm->id, $appointment);
+
+    $appointment->id = $DB->insert_record('organizer_slot_queues', $appointment);
+
+    return $appointment->id;
+}
+
+// Waiting list: function changed
 function organizer_reregister_appointment($slotid, $groupid = 0) {
     global $DB, $USER;
 
@@ -566,22 +702,23 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
         return false;
     }
 
-    $ok = true;
+	$ok_register = true;
+	$ok_unregister = true;
     if (organizer_is_group_mode()) {
         $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
 
         foreach ($memberids as $memberid) {
             $app = organizer_get_last_user_appointment($slot->organizerid, $memberid);
-            $ok ^= organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid);
+            $ok_register = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid);
             if (isset($app)) {
-                $ok ^= organizer_unregister_single_appointment($app->slotid, $memberid);
+                $ok_unregister = organizer_unregister_single_appointment($app->slotid, $memberid, $slot->organizerid);
             }
         }
     } else {
         $app = organizer_get_last_user_appointment($slot->organizerid);
-        $ok ^= organizer_register_single_appointment($slotid, $USER->id);
+        $ok_register = organizer_register_single_appointment($slotid, $USER->id);
         if (isset($app)) {
-            $ok ^= organizer_unregister_single_appointment($app->slotid, $USER->id);
+            $ok_unregister = organizer_unregister_single_appointment($app->slotid, $USER->id, $slot->organizerid);
         }
     }
 
@@ -590,7 +727,7 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
     organizer_add_event_slot($cm->id, $slot);
     sem_release($semaphore);
 
-    return $ok;
+    return $ok_register && $ok_unregister;
 }
 
 function organizer_get_active_appointment($userid, $organizerid) {
@@ -607,41 +744,44 @@ function organizer_get_active_appointment($userid, $organizerid) {
     return null;
 }
 
+// Waiting list: changed function
 function organizer_unregister_appointment($slotid, $groupid) {
     global $DB, $USER;
 
     $ok = true;
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     if (organizer_is_group_mode()) {
-        $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
+        $memberids = $DB->get_fieldset_select('groups_members', 'userid', 'groupid = ?', array($groupid));
 
         foreach ($memberids as $memberid) {
-            $ok ^= organizer_unregister_single_appointment($slotid, $memberid);
+            $ok = organizer_unregister_single_appointment($slotid, $memberid, $organizer->id);
         }
     } else {
-        $ok ^= organizer_unregister_single_appointment($slotid, $USER->id);
+        $ok = organizer_unregister_single_appointment($slotid, $USER->id, $organizer->id);
     }
-
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
-    $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-    organizer_add_event_slot($cm->id, $slot); // FIXME!!!
 
     return $ok;
 }
 
-function organizer_unregister_single_appointment($slotid, $userid) {
+// Waiting list: changed function
+function organizer_unregister_single_appointment($slotid, $userid, $organizerid) {
     global $DB;
 
-    $app = $DB->get_record('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid));
+	$ok_register = true;
+	$ok_unqueue = true;
+    $slotx = new organizer_slot($slotid);
+    if($eventid = $DB->get_field('organizer_slot_appointments', 'eventid', array('userid' => $userid, 'slotid' => $slotid))) {
+	    $deleted = $DB->delete_records('event', array('id' => $eventid));
+	}
 
-    // TODO: remove the participant from the list on the other event.
-    $DB->delete_records('event', array('id' => $app->eventid));
+	$deleted = $DB->delete_records('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid));
 
-    if (isset($app->attended)) {
-        return true;
-    } else {
-        $DB->delete_records('event', array('id' => $app->eventid));
-        return $DB->delete_records('organizer_slot_appointments', array('id' => $app->id));
-    }
+ 	if (organizer_hasqueue($organizerid) && $next = $slotx->get_next_in_queue()) {
+        $ok_register = organizer_register_appointment($slotid, $next->groupid, $next->userid, true);
+        $ok_unqueue = organizer_delete_from_queue($slotid, $next->userid);
+ 	}
+	
+	return $deleted && $ok_register && $ok_unqueue;
 }
 
 function organizer_evaluate_slots($data) {
@@ -683,7 +823,7 @@ function organizer_get_course_module_data() {
     global $DB;
 
     $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or.
-    $n = optional_param('o', 0, PARAM_INT); // Organizer instance ID - it should be named as the first character of the module.
+    $n = optional_param('o', 0, PARAM_INT); // organizer instance ID - it should be named as the first character of the module.
 
     if ($id) {
         $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
@@ -706,7 +846,7 @@ function organizer_get_course_module_data_new() {
     global $DB;
 
     $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or.
-    $n = optional_param('o', 0, PARAM_INT); // Organizer instance ID - it should be named as the first character of the module.
+    $n = optional_param('o', 0, PARAM_INT); // organizer instance ID - it should be named as the first character of the module.
 
     $instance = new stdClass();
 
@@ -734,6 +874,15 @@ function organizer_is_group_mode() {
     $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
     $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
     return $organizer->isgrouporganizer;
+}
+
+// Waiting list
+function organizer_is_queueable() {
+    global $DB;
+    $id = optional_param('id', 0, PARAM_INT);
+    $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
+    $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+    return $organizer->queue;
 }
 
 function organizer_fetch_my_group() {
@@ -803,4 +952,20 @@ function organizer_fetch_table_entries($slots, $orderby="") {
 
     $params = array_merge($params, $inparams);
     return $DB->get_records_sql($query, $params);
+}
+
+/** Waiting list
+ * Checks whether an organizer instance supports waiting queues.
+ *
+ * @param int $organizerid The ID of the organizer instance.
+ * @return boolean
+ */
+function organizer_hasqueue($organizerid) {
+    global $DB;
+
+    $result = false;
+    if ($DB->get_field('organizer', 'queue', array('id' => $organizerid))) {
+        $result = true;
+    }
+    return $result;
 }

@@ -456,6 +456,12 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
         $numshown = 0;
         foreach ($slots as $slot) {
             $slotx = new organizer_slot($slot);
+			$isinqueue = false;
+			if ($organizer->isgrouporganizer) {
+				if($group = organizer_fetch_my_group()) $isinqueue = $slotx->is_group_in_queue($group->id);
+			} else {
+				$isinqueue = $slotx->is_user_in_queue($USER->id);
+			}
             if (!$slotx->is_available()) {
                 if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW) {
                     $row = $rows[] = new html_table_row();
@@ -463,9 +469,14 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                 } else {
                     continue; // Slot isn't available yet.
                 }
-            } else {
-                $row = $rows[] = new html_table_row();
-                $row->attributes['class'] = '';
+            } else { // Waiting list
+				if ($organizer->queue && $isinqueue) {
+                	$row = $rows[] = new html_table_row();
+           			$row->attributes['class'] = 'queueing';
+                } else {
+					$row = $rows[] = new html_table_row();
+               		$row->attributes['class'] = '';
+                }
 
             }
 
@@ -931,7 +942,7 @@ function organizer_registration_allowed($organizer, $userid = null) {
     }
 }
 
-// Content generating funcionts.
+// Content generating functions.
 
 function organizer_date_time($slot) {
     if (!isset($slot) || !isset($slot->starttime)) {
@@ -1157,6 +1168,22 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
         } else {
             $output .= "<span style=\"color: red;\"><em>" . get_string('group_slot_full', 'organizer')
             . "</em></span>";
+			// Waiting list
+			if (organizer_is_queueable()) {
+		        $a = new stdClass();
+				$inqueue = count($DB->get_records('organizer_slot_queues', array('slotid' => $slot->id)));
+				$a->inqueue = $inqueue;
+				if ($inqueue) {
+				    $slotx = new organizer_slot($slot);
+					$a->queueposition = 0;
+					if($group = organizer_fetch_my_group()) $a->queueposition = $slotx->is_group_in_queue($group->id);
+					if($a->queueposition) {
+						$output .= "&nbsp;<em>(" . get_string('places_inqueue_withposition', 'organizer', $a). ")</em>";
+					} else {					
+						$output .= "&nbsp;<em>(" . get_string('places_inqueue', 'organizer', $a). ")</em>";
+					}
+				}
+			}
         }
     } else {
         $app = $DB->get_record('organizer_slot_appointments', array('slotid' => $slot->id, 'userid' => $userid));
@@ -1185,7 +1212,23 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
                 $output .= "<span style=\"color: red;\"><em>" . get_string('places_taken_pl', 'organizer', $a)
                 . "</em></span>";
             }
+			// Waiting list
+			if (organizer_is_queueable()) {
+				$inqueue = count($DB->get_records('organizer_slot_queues', array('slotid' => $slot->id)));
+				$a->inqueue = $inqueue;
+				if ($inqueue) {
+				    $slotx = new organizer_slot($slot);
+					$a->queueposition = 0;
+					$a->queueposition = $slotx->is_user_in_queue($USER->id);
+					if($a->queueposition) {
+						$output .= "&nbsp;<em>(" . get_string('places_inqueue_withposition', 'organizer', $a). ")</em>";
+					} else {					
+						$output .= "&nbsp;<em>(" . get_string('places_inqueue', 'organizer', $a). ")</em>";
+					}
+				}
+			}
         }
+
     }
 
     $output .= $slot->isanonymous ? ' ' .
@@ -1327,13 +1370,41 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                 $content .= "<span style=\"color: red;\"><em>" . get_string('places_taken_pl', 'organizer', $a)
                         . "</em></span>";
             }
+			// Waiting list
+			if (organizer_is_queueable()) {
+				$inqueue = count($DB->get_records('organizer_slot_queues', array('slotid' => $slot->id))); 
+				$a->inqueue = $inqueue;
+				if ($inqueue) {
+					if($a->queueposition = $slotx->is_user_in_queue($USER->id)) {
+						$content .= "&nbsp;<em>(" . get_string('places_inqueue_withposition', 'organizer', $a). ")</em>";
+					} else {					
+						$content .= "&nbsp;<em>(" . get_string('places_inqueue', 'organizer', $a). ")</em>";
+					}
+				}
+			}
         }
-    } else {
+   } else {
         if ($count == 0) {
             $content .= "<em>" . get_string('group_slot_available', 'organizer') . "</em>";
         } else {
             $content .= "<span style=\"color: red;\"><em>" . get_string('group_slot_full', 'organizer')
                     . "</em></span>";
+			// Waiting list
+			if (organizer_is_queueable()) {
+		        $a = new stdClass();
+				$inqueue = count($DB->get_records('organizer_slot_queues', array('slotid' => $slot->id)));
+				$a->inqueue = $inqueue;
+				if ($inqueue) {
+				    $slotx = new organizer_slot($slot);
+					$a->queueposition = 0;
+					if($group = organizer_fetch_my_group()) $a->queueposition = $slotx->is_group_in_queue($group->id);
+					if($a->queueposition) {
+						$content .= "&nbsp;<em>(" . get_string('places_inqueue_withposition', 'organizer', $a). ")</em>";
+					} else {					
+						$content .= "&nbsp;<em>(" . get_string('places_inqueue', 'organizer', $a). ")</em>";
+					}
+				}
+			}
         }
     }
 
@@ -1482,7 +1553,7 @@ function organizer_slot_reg_status($organizer, $slot) {
 }
 
 function organizer_student_action($params, $slot) {
-    global $DB, $OUTPUT;
+    global $DB, $OUTPUT, $USER;
 
     $slotx = new organizer_slot($slot);
 
@@ -1524,6 +1595,28 @@ function organizer_student_action($params, $slot) {
     } else {
         $disabled |= $slotfull || !$canregister || $ismyslot;
         $action = $ismyslot ? 'unregister' : 'register';
+   }
+
+	// Waitinglist
+	$isalreadyinqueue = false;
+    if ($organizer->isgrouporganizer) {
+		if($group = organizer_fetch_my_group()) $isalreadyinqueue = $slotx->is_group_in_queue($group->id);
+    } else {
+    	$isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
+    }
+
+	$isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
+				 && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
+	 		
+
+    if (!$myslotexists && $slotfull && $canregister && !$ismyslot && $isqueueable && !$isalreadyinqueue) {
+    	$action = 'queue';
+    	$disabled = false;
+    }
+    
+    if ($isalreadyinqueue ) {
+    	$action = 'unqueue';
+    	$disabled = false;
     }
 
     if ($ismyslot || organizer_is_my_slot($slotx)) {
