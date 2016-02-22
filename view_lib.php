@@ -684,8 +684,8 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON g.id = a2.groupid
         WHERE g.id $insql
-        GROUP BY g.id, g.name, status, a2.starttime, a2.duration, a2.location,
-            a2.teacherid, a2.applicantid, a2.comments, a2.teachervisible, a2.slotid
+        GROUP BY g.id, g.name, status, a2.starttime, a2.duration, a2.location, a2.locationlink,
+            a2.teacherid, a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible, a2.slotid, a2.allownewappointments, a2.id
         $orderby";
 
     return $DB->get_records_sql($query, $par);
