@@ -139,7 +139,11 @@ function organizer_add_appointment_slots($data) {
             print_error('Duration is invalid (not set or < 1). No slots will be added. Contact support!');
         }
 
-        for ($time = $slot['from']; $time + $data->duration <= $slot['to']; $time += $data->duration) {
+        if (!isset($data->gap) || $data->gap < 0) {
+            print_error('Gap is invalid (not set or < 0). No slots will be added. Contact support!');
+        }
+
+        for ($time = $slot['from']; $time + $data->duration <= $slot['to']; $time += ($data->duration+$data->gap) ) {
             $t = new DateTime();
             $t->setTimestamp($slot['date']); // Sets the day.
 
@@ -764,6 +768,7 @@ function organizer_fetch_table_entries($slots, $orderby="") {
     a.comments,
     s.starttime,
     s.duration,
+    s.gap,
     s.location,
     s.comments AS teachercomments,
     u.firstname,

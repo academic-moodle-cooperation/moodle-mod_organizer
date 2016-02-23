@@ -219,5 +219,19 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015012004, 'organizer');
     }
 
+    if ($oldversion < 2015111900) {
+
+        // Define field id to be added to organizer_slots.
+        $table = new xmldb_table('organizer_slots');
+        $field = new xmldb_field('gap', XMLDB_TYPE_INTEGER, '4', null, null, null, null, 'duration');
+
+        // Conditionally launch add field gap.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Organizer savepoint reached.
+        upgrade_mod_savepoint(true, 2015111900, 'organizer');
+    }
+
     return true;
 }

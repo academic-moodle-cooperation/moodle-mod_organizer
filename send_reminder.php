@@ -97,13 +97,13 @@ if ($recipient != null) {
 
 
 
-
 $mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode,
-        'slots' => $slots, 'recipients' => $recipients));
-
-$recipient = optional_param('recipient', null, PARAM_INT);
+        'slots' => $slots, 'recipients' => $recipients, 'recipient' => $recipient));
 
 if ($data = $mform->get_data()) {
+
+	$recipient = $data->recipient;
+
     $count = organizer_remind_all($recipient, $data->message_custommessage['text']);
 
     $redirecturl->param('data[count]', $count);

@@ -30,6 +30,7 @@
         <FIELD NAME="organizerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="starttime"/>
         <FIELD NAME="starttime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="organizerid" NEXT="duration"/>
         <FIELD NAME="duration" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" PREVIOUS="starttime" NEXT="location"/>
+		<FIELD NAME="gap" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="location" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="duration" NEXT="locationlink"/>
         <FIELD NAME="locationlink" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="location" NEXT="maxparticipants"/>
         <FIELD NAME="maxparticipants" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" PREVIOUS="locationlink" NEXT="teacherid"/>

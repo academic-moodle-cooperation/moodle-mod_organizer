@@ -92,6 +92,16 @@ class organizer_add_slots_form extends moodleform {
         $duration[1]->removeOption(604800);
         $mform->addHelpButton('duration', 'duration', 'organizer');
 
+        $mform->addElement('duration', 'gap', get_string('gap', 'organizer'),
+                array('optional' => false, 'defaultunit' => 60));
+        $mform->setType('gap', PARAM_INT);
+        $mform->setDefault('gap', 0);
+        $duration = $mform->getElement('gap')->getElements();
+        $duration[1]->removeOption(1);
+        $duration[1]->removeOption(86400);
+        $duration[1]->removeOption(604800);
+        $mform->addHelpButton('gap', 'gap', 'organizer');
+
         $mform->addElement('text', 'maxparticipants', get_string('maxparticipants', 'organizer'), array('size' => '3'));
         $mform->setType('maxparticipants', PARAM_INT);
         $mform->setDefault('maxparticipants', 1);
@@ -197,6 +207,11 @@ class organizer_add_slots_form extends moodleform {
             $errors['duration'] = get_string('err_fullminute', 'organizer');
         }
 
+        // Check if gap is a full minute.
+        if ($data['gap'] % 60 != 0) {
+            $errors['gap'] = get_string('err_fullminutegap', 'organizer');
+        }
+
         if (!$this->_converts_to_int($data['notificationtime']) || $data['notificationtime'] <= 0) {
             $errors['notificationtime'] = get_string('err_posint', 'organizer');
         }
@@ -239,6 +254,7 @@ class organizer_add_slots_form extends moodleform {
                     continue;
                 }
                 $message = ' ';
+				// anscheinend nicht notwendig: $currentslot_to_plus_gap = $currentslot['to'] um gap erhoehen und diese Variable stattdessen verwenden
                 for ($j = 0; $j < $i; $j++) {
                     $otherslot = $slots[$j];
                     if (!in_array($j, $invalidslots) && $currentslot['day'] == $otherslot['day']
@@ -269,7 +285,10 @@ class organizer_add_slots_form extends moodleform {
 
         if ($data['location'] == ''
         || !($data['duration']['number'] * $data['duration']['timeunit'] % 60 == 0)
-        || $data['duration']['number'] <= 0 || !$this->_converts_to_int($data['notificationtime']['number'])
+        || $data['duration']['number'] <= 0 
+        || !($data['gap']['number'] * $data['gap']['timeunit'] % 60 == 0)
+        || $data['gap']['number'] < 0 
+		|| !$this->_converts_to_int($data['notificationtime']['number'])
         || $data['notificationtime']['number'] <= 0) {
             return false;
         }
@@ -292,6 +311,7 @@ class organizer_add_slots_form extends moodleform {
 
             for ($i = 0; $i < count($slots); $i++) {
                 $currentslot = $slots[$i];
+				//  anscheinend nicht notwendig: $currentslot_to_plus_gap = $currentslot['to'] um gap erhoehen und diese Variable stattdessen verwenden
                 for ($j = 0; $j < $i; $j++) {
                     $otherslot = $slots[$j];
                     if ($currentslot['day'] == $otherslot['day']
@@ -313,7 +333,7 @@ class organizer_add_slots_form extends moodleform {
 
         $fields = array('teacherid', 'notificationtime', 'teachervisible', 'isanonymous',
                 'location', 'locationlink', 'comments', 'startdate',
-                'enddate', 'duration', 'availablefrom', 'maxparticipants');
+                'enddate', 'duration', 'gap', 'availablefrom', 'maxparticipants');
 
         foreach ($fields as $field) {
             $mform->getElement($field)->freeze();
@@ -446,7 +466,7 @@ class organizer_add_slots_form extends moodleform {
         if (isset($mform->_submitValues['now'])) {
             $mform->insertElementBefore(
                     $mform->createElement('static', 'availablefromdummy', get_string('availablefrom', 'organizer'),
-                            'Starting now'), 'notificationtime');
+                            get_string('relative_deadline_now', 'organizer')), 'notificationtime');
             $mform->addHelpButton('availablefromdummy', 'availablefrom', 'organizer');
             $mform->addElement('hidden', 'availablefrom', 0);
         } else {
@@ -497,12 +517,14 @@ class organizer_add_slots_form extends moodleform {
                             }
                             $duration = $mform->_submitValues['duration']['number'];
                             $unit = $mform->_submitValues['duration']['timeunit'];
+                            $gap = $mform->_submitValues['gap']['number'];
+                            $unitgap = $mform->_submitValues['gap']['timeunit'];
 
                             $collisions = $this->_check_collision($slot, $date, $events);
                             $collcount += count($collisions);
 
                             $dayslot = $this->_create_slot_review_group($date, $id, $slot['from'], $slot['to'],
-                                    $duration, $unit);
+                                    $duration, $unit, $gap, $unitgap);
                             $mform->insertElementBefore(
                                     $mform->createElement('group', "reviewgroup{$id}", '', $dayslot, ORGANIZER_SPACING, false),
                                     'other');
@@ -525,7 +547,7 @@ class organizer_add_slots_form extends moodleform {
                                                                 get_string('timetemplate', 'organizer')) . '<br />'),
                                         'other');
                             }
-                            $totalslots += intval(($slot['to'] - $slot['from']) / ($duration * $unit));
+                            $totalslots += intval(($slot['to'] - $slot['from']) / ( ($duration * $unit) + ($gap * $unitgap) ));
 
                             $dayempty = false;
 
@@ -582,7 +604,7 @@ class organizer_add_slots_form extends moodleform {
         return true;
     }
 
-    private function _create_slot_review_group($date, $id, $from, $to, $duration, $unit, $disabled = false) {
+    private function _create_slot_review_group($date, $id, $from, $to, $duration, $unit, $gap, $unitgap, $disabled = false) {
         $mform = &$this->_form;
         $name = "finalslots[{$id}]";
 
@@ -602,7 +624,9 @@ class organizer_add_slots_form extends moodleform {
         $a->endtime = gmdate('H:i', $to);
         $a->duration = $duration;
         $a->unit = $unitname;
-        $a->totalslots = intval(($to - $from) / ($duration * $unit));
+        $a->gap = $duration;
+        $a->unitgap = $unitname;
+        $a->totalslots = intval(($to - $from) / ( ($duration * $unit) + ($gap * $unitgap) ));
 
         $dayslot = array();
         $dayslot[] = $mform->createElement('advcheckbox', "{$name}[selected]", '',
@@ -629,7 +653,7 @@ class organizer_add_slots_form extends moodleform {
         if (isset($mform->_submitValues['now'])) {
             $mform->insertElementBefore(
                     $mform->createElement('static', 'availablefromdummy', get_string('availablefrom', 'organizer'),
-                            'Starting now'), 'notificationtime');
+                            get_string('relative_deadline_now', 'organizer')), 'notificationtime');
             $mform->addElement('hidden', 'availablefrom', 0);
             $mform->addElement('hidden', 'now', 1);
         } else {

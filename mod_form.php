@@ -73,7 +73,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        $this->add_intro_editor($organizerconfig->requiremodintro);
+        $this->standard_intro_elements();
 
         // MY ELEMENTS.
         $mform->addElement('header', 'availability', get_string('availability', 'organizer'));
@@ -243,4 +243,31 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         return $memberships;
     }
+	
+    public function standard_grading_coursemodule_elements() {
+        global $CFG;
+        $mform =& $this->_form;
+        parent::standard_grading_coursemodule_elements();
+
+        $organizerconfig = get_config('organizer');
+        if (isset($organizerconfig->maximumgrade)) {
+	  		$mform->setDefault('grade', $organizerconfig->maximumgrade);
+        }
+    }
+
+    public function standard_intro_elements() {
+        global $CFG;
+        $mform =& $this->_form;
+        parent::standard_intro_elements();
+
+        $organizerconfig = get_config('organizer');
+		
+		$required = $organizerconfig->requiremodintro;
+		 
+        if ($required) {
+			$mform->addRule('introeditor', get_string('required'), 'required', null, 'client');
+		}
+
+    }
+
 }

@@ -44,6 +44,7 @@ class organizer_remind_all_form extends moodleform {
 
         $recipients = $data['recipients'];
         $recipientscount = count($recipients);
+        $recipient = $data['recipient'];
 
         $mform->addElement('hidden', 'id', $data['id']);
         $mform->setType('id', PARAM_INT);
@@ -51,6 +52,8 @@ class organizer_remind_all_form extends moodleform {
         $mform->setType('mode', PARAM_INT);
         $mform->addElement('hidden', 'action', 'remindall');
         $mform->setType('action', PARAM_ACTION);
+        $mform->addElement('hidden', 'recipient', $recipient);
+        $mform->setType('recipient', PARAM_INT);
 
         list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
