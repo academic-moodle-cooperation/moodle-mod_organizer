@@ -278,7 +278,7 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2016012400, 'organizer');
     }
   
-    if ($oldversion < 2016012800) {
+    if ($oldversion < 2016012805) {
 
         // Define field visibility to be added to organizer.
         $table = new xmldb_table('organizer');
@@ -298,7 +298,7 @@ function xmldb_organizer_upgrade($oldversion) {
         $dbman->rename_field($table, $field, 'visibility');
 
         // Organizer savepoint reached.
-        upgrade_mod_savepoint(true, 2016012800, 'organizer');
+        upgrade_mod_savepoint(true, 2016012805, 'organizer');
     }
 
     return true;
