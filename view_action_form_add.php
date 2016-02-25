@@ -69,9 +69,10 @@ class organizer_add_slots_form extends moodleform {
         $mform->setDefault('teachervisible', 1);
         $mform->addHelpButton('teachervisible', 'teachervisible', 'organizer');
 
-        $mform->addElement('checkbox', 'isanonymous', get_string('isanonymous', 'organizer'));
-        $mform->setType('isanonymous', PARAM_BOOL);
-        $mform->addHelpButton('isanonymous', 'isanonymous', 'organizer');
+        $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->_get_visibilities());
+        $mform->setType('visibility', PARAM_INT);
+        $mform->setDefault('visibility', $this->_get_instance_visibility());
+        $mform->addHelpButton('visibility', 'visibility', 'organizer');
 
         $mform->addElement('text', 'location', get_string('location', 'organizer'), array('size' => '64'));
         $mform->setType('location', PARAM_TEXT);
@@ -331,7 +332,7 @@ class organizer_add_slots_form extends moodleform {
     private function _freeze_fields() {
         $mform = &$this->_form;
 
-        $fields = array('teacherid', 'notificationtime', 'teachervisible', 'isanonymous',
+        $fields = array('teacherid', 'notificationtime', 'teachervisible', 'visibility',
                 'location', 'locationlink', 'comments', 'startdate',
                 'enddate', 'duration', 'gap', 'availablefrom', 'maxparticipants');
 
@@ -734,6 +735,16 @@ class organizer_add_slots_form extends moodleform {
         return $DB->get_records_sql($query, $params);
     }
 
+    private function _get_visibilities() {
+ 
+        $visibilities = array();
+		$visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('visibility_all','organizer');
+		$visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('visibility_anonymous','organizer');
+		$visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('visibility_slot','organizer');
+ 
+        return $visibilities;
+    }
+
     private function _get_teacher_list() {
         list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
@@ -798,5 +809,12 @@ class organizer_add_slots_form extends moodleform {
         $mform->addElement('hidden', 'scrolly', isset($data->scrolly) ? $data->scrolly : 0);
         $mform->setType('scrolly', PARAM_BOOL);
     }
+	
+	private function _get_instance_visibility() {
+	
+        list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+		
+		return	$organizer->visibility;
+	}
 
 }

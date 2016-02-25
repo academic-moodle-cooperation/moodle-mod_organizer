@@ -285,13 +285,19 @@ class organizer_slot {
     }
 
     /** Waiting list
-     * Returns the position of a given user in this slot's queue starting at 1.
-     * Returns 0 if the user is not in the queue.
+     * Returns the position of a given group in this slot's queue starting at 1.
+     * Returns 0 if the group is not in the queue.
      *
      * @param int $userid The ID of the user.
      */
-    public function is_group_in_queue($groupid) {
-		$result = false;
+    public function is_group_in_queue($groupid = 0) {
+		$result = 0;
+		$position = 0;
+
+		if ($groupid==0) {
+			$group = organizer_fetch_my_group();
+	    	$groupid = $group ? $group->id : 0;
+		}
 
 		$this->load_organizer();
 		// The organizer should exists. Otherwise we are in a pathological state.
@@ -300,8 +306,9 @@ class organizer_slot {
 			// The queue might be empty though.
 			if ($this->queue) {
 				foreach ($this->queue as $entry) {
+					$position++;
 					if ($entry->groupid == $groupid) {
-						$result = true;
+						$result = $position;
 						break;
 					}
 				}

@@ -33,6 +33,10 @@ define('ORGANIZER_MESSAGES_RE_UNREG', 1);
 define('ORGANIZER_MESSAGES_ALL', 2);
 define('ORGANIZER_DELETE_EVENTS', 1);
 
+define('ORGANIZER_VISIBILITY_ALL', 0);
+define('ORGANIZER_VISIBILITY_ANONYMOUS', 1);
+define('ORGANIZER_VISIBILITY_SLOT', 2);
+
 require_once(dirname(__FILE__) . '/slotlib.php');
 
 /**

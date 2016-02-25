@@ -44,7 +44,7 @@ define('ORGANIZER_DEFAULT_ORGANIZER_RELATIVEDEADLINE', 86400);
 
 define('ORGANIZER_DEFAULT_SLOT_LOCATIONLINK', '');
 define('ORGANIZER_DEFAULT_SLOT_TEACHERVISIBLE', 1);
-define('organizer_DEFAULT_SLOT_NOTIFIED', 1);
+define('ORGANIZER_DEFAULT_SLOT_NOTIFIED', 1);
 
 define('ORGANIZER_DEFAULT_APPOINTMENT_GROUPID', 0);
 define('ORGANIZER_DEFAULT_APPOINTMENT_NOTIFIED', 1);
@@ -184,7 +184,7 @@ function migrate_slots($cm, $scheduler, $organizer) {
         $newslot->notificationtime = $oldslot->emaildate > 0 ? $oldslot->starttime - $oldslot->emaildate : null;
         $newslot->comments = isset($oldslot->appointmentnote) ? $oldslot->appointmentnote : '';
         $newslot->teachervisible = ORGANIZER_DEFAULT_SLOT_TEACHERVISIBLE;
-        $newslot->notified = organizer_DEFAULT_SLOT_NOTIFIED;
+        $newslot->notified = ORGANIZER_DEFAULT_SLOT_NOTIFIED;
         echo "done.\n";
 
         echo "\t\tInserting new slot record... ";
@@ -241,7 +241,7 @@ function migrate_slots($cm, $scheduler, $organizer) {
         $slotcount++;
     }
 
-    echo "organizer migrated successfully. $slotcount slots migrated.\n";
+    echo "Organizer migrated successfully. $slotcount slots migrated.\n";
 }
 
 function add_course_module_x($cmold, $organizer) {

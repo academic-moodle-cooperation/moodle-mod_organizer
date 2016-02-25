@@ -122,7 +122,7 @@ function organizer_add_appointment_slots($data) {
 
         $newslot = new stdClass();
         $newslot->maxparticipants = $data->maxparticipants;
-        $newslot->isanonymous = isset($data->isanonymous) ? 1 : 0;
+        $newslot->visibility = $data->visibility;
         $newslot->timemodified = time();
         $newslot->teacherid = $data->teacherid;
         $newslot->teachervisible = isset($data->teachervisible) ? 1 : 0;
@@ -367,6 +367,10 @@ function organizer_update_appointment_slot($data) {
         $event->userid = $slot->teacherid = $data->teacherid;
         $modified = true;
     }
+    if ($data->mod_visibility == 1) {
+        $slot->visibility = $data->visibility;
+        $modified = true;
+    }
     if ($data->mod_location == 1) {
         $slot->location = $data->location;
         $modified = true;
@@ -383,7 +387,6 @@ function organizer_update_appointment_slot($data) {
         $slot->notificationtime = $data->notificationtime;
         $modified = true;
     }
-
     if ($data->mod_availablefrom == 1) {
         if (is_array($data->availablefrom)) {
             $slot->availablefrom = 0;
@@ -392,13 +395,8 @@ function organizer_update_appointment_slot($data) {
         }
         $modified = true;
     }
-
     if ($data->mod_teachervisible == 1) {
         $slot->teachervisible = $data->teachervisible;
-        $modified = true;
-    }
-    if ($data->mod_isanonymous == 1) {
-        $slot->isanonymous = $data->isanonymous;
         $modified = true;
     }
     if ($data->mod_comments == 1) {
@@ -470,7 +468,6 @@ function organizer_security_check_apps($apps) {
     return count($apps) == count($records);
 }
 
-// Waiting list
 function organizer_delete_appointment_slot($id) {
     global $DB, $USER;
 
@@ -503,6 +500,7 @@ function organizer_delete_appointment_slot($id) {
     return $notifiedusers;
 }
 
+// Waiting list new function
 function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
     global $DB;
 
@@ -525,6 +523,38 @@ function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
     return $deleted;
 }
 
+// Waiting list new function
+function organizer_delete_user_from_any_queue($organizerid, $userid, $groupid = null) {
+    global $DB;
+
+    $ok = true;
+
+    if($groupid) {
+		$params = array('organizerid' => $organizerid, 'groupid' => $groupid);
+		$slotquery = 'SELECT q.id, q.eventid
+					FROM {organizer_slots} s
+					INNER JOIN {organizer_slot_queues} q ON s.id = q.slotid
+					WHERE s.organizerid = :organizerid AND q.groupid = :groupid';
+    } else {
+		$params = array('organizerid' => $organizerid, 'userid' => $userid);
+		$slotquery = 'SELECT q.id, q.eventid
+					FROM {organizer_slots} s
+					INNER JOIN {organizer_slot_queues} q ON s.id = q.slotid
+					WHERE s.organizerid = :organizerid AND q.userid = :userid';
+	}
+
+	$slot_queues = $DB->get_records_sql($slotquery, $params);
+
+	foreach ($slot_queues as $slot_queue) {
+		$DB->delete_records('event', array('id' => $slot_queue->eventid));
+		// Tscpr: Petr Skoda told us that $DB->delete_records will throw an exeption if it fails, otherwise it always succeeds.
+		$ok &= $DB->delete_records('organizer_slot_queues', array('id' => $slot_queue->id));
+	}
+
+    return $ok;
+}
+
+// Waiting list new function
 function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid = 0) {
 	global $DB, $USER;
 
@@ -557,6 +587,7 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
     return $ok;
 }
 
+// Waiting list: changed function
 function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sendmessage = false) {
     global $DB, $USER, $CFG;
 
@@ -566,7 +597,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
     
 	$slot = new organizer_slot($slotid);
     if ($slot->is_full()) {
-    	return organizer_add_to_queue($slot, $groupid, $userid);  // Waiting list
+    	return organizer_add_to_queue($slot, $groupid, $userid);
     }
 	
 	$semaphore = sem_get($slotid);
@@ -608,40 +639,9 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
     organizer_add_event_slot($cm->id, $slot);
     sem_release($semaphore);
-	
-	organizer_remove_queuentries($userid, $organizer->id);
 
     return $ok;
 }
-
-function organizer_remove_queuentries($userid, $organizerid) {
-    global $DB;
-
-	$deleted = 0;
-	if (organizer_is_group_mode()) {
-		if($group = organizer_fetch_my_group()) {
-			$params = array('organizerid' => $organizerid, 'groupid' => $group->id);
-			$query = "SELECT b.id FROM {organizer_slots} a
-			INNER JOIN {organizer_slot_queues} b ON a.id = b.slotid
-			WHERE a.organizerid = :organizerid AND b.groupid = :groupid";
-			$entries = $DB->get_records_sql($query, $params);
-			foreach($entries as $entry) {
-				$deleted += $DB->delete_records('organizer_slot_queues', array('id' => $entry->id));
-			}
-		}
-	} else {
-		$params = array('organizerid' => $organizerid, 'userid' => $userid);
-		$query = "SELECT b.id FROM {organizer_slots} a
-		INNER JOIN {organizer_slot_queues} b ON a.id = b.slotid
-		WHERE a.organizerid = :organizerid AND b.userid = :userid";
-		$entries = $DB->get_records_sql($query, $params);
-		foreach($entries as $entry) {
-			$deleted += $DB->delete_records('organizer_slot_queues', array('id' => $entry->id));
-		}
-	}
-	return $deleted;
-}
-
 
 function organizer_register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0) {
     global $DB;
@@ -663,10 +663,14 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
 
     $appointment->id = $DB->insert_record('organizer_slot_appointments', $appointment);
 
+	if (organizer_hasqueue($organizer->id)) {
+		$unqueue = organizer_delete_user_from_any_queue($organizer->id, $userid);
+	}
+
     return $appointment->id;
 }
 
-// Waiting list
+// Waiting list new function
 function organizer_queue_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0) {
     global $DB;
 
@@ -767,19 +771,21 @@ function organizer_unregister_appointment($slotid, $groupid) {
 function organizer_unregister_single_appointment($slotid, $userid, $organizerid) {
     global $DB;
 
+	$ok_register = true;
+	$ok_unqueue = true;
     $slotx = new organizer_slot($slotid);
     if($eventid = $DB->get_field('organizer_slot_appointments', 'eventid', array('userid' => $userid, 'slotid' => $slotid))) {
-	    $ok = $DB->delete_records('event', array('id' => $eventid));
+	    $deleted = $DB->delete_records('event', array('id' => $eventid));
 	}
 
 	$deleted = $DB->delete_records('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid));
 
  	if (organizer_hasqueue($organizerid) && $next = $slotx->get_next_in_queue()) {
-        $ok = organizer_register_appointment($slotid, $next->groupid, $next->userid, true);
-        $ok = organizer_delete_from_queue($slotid, $next->userid);
+        $ok_register = organizer_register_appointment($slotid, $next->groupid, $next->userid, true);
+        $ok_unqueue = organizer_delete_from_queue($slotid, $next->userid);
  	}
 	
-	return $deleted;
+	return $deleted && $ok_register && $ok_unqueue;
 }
 
 function organizer_evaluate_slots($data) {
@@ -821,7 +827,7 @@ function organizer_get_course_module_data() {
     global $DB;
 
     $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or.
-    $n = optional_param('o', 0, PARAM_INT); // organizer instance ID - it should be named as the first character of the module.
+    $n = optional_param('o', 0, PARAM_INT); // Organizer instance ID - it should be named as the first character of the module.
 
     if ($id) {
         $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
@@ -844,7 +850,7 @@ function organizer_get_course_module_data_new() {
     global $DB;
 
     $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or.
-    $n = optional_param('o', 0, PARAM_INT); // organizer instance ID - it should be named as the first character of the module.
+    $n = optional_param('o', 0, PARAM_INT); // Organizer instance ID - it should be named as the first character of the module.
 
     $instance = new stdClass();
 
@@ -874,7 +880,7 @@ function organizer_is_group_mode() {
     return $organizer->isgrouporganizer;
 }
 
-// Waiting list
+// Waiting list new function
 function organizer_is_queueable() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
@@ -967,3 +973,4 @@ function organizer_hasqueue($organizerid) {
     }
     return $result;
 }
+

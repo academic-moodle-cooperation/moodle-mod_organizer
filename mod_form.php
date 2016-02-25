@@ -50,7 +50,6 @@ class mod_organizer_mod_form extends moodleform_mod {
         if ($instance) {
             $PAGE->requires->js_init_call('M.mod_organizer.init_mod_form', array(false), false, $jsmodule);
         } else {
-            $organizerconfig = get_config('organizer');
             $activatecheckbox = $organizerconfig->absolutedeadline == 'never';
             $PAGE->requires->js_init_call('M.mod_organizer.init_mod_form', array($togglecheckbox), false, $jsmodule);
         }
@@ -73,7 +72,12 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        $this->organizer_standard_intro_elements();
+        $this->standard_intro_elements();
+		
+		$required = $organizerconfig->requiremodintro;		 
+        if ($required) {
+			$mform->addRule('introeditor', get_string('required'), 'required', null, 'client');
+		}
 
         // MY ELEMENTS.
         $mform->addElement('header', 'availability', get_string('availability', 'organizer'));
@@ -98,7 +102,10 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->setExpanded('availability');
 
         $this->standard_grading_coursemodule_elements();
-
+        
+        if (isset($organizerconfig->maximumgrade)) {
+	  		$mform->setDefault('grade', $organizerconfig->maximumgrade);
+        }
         $mform->addElement('header', 'organizercommon', get_string('organizercommon', 'organizer'));
 
         $mform->addElement('duration', 'relativedeadline', get_string('relativedeadline', 'organizer'));
@@ -113,7 +120,12 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addGroup($group, 'isgrouporganizergroup', get_string('isgrouporganizer', 'organizer'), null, false);
         $mform->addHelpButton('isgrouporganizergroup', 'isgrouporganizer', 'organizer');
 
-        // Waiting list
+        $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->_get_visibilities());
+        $mform->setType('visibility', PARAM_INT);
+        $mform->setDefault('visibility', ORGANIZER_VISIBILITY_SLOT);
+        $mform->addHelpButton('visibility', 'visibility', 'organizer');
+         
+		 // Waiting list
 		$queuegroup = array();
         $queuegroup[] = $mform->createElement('advcheckbox', 'queue',
         		get_string('queue', 'organizer'), null, null, array(0, 1));
@@ -251,31 +263,15 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         return $memberships;
     }
+
+    private function _get_visibilities() {
+ 
+        $visibilities = array();
+		$visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('visibility_all','organizer');
+		$visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('visibility_anonymous','organizer');
+		$visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('visibility_slot','organizer');
+ 
+        return $visibilities;
+    }
 	
-    public function standard_grading_coursemodule_elements() {
-        global $CFG;
-        $mform =& $this->_form;
-        parent::standard_grading_coursemodule_elements();
-
-        $organizerconfig = get_config('organizer');
-        if (isset($organizerconfig->maximumgrade)) {
-	  		$mform->setDefault('grade', $organizerconfig->maximumgrade);
-        }
-    }
-
-    public function organizer_standard_intro_elements() {
-        global $CFG;
-        $mform =& $this->_form;
-        parent::standard_intro_elements();
-
-        $organizerconfig = get_config('organizer');
-		
-		$required = $organizerconfig->requiremodintro;
-		 
-        if ($required) {
-			$mform->addRule('introeditor', get_string('required'), 'required', null, 'client');
-		}
-
-    }
-
 }

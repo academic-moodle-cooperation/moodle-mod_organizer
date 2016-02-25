@@ -30,12 +30,12 @@
 # FOR Moodle 2.5+
 # ---------------------------------------------------------------
 
-organizer module
+Organizer module
 ===============
 
 OVERVIEW
 ================================================================================
-    The organizer module is used to create timeslots for students to register to.
+    The Organizer module is used to create timeslots for students to register to.
 
     An organizer consists of three views:
     1) Appointments view, which allows teachers to create, remove, modify, grade 

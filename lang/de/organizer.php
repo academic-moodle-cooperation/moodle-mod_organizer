@@ -158,8 +158,8 @@ $string['rewievslotsheader'] = 'Zeitslots ansehen';
 $string['noslots'] = 'Keine Slots für ';
 $string['err_noslots'] = 'Keine Slots ausgewählt!';
 $string['err_comments'] = 'Beschreibung notwendig!';
-$string['isanonymous'] = 'Anonym';
-$string['isanonymous_help'] = 'Kreuzen Sie diese Option an, um zu verhindern, dass die für den Zeitslot angemeldeten Teilnehmer/innen die Informationen anderer angemeldeter Teilnehmer/innen einsehen können.';
+$string['visibility'] = 'Sichtbarkeit der Mitglieder';
+$string['visibility_help'] = 'Mit Hilfe des Parameters "Sichtbarkeit der Mitglieder" kann eingetstellt werden, ob die Namen der anderen Teilnehmer/innen aller Slots stets verborgen sind (Anonyme Slots), ob nur die Namen jener Teilnehmer/innen einsehbar sind, die im eignen Slot angemeldet sind oder stets alle Namen aller Teilnehmer/innen aller Slots angeziegt werden sollen.';
 $string['remindall_desc'] = 'Erinnerungen an alle Teilnehmer/innen ohne Termin versenden';
 $string['infobox_showmyslotsonly'] = 'Nur meine Slots anzeigen';
 $string['th_datetime'] = 'Datum & Zeit';
@@ -355,7 +355,7 @@ $string['no_slots_defined_teacher'] = 'Derzeit sind keine Zeitslots verfügbar. 
 $string['eventnoparticipants'] = 'Keine Teilnehmer/innen';
 $string['eventteacheranonymous'] = '<em>anonymous</em>';
 
-$string['organizer:addinstance'] = 'organizer hinzufügen';
+$string['organizer:addinstance'] = 'Organizer hinzufügen';
 $string['organizer:comment'] = 'Kommentare hinzufügen';
 $string['organizer:addslots'] = 'Neue Zeitslots hinzufügen';
 $string['organizer:editslots'] = 'Vorhandene Zeitslots bearbeiten';
@@ -427,16 +427,6 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Teilnehmer/in
 Moodle Messaging System';
 $string['register_notify:teacher:queue:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im {$a->location} in die Warteliste eingetragen.';
 
-// Section Warteliste.
-
-$string['register_notify:teacher:queue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe in Warteliste eingetragen';
-$string['register_notify:teacher:queue:group:fullmessage'] = 'Hallo {$a->receivername}!
-
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Teilnehmer/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} in die Warteliste eingetragen.
-
-Moodle Messaging System';
-$string['register_notify:teacher:queue:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} in die Warteliste eingetragen.';
-
 // Section.
 
 $string['register_notify:teacher:reregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in umgemeldet';
@@ -466,16 +456,6 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Teilnehmer/in
 
 Moodle Messaging System';
 $string['register_notify:teacher:unqueue:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich im Zeitslot am {$a->date} um {$a->time} im {$a->location} aus der Warteliste ausgetragen.';
-
-// Section Warteliste.
-
-$string['register_notify:teacher:unqueue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe aus Warteliste ausgetragen';
-$string['register_notify:teacher:unqueue:group:fullmessage'] = 'Hallo {$a->receivername}!
-
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Teilnehmer/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} aus der Warteliste ausgetragen.
-
-Moodle Messaging System';
-$string['register_notify:teacher:unqueue:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} aus der Warteliste ausgetragen.';
 
 // Section.
 
@@ -689,6 +669,41 @@ $string['group_registration_notify:student:unqueue:group:smallmessage'] = '{$a->
 
 // Section.
 
+$string['group_registration_notify:student:register:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe angemeldet';
+$string['group_registration_notify:student:register:fullmessage'] = 'Hallo {$a->receivername}!
+
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat {$a->sendername} Ihre Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im {$a->location} angemeldet.
+
+Moodle Messaging System';
+$string['group_registration_notify:student:register:smallmessage'] = '{$a->sendername} hat Ihre Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} angemeldet.';
+
+// Section.
+
+$string['group_registration_notify:student:reregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe umgemeldet';
+$string['group_registration_notify:student:reregister:fullmessage'] = 'Hallo {$a->receivername}!
+
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat {$a->sendername} Ihre Gruppe {$a->groupname} für einen neuen Zeitslot am {$a->date} um {$a->time} im {$a->location} umgemeldet.
+
+Moodle Messaging System';
+$string['group_registration_notify:student:reregister:smallmessage'] = '{$a->sendername} hat Ihre Gruppe {$a->groupname} für einen neuen Zeitslot am {$a->date} um {$a->time} umgemeldet.';
+
+// Section.
+
+$string['group_registration_notify:student:unregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe abgemeldet';
+$string['group_registration_notify:student:unregister:fullmessage'] = 'Hallo {$a->receivername}!
+
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat {$a->sendername} Ihre Gruppe {$a->groupname} vom Zeitslot am {$a->date} um {$a->time} im {$a->location} abgemeldet.
+
+Moodle Messaging System';
+$string['group_registration_notify:student:unregister:smallmessage'] = '{$a->sendername} hat Ihre Gruppe {$a->groupname} vom Zeitslot am {$a->date} um {$a->time} abgemeldet.';
+
+
+
+
+
+
+// Section.
+
 $string['appointment_reminder:teacher:digest:subject'] = 'Terminerinnerung';
 $string['appointment_reminder:teacher:digest:fullmessage'] = 'Hallo {$a->receivername}!
 
@@ -887,7 +902,9 @@ $string['eval_link'] = 'einen neuen Termin';
 
 $string['group_slot_available'] = "Slot verfügbar";
 $string['group_slot_full'] = "Slot vergeben";
-$string['slot_anonymous'] = "Slot anonym";
+$string['slot_anonymous'] = "Anonymer Slot";
+$string['slot_slotvisible'] = "Mitglieder nur sichtbar wenn eigener Slot";
+$string['slot_visible'] = "Mitglieder des Slots immer sichtbar";
 
 $string['message_info_reminders_sent_sg'] = 'Es wurde {$a->count} Mitteilung versandt.';
 $string['message_info_reminders_sent_pl'] = 'Es wurden {$a->count} Mitteilungen versandt.';
@@ -923,3 +940,7 @@ $string['queuesubject'] = 'Moodle Organizer: Aus Warteliste nachgerückt';
 $string['queuebody'] = 'Ihre Anmeldung zu einem Termin wurde vom Status "Warteliste" in den Status "Angemeldet" versetzt.';
 $string['eventqueueadded'] = 'Zur Warteliste hinzugefügt';
 $string['eventqueueremoved'] = 'Aus Warteliste entfernt';
+
+$string['visibility_anonymous'] = 'Alle anonym';
+$string['visibility_slot'] = 'Sichtbar nur wenn eigener Slot';
+$string['visibility_all'] = 'Alle sichtbar';

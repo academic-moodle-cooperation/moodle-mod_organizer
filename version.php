@@ -1,5 +1,5 @@
 <?php
-// This file is part of mod_organizer_29 for Moodle - http://moodle.org/
+// This file is part of mod_organizer for Moodle - http://moodle.org/
 //
 // It is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,8 +29,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2016012802;
-$plugin->release = "2016-01-28 (2)"; // User-friendly version number.
+$plugin->version = 2016012804;
+$plugin->release = "2016-01-28 (4)"; // User-friendly version number.
 $plugin->maturity = MATURITY_STABLE;
 $plugin->requires = 2014041100; // Requires this Moodle version.
 $plugin->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics).

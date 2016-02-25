@@ -52,7 +52,7 @@ function xmldb_organizer_upgrade($oldversion) {
         $dbman->change_field_unsigned($table, $field);
         $dbman->change_field_default($table, $field);
 
-        // organizer savepoint reached.
+        // Organizer savepoint reached.
         upgrade_mod_savepoint(true, 2012081404, 'organizer');
     }
 
@@ -68,7 +68,7 @@ function xmldb_organizer_upgrade($oldversion) {
         $dbman->change_field_unsigned($table, $field);
         $dbman->change_field_default($table, $field);
 
-        // organizer savepoint reached.
+        // Organizer savepoint reached.
         upgrade_mod_savepoint(true, 2012081401, 'organizer');
     }
 
@@ -84,7 +84,7 @@ function xmldb_organizer_upgrade($oldversion) {
         $dbman->change_field_unsigned($table, $field);
         $dbman->change_field_default($table, $field);
 
-        // organizer savepoint reached.
+        // Organizer savepoint reached.
         upgrade_mod_savepoint(true, 2012081404, 'organizer');
     }
 
@@ -136,7 +136,7 @@ function xmldb_organizer_upgrade($oldversion) {
         // Launch add key slot.
         $dbman->add_key($table, $key);
 
-        // organizer savepoint reached.
+        // Organizer savepoint reached.
         upgrade_mod_savepoint(true, 2012122601, 'organizer');
     }
 
@@ -163,7 +163,7 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // organizer savepoint reached.
+        // Organizer savepoint reached.
         upgrade_mod_savepoint(true, 2013112900, 'organizer');
     }
 
@@ -178,7 +178,7 @@ function xmldb_organizer_upgrade($oldversion) {
                 '10', XMLDB_UNSIGNED, false, null, '0', 'emailteachers');
         $dbman->change_field_notnull($table, $field);
 
-        // organizer savepoint reached.
+        // Organizer savepoint reached.
         upgrade_mod_savepoint(true, 2013112901, 'organizer');
     }
 
@@ -186,7 +186,7 @@ function xmldb_organizer_upgrade($oldversion) {
         $DB->execute('UPDATE mdl_log SET url = RIGHT(url, LOCATE("/", REVERSE(url))-1) ' .
                 'WHERE module="organizer" and url LIKE "http://%"');
 
-        // organizer savepoint reached.
+        // Organizer savepoint reached.
         upgrade_mod_savepoint(true, 2013122300, 'organizer');
     }
 
@@ -202,7 +202,7 @@ function xmldb_organizer_upgrade($oldversion) {
                 '10', XMLDB_UNSIGNED, false, null, '0', 'emailteachers');
         $dbman->change_field_notnull($table, $field);
 
-        // organizer savepoint reached.
+        // Organizer savepoint reached.
         upgrade_mod_savepoint(true, 2014032400, 'organizer');
     }
 
@@ -215,13 +215,13 @@ function xmldb_organizer_upgrade($oldversion) {
         // Launch change of precision, sign and the default value for field grade.
         $dbman->change_field_precision($table, $field);
 
-        // organizer savepoint reached.
+        // Organizer savepoint reached.
         upgrade_mod_savepoint(true, 2015012004, 'organizer');
     }
 
     if ($oldversion < 2015111900) {
 
-        // Define field id to be added to organizer_slots.
+        // Define field gap to be added to organizer_slots.
         $table = new xmldb_table('organizer_slots');
         $field = new xmldb_field('gap', XMLDB_TYPE_INTEGER, '4', null, null, null, null, 'duration');
 
@@ -229,11 +229,11 @@ function xmldb_organizer_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        // organizer savepoint reached.
+        // Organizer savepoint reached.
         upgrade_mod_savepoint(true, 2015111900, 'organizer');
     }
 
-   if ($oldversion < 2016012700) {
+     if ($oldversion < 2015063000) {
         // Define field queue to be added to organizer.
         $table = new xmldb_table('organizer');
         $field = new xmldb_field('queue', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'grade');
@@ -241,6 +241,12 @@ function xmldb_organizer_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        // Organizer savepoint reached.
+        upgrade_mod_savepoint(true, 2015063000, 'organizer');
+    }
+	
+
+    if ($oldversion < 2016012400) {
 
         // Define table organizer_slot_queues to be created.
         $table = new xmldb_table('organizer_slot_queues');
@@ -251,13 +257,8 @@ function xmldb_organizer_upgrade($oldversion) {
         $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('groupid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('applicantid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('attended', XMLDB_TYPE_INTEGER, '4', null, null, null, null);
-        $table->add_field('grade', XMLDB_TYPE_NUMBER, '11, 5', null, null, null, null);
-        $table->add_field('feedback', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('comments', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('eventid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('notified', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('allownewappointments', XMLDB_TYPE_INTEGER, '4', null, null, null, null);
 
         // Adding keys to table organizer_slot_queues.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -273,8 +274,31 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        // organizer savepoint reached.
-        upgrade_mod_savepoint(true, 2016012700, 'organizer');
+        // Organizer savepoint reached.
+        upgrade_mod_savepoint(true, 2016012400, 'organizer');
+    }
+  
+    if ($oldversion < 2016012800) {
+
+        // Define field visibility to be added to organizer.
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('visibility', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'grade');
+
+        // Conditionally launch add field grade.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Rename field isanonymous on table organizer_slots to visibility.
+        $table = new xmldb_table('organizer_slots');
+        $field = new xmldb_field('isanonymous', XMLDB_TYPE_INTEGER, '4', null, false, null, '0', 'teacherid');
+
+        // Launch rename field isanonymous.
+        $dbman->change_field_notnull($table, $field);
+        $dbman->rename_field($table, $field, 'visibility');
+
+        // Organizer savepoint reached.
+        upgrade_mod_savepoint(true, 2016012800, 'organizer');
     }
 
     return true;

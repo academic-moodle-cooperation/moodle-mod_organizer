@@ -77,8 +77,7 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
-if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
-
+if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {  // Waiting list
     require_capability('mod/organizer:register', $context);
 
     if (!organizer_security_check_slots($slot)) {
@@ -125,8 +124,8 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
     }
 
     redirect($redirecturl);
-	
-} else if ($action == ORGANIZER_ACTION_UNREGISTER || $action == ORGANIZER_ACTION_UNQUEUE) {
+
+} else if ($action == ORGANIZER_ACTION_UNREGISTER || $action == ORGANIZER_ACTION_UNQUEUE) { // Waiting list
 
     require_capability('mod/organizer:unregister', $context);
 
@@ -181,9 +180,9 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 
 
     redirect($redirecturl);
-	
+
 } else if ($action == ORGANIZER_ACTION_REREGISTER) {
-		
+
     require_capability('mod/organizer:register', $context);
     require_capability('mod/organizer:unregister', $context);
 
@@ -225,9 +224,9 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
     }
 
     redirect($redirecturl);
-	
+
 } else {
-	
+
     print_error('Either a wrong method or no method was selected!');
 
 }
@@ -270,8 +269,7 @@ function organizer_organizer_student_action_allowed($action, $slot) {
 	// Waiting list
 	$isalreadyinqueue = false;
     if ($organizer->isgrouporganizer) {
-		$group = organizer_fetch_my_group();		
-    	$isalreadyinqueue = $slotx->is_group_in_queue($group->id);
+    	$isalreadyinqueue = $slotx->is_group_in_queue();
     } else {
     	$isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
     }
