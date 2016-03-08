@@ -712,14 +712,14 @@ $string['group_registration_notify:student:register:group:smallmessage'] = '{$a-
 
 // Section Warteliste.
 
-$string['group_registration_notify:student:queue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group queued';
-$string['group_registration_notify:student:queue:group:fullmessage'] =
+$string['group_registration_notify:student:queue:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group queued';
+$string['group_registration_notify:student:queue:fullmessage'] =
 'Hello {$a->receivername}!
 
 As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} has added your group {$a->groupname} to the waiting list of the time slot on {$a->date} at {$a->time} in {$a->location}.
 
 Moodle Messaging System';
-$string['group_registration_notify:student:queue:group:smallmessage'] = '{$a->sendername} has added your group {$a->groupname} to the waiting list of the time slot on {$a->date} at {$a->time}.';
+$string['group_registration_notify:student:queue:smallmessage'] = '{$a->sendername} has added your group {$a->groupname} to the waiting list of the time slot on {$a->date} at {$a->time}.';
 
 // Section.
 
@@ -745,14 +745,14 @@ $string['group_registration_notify:student:unregister:group:smallmessage'] = '{$
 
 // Section Warteliste.
 
-$string['group_registration_notify:student:unqueue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group removed from waiting list';
-$string['group_registration_notify:student:unqueue:group:fullmessage'] =
+$string['group_registration_notify:student:unqueue:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group removed from waiting list';
+$string['group_registration_notify:student:unqueue:fullmessage'] =
 'Hello {$a->receivername}!
 
 As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} has removed your group {$a->groupname} from the waiting list of the time slot on {$a->date} at {$a->time} in {$a->location}.
 
 Moodle Messaging System';
-$string['group_registration_notify:student:unqueue:group:smallmessage'] = '{$a->sendername} has removed your group {$a->groupname} from the waiting list of the time slot on {$a->date} at {$a->time}.';
+$string['group_registration_notify:student:unqueue:smallmessage'] = '{$a->sendername} has removed your group {$a->groupname} from the waiting list of the time slot on {$a->date} at {$a->time}.';
 
 // Section.
 

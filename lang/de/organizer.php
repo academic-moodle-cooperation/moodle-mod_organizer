@@ -629,13 +629,13 @@ $string['group_registration_notify:student:register:group:smallmessage'] = '{$a-
 
 // Section Warteliste.
 
-$string['group_registration_notify:student:queue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe in Warteliste eingetragen';
-$string['group_registration_notify:student:queue:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['group_registration_notify:student:queue:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe in Warteliste eingetragen';
+$string['group_registration_notify:student:queue:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat {$a->sendername} Ihre Gruppe {$a->groupname} in die Warteliste für den Zeitslot am {$a->date} um {$a->time} im {$a->location} eingetragen.
 
 Moodle Messaging System';
-$string['group_registration_notify:student:queue:group:smallmessage'] = '{$a->sendername} hat Ihre Gruppe {$a->groupname} in die Warteliste für den Zeitslot am {$a->date} um {$a->time} eingetragen.';
+$string['group_registration_notify:student:queue:smallmessage'] = '{$a->sendername} hat Ihre Gruppe {$a->groupname} in die Warteliste für den Zeitslot am {$a->date} um {$a->time} eingetragen.';
 
 // Section.
 
@@ -659,13 +659,13 @@ $string['group_registration_notify:student:unregister:group:smallmessage'] = '{$
 
 // Section Warteliste.
 
-$string['group_registration_notify:student:unqueue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe aus Warteliste ausgetragen';
-$string['group_registration_notify:student:unqueue:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['group_registration_notify:student:unqueue:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe aus Warteliste ausgetragen';
+$string['group_registration_notify:student:unqueue:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat {$a->sendername} Ihre Gruppe {$a->groupname} aus der Warteliste vom Zeitslot am {$a->date} um {$a->time} im {$a->location} ausgetragen.
 
 Moodle Messaging System';
-$string['group_registration_notify:student:unqueue:group:smallmessage'] = '{$a->sendername} hat Ihre Gruppe {$a->groupname} aus der Warteliste vom Zeitslot am {$a->date} um {$a->time} ausgetragen.';
+$string['group_registration_notify:student:unqueue:smallmessage'] = '{$a->sendername} hat Ihre Gruppe {$a->groupname} aus der Warteliste vom Zeitslot am {$a->date} um {$a->time} ausgetragen.';
 
 // Section.
 
