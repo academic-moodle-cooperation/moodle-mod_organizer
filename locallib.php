@@ -505,11 +505,10 @@ function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
     global $DB;
 
     if($groupid) {
-        if (!$queueentry = $DB->get_record('organizer_slot_queues', array('slotid' => $slotid, 'groupid' => $groupid))) {
-            return false;
-        } else {
-			$deleted = $DB->delete_records('event', array('id' => $queueentry->eventid));
-            $deleted = $DB->delete_records('organizer_slot_queues', array('slotid' => $slotid, 'groupid' => $groupid));
+		$queueentries = $DB->get_records('organizer_slot_queues', array('slotid' => $slotid, 'groupid' => $groupid));
+		foreach($queueentries as $entry) {
+			$deleted = $DB->delete_records('event', array('id' => $entry->eventid));
+            $deleted = $DB->delete_records('organizer_slot_queues', array('id' => $entry->id));
         }
     } else {
 		if (!$queueentry = $DB->get_record('organizer_slot_queues', array('slotid' => $slotid, 'userid' => $userid))) {
@@ -715,16 +714,29 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
             $app = organizer_get_last_user_appointment($slot->organizerid, $memberid);
             $ok_register = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid);
             if (isset($app)) {
-                $ok_unregister = organizer_unregister_single_appointment($app->slotid, $memberid, $slot->organizerid);
+                $ok_unregister = organizer_unregister_single_appointment($app->slotid, $memberid);
             }
         }
     } else {
         $app = organizer_get_last_user_appointment($slot->organizerid);
         $ok_register = organizer_register_single_appointment($slotid, $USER->id);
         if (isset($app)) {
-            $ok_unregister = organizer_unregister_single_appointment($app->slotid, $USER->id, $slot->organizerid);
+            $ok_unregister = organizer_unregister_single_appointment($app->slotid, $USER->id);
         }
     }
+
+ 	if (organizer_hasqueue($slot->organizerid)) {
+	    $slotx = new organizer_slot($app->slotid);
+		if (organizer_is_group_mode()) {
+			$next = $slotx->get_next_in_queue_group();
+		} else {
+			$next = $slotx->get_next_in_queue();
+		}
+		if($next) {
+        	$ok_register = organizer_register_appointment($app->slotid, $next->groupid, $next->userid, true);
+        	$ok_unqueue = organizer_delete_from_queue($app->slotid, $next->userid);
+		}
+ 	}
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
@@ -758,17 +770,30 @@ function organizer_unregister_appointment($slotid, $groupid) {
         $memberids = $DB->get_fieldset_select('groups_members', 'userid', 'groupid = ?', array($groupid));
 
         foreach ($memberids as $memberid) {
-            $ok = organizer_unregister_single_appointment($slotid, $memberid, $organizer->id);
+            $ok = organizer_unregister_single_appointment($slotid, $memberid);
         }
     } else {
-        $ok = organizer_unregister_single_appointment($slotid, $USER->id, $organizer->id);
+        $ok = organizer_unregister_single_appointment($slotid, $USER->id);
     }
+
+ 	if (organizer_hasqueue($organizer->id)) {
+	    $slotx = new organizer_slot($slotid);
+		if (organizer_is_group_mode()) {
+			$next = $slotx->get_next_in_queue_group();
+		} else {
+			$next = $slotx->get_next_in_queue();
+		}
+		if($next) {
+        	$ok_register = organizer_register_appointment($slotid, $next->groupid, $next->userid, true);
+        	$ok_unqueue = organizer_delete_from_queue($slotid, $next->userid);
+		}
+ 	}
 
     return $ok;
 }
 
 // Waiting list: changed function
-function organizer_unregister_single_appointment($slotid, $userid, $organizerid) {
+function organizer_unregister_single_appointment($slotid, $userid) {
     global $DB;
 
 	$ok_register = true;
@@ -778,14 +803,9 @@ function organizer_unregister_single_appointment($slotid, $userid, $organizerid)
 	    $deleted = $DB->delete_records('event', array('id' => $eventid));
 	}
 
-	$deleted = $DB->delete_records('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid));
-
- 	if (organizer_hasqueue($organizerid) && $next = $slotx->get_next_in_queue()) {
-        $ok_register = organizer_register_appointment($slotid, $next->groupid, $next->userid, true);
-        $ok_unqueue = organizer_delete_from_queue($slotid, $next->userid);
- 	}
+	$ok = $DB->delete_records('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid));
 	
-	return $deleted && $ok_register && $ok_unqueue;
+	return $ok;
 }
 
 function organizer_evaluate_slots($data) {

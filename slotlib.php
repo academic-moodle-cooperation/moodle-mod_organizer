@@ -133,6 +133,7 @@ class organizer_slot {
     private $organizer;
     private $apps;
     private $queue;  // Waiting list
+    private $queue_group;  // Waiting list
 
     public function __construct($slot, $lazy = true) {
         global $DB;
@@ -161,6 +162,7 @@ class organizer_slot {
 			// Waiting list
             if ($this->organizer->queue) {
             	$this->load_queue();
+            	$this->load_queue_group();
             }
         }
     }
@@ -302,10 +304,10 @@ class organizer_slot {
 		$this->load_organizer();
 		// The organizer should exists. Otherwise we are in a pathological state.
 		if ($this->organizer->queue) {
-			$this->load_queue();
+			$this->load_queue_group();
 			// The queue might be empty though.
-			if ($this->queue) {
-				foreach ($this->queue as $entry) {
+			if ($this->queue_group) {
+				foreach ($this->queue_group as $entry) {
 					$position++;
 					if ($entry->groupid == $groupid) {
 						$result = $position;
@@ -336,6 +338,19 @@ class organizer_slot {
     	return $result;
     }
 
+    public function get_next_in_queue_group() {
+    	$result = null;
+    	$this->load_organizer();
+    	
+    	if ($this->organizer->queue) {
+    		$this->load_queue_group();
+    		if ($this->queue_group) {
+    			$result = array_shift($this->queue_group);
+    		}
+    	}
+    	return $result;
+    }
+
     private function load_organizer() {
         global $DB;
         if (!$this->organizer) {
@@ -356,6 +371,15 @@ class organizer_slot {
     	if (!$this->queue) {
     		$this->queue = $DB->get_records('organizer_slot_queues', array('slotid' => $this->slot->id),
     				'id ASC');
+    	}
+    }	
+
+	// Waiting list
+    private function load_queue_group() {
+    	global $DB;
+    	if (!$this->queue_group) {
+			$select = 'slotid = ' . $this->slot->id . ' group by groupid order by id asc ';
+    		$this->queue_group = $DB->get_records_select('organizer_slot_queues', $select);
     	}
     }	
 }

@@ -455,8 +455,12 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
     if (count($slots) != 0) {
         $numshown = 0;
         foreach ($slots as $slot) {
-            $slotx = new organizer_slot($slot);
-            $alreadyinqueue = $slotx->is_user_in_queue($USER->id); // Waiting list
+            $slotx = new organizer_slot($slot);            
+			if ($organizer->isgrouporganizer) {
+				$alreadyinqueue = $slotx->is_group_in_queue();
+			} else {
+				$alreadyinqueue = $slotx->is_user_in_queue($USER->id); // Waiting list
+			}			
             if (!$slotx->is_available()) {
                 if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW) {
                     $row = $rows[] = new html_table_row();
@@ -1178,7 +1182,8 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
 			. "</em></span><br />";
 			// Waiting list
 			if (organizer_is_queueable()) {
-				$inqueue = count($DB->get_records('organizer_slot_queues', array('slotid' => $slot->id))); 
+				$select = 'slotid = ' . $slot->id . ' group by groupid';
+    			$inqueue = count($DB->get_records_select('organizer_slot_queues', $select));
 				if ($inqueue) {
 					$a->inqueue = $inqueue;
 					$slotx = new organizer_slot($slot);
@@ -1192,7 +1197,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
 		}
 
 		
-	} else {
+	} else {  // not groupmode:
 
 		$count = count($apps);
 		$maxparticipants = $slot->maxparticipants;
@@ -1284,6 +1289,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
     $groupmode = organizer_is_group_mode();
 	
     if ($studentview) {
+		
         if ($slot->visibility == ORGANIZER_VISIBILITY_ANONYMOUS) {
             if ($ismyslot) {
                 $idnumber = organizer_get_user_idnumber($app->userid);
@@ -1316,7 +1322,9 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
 				}
 			}
         }
-    } else {
+		
+    } else {  // not studentview:
+	
         if ($count == 0) {
             $content .= $groupmode ?
                 ('<em>' . get_string('nogroup', 'organizer') . '</em><br />') :
@@ -1382,7 +1390,9 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
 				}
 			}
         }
+		
     } else { // if groupmode:
+	
         if ($count == 0) {
             $content .= "<em>" . get_string('group_slot_available', 'organizer') . "</em>";
         } else {
@@ -1390,7 +1400,8 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                     . "</em></span>";
 			// Waiting list
 			if (organizer_is_queueable()) {
-				$inqueue = count($DB->get_records('organizer_slot_queues', array('slotid' => $slot->id))); 
+				$select = 'slotid = ' . $slot->id . ' group by groupid';
+    			$inqueue = count($DB->get_records_select('organizer_slot_queues', $select));
 				if ($inqueue) {
 			        $a = new stdClass();
 					$a->inqueue = $inqueue;
