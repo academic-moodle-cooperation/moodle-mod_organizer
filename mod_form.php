@@ -255,19 +255,4 @@ class mod_organizer_mod_form extends moodleform_mod {
         }
     }
 
-    public function standard_intro_elements() {
-        global $CFG;
-        $mform =& $this->_form;
-        parent::standard_intro_elements();
-
-        $organizerconfig = get_config('organizer');
-		
-		$required = $organizerconfig->requiremodintro;
-		 
-        if ($required) {
-			$mform->addRule('introeditor', get_string('required'), 'required', null, 'client');
-		}
-
-    }
-
 }
