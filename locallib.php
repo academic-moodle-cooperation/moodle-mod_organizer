@@ -926,6 +926,15 @@ function organizer_fetch_my_group() {
     return $group;
 }
 
+function organizer_display_calendar() {
+    global $DB;
+    $id = optional_param('id', 0, PARAM_INT);
+    $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
+    $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+    return $organizer->calendar;
+}
+
+
 function organizer_fetch_table_entries($slots, $orderby="") {
     global $DB;
 
@@ -946,6 +955,7 @@ function organizer_fetch_table_entries($slots, $orderby="") {
     s.comments AS teachercomments,
     u.firstname,
     u.lastname,
+	u.email,
     u.idnumber,
     u2.firstname AS teacherfirstname,
     u2.lastname AS teacherlastname,
@@ -992,5 +1002,17 @@ function organizer_hasqueue($organizerid) {
         $result = true;
     }
     return $result;
+}
+
+function organizer_with_grading() {
+    global $DB;
+    $id = optional_param('id', 0, PARAM_INT);
+    $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
+    $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+	if($organizer->grade!=0) {
+    	return 1;
+	} else {
+		return 0;
+	}
 }
 

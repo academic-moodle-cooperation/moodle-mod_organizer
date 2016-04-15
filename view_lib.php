@@ -46,10 +46,10 @@ require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 require_once(dirname(__FILE__) . '/slotlib.php');
 require_once(dirname(__FILE__) . '/infobox.php');
 
-function organizer_display_form(moodleform $mform, $title, $addcalendar = true) {
+function organizer_display_form(moodleform $mform, $title) {
     global $OUTPUT;
 
-    if ($addcalendar) {
+    if (organizer_display_calendar()) {
         organizer_add_calendar();
     }
 
@@ -256,7 +256,7 @@ function organizer_generate_button_bar($params, $organizer, $context) {
             '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsprinturl . '\');" />';
     }
 
-    if (has_capability("mod/organizer:evalslots", $context, null, true)) {
+    if (has_capability("mod/organizer:evalslots", $context, null, true) && organizer_with_grading()) {
         $slotsevalurl = new moodle_url('/mod/organizer/slots_eval.php', array('id' => $params['id']));
         $output .= '<input type="submit" value="' . get_string('btn_eval', 'organizer') .
             '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsevalurl . '\');" />';
@@ -1047,6 +1047,11 @@ function organizer_reg_organizer_app_details($organizer, $userid, &$popups) {
 
 function organizer_teacher_action_new($params, $entry, $context) {
     global $OUTPUT;
+	if(organizer_with_grading()) {
+		$evalenabled = has_capability('mod/organizer:evalslots', $context, null, true);
+	} else {
+		$evalenabled = false;
+	}
 	$evalurl = new moodle_url('/mod/organizer/slots_eval.php', 
 			array('id' => $params['id'], 'slots[]' => $entry->slotid));   
 	$remindurl = new moodle_url('/mod/organizer/send_reminder.php',
@@ -1059,7 +1064,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
             $button = new stdClass();
             $button->text = get_string("btn_reeval", 'organizer');
             $button->url = $evalurl;
-            $button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+            $button->disabled = !$evalenabled;
             $buttons[] = $button;
             break;
 
@@ -1067,7 +1072,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
             $button = new stdClass();
             $button->text = get_string("btn_reeval", 'organizer');
             $button->url = $evalurl;
-            $button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+            $button->disabled = !$evalenabled;
             $buttons[] = $button;
             break;
 
@@ -1075,7 +1080,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
             $button = new stdClass();
             $button->text = get_string("btn_eval_short", 'organizer');
             $button->url = $evalurl;
-            $button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+            $button->disabled = !$evalenabled;
             $buttons[] = $button;
             break;
 
@@ -1083,7 +1088,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
             $button = new stdClass();
             $button->text = get_string("btn_eval_short", 'organizer');
             $button->url = $evalurl;
-            $button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+            $button->disabled = !$evalenabled;
             $buttons[] = $button;
             break;
 
@@ -1091,7 +1096,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
             $button = new stdClass();
             $button->text = get_string("btn_reeval", 'organizer');
             $button->url = $evalurl;
-            $button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+            $button->disabled = !$evalenabled;
             $buttons[] = $button;
             break;
 
@@ -1105,7 +1110,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
             $button = new stdClass();
             $button->text = get_string("btn_reeval", 'organizer');
             $button->url = $evalurl;
-            $button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true);
+            $button->disabled = !$evalenabled;
             $buttons[] = $button;
             break;
 
@@ -1445,7 +1450,11 @@ function organizer_get_attended_icon($appointment) {
         }
     }
 
-    return organizer_get_img('pix/slot_pending_small.png', '', get_string('reg_status_slot_pending', 'organizer'));
+	if(organizer_with_grading()) {
+    	return organizer_get_img('pix/slot_pending_small.png', '', get_string('reg_status_slot_pending', 'organizer'));
+	} else {
+		return "";
+	}
 }
 
 function organizer_location_link($slot) {
@@ -1526,8 +1535,10 @@ function organizer_slot_reg_status($organizer, $slot) {
             $regslot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
             if ($slotx->id == $regslot->id) {
                 if (!isset($app->attended)) {
-                    $output = organizer_get_img('pix/slot_pending_24x24.png', '',
+					if(organizer_with_grading()) {
+                    	$output = organizer_get_img('pix/slot_pending_24x24.png', '',
                             get_string('reg_status_slot_pending', 'organizer'));
+					}
                 } else if ($app->attended == 0 && $app->allownewappointments == 0) {
                     $output = organizer_get_img('pix/no_24x24.png', '', get_string('reg_status_slot_not_attended', 'organizer'));
                 } else if ($app->attended == 1 && $app->allownewappointments == 0) {
@@ -1673,7 +1684,11 @@ function organizer_get_status_icon_new($status) {
             return organizer_get_img('pix/status_attended_reapp_24x24.png', '',
                     get_string('reg_status_slot_attended_reapp', 'organizer'));
         case ORGANIZER_APP_STATUS_PENDING:
-            return organizer_get_img('pix/status_pending_24x24.png', '', get_string('reg_status_slot_pending', 'organizer'));
+			if(organizer_with_grading()) {
+				return organizer_get_img('pix/status_pending_24x24.png', '', get_string('reg_status_slot_pending', 'organizer'));
+			} else {
+				return "";
+			}
         case ORGANIZER_APP_STATUS_REGISTERED:
             return organizer_get_img('pix/status_not_occured_24x24.png', '', get_string('reg_status_registered', 'organizer'));
         case ORGANIZER_APP_STATUS_NOT_ATTENDED:

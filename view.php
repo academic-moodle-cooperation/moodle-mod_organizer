@@ -64,7 +64,9 @@ $jsmodule = array(
 );
 $PAGE->requires->js_module($jsmodule);
 
-organizer_add_calendar();
+if($instance->organizer->calendar) {
+	organizer_add_calendar();
+}
 
 echo $OUTPUT->header();
 

@@ -233,20 +233,17 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015111900, 'organizer');
     }
 
-     if ($oldversion < 2015063000) {
+
+    if ($oldversion < 2016041500) {
+
         // Define field queue to be added to organizer.
         $table = new xmldb_table('organizer');
         $field = new xmldb_field('queue', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'grade');
+ 
         // Conditionally launch add field queue.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        // Organizer savepoint reached.
-        upgrade_mod_savepoint(true, 2015063000, 'organizer');
-    }
-	
-
-    if ($oldversion < 2016012400) {
 
         // Define table organizer_slot_queues to be created.
         $table = new xmldb_table('organizer_slot_queues');
@@ -274,31 +271,35 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        // Organizer savepoint reached.
-        upgrade_mod_savepoint(true, 2016012400, 'organizer');
-    }
-  
-    if ($oldversion < 2016012805) {
-
         // Define field visibility to be added to organizer.
         $table = new xmldb_table('organizer');
-        $field = new xmldb_field('visibility', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'grade');
+        $field = new xmldb_field('visibility', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'queue');
 
-        // Conditionally launch add field grade.
+        // Conditionally launch add field visibility.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // Rename field isanonymous on table organizer_slots to visibility.
+        // Define field visibility to be added to organizer_slots.
         $table = new xmldb_table('organizer_slots');
-        $field = new xmldb_field('isanonymous', XMLDB_TYPE_INTEGER, '4', null, false, null, '0', 'teacherid');
+        $field = new xmldb_field('visibility', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'gap');
 
-        // Launch rename field isanonymous.
-        $dbman->change_field_notnull($table, $field);
-        $dbman->rename_field($table, $field, 'visibility');
+        // Conditionally launch add field visibility.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field calendar to be added to organizer.
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('calendar', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'visibility');
+
+        // Conditionally launch add field calender.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
         // Organizer savepoint reached.
-        upgrade_mod_savepoint(true, 2016012805, 'organizer');
+        upgrade_mod_savepoint(true, 2016041500, 'organizer');
     }
 
     return true;

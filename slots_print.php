@@ -137,7 +137,7 @@ if ($data = $mform->get_data()) {
         print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
     }
 
-    organizer_display_form($mform, get_string('title_print', 'organizer'), true);
+    organizer_display_form($mform, get_string('title_print', 'organizer'));
 }
 
 die;
@@ -248,6 +248,10 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
                     $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
                     break;
+                case 'email':
+                    $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
+                    $columnformats[] = array('fill' => 0, 'align' => 'C');
+                    break;
                 case 'idnumber':
                     $columnwitdh[] = array('value' => 24, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
@@ -280,6 +284,9 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
             break;
         case "participant":
             $sort = "u.lastname";
+            break;
+        case "email":
+            $sort = "u.email";
             break;
         case "idnumber":
             $sort = "u.idnumber";
@@ -376,6 +383,9 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
                     $a->lastname = $entry->lastname;
                     $name = get_string('fullname_template', 'organizer', $a);
                     $row[] = array('data' => $name, 'rowspan' => 0);
+                    break;
+                case 'email':
+                    $row[] = array('data' => $entry->email, 'rowspan' => 0);
                     break;
                 case 'idnumber':
                     $idnumber = (isset($entry->idnumber) && $entry->idnumber !== '') ? $entry->idnumber : '';
