@@ -89,6 +89,11 @@ function organizer_update_instance($organizer) {
         $organizer->duedate = null;
     }
 
+	// waiting list
+    if (isset($organizer->queue) && $organizer->queue == 0) {
+		organizer_remove_waitingqueueentries($organizer);
+    }
+
     organizer_grade_item_update($organizer);
 
     return $DB->update_record('organizer', $organizer);
@@ -796,10 +801,10 @@ function organizer_cron() {
 
     $success = true;
 
-    $params = array('now' => $now);
+    $params = array('now' => $now, 'now2' => $now);
     $appsquery = "SELECT a.*, s.teacherid, s.location, s.starttime, s.organizerid FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id WHERE
-        s.starttime - s.notificationtime < :now AND
+        s.starttime - s.notificationtime < :now AND s.starttime > :now2 AND
         a.notified = 0";
 
     $apps = $DB->get_records_sql($appsquery, $params);
@@ -814,7 +819,7 @@ function organizer_cron() {
         $ids = array_keys($apps);
     }
     list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
-    $DB->execute("UPDATE {organizer_slot_appointments} a SET a.notified = 1 WHERE a.id $insql", $inparams);
+    $DB->execute("UPDATE {organizer_slot_appointments} SET notified = 1 WHERE id $insql", $inparams);
 
     $organizerconfig = get_config('organizer');
 
@@ -874,7 +879,7 @@ function organizer_cron() {
                 if ($thissuccess) {
                     list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
                     $inparams['teacherid'] = $teacherid;
-                    $DB->execute("UPDATE {organizer_slots} s SET s.notified = 1 WHERE s.teacherid = :teacherid AND s.id $insql",
+                    $DB->execute("UPDATE {organizer_slots} SET notified = 1 WHERE teacherid = :teacherid AND id $insql",
                                 $inparams);
                 }
             }
@@ -1032,4 +1037,13 @@ function organizer_get_coursemodule_info($coursemodule) {
         }
     }
     return $result;
+}
+
+// waiting list
+function organizer_remove_waitingqueueentries($organizer) {
+	global $DB;
+
+	$query = "slotid in (select id from {organizer_slots} where organizerid = ".$organizer->id.")";
+	$ok = $DB->delete_records_select('organizer_slot_queues', $query);
+	return $ok;
 }
