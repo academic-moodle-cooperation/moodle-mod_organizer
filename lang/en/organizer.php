@@ -1001,6 +1001,5 @@ $string['visibility_anonymous'] = 'Anonymous';
 $string['visibility_slot'] = 'Only visible to slot members';
 $string['visibility_all'] = 'Visible';
 
-$string['calendar'] = 'Display calendar';
-$string['displaycalendar'] = 'Display calendar';
-$string['calendar_help'] = 'If checked the calendar will be displayed in this organizer';
+$string['hidecalendar'] = 'Hide calendar';
+$string['hidecalendar_help'] = 'Check to hide the calendar in this organizer';

@@ -926,12 +926,12 @@ function organizer_fetch_my_group() {
     return $group;
 }
 
-function organizer_display_calendar() {
+function organizer_fetch_hidecalendar() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
     $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
-    $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
-    return $organizer->calendar;
+    $hidecalendar = $DB->get_field('organizer', 'hidecalendar', array('id' => $cm->instance), MUST_EXIST);
+    return $hidecalendar;
 }
 
 

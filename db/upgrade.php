@@ -234,7 +234,7 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
 
-    if ($oldversion < 2016041500) {
+    if ($oldversion < 2016041800) {
 
         // Define field queue to be added to organizer.
         $table = new xmldb_table('organizer');
@@ -289,17 +289,26 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Define field calendar to be added to organizer.
+        // Define field hidecalendar to be added to organizer.
         $table = new xmldb_table('organizer');
-        $field = new xmldb_field('calendar', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'visibility');
+        $field = new xmldb_field('hidecalendar', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'visibility');
 
-        // Conditionally launch add field calender.
+        // Conditionally launch add field hidecalender.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
+        // Drop field calendar of organizer.
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('calendar');
+
+        // Conditionally drop field calender.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
         // Organizer savepoint reached.
-        upgrade_mod_savepoint(true, 2016041500, 'organizer');
+        upgrade_mod_savepoint(true, 2016041800, 'organizer');
     }
 
     return true;

@@ -49,7 +49,7 @@ require_once(dirname(__FILE__) . '/infobox.php');
 function organizer_display_form(moodleform $mform, $title) {
     global $OUTPUT;
 
-    if (organizer_display_calendar()) {
+    if (organizer_fetch_hidecalendar()!=1) {
         organizer_add_calendar();
     }
 

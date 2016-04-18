@@ -64,7 +64,7 @@ $jsmodule = array(
 );
 $PAGE->requires->js_module($jsmodule);
 
-if($instance->organizer->calendar) {
+if($instance->organizer->hidecalendar!=1) {
 	organizer_add_calendar();
 }
 

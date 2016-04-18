@@ -969,6 +969,5 @@ $string['visibility_anonymous'] = 'Anonym';
 $string['visibility_slot'] = 'Sichtbar nur, wenn eigener Slot';
 $string['visibility_all'] = 'Sichtbar';
 
-$string['calendar'] = 'Kalender anzeigen';
-$string['displaycalendar'] = 'Kalender anzeigen';
-$string['calendar_help'] = 'Stellen Sie hier ein, ob der Kalender in diesem Organizer angezeigt werden soll.';
+$string['hidecalendar'] = 'Kalender verbergen';
+$string['hidecalendar_help'] = 'Stellen Sie hier ein, ob der Kalender in diesem Terminplaner ausgeblendet werden soll.';
