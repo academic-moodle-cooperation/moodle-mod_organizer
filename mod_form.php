@@ -74,11 +74,6 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         $this->standard_intro_elements();
 		
-		$required = $organizerconfig->requiremodintro;		 
-        if ($required) {
-			$mform->addRule('introeditor', get_string('required'), 'required', null, 'client');
-		}
-
         // MY ELEMENTS.
         $mform->addElement('header', 'availability', get_string('availability', 'organizer'));
 
