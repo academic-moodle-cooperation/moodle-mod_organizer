@@ -233,5 +233,20 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015111900, 'organizer');
     }
 
+    if ($oldversion < 2016012808) {
+
+        // Define field isanonymous to be added to organizer_slots.
+        $table = new xmldb_table('organizer_slots');
+        $field = new xmldb_field('isanonymous', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '1', 'gap');
+
+        // Conditionally launch add field isanonymous.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Organizer savepoint reached.
+        upgrade_mod_savepoint(true, 2016012808, 'organizer');
+    }
+
     return true;
 }
