@@ -39,7 +39,7 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
         // Define each element separated.
         $organizer = new backup_nested_element('organizer', array('id'),
                 array('course', 'name', 'intro', 'introformat', 'timemodified', 'isgrouporganizer', 'emailteachers',
-                        'allowregistrationsfromdate', 'duedate', 'relativedeadline', 'grade', 'visibility', 'queue'));
+                        'allowregistrationsfromdate', 'duedate', 'relativedeadline', 'grade', 'visibility'));
 
         $slots = new backup_nested_element('slots');
         $slot = new backup_nested_element('slot', array('id'),
@@ -52,19 +52,12 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
                 array('slotid', 'userid', 'groupid', 'applicantid', 'registrationtime', 'attended', 'grade',
                         'feedback', 'comments', 'eventid', 'notified', 'allownewappointments'));
 
-        $queues = new backup_nested_element('queues');
-        $queue = new backup_nested_element('queue', array('id'),
-                array('slotid', 'userid', 'groupid', 'applicantid', 'eventid', 'notified'));
-
         // Build the tree.
         $organizer->add_child($slots);
         $slots->add_child($slot);
 
         $slot->add_child($appointments);
         $appointments->add_child($appointment);
-
-        $slot->add_child($queues);
-        $queues->add_child($queue);
 
         // Define sources.
         $organizer->set_source_table('organizer', array('id' => backup::VAR_ACTIVITYID));
@@ -74,7 +67,6 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
         if ($userinfo) {
             $slot->set_source_table('organizer_slots', array('organizerid' => backup::VAR_PARENTID));
             $appointment->set_source_table('organizer_slot_appointments', array('slotid' => backup::VAR_PARENTID));
-            $appointment->set_source_table('organizer_slot_queues', array('slotid' => backup::VAR_PARENTID));
         }
 
         // Annotate the user id's where required.
@@ -82,9 +74,6 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
         $appointment->annotate_ids('user', 'userid');
         $appointment->annotate_ids('user', 'applicantid');
         $appointment->annotate_ids('group', 'groupid');
-        $queue->annotate_ids('user', 'userid');
-        $queue->annotate_ids('user', 'applicantid');
-        $queue->annotate_ids('group', 'groupid');
 
         // Return the root element (organizer), wrapped into standard activity structure.
         return $this->prepare_activity_structure($organizer);

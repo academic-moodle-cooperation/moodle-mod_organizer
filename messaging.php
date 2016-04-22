@@ -207,6 +207,13 @@ function organizer_prepare_and_send_message($data, $type) {
                 organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
             }
             break;
+        case 'register_notify:teacher:queue': 
+            $slot = $DB->get_record('organizer_slots', array('id' => $data));
+            $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
+            if ($organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
+                organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
+            }
+            break;
         case 'register_notify:teacher:reregister':
         case 'register_notify:teacher:unregister':
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
@@ -215,9 +222,29 @@ function organizer_prepare_and_send_message($data, $type) {
                 organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
             }
             break;
+        case 'register_notify:teacher:unqueue':
+            $slot = $DB->get_record('organizer_slots', array('id' => $data));
+            $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
+            if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG || $organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
+                organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
+            }
+            break;
         case 'group_registration_notify:student:register':
+        case 'group_registration_notify:student:queue':
         case 'group_registration_notify:student:reregister':
         case 'group_registration_notify:student:unregister':
+            $slot = $DB->get_record('organizer_slots', array('id' => $data));
+            $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
+            foreach ($apps as $app) {
+                if ($app->groupid && !groups_is_member($app->groupid, $app->userid)) {
+                    continue;
+                }
+                if ($app->userid != $USER->id) {
+                    organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
+                }
+            }
+            break;
+        case 'group_registration_notify:student:unqueue':
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
             $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
             foreach ($apps as $app) {

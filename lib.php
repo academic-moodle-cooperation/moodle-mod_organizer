@@ -33,6 +33,10 @@ define('ORGANIZER_MESSAGES_RE_UNREG', 1);
 define('ORGANIZER_MESSAGES_ALL', 2);
 define('ORGANIZER_DELETE_EVENTS', 1);
 
+define('ORGANIZER_VISIBILITY_ALL', 0);
+define('ORGANIZER_VISIBILITY_ANONYMOUS', 1);
+define('ORGANIZER_VISIBILITY_SLOT', 2);
+
 require_once(dirname(__FILE__) . '/slotlib.php');
 
 /**
@@ -83,6 +87,11 @@ function organizer_update_instance($organizer) {
 
     if (isset($organizer->duedate) && $organizer->duedate == 0) {
         $organizer->duedate = null;
+    }
+
+	// waiting list
+    if (isset($organizer->queue) && $organizer->queue == 0) {
+		organizer_remove_waitingqueueentries($organizer);
     }
 
     organizer_grade_item_update($organizer);
@@ -1028,4 +1037,13 @@ function organizer_get_coursemodule_info($coursemodule) {
         }
     }
     return $result;
+}
+
+// waiting list
+function organizer_remove_waitingqueueentries($organizer) {
+	global $DB;
+
+	$query = "slotid in (select id from {organizer_slots} where organizerid = ".$organizer->id.")";
+	$ok = $DB->delete_records_select('organizer_slot_queues', $query);
+	return $ok;
 }

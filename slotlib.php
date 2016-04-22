@@ -132,6 +132,8 @@ class organizer_slot {
     private $slot;
     private $organizer;
     private $apps;
+    private $queue;  // Waiting list
+    private $queue_group;  // Waiting list
 
     public function __construct($slot, $lazy = true) {
         global $DB;
@@ -157,7 +159,22 @@ class organizer_slot {
         if (!$lazy) {
             $this->load_organizer();
             $this->load_appointments();
+			// Waiting list
+            if ($this->organizer->queue) {
+            	$this->load_queue();
+            	$this->load_queue_group();
+            }
         }
+    }
+
+	// Waiting list
+    public function get_organizer() {
+    	$this->load_organizer();
+    	return $this->organizer;
+    }
+    
+    public function get_slot() {
+    	return $this->slot;
     }
 
     public function has_participants() {
@@ -239,6 +256,100 @@ class organizer_slot {
         }
         return true;
     }
+	
+
+    /** Waiting list
+     * Returns the position of a given user in this slot's queue starting at 1.
+     * Returns 0 if the user is not in the queue.
+     *
+     * @param int $userid The ID of the user.
+     */
+    public function is_user_in_queue($userid) {
+		$result = 0;
+		$this->queue = null;
+		$this->load_organizer();
+		// The organizer should exists. Otherwise we are in a pathological state.
+		if ($this->organizer->queue) {
+			$this->load_queue();
+			// The queue might be empty though.
+			if ($this->queue) {
+				$position = 0;
+				foreach ($this->queue as $entry) {
+					$position++;
+					if ($entry->userid == $userid) {
+						$result = $position;
+						break;
+					}
+				}
+			}
+		}
+		return $result; 
+    }
+
+    /** Waiting list
+     * Returns the position of a given group in this slot's queue starting at 1.
+     * Returns 0 if the group is not in the queue.
+     *
+     * @param int $userid The ID of the user.
+     */
+    public function is_group_in_queue($groupid = 0) {
+		$result = 0;
+		$position = 0;
+
+		if ($groupid==0) {
+			$group = organizer_fetch_my_group();
+	    	$groupid = $group ? $group->id : 0;
+		}
+
+		$this->load_organizer();
+		// The organizer should exists. Otherwise we are in a pathological state.
+		if ($this->organizer->queue) {
+			$this->load_queue_group();
+			// The queue might be empty though.
+			if ($this->queue_group) {
+				foreach ($this->queue_group as $entry) {
+					$position++;
+					if ($entry->groupid == $groupid) {
+						$result = $position;
+						break;
+					}
+				}
+			}
+		}
+		return $result; 
+    }
+    
+    /** Waiting list
+     * Returns the next entry of the waiting queue for this slot if the queue is not empty,
+     * null otherwise.
+     * 
+     * @return Ambigous <NULL, mixed>
+     */
+    public function get_next_in_queue() {
+    	$result = null;
+    	$this->load_organizer();
+    	
+    	if ($this->organizer->queue) {
+    		$this->load_queue();
+    		if ($this->queue) {
+    			$result = array_shift($this->queue);
+    		}
+    	}
+    	return $result;
+    }
+
+    public function get_next_in_queue_group() {
+    	$result = null;
+    	$this->load_organizer();
+    	
+    	if ($this->organizer->queue) {
+    		$this->load_queue_group();
+    		if ($this->queue_group) {
+    			$result = array_shift($this->queue_group);
+    		}
+    	}
+    	return $result;
+    }
 
     private function load_organizer() {
         global $DB;
@@ -253,6 +364,24 @@ class organizer_slot {
             $this->apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $this->slot->id));
         }
     }
+	
+	// Waiting list
+    private function load_queue() {
+    	global $DB;
+    	if (!$this->queue) {
+    		$this->queue = $DB->get_records('organizer_slot_queues', array('slotid' => $this->slot->id),
+    				'id ASC');
+    	}
+    }	
+
+	// Waiting list
+    private function load_queue_group() {
+    	global $DB;
+    	if (!$this->queue_group) {
+			$select = 'slotid = ' . $this->slot->id . ' group by groupid order by id asc ';
+    		$this->queue_group = $DB->get_records_select('organizer_slot_queues', $select);
+    	}
+    }	
 }
 
 function organizer_user_has_access($slotid) {

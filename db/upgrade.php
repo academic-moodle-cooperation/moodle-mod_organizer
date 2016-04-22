@@ -221,7 +221,7 @@ function xmldb_organizer_upgrade($oldversion) {
 
     if ($oldversion < 2015111900) {
 
-        // Define field id to be added to organizer_slots.
+        // Define field gap to be added to organizer_slots.
         $table = new xmldb_table('organizer_slots');
         $field = new xmldb_field('gap', XMLDB_TYPE_INTEGER, '4', null, null, null, null, 'duration');
 
@@ -233,19 +233,82 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015111900, 'organizer');
     }
 
-    if ($oldversion < 2016012808) {
 
-        // Define field isanonymous to be added to organizer_slots.
-        $table = new xmldb_table('organizer_slots');
-        $field = new xmldb_field('isanonymous', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '1', 'gap');
+    if ($oldversion < 2016041800) {
 
-        // Conditionally launch add field isanonymous.
+        // Define field queue to be added to organizer.
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('queue', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'grade');
+ 
+        // Conditionally launch add field queue.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
+        // Define table organizer_slot_queues to be created.
+        $table = new xmldb_table('organizer_slot_queues');
+
+        // Adding fields to table organizer_slot_queues.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('slotid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('groupid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('applicantid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('eventid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('notified', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table organizer_slot_queues.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('slot', XMLDB_KEY_FOREIGN, array('slotid'), 'organizer_slots', array('id'));
+
+        // Adding indexes to table organizer_slot_queues.
+        $table->add_index('slot_queue_userid', XMLDB_INDEX_NOTUNIQUE, array('userid'));
+        $table->add_index('slot_queue_groupid', XMLDB_INDEX_NOTUNIQUE, array('groupid'));
+        $table->add_index('slot_queue_eventid', XMLDB_INDEX_NOTUNIQUE, array('eventid'));
+
+        // Conditionally launch create table for organizer_slot_queues.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define field visibility to be added to organizer.
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('visibility', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'queue');
+
+        // Conditionally launch add field visibility.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field visibility to be added to organizer_slots.
+        $table = new xmldb_table('organizer_slots');
+        $field = new xmldb_field('visibility', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'gap');
+
+        // Conditionally launch add field visibility.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field hidecalendar to be added to organizer.
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('hidecalendar', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'visibility');
+
+        // Conditionally launch add field hidecalender.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Drop field calendar of organizer.
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('calendar');
+
+        // Conditionally drop field calender.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
         // Organizer savepoint reached.
-        upgrade_mod_savepoint(true, 2016012808, 'organizer');
+        upgrade_mod_savepoint(true, 2016041800, 'organizer');
     }
 
     return true;

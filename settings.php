@@ -60,10 +60,6 @@ $organizersettings = new admin_settingpage('modsettingorganizer', $pagetitle, 'm
 // Introductory explanation that all the settings are defaults for the add quiz form.
 $organizersettings->add(new admin_setting_heading('organizerintro', '', get_string('configintro', 'organizer')));
 
-// Set modintro required (default) or optional.
-$organizersettings->add(new admin_setting_configcheckbox('organizer/requiremodintro',
-        get_string('requiremodintro', 'organizer'), get_string('configrequiremodintro', 'organizer'), 1));
-
 // Maximum grade.
 $organizersettings->add(
         new admin_setting_configtext('organizer/maximumgrade', get_string('maximumgrade'),

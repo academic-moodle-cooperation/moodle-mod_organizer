@@ -77,11 +77,16 @@ class organizer_print_slots_form extends moodleform {
                 WHERE s.id = :slotid", $params);
 
         $identityfields = explode(',', $CFG->showuseridentity);
+        $selcols = array('datetime', 'location', 'teacher', 'participant');
         if (array_search('idnumber', $identityfields) !== false) {
-            $selcols = array('datetime', 'location', 'teacher', 'participant', 'idnumber', 'attended', 'grade', 'feedback');
-        } else {
-            $selcols = array('datetime', 'location', 'teacher', 'participant', 'attended', 'grade', 'feedback');
-        }
+            $selcols[] = 'idnumber';
+        } 
+        if (array_search('email', $identityfields) !== false) {
+            $selcols[] = 'email';
+        } 		
+		$selcols[] = 'attended';
+		$selcols[] = 'grade';
+		$selcols[] = 'feedback';
         $this->_selcols = $selcols;
 
         if ($isgrouporganizer) {
@@ -256,6 +261,9 @@ class organizer_print_slots_form extends moodleform {
             case "participant":
                 $sort = "u.lastname";
                 break;
+            case "email":
+                $sort = "u.email";
+                break;
             case "idnumber":
                 $sort = "u.idnumber";
                 break;
@@ -343,6 +351,12 @@ class organizer_print_slots_form extends moodleform {
                         $a->lastname = $entry->lastname;
                         $name = get_string('fullname_template', 'organizer', $a);
                         $content = "<span name='{$column}_cell'>" . $name . '</span>';
+                        $cell = new html_table_cell($content);
+                        $cell->style = 'vertical-align: middle;';
+                        $row->cells[] = $cell;
+                        break;
+                    case 'email':
+                        $content = "<span name='{$column}_cell'>" . $entry->email . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->style = 'vertical-align: middle;';
                         $row->cells[] = $cell;

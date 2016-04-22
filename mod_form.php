@@ -50,7 +50,6 @@ class mod_organizer_mod_form extends moodleform_mod {
         if ($instance) {
             $PAGE->requires->js_init_call('M.mod_organizer.init_mod_form', array(false), false, $jsmodule);
         } else {
-            $organizerconfig = get_config('organizer');
             $activatecheckbox = $organizerconfig->absolutedeadline == 'never';
             $PAGE->requires->js_init_call('M.mod_organizer.init_mod_form', array($togglecheckbox), false, $jsmodule);
         }
@@ -74,7 +73,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
         $this->standard_intro_elements();
-
+		
         // MY ELEMENTS.
         $mform->addElement('header', 'availability', get_string('availability', 'organizer'));
 
@@ -98,7 +97,10 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->setExpanded('availability');
 
         $this->standard_grading_coursemodule_elements();
-
+        
+        if (isset($organizerconfig->maximumgrade)) {
+	  		$mform->setDefault('grade', $organizerconfig->maximumgrade);
+        }
         $mform->addElement('header', 'organizercommon', get_string('organizercommon', 'organizer'));
 
         $mform->addElement('duration', 'relativedeadline', get_string('relativedeadline', 'organizer'));
@@ -113,6 +115,19 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addGroup($group, 'isgrouporganizergroup', get_string('isgrouporganizer', 'organizer'), null, false);
         $mform->addHelpButton('isgrouporganizergroup', 'isgrouporganizer', 'organizer');
 
+        $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->_get_visibilities());
+        $mform->setType('visibility', PARAM_INT);
+        $mform->setDefault('visibility', ORGANIZER_VISIBILITY_SLOT);
+        $mform->addHelpButton('visibility', 'visibility', 'organizer');
+         
+		 // Waiting list
+		$queuegroup = array();
+        $queuegroup[] = $mform->createElement('advcheckbox', 'queue',
+        		get_string('queue', 'organizer'), null, null, array(0, 1));
+        $mform->setType('queue', PARAM_INT);
+        $mform->addGroup($queuegroup, 'queuegroup', get_string('queue', 'organizer'), null, false);
+        $mform->addHelpButton('queuegroup', 'queue', 'organizer');
+
         $pickeroptions = array();
         $pickeroptions[0] = get_string('messages_none', 'organizer');
         $pickeroptions[1] = get_string('messages_re_unreg', 'organizer');
@@ -121,6 +136,14 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addElement('select', 'emailteachers', get_string('emailteachers', 'organizer'), $pickeroptions);
         $mform->setDefault('emailteachers', $organizerconfig->emailteachers);
         $mform->addHelpButton('emailteachers', 'emailteachers', 'organizer');
+
+		$calendargroup = array();
+        $calendargroup[] = $mform->createElement('advcheckbox', 'hidecalendar',
+        		get_string('hidecalendar', 'organizer'), null, null, array(0, 1));
+        $mform->setType('calendar', PARAM_INT);
+        $mform->setDefault('hidecalendar', 0);
+       	$mform->addGroup($calendargroup, 'calendargroup', get_string('hidecalendar', 'organizer'), null, false);
+        $mform->addHelpButton('calendargroup', 'hidecalendar', 'organizer');
 
         if ($organizerconfig->absolutedeadline != 'never') {
             $absdefault = strtotime($organizerconfig->absolutedeadline);
@@ -243,16 +266,15 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         return $memberships;
     }
-	
-    public function standard_grading_coursemodule_elements() {
-        global $CFG;
-        $mform =& $this->_form;
-        parent::standard_grading_coursemodule_elements();
 
-        $organizerconfig = get_config('organizer');
-        if (isset($organizerconfig->maximumgrade)) {
-	  		$mform->setDefault('grade', $organizerconfig->maximumgrade);
-        }
+    private function _get_visibilities() {
+ 
+        $visibilities = array();
+		$visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('visibility_all','organizer');
+		$visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('visibility_anonymous','organizer');
+		$visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('visibility_slot','organizer');
+ 
+        return $visibilities;
     }
-
+	
 }

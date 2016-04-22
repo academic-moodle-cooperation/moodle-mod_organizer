@@ -66,9 +66,9 @@ class organizer_edit_slots_form extends moodleform {
     private function _get_defaults() {
         global $DB;
         $defaults = array();
-        $defset = array('teacherid' => false, 'comments' => false, 'location' => false, 'locationlink' => false,
+        $defset = array('teacherid' => false, 'visibility' => false,  'comments' => false, 'location' => false, 'locationlink' => false,
                 'maxparticipants' => false, 'availablefrom' => false, 'teachervisible' => false,
-                'isanonymous' => false, 'notificationtime' => false);
+                'notificationtime' => false);
 
         $slotids = $this->_customdata['slots'];
 
@@ -83,6 +83,14 @@ class organizer_edit_slots_form extends moodleform {
             } else {
                 if (isset($defaults['teacherid']) && $defaults['teacherid'] != $slot->teacherid) {
                     unset($defaults['teacherid']);
+                }
+            }
+            if (!isset($defaults['visibility']) && !$defset['visibility']) {
+                $defaults['visibility'] = $slot->visibility;
+                $defset['visibility'] = true;
+            } else {
+                if (isset($defaults['visibility']) && $defaults['visibility'] != $slot->visibility) {
+                    unset($defaults['visibility']);
                 }
             }
             if (!isset($defaults['comments']) && !$defset['comments']) {
@@ -136,14 +144,6 @@ class organizer_edit_slots_form extends moodleform {
                     unset($defaults['teachervisible']);
                 }
             }
-            if (!isset($defaults['isanonymous']) && !$defset['isanonymous']) {
-                $defaults['isanonymous'] = $slot->isanonymous;
-                $defset['isanonymous'] = true;
-            } else {
-                if (isset($defaults['isanonymous']) && $defaults['isanonymous'] != $slot->isanonymous) {
-                    unset($defaults['isanonymous']);
-                }
-            }
             if (!isset($defaults['notificationtime']) && !$defset['notificationtime']) {
                 $defset['notificationtime'] = true;
                 $timeunit = $this->_organizer_figure_out_unit($slot->notificationtime);
@@ -156,6 +156,12 @@ class organizer_edit_slots_form extends moodleform {
                 }
             }
         }
+
+
+		if (!isset($defaults['visibility']) && !$defset['visibility']) {
+			$instance = organizer_get_course_module_data_new();
+			$defaults['visibility'] = $instance->organizer->visibility;
+		}
 
         return $defaults;
     }
@@ -228,16 +234,10 @@ class organizer_edit_slots_form extends moodleform {
         $mform->addElement('hidden', 'mod_teachervisible', 0);
         $mform->setType('mod_teachervisible', PARAM_BOOL);
 
-        $group = array();
-        $group[] = $mform->createElement('advcheckbox', 'isanonymous', get_string('isanonymous', 'organizer'), null,
-                null, array(0, 1));
-        $group[] = $mform->createElement('static', '', '',
-                $this->_warning_icon('isanonymous', isset($defaults['isanonymous'])));
-
-        $mform->setDefault('isanonymous', 0);
-        $mform->addGroup($group, '', get_string('isanonymous', 'organizer'), ORGANIZER_SPACING, false);
-        $mform->addElement('hidden', 'mod_isanonymous', 0);
-        $mform->setType('mod_isanonymous', PARAM_BOOL);
+        $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->_get_visibilities());
+        $mform->setType('visibility', PARAM_INT);
+        $mform->addElement('hidden', 'mod_visibility', 0);
+        $mform->setType('mod_visibility', PARAM_BOOL);
 
         $group = array();
         $group[] = $mform->createElement('text', 'location', get_string('location', 'organizer'),
@@ -432,4 +432,22 @@ class organizer_edit_slots_form extends moodleform {
             return 1;
         }
     }
+	
+    private function _get_visibilities() {
+ 
+        $visibilities = array();
+		$visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('slot_visible','organizer');
+		$visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('slot_anonymous','organizer');
+		$visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('slot_slotvisible','organizer');
+ 
+        return $visibilities;
+    }
+	
+	private function _get_instance_visibility() {
+	
+        list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+		
+		return	$organizer->visibility;
+	}
+	
 }

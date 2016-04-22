@@ -30,6 +30,8 @@ define('ORGANIZER_ACTION_REGISTER', 'register');
 define('ORGANIZER_ACTION_UNREGISTER', 'unregister');
 define('ORGANIZER_ACTION_REREGISTER', 'reregister');
 define('ORGANIZER_ACTION_COMMENT', 'comment');
+define('ORGANIZER_ACTION_QUEUE', 'queue');  // Waiting list
+define('ORGANIZER_ACTION_UNQUEUE', 'unqueue');  // Waiting list
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
@@ -37,6 +39,8 @@ require_once(dirname(__FILE__) . '/view_action_form_comment.php');
 require_once(dirname(__FILE__) . '/view_action_form_print.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
+require_once($CFG->dirroot . '/mod/organizer/classes/event/queue_added.php'); // Waiting list
+require_once($CFG->dirroot . '/mod/organizer/classes/event/queue_removed.php'); // Waiting list
 
 list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
@@ -73,7 +77,7 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
-if ($action == ORGANIZER_ACTION_REGISTER) {
+if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {  // Waiting list
     require_capability('mod/organizer:register', $context);
 
     if (!organizer_security_check_slots($slot)) {
@@ -89,16 +93,28 @@ if ($action == ORGANIZER_ACTION_REGISTER) {
     $success = organizer_register_appointment($slot, $groupid);
 
     if ($success) {
-        $event = \mod_organizer\event\appointment_added::create(array(
-                'objectid' => $PAGE->cm->id,
-                'context' => $PAGE->context
-        ));
+		// Waiting list
+        if ($action == ORGANIZER_ACTION_QUEUE) {
+            $event = \mod_organizer\event\queue_added::create(array(
+                    'objectid' => $PAGE->cm->id,
+                    'context' => $PAGE->context
+            ));
+			organizer_prepare_and_send_message($slot, 'register_notify:teacher:queue'); // Message.
+			if ($group) {
+				organizer_prepare_and_send_message($slot, 'group_registration_notify:student:queue');
+			}
+        } else {
+            $event = \mod_organizer\event\appointment_added::create(array(
+                    'objectid' => $PAGE->cm->id,
+                    'context' => $PAGE->context
+            ));
+			organizer_prepare_and_send_message($slot, 'register_notify:teacher:register'); // Message.
+			if ($group) {
+				organizer_prepare_and_send_message($slot, 'group_registration_notify:student:register');
+			}
+        }
         $event->trigger();
 
-        organizer_prepare_and_send_message($slot, 'register_notify:teacher:register'); // Message.
-        if ($group) {
-            organizer_prepare_and_send_message($slot, 'group_registration_notify:student:register');
-        }
     } else {
         if (organizer_is_group_mode()) {
             $redirecturl->param('messages[]', 'message_error_slot_full_group');
@@ -108,14 +124,10 @@ if ($action == ORGANIZER_ACTION_REGISTER) {
     }
 
     redirect($redirecturl);
-} else if ($action == ORGANIZER_ACTION_UNREGISTER) {
-    require_capability('mod/organizer:unregister', $context);
 
-    $event = \mod_organizer\event\appointment_removed::create(array(
-            'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
-    ));
-    $event->trigger();
+} else if ($action == ORGANIZER_ACTION_UNREGISTER || $action == ORGANIZER_ACTION_UNQUEUE) { // Waiting list
+
+    require_capability('mod/organizer:unregister', $context);
 
     if (!organizer_security_check_slots($slot)) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
@@ -128,15 +140,49 @@ if ($action == ORGANIZER_ACTION_REGISTER) {
     $group = organizer_fetch_my_group();
     $groupid = $group ? $group->id : 0;
 
-    organizer_prepare_and_send_message($slot, 'register_notify:teacher:unregister'); // Message.
-    if ($group) {
-        organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unregister');
+	
+	if ($action == ORGANIZER_ACTION_UNREGISTER) {
+	    $success = organizer_unregister_appointment($slot, $groupid);
+	} else {
+		$success = organizer_delete_from_queue($slot, $USER->id, $groupid);
+	}
+
+	if($success) {
+		if ($action == ORGANIZER_ACTION_UNREGISTER) {
+			$event = \mod_organizer\event\appointment_removed::create(array(
+					'objectid' => $PAGE->cm->id,
+					'context' => $PAGE->context
+			));
+			organizer_prepare_and_send_message($slot, 'register_notify:teacher:unregister'); // Message.
+			if ($group) {
+				organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unregister');
+			}
+		} else {  // Waiting list
+			$event = \mod_organizer\event\queue_removed::create(array(
+					'objectid' => $PAGE->cm->id,
+					'context' => $PAGE->context
+			));
+			organizer_prepare_and_send_message($slot, 'register_notify:teacher:unqueue'); // Message.
+			if ($group) {
+				organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unqueue');
+			}
+		}
+		$event->trigger();
+	
+	
+    } else {
+        if ($action == ORGANIZER_ACTION_UNREGISTER) {
+            $redirecturl->param('messages[]', 'message_error_unknown_unregister');
+        } else {
+            $redirecturl->param('messages[]', 'message_error_unknown_unqueue');
+        }
     }
 
-    organizer_unregister_appointment($slot, $groupid);
 
     redirect($redirecturl);
+
 } else if ($action == ORGANIZER_ACTION_REREGISTER) {
+
     require_capability('mod/organizer:register', $context);
     require_capability('mod/organizer:unregister', $context);
 
@@ -178,14 +224,17 @@ if ($action == ORGANIZER_ACTION_REGISTER) {
     }
 
     redirect($redirecturl);
+
 } else {
+
     print_error('Either a wrong method or no method was selected!');
+
 }
 
 die;
 
 function organizer_organizer_student_action_allowed($action, $slot) {
-    global $DB;
+    global $DB, $USER;
 
     if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
         return false;
@@ -217,6 +266,17 @@ function organizer_organizer_student_action_allowed($action, $slot) {
     $disabled = $myslotpending || $organizerdisabled ||
         $slotdisabled || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
+	// Waiting list
+	$isalreadyinqueue = false;
+    if ($organizer->isgrouporganizer) {
+    	$isalreadyinqueue = $slotx->is_group_in_queue();
+    } else {
+    	$isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
+    }
+
+    $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
+                 && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
+
     if ($myslotexists) {
         if (!$slotdisabled) {
             if ($ismyslot) {
@@ -233,5 +293,14 @@ function organizer_organizer_student_action_allowed($action, $slot) {
         $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REGISTER;
     }
 
-    return !$disabled && ($action == $allowedaction);
+    // Waiting list
+	$result = !$disabled && ($action == $allowedaction);
+    if (!$result && $isqueueable &&  $action == ORGANIZER_ACTION_QUEUE) {
+        $result = true;     
+    }
+    if (!$result && $isalreadyinqueue && $action == ORGANIZER_ACTION_UNQUEUE) {
+    	$result = true;
+    }
+
+    return $result;
 }
