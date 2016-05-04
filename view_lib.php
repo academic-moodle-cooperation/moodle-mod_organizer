@@ -157,9 +157,7 @@ function organizer_generate_registration_status_view($params, $instance, &$popup
         $columns[] = 'appdetails';
     } else {
         $columns[] = 'participants';
-        if ($instance->organizer->grade != 0) {
-            $columns[] = 'appdetails';
-        }
+        $columns[] = 'appdetails';
     }
 
     $columns = array_merge($columns, array('datetime', 'location', 'teacher', 'actions'));
@@ -256,7 +254,7 @@ function organizer_generate_button_bar($params, $organizer, $context) {
             '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsprinturl . '\');" />';
     }
 
-    if (has_capability("mod/organizer:evalslots", $context, null, true) && organizer_with_grading()) {
+    if (has_capability("mod/organizer:evalslots", $context, null, true)) {
         $slotsevalurl = new moodle_url('/mod/organizer/slots_eval.php', array('id' => $params['id']));
         $output .= '<input type="submit" value="' . get_string('btn_eval', 'organizer') .
             '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsevalurl . '\');" />';
@@ -1047,11 +1045,7 @@ function organizer_reg_organizer_app_details($organizer, $userid, &$popups) {
 
 function organizer_teacher_action_new($params, $entry, $context) {
     global $OUTPUT;
-	if(organizer_with_grading()) {
-		$evalenabled = has_capability('mod/organizer:evalslots', $context, null, true);
-	} else {
-		$evalenabled = false;
-	}
+	$evalenabled = has_capability('mod/organizer:evalslots', $context, null, true);
 	$evalurl = new moodle_url('/mod/organizer/slots_eval.php', 
 			array('id' => $params['id'], 'slots[]' => $entry->slotid));   
 	$remindurl = new moodle_url('/mod/organizer/send_reminder.php',
