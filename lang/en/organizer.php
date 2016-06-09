@@ -371,6 +371,7 @@ $string['configdigest_label'] = 'Send appointment digest to teachers';
 $string['organizer:addinstance'] = 'Add a new organizer';
 $string['organizer:comment'] = 'Add comments';
 $string['organizer:addslots'] = 'Add new time slots';
+$string['organizer:leadslots'] = 'Lead time slots';
 $string['organizer:editslots'] = 'Edit existing time slots';
 $string['organizer:evalslots'] = 'Grade completed time slots';
 $string['organizer:deleteslots'] = 'Delete existing time slots';
