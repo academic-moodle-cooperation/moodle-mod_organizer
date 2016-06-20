@@ -87,11 +87,12 @@ class organizer_print_slots_form extends moodleform {
 		$selcols[] = 'attended';
 		$selcols[] = 'grade';
 		$selcols[] = 'feedback';
-        $this->_selcols = $selcols;
 
         if ($isgrouporganizer) {
             array_splice($selcols, 3, 0, 'groupname');
         }
+
+        $this->_selcols = $selcols;
 
         $mform->addElement('header', 'export_settings_header', get_string('exportsettings', 'organizer'));
 
@@ -197,6 +198,8 @@ class organizer_print_slots_form extends moodleform {
         );
 
         $PAGE->requires->js_init_call('M.mod_organizer.init_organizer_print_slots_form', null, false, $jsmodule);
+		
+		$isgrouporganizer = organizer_is_group_mode();
 
         $table = new html_table();
         $table->id = 'print_preview';
@@ -257,6 +260,8 @@ class organizer_print_slots_form extends moodleform {
                 break;
             case "teacher":
                 $sort = "teacherfirstname";
+            case "groupname":
+                $sort = "groupname";
                 break;
             case "participant":
                 $sort = "u.lastname";
@@ -334,6 +339,7 @@ class organizer_print_slots_form extends moodleform {
                         case 'groupname':
                             $groupname = $entry->groupname;
                             $content = "<span name='{$column}_cell'>" . $groupname . '</span>';
+							if ($isgrouporganizer) $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
                             $cell = new html_table_cell($content);
                             $cell->rowspan = $entry->rowspan;
                             $cell->style = 'vertical-align: middle;';
@@ -351,6 +357,7 @@ class organizer_print_slots_form extends moodleform {
                         $a->lastname = $entry->lastname;
                         $name = get_string('fullname_template', 'organizer', $a);
                         $content = "<span name='{$column}_cell'>" . $name . '</span>';
+						if (!$isgrouporganizer) $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
                         $cell = new html_table_cell($content);
                         $cell->style = 'vertical-align: middle;';
                         $row->cells[] = $cell;

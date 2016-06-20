@@ -68,7 +68,9 @@
         <FIELD NAME="comments" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="feedback" NEXT="eventid"/>
         <FIELD NAME="eventid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="comments" NEXT="notified"/>
         <FIELD NAME="notified" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="eventid" NEXT="allownewappointments"/>
-        <FIELD NAME="allownewappointments" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" PREVIOUS="notified"/>
+        <FIELD NAME="allownewappointments" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" PREVIOUS="notified" NEXT="teacherapplicantid"/>
+        <FIELD NAME="teacherapplicantid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="allownewappointments" NEXT="teacherapplicanttimemodified"/>
+        <FIELD NAME="teacherapplicanttimemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="teacherapplicantid"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="slot"/>

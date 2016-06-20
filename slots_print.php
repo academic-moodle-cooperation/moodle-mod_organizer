@@ -282,6 +282,9 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
         case "teacher":
             $sort = "teacherfirstname";
             break;
+        case "groupname":
+            $sort = "groupname";
+            break;
         case "participant":
             $sort = "u.lastname";
             break;
@@ -333,6 +336,7 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
     $mpdftable->setColumnFormat($columnformats);
     $entries = organizer_fetch_table_entries($slots, $dosort);
     $rowspan = 0;
+	$isgroupmode = organizer_is_group_mode();
     foreach ($entries as $entry) {
         $row = array();
         if ($rowspan == 0) {
@@ -373,6 +377,7 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
                         $row[] = null;
                     } else {
                         $groupname = isset($entry->groupname) ? $entry->groupname : '';
+						if ($organizer->isgrouporganizer) $groupname .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
                         $row[] = array('data' => $groupname, 'rowspan' => $rowspan - 1);
                     }
                     break;
@@ -382,6 +387,7 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
                     $a->firstname = $entry->firstname;
                     $a->lastname = $entry->lastname;
                     $name = get_string('fullname_template', 'organizer', $a);
+					if (!$organizer->isgrouporganizer) $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
                     $row[] = array('data' => $name, 'rowspan' => 0);
                     break;
                 case 'email':

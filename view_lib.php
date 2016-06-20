@@ -19,7 +19,8 @@
  *
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at) 
+ * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author        Andreas Windbichler
  * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -679,13 +680,13 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
             . "
         END AS status, a2.starttime, a2.duration, a2.location, a2.locationlink,
         a2.teacherid, a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible,
-        a2.slotid, a2.allownewappointments, a2.id AS appid
+        a2.slotid, a2.allownewappointments, a2.id AS appid, a2.teacherapplicantid, a2.teacherapplicanttimemodified
         FROM {groups} g
         LEFT JOIN
         (SELECT
         a.id, a.groupid, a.allownewappointments, s.id as slotid, s.starttime, s.location,
         s.locationlink, s.teacherid, s.teachervisible,
-        s.duration, a.applicantid, a.comments, s.comments AS teachercomments,
+        s.duration, a.applicantid, a.comments, s.comments AS teachercomments, a.teacherapplicantid, a.teacherapplicanttimemodified,
         (SELECT MAX(a3.attended) FROM {organizer_slot_appointments} a3
         WHERE a3.groupid = a.groupid GROUP BY a3.slotid ORDER BY a3.slotid DESC LIMIT 1) AS attended
         FROM {organizer_slot_appointments} a
@@ -693,10 +694,12 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON g.id = a2.groupid
         WHERE g.id $insql
         GROUP BY g.id, g.name, status, a2.starttime, a2.duration, a2.location, a2.locationlink,
-            a2.teacherid, a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible, a2.slotid, a2.allownewappointments, a2.id
+            a2.teacherid, a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible, a2.slotid, a2.allownewappointments
         $orderby";
 
-    return $DB->get_records_sql($query, $par);
+	$rs = $DB->get_records_sql($query, $par);
+		
+    return $rs;
 }
 
 function organizer_organizer_get_status_table_entries($params) {
@@ -762,12 +765,12 @@ function organizer_organizer_get_status_table_entries($params) {
         END AS status,
         a2.starttime, a2.duration, a2.attended, a2.location, a2.locationlink,
         a2.grade, a2.comments, a2.teachercomments, a2.feedback, a2.teacherid,
-        a2.userid, a2.teachervisible, a2.slotid, a2.allownewappointments, a2.id AS appid
+        a2.userid, a2.teachervisible, a2.slotid, a2.allownewappointments, a2.id AS appid, a2.teacherapplicantid, a2.teacherapplicanttimemodified
         FROM {user} u
         LEFT JOIN
         (SELECT a.id, a.attended, a.grade, a.feedback, a.comments, a.userid,
         a.allownewappointments, s.starttime, s.location, s.locationlink, s.teacherid,
-        s.comments AS teachercomments, s.duration, s.teachervisible, s.id AS slotid
+        s.comments AS teachercomments, s.duration, s.teachervisible, s.id AS slotid, a.teacherapplicantid, a.teacherapplicanttimemodified
         FROM {organizer_slot_appointments} a INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON u.id = a2.userid
         WHERE u.id $insql
@@ -808,7 +811,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
         }
 
         $row = new html_table_row();
-
+		
         foreach ($columns as $column) {
             switch ($column) {
                 case 'group':
@@ -823,7 +826,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 'SELECT userid FROM {groups_members} gm
                                 INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
                                 $orderby, array('groupid' => $entry->id));
-                        $list = "<em>$entry->name</em><br/ >";
+                        $list = "<em>$entry->name</em>" . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) . "<br/ >";
                         foreach ($members as $member) {
                             $idnumber = organizer_get_user_idnumber($member);
 
@@ -842,7 +845,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                         $cell = $row->cells[] = new html_table_cell($list);
                     } else {
                         $cell = $row->cells[] = new html_table_cell(
-                                organizer_get_name_link($entry->id) . ($entry->idnumber ? " ($entry->idnumber)" : ""));
+                                organizer_get_name_link($entry->id) . ($entry->idnumber ? " ($entry->idnumber)" : "") . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) );
                     }
                     break;
                 case 'status':
@@ -899,7 +902,8 @@ function organizer_get_participant_entry($entry) {
     $icon = ' ' . (isset($entry->comments) && $entry->comments != '' ?
             organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments) :
             organizer_get_img('pix/transparent.png', '', ''));
-    return organizer_get_name_link($entry->id) . " {$icon}<br/>({$entry->idnumber})";
+	$participantentry = organizer_get_name_link($entry->id) . " {$icon}<br/>({$entry->idnumber})" . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified);		
+    return $participantentry;
 }
 
 function organizer_app_details($params, $appointment, &$popups) {
@@ -921,7 +925,7 @@ function organizer_app_details($params, $appointment, &$popups) {
 
    if ($appointment->feedback)
        $list .= organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback, $popups);
-
+			
     return $list;
 }
 
@@ -999,7 +1003,7 @@ function organizer_teacher_data($params, $slot, &$popups) {
         }
     }
 
-    $slotx = new organizer_slot($slot);
+    // ??? TN 8.6.16 $slotx = new organizer_slot($slot);
 
     if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW || $slot->teachervisible || $showteacher) {
         $output = organizer_get_name_link($slot->teacherid);
@@ -1050,7 +1054,14 @@ function organizer_teacher_action_new($params, $entry, $context) {
 			array('id' => $params['id'], 'slots[]' => $entry->slotid));   
 	$remindurl = new moodle_url('/mod/organizer/send_reminder.php',
             array('id' => $params['id'], 'user' => $entry->id));
-
+    if (organizer_is_group_mode()) {
+		$assignurl = new moodle_url('/mod/organizer/slot_assign.php',
+        	    array('id' => $params['id'], 'mode' => '3', 'group' => $entry->id));
+	} else {
+		$assignurl = new moodle_url('/mod/organizer/slot_assign.php',
+        	    array('id' => $params['id'], 'mode' => '3', 'participant' => $entry->id));
+	}
+	
     $buttons = array();
 
     switch ($entry->status) {
@@ -1100,6 +1111,12 @@ function organizer_teacher_action_new($params, $entry, $context) {
             $button->url = $remindurl;
             $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true);
             $buttons[] = $button;
+			
+			$button = new stdClass();
+			$button->text = get_string("btn_assign", 'organizer');
+			$button->url = $assignurl;
+			$button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
+			$buttons[] = $button;
 
             $button = new stdClass();
             $button->text = get_string("btn_reeval", 'organizer');
@@ -1114,6 +1131,13 @@ function organizer_teacher_action_new($params, $entry, $context) {
             $button->url = $remindurl;
             $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true);
             $buttons[] = $button;
+
+			$button = new stdClass();
+			$button->text = get_string("btn_assign", 'organizer');
+			$button->url = $assignurl;
+			$button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
+			$buttons[] = $button;
+
             break;
         default:
             print_error("Wrong status code: $entry->status");
@@ -1166,6 +1190,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
 			$output .= $name . ($idnumber ? " ($idnumber) " : " ");
 			$output .= ($isgroupmode && $app->userid == $app->applicantid) ?
 					organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+			$output .= 	organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);		
 			$output .= "</div>";
 		}
 	}
@@ -1302,7 +1327,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                     $content = '<em>' . get_string('nogroup', 'organizer') . '</em><br />';
                 } else {
                     $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
-                    $content = "<em>{$groupname}</em><br />";
+                    $content = "<em>{$groupname}</em>" . organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified) . "<br />";
                 }
             }
 
@@ -1317,6 +1342,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
 						$content .= ($appointment->userid == $appointment->applicantid) ?
 							organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
 					}
+					if (!$groupmode) $content .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid, $appointment->teacherapplicanttimemodified);				
 					$content .= '<br />';
 				}
 			}
@@ -1333,7 +1359,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                 $app = reset($appointments);
 				if ($app !== false) {
                 	$groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
-                	$list = "<em>{$groupname}</em><br />";
+                	$list = "<em>{$groupname}</em>" . organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified) . "<br />";
 				} else {				
 	                $list = '';
 				}
@@ -1349,7 +1375,9 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                     $list .= ' ';
                     $list .= (organizer_is_group_mode() && $appointment->userid == $appointment->applicantid) ? organizer_get_img(
                                     'pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
-                }
+                } else {
+					$list .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid, $appointment->teacherapplicanttimemodified);
+				}
                 $list .= organizer_app_details($params, $appointment, $popups) . '</div>';
             }
             $content .= $list;
@@ -1736,3 +1764,5 @@ function organizer_popup_icon($type, $content, &$popups) {
     $iconid = organizer_register_popup($type, $content, $popups);
     return organizer_get_img($icons[$type], '', '', $iconid);
 }
+
+

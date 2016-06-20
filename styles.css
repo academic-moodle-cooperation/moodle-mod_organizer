@@ -141,6 +141,7 @@
 
 #organizer_main_cointainer a.action{
     white-space:nowrap;
+	display: block;
 }
 
 #organizer_main_cointainer a.disabled{

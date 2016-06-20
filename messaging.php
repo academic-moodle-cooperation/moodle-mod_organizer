@@ -259,6 +259,23 @@ function organizer_prepare_and_send_message($data, $type) {
         case 'register_reminder:student':
             return organizer_send_message(intval($USER->id), intval($data['user']),
                 $data['organizer'], $type, null, array('custommessage' => $data['custommessage']));
+ 			break;
+        case 'assign_notify:student':
+			$apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $data->selectedslot, 'userid' => $data->participant));
+			$slot = $DB->get_record('organizer_slots', array('id' => $data->selectedslot));
+			foreach ($apps as $app) {
+				if ($app->groupid && !groups_is_member($app->groupid, $app->userid)) {
+					continue;
+				}
+				organizer_send_message(intval($slot->teacherid), intval($app->userid), $slot, $type);
+            }
+            break;
+        case 'assign_notify:teacher':
+			$slot = $DB->get_record('organizer_slots', array('id' => $data->selectedslot));
+			if ($USER->id != $slot->teacherid) {
+				organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
+			}
+            break;			
         default:
             print_error('Not debugged yet!');
     }

@@ -94,6 +94,12 @@ $capabilities = array(
                                                                'editingteacher' => CAP_ALLOW,
                                                                'manager'        => CAP_ALLOW)),
 
+        'mod/organizer:assignslots' => array('captype'      => 'write',
+                                               'contextlevel' => CONTEXT_MODULE,
+                                               'legacy' => array('teacher'        => CAP_ALLOW,
+                                                                 'editingteacher' => CAP_ALLOW,
+                                                                 'manager'        => CAP_ALLOW)),
+
         'mod/organizer:sendreminders' => array('captype'      => 'write',
                                                'contextlevel' => CONTEXT_MODULE,
                                                'legacy' => array('teacher'        => CAP_ALLOW,

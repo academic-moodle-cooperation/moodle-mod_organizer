@@ -65,6 +65,7 @@ $string['eventslotviewed'] = 'Termin angezeigt.';
 $string['eventappointmentadded'] = 'Teilnehmer/in hat sich zu einem Termin angemeldet.';
 $string['eventappointmentcommented'] = 'Termin wurde kommentiert.';
 $string['eventappointmentevaluated'] = 'Termin wurde bewertet.';
+$string['eventappointmentassigned'] = 'Termin wurde durch Lehrende/n zugewiesen.';
 $string['eventappointmentremoved'] = 'Teilnehmer/in wurde von einem Termin abgemeldet.';
 $string['eventappointmentremindersent'] = 'Terminerinnerung zu Anmeldung zu einem Termin gesendet.';
 $string['eventappointmentlistprinted'] = 'Terminliste wurde gedruckt.';
@@ -201,6 +202,12 @@ $string['title_eval'] = 'Ausgewählte Zeitslots bewerten';
 $string['evaluate'] = 'Speichern';
 $string['eval_header'] = 'Ausgewählte Zeitslots';
 $string['collision'] = 'Warnung! Zeitkollision mit dem/n folgenden Termin/en entdeckt:';
+$string['nofreeslots'] = 'Derzeit ist kein freier Termin verfügbar.';
+$string['availableslotsfor'] = 'Verfügbare Termine für';
+
+$string['title_assign'] = 'Zeitslot zuweisen';
+$string['assign'] = 'Zuweisen';
+$string['slotassignedby'] = 'Termin zugewiesen von';
 
 $string['btn_add'] = 'Neue Slots hinzufügen';
 $string['btn_edit'] = 'Ausgewählte Slots bearbeiten';
@@ -218,6 +225,7 @@ $string['btn_unqueue'] = 'Aus Warteliste entfernen';
 $string['btn_reeval'] = 'Neu bewerten';
 $string['btn_eval_short'] = 'Bewerten';
 $string['btn_remind'] = 'Erinnerung senden';
+$string['btn_assign'] = 'Termin zuweisen';
 $string['btn_save'] = 'Kommentar speichern';
 $string['btn_send'] = 'Senden';
 
@@ -384,6 +392,8 @@ $string['messageprovider:register_reminder:student'] = 'Terminplaner Registrieru
 $string['messageprovider:edit_notify:student'] = 'Terminplaner Änderungen';
 $string['messageprovider:edit_notify:teacher'] = 'Terminplaner Änderungen (Trainer/in)';
 $string['messageprovider:slotdeleted_notify:student'] = 'Terminplaner Slot absagen';
+$string['messageprovider:assign_notify:student'] = 'Terminplaner Zuweisung durch Lehrende/n';
+$string['messageprovider:assign_notify:teacher'] = 'Terminplaner Zuweisung';
 
 /* Message templates following.
  * Please note that the following strings are available:
@@ -686,6 +696,66 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat {$a->sendername} I
 
 Moodle Messaging System';
 $string['group_registration_notify:student:reregister:group:smallmessage'] = '{$a->sendername} hat Ihre Gruppe {$a->groupname} für einen neuen Zeitslot am {$a->date} um {$a->time} umgemeldet.';
+
+// assign student
+
+$string['assign_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin durch Lehrende/n zugewiesen';
+$string['assign_notify:student:fullmessage'] =
+'Hallo {$a->receivername}!
+
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen der Zeitslot am {$a->date} um {$a->time} im {$a->location} durch {$a->sendername} zugewiesen.
+
+Trainer/in: {$a->slot_teacher}
+Ort: {$a->slot_location}
+Datum: {$a->date} at {$a->time}
+
+Moodle Messaging System';
+$string['assign_notify:student:smallmessage'] = 'Termin am {$a->date} um {$a->time} durch {$a->sendername} zugewiesen.';
+
+// assign student group
+
+$string['assign_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppen-Termin durch Lehrende/n zugewiesen';
+$string['assign_notify:student:group:fullmessage'] =
+'Hallo {$a->receivername}!
+
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihrer Gruppe {$a->groupname} der Zeitslot am {$a->date} um {$a->time} im {$a->location} durch {$a->sendername} zugewiesen.
+
+Trainer/in: {$a->slot_teacher}
+Ort: {$a->slot_location}
+Datum: {$a->date} at {$a->time}
+
+Moodle Messaging System';
+$string['assign_notify:student:group:smallmessage'] = 'Gruppen-Termin am {$a->date} um {$a->time} durch {$a->sendername} zugewiesen.';
+
+// assign teacher
+
+$string['assign_notify:teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin zugewiesen';
+$string['assign_notify:teacher:fullmessage'] =
+'Hallo {$a->receivername}!
+
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie {$a->sendername} den Zeitslot am {$a->date} um {$a->time} im {$a->location} zugewiesen.
+
+Teilnehmer/in: {$a->sendername}
+Ort: {$a->slot_location}
+Datum: {$a->date} at {$a->time}
+
+Moodle Messaging System';
+$string['assign_notify:teacher:smallmessage'] = 'Termin am {$a->date} um {$a->time} {$a->sendername} zugewiesen.';
+
+// assign teacher group
+
+$string['assign_notify:teacher:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppen-Termin zugewiesen';
+$string['assign_notify:teacher:group:fullmessage'] =
+'Hallo {$a->receivername}!
+
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie der Gruppe {$a->groupname} den Zeitslot am {$a->date} um {$a->time} im {$a->location} zugewiesen.
+
+Gruppe: {$a->groupname}
+Ort: {$a->slot_location}
+Datum: {$a->date} at {$a->time}
+
+Moodle Messaging System';
+$string['assign_notify:teacher:group:smallmessage'] = 'Termin am {$a->date} um {$a->time} Gruppe {$a->groupname} zugewiesen.';
 
 // group registration student unregister group
 

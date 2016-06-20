@@ -567,7 +567,12 @@ function organizer_fetch_group($organizer, $userid = null) {
         $organizer = $DB->get_record('organizer', array('id' => $organizer));
     }
 
-    return groups_get_group(reset(reset(groups_get_user_groups($organizer->course, $userid))));
+	$usergrouparrays = groups_get_user_groups($organizer->course, $userid);
+	$usergroups = reset($usergrouparrays);
+	$usergroup = reset($usergroups);
+	$group = groups_get_group($usergroup);
+	
+    return $group;
 }
 
 function organizer_get_overview_student($organizer, $forindex = false) {

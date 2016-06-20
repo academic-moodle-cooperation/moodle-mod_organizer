@@ -15,23 +15,44 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php
+ * event/appointment_assigned.php
  *
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_organizer\event;
 defined('MOODLE_INTERNAL') || die();
+/**
+ * The appointment_assigned event class.
+ **/
+class appointment_assigned extends \core\event\base {
+    protected function init() {
+        $this->data['crud'] = 'u'; // Options: c(reate), r(ead), u(pdate), d(elete).
+        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
+        $this->data['objecttable'] = 'organizer_slot_appointments';
+    }
 
-$plugin->version = 2016062000;
-$plugin->release = "v3.1.0"; // User-friendly version number.
-$plugin->maturity = MATURITY_STABLE;
-$plugin->requires = 2014041100; // Requires this Moodle version.
-$plugin->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics).
-$plugin->cron = 300; // Period for cron to check this module (secs).
+    public static function get_name() {
+        return get_string('eventappointmentassigned', 'mod_organizer');
+    }
+
+    public function get_description() {
+        return "The user with id {$this->userid} has assigned an appointment of organizer activity " .
+            "with the course module id {$this->contextinstanceid}.";
+    }
+
+    public function get_url() {
+        return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
+    }
+
+    public function get_legacy_logdata() {
+        // Override if you are migrating an add_to_log() call.
+        return array($this->courseid, 'mod_organizer', 'assign',
+            $this->objectid, $this->contextinstanceid);
+    }
+}

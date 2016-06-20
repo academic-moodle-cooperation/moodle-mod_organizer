@@ -311,5 +311,27 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2016041800, 'organizer');
     }
 
+    if ($oldversion < 2016060801) {
+
+        // Define field teacherapplicantid and teacherapplicanttimemodified to be added to organizer_slot_appointments.
+        $table = new xmldb_table('organizer_slot_appointments');
+        $field = new xmldb_field('teacherapplicantid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'allownewappointments');
+ 
+        // Conditionally launch add field teacherapplicantid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('teacherapplicanttimemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'teacherapplicantid');
+ 
+        // Conditionally launch add field teacherapplicanttimemodified.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Organizer savepoint reached.
+        upgrade_mod_savepoint(true, 2016060801, 'organizer');
+    }
+
     return true;
 }

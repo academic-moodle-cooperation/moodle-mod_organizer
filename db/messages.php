@@ -20,6 +20,7 @@
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author        Andreas Windbichler
  * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -44,5 +45,9 @@ $messageproviders = array(
         'edit_notify:student' => array('capability' => 'mod/organizer:receivemessagesstudent',
                 'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
         'edit_notify:teacher' => array('capability' => 'mod/organizer:receivemessagesteacher',
+                'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
+        'assign_notify:student' => array('capability' => 'mod/organizer:receivemessagesstudent',
+                'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
+        'assign_notify:teacher' => array('capability' => 'mod/organizer:receivemessagesteacher',
                 'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
 );

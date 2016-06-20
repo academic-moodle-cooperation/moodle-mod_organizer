@@ -587,13 +587,12 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
 }
 
 // Waiting list: changed function
-function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sendmessage = false) {
+function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sendmessage = false, $teacherapplicantid = null) {
     global $DB, $USER, $CFG;
 
     if (!$userid) {
         $userid = $USER->id;
     }
-    
 	$slot = new organizer_slot($slotid);
     if ($slot->is_full()) {
     	return organizer_add_to_queue($slot, $groupid, $userid);
@@ -608,11 +607,11 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
         $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
 
         foreach ($memberids as $memberid) {
-            $ok = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid);
+            $ok = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid, $teacherapplicantid);
             $recipents[] = $memberid;
         }
     } else {
-        $ok = organizer_register_single_appointment($slotid, $userid);
+        $ok = organizer_register_single_appointment($slotid, $userid, 0, 0, $teacherapplicantid);
         $recipents[] = $userid;
     }
 
@@ -642,7 +641,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
     return $ok;
 }
 
-function organizer_register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0) {
+function organizer_register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0, $teacherapplicantid = null) {
     global $DB;
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
@@ -657,6 +656,8 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     $appointment->grade = null;
     $appointment->feedback = '';
     $appointment->comments = '';
+    $appointment->teacherapplicantid = $teacherapplicantid;
+    $appointment->teacherapplicanttimemodified = strtotime("now");
 
     $appointment->eventid = organizer_add_event_appointment($cm->id, $appointment);
 
@@ -926,6 +927,14 @@ function organizer_fetch_my_group() {
     return $group;
 }
 
+function organizer_get_groupname($groupid) {
+    global $DB;
+
+    $groupname = $DB->get_field('groups', 'name', array('id' => $groupid), MUST_EXIST);
+
+    return $groupname;
+}
+
 function organizer_fetch_hidecalendar() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
@@ -963,7 +972,8 @@ function organizer_fetch_table_entries($slots, $orderby="") {
     CASE (SELECT COUNT(a2.slotid) FROM {organizer_slot_appointments} a2 WHERE a2.slotid = a.slotid)
     WHEN 0 THEN 1
     ELSE (SELECT COUNT(a2.slotid) FROM {organizer_slot_appointments} a2 WHERE a2.slotid = a.slotid)
-    END AS rowspan
+    END AS rowspan,
+	a.teacherapplicantid
 
     FROM {organizer_slots} s
     LEFT JOIN {organizer_slot_appointments} a ON a.slotid = s.id
@@ -1015,4 +1025,21 @@ function organizer_with_grading() {
 		return 0;
 	}
 }
+
+function organizer_get_teacherapplicant_output($teacherapplicantid, $teacherapplicanttimemodified) {
+    global $DB;
+
+	$output = "";
+	
+	if(is_numeric($teacherapplicantid)) {
+		if($teacher = $DB->get_record('user', array('id' => $teacherapplicantid), 'lastname,firstname')) {
+			$output = " <span style= 'cursor:help;' title='" . get_string('slotassignedby', 'organizer') . " " . $teacher->firstname . " " . $teacher->lastname . "\n" . userdate($teacherapplicanttimemodified, get_string('fulldatetimetemplate', 'organizer')) ."'>[" . $teacher->firstname[0] . $teacher->lastname[0] . "]</span>";
+		}
+		
+	}
+	
+	return $output;
+		
+}
+
 
