@@ -57,8 +57,8 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $namesplit = explode(':', $type);
 
     $strings = new stdClass();
-    $strings->sendername = fullname($sender);
-    $strings->receivername = fullname($receiver);
+    $strings->sendername = fullname($sender, true);
+    $strings->receivername = fullname($receiver, true);
 
     if ($type != 'register_reminder:student') {
         $strings->date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
@@ -71,9 +71,9 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $strings->courseshortname = $course->shortname;
     $strings->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
 
-    if ($namesplit[0] == "edit_notify") {
+    if ($namesplit[0] == "edit_notify" || $namesplit[0] == "assign_notify") {
         $strings->slot_teacher = $slot->teachervisible == 1 ?
-           fullname($DB->get_record('user', array('id' => $slot->teacherid))) : get_string('teacherinvisible', 'organizer');
+           fullname($DB->get_record('user', array('id' => $slot->teacherid)), true) : get_string('teacherinvisible', 'organizer');
         $strings->slot_location = organizer_location_link($slot);
         $strings->slot_maxparticipants = $slot->maxparticipants;
         $strings->slot_comments = s($slot->comments);

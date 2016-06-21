@@ -67,27 +67,38 @@ class organizer_assign_slot_form extends moodleform {
         $data = $this->_customdata;
 
 		if($data['group']!=0) {
-	       	$mform->addElement('header', 'assignheader', get_string('availableslotsfor', 'organizer') . ' <strong>' .$data['groupname'] . '</strong>');
+	       	$mform->addElement('header', 'assignheader', get_string('availableslotsfor', 'organizer') . ' <strong>' . $data['groupname'] . '</strong>');
 		} else {
-        	$mform->addElement('header', 'assignheader', get_string('availableslotsfor', 'organizer') . ' <strong>' .$this->_displayparticipant($data['participant']) . '</strong>');
+        	$mform->addElement('header', 'assignheader', get_string('availableslotsfor', 'organizer') . ' <strong>' . organizer_get_name_link($data['participant']) . '</strong>');
  		}
 
         $slots = $DB->get_records('organizer_slots', array('organizerid' => $data['organizerid']));
         $organizer = $DB->get_record('organizer', array('id' => $data['organizerid']));
         
 		$radioarray=array();
-		$mform->addElement('html', '<table class="generaltable">');
+		$mform->addElement('html', '<table class="generaltable overview">');
+		$mform->addElement('html', '<tr>');
+		$mform->addElement('html', '<th style="vertical-align: middle;white-space: nowrap; text-align:right; padding-right:50px;" nowrap>' . get_string('th_datetime', 'organizer') . '</td>');
+		$mform->addElement('html', '<th style="vertical-align: middle;white-space: nowrap; text-align:center;" nowrap>' . get_string('th_location', 'organizer') . '</td>');
+		$mform->addElement('html', '<th style="vertical-align: middle;white-space: nowrap; text-align:center;" nowrap>' . get_string('th_teacher', 'organizer') . '</td>');
+		$mform->addElement('html', '<th style="vertical-align: middle;white-space: nowrap" nowrap> </td>');
         $i = 0;
 		foreach ($slots as $slot) {
 			if($this->_organizer_slot_is_free($slot, $data['participant'])) {
 				$i++;
-				$date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
-				$time = userdate($slot->starttime, get_string('timetemplate', 'organizer')) . ' - '
-						. userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));;
-				$str = ''.$date.' '.$time;
-				$mform->addElement('html', '<tr class="rcs-course"><td class="cell">');
-				$mform->addElement('radio', 'selectedslot', '', $str, $slot->id);
-				$mform->addElement('html', '</td></tr>');
+//				$date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
+//				$time = userdate($slot->starttime, get_string('timetemplate', 'organizer')) . ' - '
+//						. userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));;
+//				$str = ''.$date.' '.$time;
+				$strradio = organizer_date_time($slot);
+				$mform->addElement('html', '<tr class="free_slot">');
+				$mform->addElement('html', '<td style="vertical-align: middle;white-space: nowrap" nowrap>');
+				$mform->addElement('radio', 'selectedslot', '', $strradio, $slot->id);
+				$mform->addElement('html', '</td>');
+				$mform->addElement('html', '<td style="vertical-align: middle;white-space: nowrap" nowrap>' . organizer_location_link($slot) . '</td>');
+				$mform->addElement('html', '<td style="vertical-align: middle;white-space: nowrap" nowrap>' . organizer_get_name_link($slot->teacherid) . '</td>');
+				$mform->addElement('html', '<td style="vertical-align: middle;width:100%;"> </td>');
+				$mform->addElement('html', '</tr>');
 				if($i==1) $defaultid = $slot->id;
 			}
         }
@@ -130,10 +141,6 @@ class organizer_assign_slot_form extends moodleform {
         $mform->closeHeaderBefore('buttonar');
     }
 
-    private function _displayparticipant($userid) {
-		
-		return organizer_get_name_link($userid);
-		
-    }
 
+	
 }
