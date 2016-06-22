@@ -1183,6 +1183,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
 			$output .= $name . ($idnumber ? " ($idnumber) " : " ");
 			$output .= ($isgroupmode && $app->userid == $app->applicantid) ?
 					organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+			$output .= 	organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);		
 			$output .= organizer_app_details($params, $app, $popups);
 			$output .= "</div>";
 		} else if ($slot->visibility != ORGANIZER_VISIBILITY_ANONYMOUS && (organizer_is_my_slot($slot) || $slot->visibility == ORGANIZER_VISIBILITY_ALL) ) {
@@ -1318,7 +1319,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
             if ($ismyslot) {
                 $idnumber = organizer_get_user_idnumber($app->userid);
                 $content .= organizer_get_name_link($app->userid) .
-                            ($idnumber ? " ($idnumber) " : " ") . '<br />';
+                            ($idnumber ? " ($idnumber) " : " ") . organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified) . '<br />';
             }
         } else { // Not anonymous.
             if ($groupmode) {
