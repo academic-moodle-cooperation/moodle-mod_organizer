@@ -193,13 +193,10 @@ class mod_organizer_mod_form extends moodleform_mod {
             }
         }
 
-        if ($data['instance'] != 0) { // Skip the group check for old organizer compatibility.
-            return $errors;
-        }
-
         if ($data['isgrouporganizer'] == 1 && $data['groupmode'] == 0) {
-            $errors['isgrouporganizer'] = get_string('groupwarning', 'organizer');
             $errors['groupmode'] = get_string('warninggroupmode', 'organizer');
+        } else if ($data['isgrouporganizer'] == 1 && $data['groupingid'] == 0) {
+            $errors['isgrouporganizer'] = get_string('invalidgrouping', 'organizer');
         }
 
         if ($data['groupmode'] != 0 && $data['groupingid'] == 0) {
