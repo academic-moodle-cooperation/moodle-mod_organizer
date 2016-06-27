@@ -1035,16 +1035,23 @@ function organizer_with_grading() {
 	}
 }
 
-function organizer_get_teacherapplicant_output($teacherapplicantid, $teacherapplicanttimemodified) {
+function organizer_get_teacherapplicant_output($teacherapplicantid, $teacherapplicanttimemodified=null, $printable=false) {
     global $DB;
 
 	$output = "";
 	
 	if(is_numeric($teacherapplicantid)) {
-		if($teacher = $DB->get_record('user', array('id' => $teacherapplicantid), 'lastname,firstname')) {
-			$output = " <span style= 'cursor:help;' title='" . get_string('slotassignedby', 'organizer') . " " . $teacher->firstname . " " . $teacher->lastname . "\n" . userdate($teacherapplicanttimemodified, get_string('fulldatetimetemplate', 'organizer')) ."'>[" . $teacher->firstname[0] . $teacher->lastname[0] . "]</span>";
+		if(!$printable) {
+			$timestampstring = $teacherapplicanttimemodified!=null ? "\n" . userdate($teacherapplicanttimemodified, get_string('fulldatetimetemplate', 'organizer')) : "";
+			if($teacher = $DB->get_record('user', array('id' => $teacherapplicantid), 'lastname,firstname')) {
+				$output = " <span style= 'cursor:help;' title='" . get_string('slotassignedby', 'organizer') . " " . 
+							$teacher->firstname . " " . $teacher->lastname . $timestampstring ."'>[" . $teacher->firstname[0] . $teacher->lastname[0] . "]</span>";
+			}
+		} else {
+			if($teacher = $DB->get_record('user', array('id' => $teacherapplicantid), 'lastname,firstname')) {
+				$output = "[" . $teacher->firstname[0] . $teacher->lastname[0] . "]";
+			}
 		}
-		
 	}
 	
 	return $output;

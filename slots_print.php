@@ -377,7 +377,7 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
                         $row[] = null;
                     } else {
                         $groupname = isset($entry->groupname) ? $entry->groupname : '';
-						if ($organizer->isgrouporganizer) $groupname .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
+						if ($organizer->isgrouporganizer) $groupname .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                         $row[] = array('data' => $groupname, 'rowspan' => $rowspan - 1);
                     }
                     break;
@@ -387,7 +387,7 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
                     $a->firstname = $entry->firstname;
                     $a->lastname = $entry->lastname;
                     $name = get_string('fullname_template', 'organizer', $a);
-					if (!$organizer->isgrouporganizer) $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
+					if (!$organizer->isgrouporganizer) $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                     $row[] = array('data' => $name, 'rowspan' => 0);
                     break;
                 case 'email':
