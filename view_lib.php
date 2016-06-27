@@ -970,10 +970,19 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
 	
 					$cell->style .= ' vertical-align: middle;';
 				} // end foreach column
+				$numshown++;
 		        $rows[] = $row;
 			} // end is_free_slot
         } // end foreach slot
-    } // if slots
+	} // end if slots
+	
+	if($numshown==0) { // if no slots shown
+		$row = new html_table_row();
+		$cell = new html_table_cell(get_string('slotlistempty', 'organizer'));
+		$cell->colspan = count($columns);
+		$row->cells[] = $cell;
+		$rows[] = $row;
+    } // end if no slots shown
     return $rows;
 }
 

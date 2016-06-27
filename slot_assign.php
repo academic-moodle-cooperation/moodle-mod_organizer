@@ -82,7 +82,7 @@ $event = \mod_organizer\event\appointment_assigned::create(array(
 ));
 $event->trigger();
 
-redirect($newurl, "Message ok", 5);
+redirect($newurl, get_string('assignsuccess', 'organizer'), 5);
 
 print_error('If you see this, something went wrong!');
 

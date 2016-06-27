@@ -208,6 +208,8 @@ $string['availableslotsfor'] = 'Verfügbare Termine für';
 $string['assign_title'] = 'Termin zuweisen';
 $string['assign'] = 'Zuweisen';
 $string['slotassignedby'] = 'Termin zugewiesen von';
+$string['slotlistempty'] = 'Es konnten keine Termine gefunden werden.';
+$string['assignsuccess'] = 'Der Termin wurde erfolgreich zugeteilt und der/die Teilnehmer/in verständigt.';
 
 $string['btn_add'] = 'Neue Slots hinzufügen';
 $string['btn_edit'] = 'Ausgewählte Slots bearbeiten';
@@ -384,7 +386,7 @@ $string['organizer:viewregistrations'] = 'Status der Anmeldung von Teilnehmer/in
 $string['messageprovider:test'] = 'Terminplaner Test Nachricht';
 $string['messageprovider:appointment_reminder:student'] = 'Terminplaner Terminerinnerung';
 $string['messageprovider:appointment_reminder:teacher'] = 'Terminplaner Terminerinnerung (Trainer/in)';
-$string['messageprovider:manual_reminder:student'] = 'Terminplaner manuele Terminerinnerung';
+$string['messageprovider:manual_reminder:student'] = 'Terminplaner manuelle Terminerinnerung';
 $string['messageprovider:eval_notify:student'] = 'Terminplaner Bewertungsbenachrichtigung';
 $string['messageprovider:register_notify:teacher'] = 'Terminplaner Registrierungsbenachrichtigung';
 $string['messageprovider:group_registration_notify:student'] = 'Terminplaner Gruppenregistrierung Benachrichtigung';

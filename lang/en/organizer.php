@@ -210,6 +210,8 @@ $string['eval_allow_new_appointments'] = 'Allow reappointment';
 $string['assign_title'] = 'Assign appointment';
 $string['assign'] = 'Assign';
 $string['slotassignedby'] = 'Slot assigned by';
+$string['slotlistempty'] = 'No slots were found.';
+$string['assignsuccess'] = 'The slot has been assigned successfully and the participant has been notified.';
 
 $string['evaluate'] = 'Evaluate';
 $string['eval_header'] = 'Selected time slots';
