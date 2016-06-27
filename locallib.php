@@ -927,12 +927,21 @@ function organizer_fetch_my_group() {
     return $group;
 }
 
-function organizer_get_groupname($groupid) {
+function organizer_fetch_user_group($userid) {
     global $DB;
 
-    $groupname = $DB->get_field('groups', 'name', array('id' => $groupid), MUST_EXIST);
+    $id = optional_param('id', 0, PARAM_INT);
+    $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
 
-    return $groupname;
+    $params = array('groupingid' => $cm->groupingid, 'userid' => $userid);
+    $query = "SELECT {groups}.id FROM {groups}
+                INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
+                INNER JOIN {groups_members} ON {groups}.id = {groups_members}.groupid
+                WHERE {groupings_groups}.groupingid = :groupingid
+                AND {groups_members}.userid = :userid
+                ORDER BY {groups}.name ASC";
+    $group = $DB->get_record_sql($query, $params);
+    return $group;
 }
 
 function organizer_fetch_hidecalendar() {

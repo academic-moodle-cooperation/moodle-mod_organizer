@@ -52,6 +52,8 @@ function organizer_make_infobox($params, $organizer, $context, &$popups) {
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             $output .= organizer_make_reminder_section($params, $context);
         break;
+        case ORGANIZER_ASSIGNMENT_VIEW:
+        break;
         default:
             print_error("Wrong view mode: {$params['mode']}");
     }

@@ -179,6 +179,28 @@ function organizer_generate_registration_status_view($params, $instance, &$popup
     return $output;
 }
 
+function organizer_generate_assignment_view($params, $instance, &$popups) {
+
+//    $output = organizer_make_infobox($params, $instance->organizer, $instance->context, $popups);
+	$content = get_string('availableslotsfor', 'organizer') .' <strong>' . organizer_get_name_link($params['participant']) . '</strong>';
+	$output = organizer_make_section('assign', $content);
+
+	$columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
+	$align = array('left', 'left', 'left', 'left', 'center', 'center');
+	$sortable = array('datetime', 'location', 'teacher');
+
+	$table = new html_table();
+	$table->id = 'slot_overview';
+	$table->attributes['class'] = 'generaltable boxaligncenter overview';
+	$table->head = organizer_generate_table_header($columns, $sortable, $params);
+	$table->data = organizer_generate_assignment_table_content($columns, $params, $instance->organizer, $popups, false, false);
+	$table->align = $align;
+
+	$output .= organizer_render_table_with_footer($table);
+
+    return $output;
+}
+
 function organizer_begin_form($params) {
     $url = new moodle_url('/mod/organizer/view_action.php');
     $output = '<form name="viewform" action="' . $url->out() . '" method="post">';
@@ -898,6 +920,63 @@ function organizer_organizer_generate_registration_table_content($columns, $para
     return $rows;
 }
 
+function organizer_generate_assignment_table_content($columns, $params, $organizer, $popups) {
+    global $DB;
+
+    $translate = array('datetime' => "starttime {$params['dir']}", 'location' => "location {$params['dir']}",
+            'teacher' => "lastname {$params['dir']}, firstname {$params['dir']}");
+
+    $order = $translate[$params['sort']];
+	$participant = $params['participant'];
+
+	$sqlparams = array('organizerid' => $organizer->id);
+	$query = "SELECT s.*, u.firstname, u.lastname FROM {organizer_slots} s
+	INNER JOIN {user} u ON s.teacherid = u.id WHERE s.organizerid = :organizerid ORDER BY $order";
+	$slots = $DB->get_records_sql($query, $sqlparams);
+
+    $rows = array();
+    if (count($slots) != 0) {
+        $numshown = 0;
+        foreach ($slots as $slot) {
+			if(organizer_slot_is_free($slot, $participant)) {
+		        $row = new html_table_row();
+				foreach ($columns as $column) {
+					switch ($column) {
+						case 'datetime':
+							$cell = $row->cells[] = new html_table_cell(organizer_date_time($slot));
+							break;
+						case 'location':
+							$cell = $row->cells[] = new html_table_cell(organizer_location_link($slot));
+							break;
+						case 'participants':
+							$cell = $row->cells[] = new html_table_cell(
+									organizer_get_participant_list($params, $slot, null, $popups));
+							break;
+						case 'teacher':
+							$cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $slot, $popups));
+							break;
+						case 'details':
+							$cell = $row->cells[] = new html_table_cell(organizer_slot_status($params, $slot));
+							break;
+						case 'status':
+							$cell = $row->cells[] = new html_table_cell(organizer_slot_reg_status($organizer, $slot));
+							break;
+						case 'actions':
+							$cell = $row->cells[] = new html_table_cell(organizer_get_assign_button($slot->id, $params));
+							break;
+						default:
+							print_error("Unrecognized column type: $column");
+					}  // end switch
+	
+					$cell->style .= ' vertical-align: middle;';
+				} // end foreach column
+		        $rows[] = $row;
+			} // end is_free_slot
+        } // end foreach slot
+    } // if slots
+    return $rows;
+}
+
 function organizer_get_participant_entry($entry) {
     $icon = ' ' . (isset($entry->comments) && $entry->comments != '' ?
             organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments) :
@@ -1054,13 +1133,8 @@ function organizer_teacher_action_new($params, $entry, $context) {
 			array('id' => $params['id'], 'slots[]' => $entry->slotid));   
 	$remindurl = new moodle_url('/mod/organizer/send_reminder.php',
             array('id' => $params['id'], 'user' => $entry->id));
-    if (organizer_is_group_mode()) {
-		$assignurl = new moodle_url('/mod/organizer/slot_assign.php',
-        	    array('id' => $params['id'], 'mode' => '3', 'group' => $entry->id));
-	} else {
-		$assignurl = new moodle_url('/mod/organizer/slot_assign.php',
-        	    array('id' => $params['id'], 'mode' => '3', 'participant' => $entry->id));
-	}
+	$assignurl = new moodle_url('/mod/organizer/view.php',
+        	    array('id' => $params['id'], 'sort' => 'datetime', 'mode' => '4', 'participant' => $entry->id));
 	
     $buttons = array();
 
@@ -1699,6 +1773,15 @@ function organizer_get_reg_button($type, $slotid, $params, $disabled = false) {
             array('disabled' => $disabled));
 }
 
+function organizer_get_assign_button($slotid, $params) {
+    global $OUTPUT;
+
+    $actionurl = new moodle_url('/mod/organizer/slot_assign.php',
+            array('id' => $params['id'], 'mode' => $params['mode'], 'participant' => $params['participant'], 'slot' => $slotid));
+
+    return $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'), 'post');
+}
+
 function organizer_get_status_icon_new($status) {
     switch ($status) {
         case ORGANIZER_APP_STATUS_ATTENDED:
@@ -1766,4 +1849,21 @@ function organizer_popup_icon($type, $content, &$popups) {
     return organizer_get_img($icons[$type], '', '', $iconid);
 }
 
+function organizer_slot_is_free($slot, $userid) {
+
+	$slotx = new organizer_slot($slot);
+	if (!$slotx->is_past_due() && !$slotx->is_full() && $slotx->is_available() ) {
+
+		$apps = organizer_get_all_user_appointments($slotx->organizerid, $userid);
+		foreach ($apps as $app) {  // is own slot?
+			print_r($app->slotid.'<br />');
+			if ($app->slotid == $slotx->id) {
+				return false;
+			}
+		}
+		return true;
+	}
+		
+	return false;
+}
 

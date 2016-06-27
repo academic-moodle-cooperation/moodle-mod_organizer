@@ -222,6 +222,8 @@ function organizer_make_legend($params) {
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::end_tag('tr');
             break;
+        case ORGANIZER_ASSIGNMENT_VIEW:
+            break;
         default:
             print_error('Unknown view mode: ' . $params['mode']);
     }

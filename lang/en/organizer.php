@@ -207,7 +207,7 @@ $string['eval_grade'] = 'Grade';
 $string['eval_feedback'] = 'Feedback';
 $string['eval_allow_new_appointments'] = 'Allow reappointment';
 
-$string['title_assign'] = 'Assign appointment';
+$string['assign_title'] = 'Assign appointment';
 $string['assign'] = 'Assign';
 $string['slotassignedby'] = 'Slot assigned by';
 

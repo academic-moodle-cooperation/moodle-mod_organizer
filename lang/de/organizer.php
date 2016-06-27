@@ -205,7 +205,7 @@ $string['collision'] = 'Warnung! Zeitkollision mit dem/n folgenden Termin/en ent
 $string['nofreeslots'] = 'Derzeit ist kein freier Termin verfügbar.';
 $string['availableslotsfor'] = 'Verfügbare Termine für';
 
-$string['title_assign'] = 'Zeitslot zuweisen';
+$string['assign_title'] = 'Termin zuweisen';
 $string['assign'] = 'Zuweisen';
 $string['slotassignedby'] = 'Termin zugewiesen von';
 

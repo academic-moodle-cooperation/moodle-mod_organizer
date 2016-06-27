@@ -27,7 +27,6 @@
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
-require_once(dirname(__FILE__) . '/view_action_form_assign.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
@@ -35,18 +34,18 @@ list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
 
-$mode = optional_param('mode', null, PARAM_INT);
-$action = optional_param('action', null, PARAM_ACTION);
-$participant = optional_param('participant', null, PARAM_INT);
-$group = optional_param('group', null, PARAM_INT);
+require_capability('mod/organizer:assignslots', $context);
+
+$mode = required_param('mode', PARAM_INT);
+$slotid = required_param('slot', PARAM_INT);
+$participantid = required_param('participant', PARAM_INT);
 
 $url = new moodle_url('/mod/organizer/slot_assign.php');
 $url->param('id', $cm->id);
 $url->param('mode', $mode);
-$url->param('action', $action);
+$url->param('slot', $slotid);
 $url->param('sesskey', sesskey());
-$url->param('participant', $participant);
-$url->param('group', $group);
+$url->param('participant', $participantid);
 
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
@@ -60,45 +59,31 @@ $jsmodule = array(
 );
 $PAGE->requires->js_module($jsmodule);
 
-require_capability('mod/organizer:assignslots', $context);
+$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => 3));
 
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
-
-$logurl = 'slot_assign.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
-
-$groupname = "";
+$group = null;
 if (organizer_is_group_mode()) {
-	$groupname = organizer_get_groupname($group);
+	$group = organizer_fetch_user_group($participantid);
 }
 
-$mform = new organizer_assign_slot_form(null, array('id' => $cm->id, 'mode' => $mode, 'participant' => $participant, 'group' => $group, 'groupname' => $groupname, 'organizerid' => $organizer->id));
+$appointment_id = organizer_register_appointment($slotid, $group, $participantid, false, $USER->id);
 
-if ($data = $mform->get_data()) {
-    
-	$slotid = $data->selectedslot;
-	$participantid = $data->participant;
-	$groupid = $data->group;
-	
-	$appointment_id = organizer_register_appointment($slotid, $groupid, $participantid, false, $USER->id);
+$data = new stdClass();
+$data->selectedslot = $slotid;
+$data->participant = $participantid;
+organizer_prepare_and_send_message($data, 'assign_notify:student'); // Message.
+organizer_prepare_and_send_message($data, 'assign_notify:teacher'); // Message.
 
-    organizer_prepare_and_send_message($data, 'assign_notify:student'); // Message.
-    organizer_prepare_and_send_message($data, 'assign_notify:teacher'); // Message.
+$newurl = $redirecturl->out();
 
-    $newurl = $redirecturl->out();
+$event = \mod_organizer\event\appointment_assigned::create(array(
+		'objectid' => $PAGE->cm->id,
+		'context' => $PAGE->context
+));
+$event->trigger();
 
-    $event = \mod_organizer\event\appointment_assigned::create(array(
-            'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
-    ));
-    $event->trigger();
+redirect($newurl, "Message ok", 5);
 
-    redirect($newurl);
-} else {
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading(get_string('title_assign', 'organizer'));
-	$mform->display();
-    echo $OUTPUT->footer();
-}
-print_error('If you see this, something went wrong with edit action!');
+print_error('If you see this, something went wrong!');
 
 die;
