@@ -1091,9 +1091,9 @@ function organizer_teacher_data($params, $slot, &$popups) {
         }
     }
 
-    // ??? TN 8.6.16 $slotx = new organizer_slot($slot);
-
-    if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW || $slot->teachervisible || $showteacher) {
+    if ($params['mode'] == ORGANIZER_TAB_STUDENT_VIEW && !$slot->teachervisible) {
+        $output = '<em>' . get_string('teacherinvisible', 'organizer') . '</em>';
+	} else if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW || $slot->teachervisible || $showteacher) {
         $output = organizer_get_name_link($slot->teacherid);
     } else {
         $output = '<em>' . get_string('teacherinvisible', 'organizer') . '</em>';
