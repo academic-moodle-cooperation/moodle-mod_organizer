@@ -311,5 +311,18 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2016041800, 'organizer');
     }
 
+    if ($oldversion < 2016050402) {
+
+         // Changing precision of field duration on table organizer_slots to INT(10)
+        $table = new xmldb_table('organizer_slots');
+        $field = new xmldb_field('duration', XMLDB_TYPE_INTEGER, '10');
+
+        // Launch change of precision, sign and the default value for field duration.
+        $dbman->change_field_precision($table, $field);
+
+        // Organizer savepoint reached.
+        upgrade_mod_savepoint(true, 2016062800, 'organizer');
+    }
+	
     return true;
 }
