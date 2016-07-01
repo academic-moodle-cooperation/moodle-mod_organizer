@@ -38,14 +38,14 @@ require_capability('mod/organizer:assignslots', $context);
 
 $mode = required_param('mode', PARAM_INT);
 $slotid = required_param('slot', PARAM_INT);
-$participantid = required_param('participant', PARAM_INT);
+$assignid = required_param('assignid', PARAM_INT);
 
 $url = new moodle_url('/mod/organizer/slot_assign.php');
 $url->param('id', $cm->id);
 $url->param('mode', $mode);
 $url->param('slot', $slotid);
 $url->param('sesskey', sesskey());
-$url->param('participant', $participantid);
+$url->param('assignid', $assignid);
 
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
@@ -61,16 +61,26 @@ $PAGE->requires->js_module($jsmodule);
 
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => 3));
 
-$group = null;
+$groupid = null;
+$participantid = null;
 if (organizer_is_group_mode()) {
-	$group = organizer_fetch_user_group($participantid);
+	$groupid = $assignid;
+} else {
+	$participantid = $assignid;
 }
 
-$appointment_id = organizer_register_appointment($slotid, $group, $participantid, false, $USER->id);
+$appointment_id = organizer_register_appointment($slotid, $groupid, $participantid, false, $USER->id);
 
 $data = new stdClass();
 $data->selectedslot = $slotid;
-$data->participant = $participantid;
+
+if (organizer_is_group_mode()) {
+	$data->group = $groupid;
+	$data->participant = false;
+} else {
+	$data->participant = $participantid;
+	$data->group = false;
+}
 organizer_prepare_and_send_message($data, 'assign_notify:student'); // Message.
 organizer_prepare_and_send_message($data, 'assign_notify:teacher'); // Message.
 

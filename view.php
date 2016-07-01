@@ -191,7 +191,7 @@ function organizer_load_params($instance) {
             $params['sort'] = optional_param('sort', 'status', PARAM_ALPHA);
             break;
 		case ORGANIZER_ASSIGNMENT_VIEW:
-            $params['participant'] = required_param('participant', PARAM_INT);
+            $params['assignid'] = required_param('assignid', PARAM_INT);
             $params['sort'] = optional_param('sort', 'datetime', PARAM_ALPHA);
             break;    
 	}

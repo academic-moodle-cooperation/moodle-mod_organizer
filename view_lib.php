@@ -182,7 +182,7 @@ function organizer_generate_registration_status_view($params, $instance, &$popup
 function organizer_generate_assignment_view($params, $instance, &$popups) {
 
 //    $output = organizer_make_infobox($params, $instance->organizer, $instance->context, $popups);
-	$content = get_string('availableslotsfor', 'organizer') .' <strong>' . organizer_get_name_link($params['participant']) . '</strong>';
+	$content = get_string('availableslotsfor', 'organizer') .' <strong>' . organizer_get_name_link($params['assignid']) . '</strong>';
 	$output = organizer_make_section('assign', $content);
 
 	$columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
@@ -927,7 +927,7 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
             'teacher' => "lastname {$params['dir']}, firstname {$params['dir']}");
 
     $order = $translate[$params['sort']];
-	$participant = $params['participant'];
+	$assignid = $params['assignid'];
 
 	$sqlparams = array('organizerid' => $organizer->id);
 	$query = "SELECT s.*, u.firstname, u.lastname FROM {organizer_slots} s
@@ -938,7 +938,7 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
     if (count($slots) != 0) {
         $numshown = 0;
         foreach ($slots as $slot) {
-			if(organizer_slot_is_free($slot, $participant)) {
+			if(organizer_slot_is_free($slot, $assignid)) {
 		        $row = new html_table_row();
 				foreach ($columns as $column) {
 					switch ($column) {
@@ -1143,7 +1143,7 @@ function organizer_teacher_action_new($params, $entry, $context) {
 	$remindurl = new moodle_url('/mod/organizer/send_reminder.php',
             array('id' => $params['id'], 'user' => $entry->id));
 	$assignurl = new moodle_url('/mod/organizer/view.php',
-        	    array('id' => $params['id'], 'sort' => 'datetime', 'mode' => '4', 'participant' => $entry->id));
+        	    array('id' => $params['id'], 'sort' => 'datetime', 'mode' => '4', 'assignid' => $entry->id));
 	
     $buttons = array();
 
@@ -1786,7 +1786,7 @@ function organizer_get_assign_button($slotid, $params) {
     global $OUTPUT;
 
     $actionurl = new moodle_url('/mod/organizer/slot_assign.php',
-            array('id' => $params['id'], 'mode' => $params['mode'], 'participant' => $params['participant'], 'slot' => $slotid));
+            array('id' => $params['id'], 'mode' => $params['mode'], 'assignid' => $params['assignid'], 'slot' => $slotid));
 
     return $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'), 'post');
 }
@@ -1865,7 +1865,6 @@ function organizer_slot_is_free($slot, $userid) {
 
 		$apps = organizer_get_all_user_appointments($slotx->organizerid, $userid);
 		foreach ($apps as $app) {  // is own slot?
-			print_r($app->slotid.'<br />');
 			if ($app->slotid == $slotx->id) {
 				return false;
 			}

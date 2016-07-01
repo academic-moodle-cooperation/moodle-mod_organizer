@@ -261,8 +261,12 @@ function organizer_prepare_and_send_message($data, $type) {
                 $data['organizer'], $type, null, array('custommessage' => $data['custommessage']));
  			break;
         case 'assign_notify:student':
-			$apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $data->selectedslot, 'userid' => $data->participant));
 			$slot = $DB->get_record('organizer_slots', array('id' => $data->selectedslot));
+			if($data->participant) {
+				$apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $data->selectedslot, 'userid' => $data->participant));
+			} else {
+				$apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $data->selectedslot, 'groupid' => $data->group));
+			}
 			foreach ($apps as $app) {
 				if ($app->groupid && !groups_is_member($app->groupid, $app->userid)) {
 					continue;
