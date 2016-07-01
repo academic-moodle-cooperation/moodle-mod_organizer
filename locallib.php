@@ -1058,4 +1058,12 @@ function organizer_get_teacherapplicant_output($teacherapplicantid, $teacherappl
 		
 }
 
+function organizer_fetch_groupname($groupid) {
+    global $DB;
+
+    $groupname = $DB->get_field('groups', 'name', array('id' => $groupid));
+
+    return $groupname;
+}
+
 

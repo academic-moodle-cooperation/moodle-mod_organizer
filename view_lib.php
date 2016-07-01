@@ -181,8 +181,11 @@ function organizer_generate_registration_status_view($params, $instance, &$popup
 
 function organizer_generate_assignment_view($params, $instance, &$popups) {
 
-//    $output = organizer_make_infobox($params, $instance->organizer, $instance->context, $popups);
-	$content = get_string('availableslotsfor', 'organizer') .' <strong>' . organizer_get_name_link($params['assignid']) . '</strong>';
+    if ($instance->organizer->isgrouporganizer) {
+		$content = get_string('availableslotsfor', 'organizer') .' <strong>' . organizer_fetch_groupname($params['assignid']) . '</strong>';
+	} else {
+		$content = get_string('availableslotsfor', 'organizer') .' <strong>' . organizer_get_name_link($params['assignid']) . '</strong>';
+	}
 	$output = organizer_make_section('assign', $content);
 
 	$columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
