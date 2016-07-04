@@ -359,6 +359,7 @@ $string['eventteacheranonymous'] = '<em>anonymous</em>';
 $string['organizer:addinstance'] = 'Organizer hinzufügen';
 $string['organizer:comment'] = 'Kommentare hinzufügen';
 $string['organizer:addslots'] = 'Neue Zeitslots hinzufügen';
+$string['organizer:leadslots'] = 'Zeitslots verwalten';
 $string['organizer:editslots'] = 'Vorhandene Zeitslots bearbeiten';
 $string['organizer:evalslots'] = 'Abgeschlossene Zeitslots bewerten';
 $string['organizer:deleteslots'] = 'Vorhandene Zeitslots löschen';

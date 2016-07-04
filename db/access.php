@@ -75,7 +75,12 @@ $capabilities = array(
                                           'legacy'       => array('teacher'        => CAP_ALLOW,
                                                                   'editingteacher' => CAP_ALLOW,
                                                                   'manager'        => CAP_ALLOW)),
-
+        'mod/organizer:leadslots' => array('captype'             => 'read',
+                                           'contextlevel'        => CONTEXT_MODULE,
+                                           'legacy'              => array('teacher'        => CAP_ALLOW,
+                                                                          'editingteacher' => CAP_ALLOW,
+                                                                          'manager'        => CAP_ALLOW),
+                                           'clonepermissionsfrom' => 'mod/organizer:addslots'),
         'mod/organizer:editslots' => array('captype'      => 'write',
                                            'contextlevel' => CONTEXT_MODULE,
                                            'legacy' => array('teacher'        => CAP_ALLOW,
