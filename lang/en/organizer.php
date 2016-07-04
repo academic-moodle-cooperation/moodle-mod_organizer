@@ -380,6 +380,7 @@ $string['configdigest_label'] = 'Send appointment digest to teachers';
 $string['organizer:addinstance'] = 'Add a new organizer';
 $string['organizer:comment'] = 'Add comments';
 $string['organizer:addslots'] = 'Add new time slots';
+$string['organizer:leadslots'] = 'Lead time slots';
 $string['organizer:editslots'] = 'Edit existing time slots';
 $string['organizer:evalslots'] = 'Grade completed time slots';
 $string['organizer:deleteslots'] = 'Delete existing time slots';
@@ -393,6 +394,7 @@ $string['organizer:viewallslots'] = 'View all time slots as a teacher';
 $string['organizer:viewmyslots'] = 'View own time slots as a teacher';
 $string['organizer:viewstudentview'] = 'View all time slots as a student';
 $string['organizer:viewregistrations'] = 'View status of student registrations';
+$string['organizer:assignslots'] = 'Assign time slot to a student';
 
 $string['messageprovider:test'] = 'Organizer Test Message';
 $string['messageprovider:appointment_reminder:student'] = 'Organizer appointment reminder';

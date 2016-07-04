@@ -369,6 +369,7 @@ $string['eventteacheranonymous'] = '<em>anonymous</em>';
 $string['organizer:addinstance'] = 'Organizer hinzufügen';
 $string['organizer:comment'] = 'Kommentare hinzufügen';
 $string['organizer:addslots'] = 'Neue Zeitslots hinzufügen';
+$string['organizer:leadslots'] = 'Zeitslot verwalten';
 $string['organizer:editslots'] = 'Vorhandene Zeitslots bearbeiten';
 $string['organizer:evalslots'] = 'Abgeschlossene Zeitslots bewerten';
 $string['organizer:deleteslots'] = 'Vorhandene Zeitslots löschen';
@@ -382,6 +383,7 @@ $string['organizer:viewallslots'] = 'Alle Zeitslots als Trainer/in ansehen';
 $string['organizer:viewmyslots'] = 'Eigene Zeitslots als Trainer/in ansehen';
 $string['organizer:viewstudentview'] = 'Alle Zeitslots als Teilnehmer/in ansehen';
 $string['organizer:viewregistrations'] = 'Status der Anmeldung von Teilnehmer/innen ansehen';
+$string['organizer:assignslots'] = 'Teilnehmer/innen Zeitslots zuweisen';
 
 $string['messageprovider:test'] = 'Terminplaner Test Nachricht';
 $string['messageprovider:appointment_reminder:student'] = 'Terminplaner Terminerinnerung';
