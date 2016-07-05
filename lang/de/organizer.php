@@ -245,6 +245,8 @@ $string['places_taken_pl'] = '{$a->numtakenplaces}/{$a->totalplaces} Plätze ver
 $string['places_taken_sg'] = '{$a->numtakenplaces}/{$a->totalplaces} Platz vergeben';
 $string['places_inqueue'] = '{$a->inqueue} in Warteliste';
 $string['places_inqueue_withposition'] = 'Position {$a->queueposition} in Warteliste';
+$string['inwaitingqueue'] = "In Warteliste";
+$string['position'] = 'Position in Warteliste';
 
 $string['addslots_placesinfo'] = 'Diese Aktion erstellt {$a->numplaces} neue mögliche Plätze, was zu einer Gesamtanzahl von {$a->totalplaces} möglichen Plätzen für {$a->numstudents} Teilnehmer/innen führt.';
 $string['addslots_placesinfo_group'] = 'Diese Aktion erstellt {$a->numplaces} neue mögliche Plätze, was zu einer Gesamtanzahl von {$a->totalplaces} möglichen Plätzen für {$a->numgroups} Gruppen führt.';

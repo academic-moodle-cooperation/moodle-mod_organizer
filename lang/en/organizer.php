@@ -263,6 +263,8 @@ $string['group_slot_full'] = "Slot taken";
 $string['slot_anonymous'] = "Slot anonymous";
 $string['slot_slotvisible'] = "Members only visible if own slot";
 $string['slot_visible'] = "Members of slot always visible";
+$string['inwaitingqueue'] = "Waitinglist";
+$string['position'] = 'Position in queue';
 
 $string['addslots_placesinfo'] = 'This action will create {$a->numplaces} new possible places, making a total of {$a->totalplaces} possible places for {$a->numstudents} students.';
 $string['addslots_placesinfo_group'] = 'This action will create {$a->numplaces} new possible places, making a total of {$a->totalplaces} possible places for {$a->numgroups} groups.';
