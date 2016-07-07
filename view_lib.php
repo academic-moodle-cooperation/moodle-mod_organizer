@@ -893,15 +893,24 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 'SELECT userid FROM {groups_members} gm
                                 INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
                                 $orderby, array('groupid' => $entry->id));
-                        $list = '';
+						$list = "";		
                         foreach ($members as $member) {
-                            $list .= '<br />';
-                            $list .= organizer_reg_organizer_app_details($organizer, $member, $popups, $groupmode, $queueable);
+							if($queueable) {
+								$list .= organizer_reg_waitinglist_status($organizer->id, $member, $groupmode);
+							}
+							if($list!="") break;
+							$list .= '<br />';
+                            $list .= organizer_reg_organizer_app_details($organizer, $member, $popups, $groupmode);
                         }
                         $cell = $row->cells[] = new html_table_cell($list);
                     } else {
-                        $cell = $row->cells[] = new html_table_cell(
-                                organizer_reg_organizer_app_details($organizer, $entry->id, $popups, $groupmode, $queueable));
+						if($queueable) {
+							$outcell = organizer_reg_waitinglist_status($organizer->id, $userid, $groupmode);
+						} else {
+	                        $outcell = '';
+						}
+						$outcell .= organizer_reg_organizer_app_details($organizer, $entry->id, $popups, $groupmode);
+                        $cell = $row->cells[] = new html_table_cell($outcell);
                     }
 
                     break;
@@ -1121,7 +1130,7 @@ function organizer_teacher_data($params, $slot, &$popups) {
     return $output;
 }
 
-function organizer_reg_organizer_app_details($organizer, $userid, &$popups, $groupmode, $queueable) {
+function organizer_reg_organizer_app_details($organizer, $userid, &$popups, $groupmode) {
     $appointment = organizer_get_last_user_appointment($organizer, $userid, false);
     if ($appointment) {
         $list = '';
@@ -1135,44 +1144,50 @@ function organizer_reg_organizer_app_details($organizer, $userid, &$popups, $gro
                 organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback, $popups) : '');
     } else {
         $list = '-';
-		if($queueable) {
-			global $DB;
-			if($groupmode) {
-				$group = organizer_fetch_user_group($userid);
-				$query = "SELECT s.id, s.starttime, s.duration, s.teacherid, s.location, t.firstname, t.lastname FROM {organizer_slot_queues} q 
-						INNER JOIN {organizer_slots} s ON s.id = q.slotid
-						INNER JOIN {user} t ON s.teacherid = t.id
-						WHERE q.groupid = :groupid and s.organizerid = :organizerid";
-				$par = array('groupid' => $group->id, 'organizerid' => $organizer->id);
-			} else {
-				$query = "SELECT s.id, s.starttime, s.duration, s.teacherid, s.location, t.firstname, t.lastname FROM {user} u
-						INNER JOIN {organizer_slot_queues} q ON q.userid = u.id
-						INNER JOIN {organizer_slots} s ON s.id = q.slotid
-						INNER JOIN {user} t ON s.teacherid = t.id
-						WHERE u.id = :userid and s.organizerid = :organizerid";
-				$par = array('userid' => $userid, 'organizerid' => $organizer->id);		
-			}
-			if($slot = $DB->get_record_sql($query, $par)) {
-				$slotx = new organizer_slot($slot->id);
-				if($groupmode) {
-					$position = $slotx->is_group_in_queue($group->id);
-				} else {
-					$position = $slotx->is_user_in_queue($userid);
-				}
-				$list = get_string('inwaitingqueue','organizer');
-				$slotinfo = str_replace("<br />", " ", organizer_date_time($slot));
-				$slotinfo .= "\n" . get_string('teacherid', 'organizer') . ": ";
-				$slotinfo .= $slot->teacherid ? $slot->firstname . " ". $slot->lastname : "-";
-				$slotinfo .= "\n" . get_string('location', 'organizer') . ": ";
-				$slotinfo .= $slot->location ? $slot->location : "-";
-				$slotinfo .= "\n" . get_string('position', 'organizer') . ": ";
-				$slotinfo .= $position;
-				$list .= " <span style=\"cursor:help;\">" . organizer_get_img('../../pix/docs.png', $slotinfo, $slotinfo) . "</span>";				
-			}
-		}
     }
 
     return $list;
+}
+
+function organizer_reg_waitinglist_status($organizerid, $userid, $groupmode) {
+	global $DB;
+
+	$list = "";
+	if($groupmode) {
+		$group = organizer_fetch_user_group($userid);
+		$query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.teacherid, s.location, t.firstname, t.lastname FROM {organizer_slot_queues} q 
+				INNER JOIN {organizer_slots} s ON s.id = q.slotid
+				INNER JOIN {user} t ON s.teacherid = t.id
+				WHERE q.groupid = :groupid and s.organizerid = :organizerid";
+		$par = array('groupid' => $group->id, 'organizerid' => $organizerid);
+	} else {
+		$query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.teacherid, s.location, t.firstname, t.lastname FROM {user} u
+				INNER JOIN {organizer_slot_queues} q ON q.userid = u.id
+				INNER JOIN {organizer_slots} s ON s.id = q.slotid
+				INNER JOIN {user} t ON s.teacherid = t.id
+				WHERE u.id = :userid and s.organizerid = :organizerid";
+		$par = array('userid' => $userid, 'organizerid' => $organizerid);		
+	}
+	if($slot = $DB->get_record_sql($query, $par)) {
+		$slotx = new organizer_slot($slot->id);
+		if($groupmode) {
+			$position = $slotx->is_group_in_queue($group->id);
+		} else {
+			$position = $slotx->is_user_in_queue($userid);
+		}
+		$list = get_string('inwaitingqueue','organizer');
+		$slotinfo = str_replace("<br />", " ", organizer_date_time($slot));
+		$slotinfo .= "\n" . get_string('teacherid', 'organizer') . ": ";
+		$slotinfo .= $slot->teacherid ? $slot->firstname . " ". $slot->lastname : "-";
+		$slotinfo .= "\n" . get_string('location', 'organizer') . ": ";
+		$slotinfo .= $slot->location ? $slot->location : "-";
+		$slotinfo .= "\n" . get_string('position', 'organizer') . ": ";
+		$slotinfo .= $position;
+		$list .= "<span style=\"cursor:help;\"> " . organizer_get_img('../../pix/docs.png', $slotinfo, $slotinfo) . "</span>";				
+	}
+	
+	return $list;
+
 }
 
 function organizer_teacher_action_new($params, $entry, $context) {
