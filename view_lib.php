@@ -1023,7 +1023,7 @@ function organizer_app_details($params, $appointment, &$popups) {
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     if ($organizer->grade != 0) 
-        $list .= organizer_display_grade($organizer, $appointment->grade);
+        $list .= organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
 
    if ($appointment->feedback)
        $list .= organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback, $popups);
@@ -1138,7 +1138,7 @@ function organizer_reg_organizer_app_details($organizer, $userid, &$popups, $gro
             $list .= organizer_get_attended_icon($appointment) . ' ';
         }
         if ($organizer->grade != 0) {
-            $list .= organizer_display_grade($organizer, $appointment->grade);
+            $list .= organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
         }
         $list .= ' ' . (isset($appointment->feedback) && $appointment->feedback != '' ?
                 organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback, $popups) : '');

@@ -1047,3 +1047,6 @@ $string['visibility_all'] = 'Sichtbar';
 
 $string['hidecalendar'] = 'Kalender verbergen';
 $string['hidecalendar_help'] = 'Stellen Sie hier ein, ob der Kalender in diesem Terminplaner ausgeblendet werden soll.';
+
+$string['finalgrade'] = 'Dieser Wert wurde in der Kursbewertung eingetragen und kann im Terminplaner nicht überschrieben werden.';
+

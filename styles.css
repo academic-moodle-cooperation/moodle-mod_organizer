@@ -147,3 +147,10 @@
 #organizer_main_cointainer a.disabled{
     color:grey;
 }
+
+.finalgrade {
+	margin-left: 0.1em;
+    cursor:help;
+	color: red;
+}
+

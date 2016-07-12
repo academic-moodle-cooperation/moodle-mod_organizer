@@ -365,16 +365,24 @@ function organizer_grade_item_update($organizer, $grades = null) {
     return grade_update('mod/organizer', $organizer->courseid, 'mod', 'organizer', $organizer->id, 0, $grades, $params);
 }
 
-function organizer_display_grade($organizer, $grade) {
+function organizer_display_grade($organizer, $grade, $userid) {
     global $DB;
     $nograde = get_string('nograde');
     static $scalegrades = array();   // Cache scales for each organizer - they might have different scales!!
 
     if ($organizer->grade >= 0) {    // Normal number.
         if ($grade == -1 || $grade == null) {
-            return $nograde;
+			if($finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid)) {
+				return organizer_display_finalgrade($finalgrade);
+			} else {
+            	return $nograde;
+			}
         } else {
-            return organizer_clean_num($grade) . ' / ' . organizer_clean_num($organizer->grade);
+            $returnstr = organizer_clean_num($grade) . '/' . organizer_clean_num($organizer->grade);
+			if($finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid)) {
+				$returnstr .=  organizer_display_finalgrade($finalgrade);
+			}
+			return $returnstr;
         }
     } else {    // Scale.
         if (empty($scalegrades[$organizer->id])) {
@@ -393,6 +401,37 @@ function organizer_display_grade($organizer, $grade) {
         }
         return $nograde;
     }
+}
+
+function organizer_display_finalgrade($finalgrade) {
+    $nograde = get_string('nograde');
+	
+	if($finalgrade) {
+		return html_writer::span('(' . $finalgrade . ')', 'finalgrade', array('title' => get_string('finalgrade', 'organizer')));
+	} else {
+		return $nograde;	
+	}
+}
+
+function organizer_get_finalgrade_overwritten($organizerid, $userid) {
+    global $DB;
+
+	$params = array('organizerid' => $organizerid, 'userid' => $userid);
+	$query = "SELECT gg.rawgrade, gg.finalgrade FROM mdl_grade_items gi 
+			inner join mdl_grade_grades gg on gg.itemid = gi.id 
+			where gi.itemtype = 'mod' and gi.itemmodule = 'organizer' 
+			and gi.iteminstance = :organizerid and gg.userid = :userid";
+	if($grades = $DB->get_record_sql($query, $params)) {	
+		if(is_null($grades->rawgrade)) $grades->rawgrade = 0;
+		if(is_null($grades->finalgrade)) $grades->finalgrade = 0;
+		if($grades->rawgrade != $grades->finalgrade) {
+			return organizer_clean_num($grades->finalgrade);
+		} else {
+			return false;	
+		}
+	} else {
+		return false;
+	}
 }
 
 // Tscpr: we can strip the trailing _organizer in this function name...
@@ -600,7 +639,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
             $a->groupname = $group->name;
             $completedapp = get_string('mymoodle_completed_app_group', 'organizer', $a) . ($forindex ? '' :
-                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade) . ")");
+                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $completedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -615,7 +654,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->groupname = $group->name;
 
             $missedapp = get_string('mymoodle_missed_app_group', 'organizer', $a) . ($forindex ? '' :
-                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade) . ")");
+                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $missedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -678,7 +717,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
             $completedapp = get_string('mymoodle_completed_app', 'organizer', $a) . ($forindex ? '' :
-                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade) . ")");
+                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $completedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -690,7 +729,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
             $missedapp = get_string('mymoodle_missed_app', 'organizer', $a) . ($forindex ? '' :
-                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade) . ")");
+                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $missedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }

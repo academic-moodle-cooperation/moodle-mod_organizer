@@ -1078,3 +1078,5 @@ $string['visibility_all'] = 'Visible';
 
 $string['hidecalendar'] = 'Hide calendar';
 $string['hidecalendar_help'] = 'Check to hide the calendar in this organizer';
+
+$string['finalgrade'] = 'This value has been set in the gradebook and can not be changed in the organizer.';
