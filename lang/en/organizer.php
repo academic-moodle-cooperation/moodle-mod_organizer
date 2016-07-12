@@ -408,7 +408,7 @@ $string['messageprovider:group_registration_notify:student'] = 'Organizer groupr
 $string['messageprovider:register_reminder:student'] = 'Organizer registration reminder';
 $string['messageprovider:edit_notify:student'] = 'Organizer changes';
 $string['messageprovider:edit_notify:teacher'] = 'Organizer changes (Teacher)';
-$string['messageprovider:slotdeleted_notify:student'] = 'Organizer slots cancled';
+$string['messageprovider:slotdeleted_notify:student'] = 'Organizer slots cancelled';
 $string['messageprovider:assign_notify:student'] = 'Organizer assignment by teacher';
 $string['messageprovider:assign_notify:teacher'] = 'Organizer assignment';
 
@@ -457,23 +457,23 @@ $string['modformwarningplural'] = 'These fields cannot be edited as there are ap
 
 // slotdeleted student
 
-$string['slotdeleted_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment cancled';
+$string['slotdeleted_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment cancelled';
 $string['slotdeleted_notify:student:fullmessage'] = 'Hello {$a->receivername}!
 
 Your appointment in the course {$a->courseshortname} on {$a->date} at {$a->time} in {$a->location} was cancelled.
 Note that you have no longer an appointment in the organizer {$a->organizername}.
 Please follow the link to make a new appointment: {$a->courselink}';
-$string['slotdeleted_notify:student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->organizername} was cancled.';
+$string['slotdeleted_notify:student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in organizer "{$a->organizername}" was cancelled.';
 
 // slotdeleted student group
 
-$string['slotdeleted_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment cancled';
+$string['slotdeleted_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment cancelled';
 $string['slotdeleted_notify:student:group:fullmessage'] = 'Hello {$a->receivername}!
 
 Your appointment in the course {$a->courseshortname} on {$a->date} at {$a->time} in {$a->location} was cancelled.
 Note that you have no longer an appointment in the organizer {$a->organizername}.
 Please follow the link to make a new appointment: {$a->courselink}';
-$string['slotdeleted_notify:student:group:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->organizername} was cancled.';
+$string['slotdeleted_notify:student:group:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in organizer "{$a->organizername}" was cancelled.';
 
 // register teacher register
 
