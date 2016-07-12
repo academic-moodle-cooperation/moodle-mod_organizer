@@ -156,10 +156,16 @@ class organizer_evaluate_slots_form extends moodleform {
 						
 	                    $grademenu = organizer_make_grades_menu_organizer($maxgrade);
 						if($finalgrade) {
-							$appgroup[] = $mform->createElement('hidden', 'grade', $app->grade,
+							if($app->grade=="0") { 
+								$appgrade = null;
+							} else {
+								$appgrade = $app->grade;
+							}
+							$appgroup[] = $mform->createElement('hidden', 'grade', $appgrade,
                                 array('class' => "allow{$slotid}"));
 
-    	                    $appgroup[] = $select = $mform->createElement('select', 'gradenothing', '', $grademenu, array('disabled' => 'disabled'));
+    	                    $appgroup[] = $select = $mform->createElement('select', 'gradenothing', '', $grademenu, 
+																						array('disabled' => 'disabled'));
 		                    $appgroup[] = $mform->createElement('static', '', '', organizer_display_finalgrade($finalgrade));							
 						} else {
 	   	                    $appgroup[] = $mform->createElement('select', 'grade', '', $grademenu);
@@ -195,7 +201,7 @@ class organizer_evaluate_slots_form extends moodleform {
                     if ($maxgrade != 0) {
                         $mform->setType("{$name}[grade]", PARAM_INT);
 						if($finalgrade) {
-                        $mform->setType("{$name}[gradenothing]", PARAM_INT);
+                        	$mform->setType("{$name}[gradenothing]", PARAM_INT);
 	                        $mform->setDefault("{$name}[gradenothing]", $app->grade);
 						} else {
 	                        $mform->setDefault("{$name}[grade]", $app->grade);							
