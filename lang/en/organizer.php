@@ -1079,4 +1079,15 @@ $string['visibility_all'] = 'Visible';
 $string['hidecalendar'] = 'Hide calendar';
 $string['hidecalendar_help'] = 'Check to hide the calendar in this organizer';
 
-$string['finalgrade'] = 'This value has been set in the gradebook and can not be changed in the organizer.';
+$string['finalgrade'] = 'This value has been set in the gradebook and can not be changed withe organizer.';
+
+$string['selectedslots'] = 'Selected slots';
+$string['actionlink_edit'] = 'edit';
+$string['actionlink_delete'] = 'delete';
+$string['actionlink_eval'] = 'evaluate';
+$string['actionlink_print'] = 'print';
+$string['btn_start'] = 'Start';
+$string['noslotsselected'] = 'No slots selected!';
+$string['norightpage'] = 'You are not allowed to call up this page.';
+
+

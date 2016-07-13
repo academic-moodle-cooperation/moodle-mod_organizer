@@ -1065,5 +1065,3 @@ function organizer_fetch_groupname($groupid) {
 
     return $groupname;
 }
-
-

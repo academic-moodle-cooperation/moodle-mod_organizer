@@ -1050,3 +1050,11 @@ $string['hidecalendar_help'] = 'Stellen Sie hier ein, ob der Kalender in diesem 
 
 $string['finalgrade'] = 'Dieser Wert wurde in der Kursbewertung eingetragen und kann im Terminplaner nicht überschrieben werden.';
 
+$string['selectedslots'] = 'Ausgewählte Termine';
+$string['actionlink_edit'] = 'bearbeiten';
+$string['actionlink_delete'] = 'entfernen';
+$string['actionlink_eval'] = 'bewerten';
+$string['actionlink_print'] = 'drucken';
+$string['btn_start'] = 'Start';
+$string['noslotsselected'] = 'Sie haben keine Termine ausgewählt!';
+$string['norightpage'] = 'Sie haben nicht das Recht, diese Seite aufzurufen.';

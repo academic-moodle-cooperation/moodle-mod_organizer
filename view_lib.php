@@ -92,10 +92,12 @@ function organizer_generate_appointments_view($params, $instance, &$popups) {
     global $PAGE;
     $PAGE->requires->js_init_call('M.mod_organizer.init_checkboxes');
 
+    $organizerexpired = isset($instance->organizer->duedate) && $instance->organizer->duedate - time() < 0;
+
     $output = organizer_generate_tab_row($params, $instance->context);
     $output .= organizer_make_infobox($params, $instance->organizer, $instance->context, $popups);
     $output .= organizer_begin_form($params);
-    $output .= organizer_generate_button_bar($params, $instance->organizer, $instance->context);
+    $output .= organizer_generate_button_bar($params, $organizerexpired);
 
     $columns = array('select', 'datetime', 'location', 'participants', 'teacher', 'details');
     $align = array('center', 'left', 'left', 'left', 'left', 'center');
@@ -109,7 +111,7 @@ function organizer_generate_appointments_view($params, $instance, &$popups) {
     $table->align = $align;
 
     $output .= organizer_render_table_with_footer($table);
-    $output .= organizer_generate_button_bar($params, $instance->organizer, $instance->context);
+    $output .= organizer_generate_actionlink_bar($instance->context, $organizerexpired);
     $output .= organizer_end_form();
 
     return $output;
@@ -209,6 +211,7 @@ function organizer_begin_form($params) {
     $output = '<form name="viewform" action="' . $url->out() . '" method="post">';
     $output .= '<input type="hidden" name="id" value="' . $params['id'] . '" />';
     $output .= '<input type="hidden" name="mode" value="' . $params['mode'] . '" />';
+    $output .= '<input type="hidden" name="sesskey" value="' . sesskey() . '" />';
 
     return $output;
 }
@@ -247,49 +250,49 @@ function organizer_generate_tab_row($params, $context) {
     }
 }
 
-function organizer_generate_button_bar($params, $organizer, $context) {
-    // TODO Remove old stuff // TODO disable buttons if necessary.
-    $organizerexpired = isset($organizer->duedate) && $organizer->duedate - time() < 0;
+function organizer_generate_button_bar($params, $organizerexpired) {
 
-    $output = '<div name="button_bar" class="buttons mdl-align">';
+    $output = '<div name="button_bar" class="buttons">';
 
-    if (has_capability("mod/organizer:addslots", $context, null, true)) {
-        $slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
-        $output .= '<input type="submit" value="' . get_string('btn_add', 'organizer') .
-            '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsaddurl . '\');" ' .
-            ($organizerexpired ? 'disabled ' : '') . '/>';
-    }
-
-    if (has_capability("mod/organizer:editslots", $context, null, true)) {
-        $sloteditsurl = new moodle_url('/mod/organizer/slots_edit.php', array('id' => $params['id']));
-        $output .= '<input type="submit" value="' . get_string('btn_edit', 'organizer') .
-            '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $sloteditsurl . '\');" ' .
-            ($organizerexpired ? 'disabled ' : '') . '/>';
-    }
-
-    if (has_capability("mod/organizer:deleteslots", $context, null, true)) {
-        $slotsdeleteurl = new moodle_url('/mod/organizer/slots_delete.php', array('id' => $params['id']));
-        $output .= '<input type="submit" value="' . get_string('btn_delete', 'organizer') .
-            '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsdeleteurl . '\');" ' .
-            ($organizerexpired ? 'disabled ' : '') . '/>';
-    }
-
-    if (has_capability("mod/organizer:printslots", $context, null, true)) {
-        $slotsprinturl = new moodle_url('/mod/organizer/slots_print.php', array('id' => $params['id']));
-        $output .= '<input type="submit" value="' . get_string('btn_print', 'organizer') .
-            '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsprinturl . '\');" />';
-    }
-
-    if (has_capability("mod/organizer:evalslots", $context, null, true)) {
-        $slotsevalurl = new moodle_url('/mod/organizer/slots_eval.php', array('id' => $params['id']));
-        $output .= '<input type="submit" value="' . get_string('btn_eval', 'organizer') .
-            '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsevalurl . '\');" />';
-    }
+	$slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
+	$output .= '<input type="submit" value="' . get_string('btn_add', 'organizer') .
+		'" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsaddurl . '\');" ' .
+		($organizerexpired ? 'disabled ' : '') . '/>';
 
     $output .= '</div>';
 
     return $output;
 }
+
+
+function organizer_generate_actionlink_bar($context, $organizerexpired) {
+
+    $output = '<div name="actionlink_bar" class="buttons mdl-align">';
+
+	$output .= html_writer::span(get_string('selectedslots', 'organizer'));
+	
+    if (has_capability("mod/organizer:editslots", $context, null, true) && !$organizerexpired) {
+		$actions['edit'] = get_string('actionlink_edit', 'organizer');
+    }
+    if (has_capability("mod/organizer:deleteslots", $context, null, true) && !$organizerexpired) {
+		$actions['delete'] = get_string('actionlink_delete', 'organizer');
+    }
+    if (has_capability("mod/organizer:printslots", $context, null, true)) {
+		$actions['print'] = get_string('actionlink_print', 'organizer');
+    }
+    if (has_capability("mod/organizer:evalslots", $context, null, true)) {
+		$actions['eval'] = get_string('actionlink_eval', 'organizer');
+    }
+
+	$output .= html_writer::select($actions, 'bulkaction', '', array(''=> 'choosedots'), array('style' => 'margin-left:0.3em;margin-right:0.3em;'));
+	$output .= '<input type="submit" value="' . get_string('btn_start', 'organizer') . '" ' .
+            ($organizerexpired ? 'disabled ' : '') . '/>';
+
+    $output .= '</div>';
+
+    return $output;
+}
+
 
 function organizer_generate_table_header($columns, $sortable, $params, $usersort = false) {
     global $OUTPUT;

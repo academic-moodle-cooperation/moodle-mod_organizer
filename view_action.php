@@ -49,6 +49,7 @@ require_sesskey();
 
 $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ACTION);
+$bulkaction = optional_param('bulkaction', null, PARAM_ACTION);
 $user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = optional_param_array('slots', array(), PARAM_INT);
@@ -76,6 +77,49 @@ $PAGE->requires->js_module($jsmodule);
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
+
+if($bulkaction) {
+	if(!$slots) {
+	    $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+    	redirect($redirecturl);
+	} else {
+		$slotsarray="";
+		foreach($slots as $slot) {
+			$slotsarray .= "&slots[]=".$slot;
+		}
+	    $organizerexpired = isset($organizer->duedate) && $organizer->duedate - time() < 0;
+		switch($bulkaction) {
+			case 'edit':
+			    require_capability('mod/organizer:editslots', $context);
+				$redirecturl = new moodle_url('/mod/organizer/slots_edit.php', 
+						array('id' => $cm->id, 'mode' => $mode)) . $slotsarray;
+				redirect($redirecturl);
+				break;
+			case 'delete':
+			    require_capability('mod/organizer:deleteslots', $context);
+				$redirecturl = new moodle_url('/mod/organizer/slots_delete.php', 
+						array('id' => $cm->id, 'mode' => $mode)) . $slotsarray;
+				redirect($redirecturl);
+				break;
+			case 'print':
+			    require_capability('mod/organizer:printslots', $context);
+				$redirecturl = new moodle_url('/mod/organizer/slots_print.php', 
+						array('id' => $cm->id, 'mode' => $mode)) . $slotsarray;
+				redirect($redirecturl);
+				break;
+			case 'eval':
+			    require_capability('mod/organizer:evalslots', $context);
+				$redirecturl = new moodle_url('/mod/organizer/slots_eval.php', 
+						array('id' => $cm->id, 'mode' => $mode)) . $slotsarray;
+				redirect($redirecturl);
+				break;
+			default:
+				print_error('Unknown bulkaction!');
+				die;	
+		}
+	}
+			
+}
 
 if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {  // Waiting list
     require_capability('mod/organizer:register', $context);
