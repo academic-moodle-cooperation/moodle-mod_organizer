@@ -43,10 +43,12 @@ require_login($instance->course, false, $instance->cm);
 
 $params = organizer_load_params($instance);
 
-if($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW && ("".$_SESSION["organizer_new_instance"]=="".$instance->organizer->id)) {
-	$_SESSION["organizer_new_instance"] = null;
-	$redirecturl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
-	redirect($redirecturl);
+if(isset($_SESSION["organizer_new_instance"])) {
+	if($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW && ("".$_SESSION["organizer_new_instance"]=="".$instance->organizer->id)) {
+		$_SESSION["organizer_new_instance"] = null;
+		$redirecturl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
+		redirect($redirecturl);
+	}
 }
 
 $url = organizer_create_url($params);

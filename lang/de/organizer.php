@@ -709,7 +709,7 @@ $string['assign_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname}
 $string['assign_notify:student:fullmessage'] =
 'Hallo {$a->receivername}!
 
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen der Zeitslot am {$a->date} um {$a->time} im/in {$a->location} durch {$a->sendername} zugewiesen.
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen der Zeitslot mit {$a->slot_teacher} am {$a->date} um {$a->time} im/in {$a->location} durch {$a->sendername} zugewiesen.
 
 Trainer/in: {$a->slot_teacher}
 Ort: {$a->slot_location}
@@ -724,7 +724,7 @@ $string['assign_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshor
 $string['assign_notify:student:group:fullmessage'] =
 'Hallo {$a->receivername}!
 
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihrer Gruppe {$a->groupname} der Zeitslot am {$a->date} um {$a->time} im/in {$a->location} durch {$a->sendername} zugewiesen.
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihrer Gruppe {$a->groupname} der Zeitslot mit {$a->slot_teacher} am {$a->date} um {$a->time} im/in {$a->location} durch {$a->sendername} zugewiesen.
 
 Trainer/in: {$a->slot_teacher}
 Ort: {$a->slot_location}
@@ -739,14 +739,14 @@ $string['assign_notify:teacher:subject'] = '[{$a->courseid}{$a->courseshortname}
 $string['assign_notify:teacher:fullmessage'] =
 'Hallo {$a->receivername}!
 
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie {$a->sendername} den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} zugewiesen.
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen {$a->participantname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} von {$a->sendername} zugewiesen.
 
-Teilnehmer/in: {$a->sendername}
+Teilnehmer/in: {$a->participantname}
 Ort: {$a->slot_location}
 Datum: {$a->date} at {$a->time}
 
 Moodle Messaging System';
-$string['assign_notify:teacher:smallmessage'] = 'Termin am {$a->date} um {$a->time} {$a->sendername} zugewiesen.';
+$string['assign_notify:teacher:smallmessage'] = 'Termin am {$a->date} um {$a->time} von {$a->sendername} zugewiesen.';
 
 // assign teacher group
 
@@ -754,14 +754,14 @@ $string['assign_notify:teacher:group:subject'] = '[{$a->courseid}{$a->courseshor
 $string['assign_notify:teacher:group:fullmessage'] =
 'Hallo {$a->receivername}!
 
-Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie der Gruppe {$a->groupname} den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} zugewiesen.
+Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} von {$a->sendername} zugewiesen.
 
 Gruppe: {$a->groupname}
 Ort: {$a->slot_location}
 Datum: {$a->date} at {$a->time}
 
 Moodle Messaging System';
-$string['assign_notify:teacher:group:smallmessage'] = 'Termin am {$a->date} um {$a->time} Gruppe {$a->groupname} zugewiesen.';
+$string['assign_notify:teacher:group:smallmessage'] = 'Termin am {$a->date} um {$a->time} für Gruppe {$a->groupname} von {$a->sendername} zugewiesen.';
 
 // group registration student unregister group
 

@@ -837,14 +837,14 @@ $string['assign_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname}
 $string['assign_notify:student:fullmessage'] =
 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, an appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to you by the teacher.
+As a part of the course {$a->courseid} {$a->coursefullname}, an appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to you by {$a->sendername}.
 
 Teacher: {$a->slot_teacher}
 Location: {$a->slot_location}
 Date: {$a->date} at {$a->time}
 
 Moodle Messaging System';
-$string['assign_notify:student:smallmessage'] = 'An appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to you.';
+$string['assign_notify:student:smallmessage'] = 'An appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to you by {$a->sendername}.';
 
 // assign student group
 
@@ -852,14 +852,14 @@ $string['assign_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshor
 $string['assign_notify:student:group:fullmessage'] =
 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, an appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to your group {$a->groupname} by the teacher.
+As a part of the course {$a->courseid} {$a->coursefullname}, an appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to your group {$a->groupname} by {$a->sendername}.
 
 Teacher: {$a->slot_teacher}
 Location: {$a->slot_location}
 Date: {$a->date} at {$a->time}
 
 Moodle Messaging System';
-$string['assign_notify:student:group:smallmessage'] = 'An appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to your group {$a->groupname}.';
+$string['assign_notify:student:group:smallmessage'] = 'An appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to your group {$a->groupname} by {$a->sendername}.';
 
 // assign teacher
 
@@ -867,14 +867,14 @@ $string['assign_notify:teacher:subject'] = '[{$a->courseid}{$a->courseshortname}
 $string['assign_notify:teacher:fullmessage'] =
 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, an appointment with {$a->sendername} on {$a->date} at {$a->time} has been assigned by you.
+As a part of the course {$a->courseid} {$a->coursefullname}, an appointment with {$a->participantname} on {$a->date} at {$a->time} has been assigned to you by {$a->sendername}.
 
-Participant: {$a->sendername}
+Participant: {$a->participantname}
 Location: {$a->slot_location}
 Date: {$a->date} at {$a->time}
 
 Moodle Messaging System';
-$string['assign_notify:teacher:smallmessage'] = 'An appointment with {$a->sendername} on {$a->date} at {$a->time} has been assigned by you';
+$string['assign_notify:teacher:smallmessage'] = 'An appointment with {$a->sendername} on {$a->date} at {$a->time} has been assigned by you by {$a->sendername}';
 
 // assign teacher group
 
@@ -882,14 +882,14 @@ $string['assign_notify:teacher:group:subject'] = '[{$a->courseid}{$a->courseshor
 $string['assign_notify:teacher:group:fullmessage'] =
 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, an appointment with group {$a->groupname} on {$a->date} at {$a->time} has been assigned by you.
+As a part of the course {$a->courseid} {$a->coursefullname}, an appointment with group {$a->groupname} on {$a->date} at {$a->time} has been assigned to you by {$a->sendername}.
 
 Group: {$a->groupname}
 Location: {$a->slot_location}
 Date: {$a->date} at {$a->time}
 
 Moodle Messaging System';
-$string['assign_notify:teacher:group:smallmessage'] = 'An appointment with group {$a->groupname} on {$a->date} at {$a->time} has been assigned by you.';
+$string['assign_notify:teacher:group:smallmessage'] = 'An appointment with group {$a->groupname} on {$a->date} at {$a->time} has been assigned to you by {$a->sendername}.';
 
 // appointment reminder teacher
 
