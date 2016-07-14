@@ -83,6 +83,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     if ($namesplit[0] == "assign_notify") {
         $strings->slot_teacher = $slot->teachervisible == 1 ?
            fullname($DB->get_record('user', array('id' => $slot->teacherid)), true) : get_string('teacherinvisible', 'organizer');
+        $strings->slot_location = organizer_location_link($slot);
 		if (isset($customdata['participantname'])) {
 			$strings->participantname = $customdata['participantname'];
 		}
