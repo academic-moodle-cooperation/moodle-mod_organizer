@@ -63,6 +63,8 @@ function organizer_add_instance($organizer) {
     $organizer->id = $DB->insert_record('organizer', $organizer);
 
     organizer_grade_item_update($organizer);
+	
+	$_SESSION["organizer_new_instance"] = $organizer->id;
 
     return $organizer->id;
 }
