@@ -647,7 +647,7 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie sich entwede
 {$a->custommessage}
 
 Moodle Messaging System';
-$string['register_reminder:student:smallmessage'] = 'Bitte melden Sie sich für einen neuen Zeitslot an.';
+$string['register_reminder:student:smallmessage'] = 'Bitte melden Sie sich für einen (neuen) Zeitslot an.';
 
 // register reminder ??? group
 
@@ -659,7 +659,7 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Ihre Gruppe {
 {$a->custommessage}
 
 Moodle Messaging System';
-$string['register_reminder:group:smallmessage'] = 'Bitte melden Sie sich für einen neuen Zeitslot an.';
+$string['register_reminder:group:smallmessage'] = 'Bitte melden Sie sich für einen (neuen) Zeitslot an.';
 
 // register reminder student group
 

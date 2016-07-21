@@ -1065,3 +1065,20 @@ function organizer_fetch_groupname($groupid) {
 
     return $groupname;
 }
+
+function organizer_fetch_groupusers($groupid) {
+    global $DB;
+
+    $query = "SELECT u.id, u.lastname,u.firstname FROM {groups_members} g
+            INNER JOIN {user} u ON u.id = g.userid 
+            WHERE g.groupid = :groupid";
+    $par = array('groupid' => $groupid);
+    $users = $DB->get_records_sql($query, $par);
+
+    if (!$users || count($users) == 0) {
+        return array();
+    }
+		
+    return $users;
+}
+	

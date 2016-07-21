@@ -136,7 +136,11 @@ function organizer_remind_all($recipient = null, $custommessage = "") {
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
     if ($recipient != null) {
-        $entries = $DB->get_records_list('user', 'id', array($recipient));
+		if ($cm->groupingid == 0) {
+        	$entries = $DB->get_records_list('user', 'id', array($recipient));
+		} else {
+        	$entries = organizer_fetch_groupusers($recipient);
+		}
     } else if ($cm->groupingid == 0) {
         $entries = get_enrolled_users($context, 'mod/organizer:register');
     } else {

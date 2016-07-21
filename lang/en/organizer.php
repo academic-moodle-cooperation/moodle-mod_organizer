@@ -715,7 +715,7 @@ As a part of the course {$a->courseid} {$a->coursefullname}, you either still ha
 {$a->custommessage}
 
 Moodle Messaging System';
-$string['register_reminder:student:smallmessage'] = 'Please register to a new time slot.';
+$string['register_reminder:student:smallmessage'] = 'Please register to a (new) time slot.';
 
 // register reminder ??? group
 
@@ -728,7 +728,7 @@ As a part of the course {$a->courseid} {$a->coursefullname}, your group {$a->gro
 {$a->custommessage}
 
 Moodle Messaging System';
-$string['register_reminder:group:smallmessage'] = 'Please register your group to a new time slot.';
+$string['register_reminder:group:smallmessage'] = 'Please register your group to a (new) time slot.';
 
 // register reminder student group
 
