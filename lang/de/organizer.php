@@ -892,6 +892,7 @@ $string['legend_past_deadline'] = 'Slot über der Deadline';
 $string['legend_due'] = 'Slot fällig';
 $string['legend_organizer_expired'] = 'Terminplaner abgelaufen';
 $string['legend_anonymous'] = 'Anonymer Slot';
+$string['legend_halfanonymous'] = 'Slot-Teilnehmer/innen nur bei eigenem Slot sichtbar';
 
 $string['legend_group_applicant'] = 'Anmelder/in der Gruppe';
 $string['legend_comments'] = 'Kommentare Teilnehmer/innen oder Trainer/innen';

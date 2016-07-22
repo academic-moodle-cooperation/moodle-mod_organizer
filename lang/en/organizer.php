@@ -432,6 +432,7 @@ $string['legend_past_deadline'] = 'Slot past deadline';
 $string['legend_due'] = 'Slot due';
 $string['legend_organizer_expired'] = 'Organizer expired';
 $string['legend_anonymous'] = 'Anonymous slot';
+$string['legend_halfanonymous'] = 'Only participants of own slot visible';
 
 $string['legend_group_applicant'] = 'Applicant of the group';
 $string['legend_comments'] = 'Student/Teacher comments';
