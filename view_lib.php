@@ -1702,6 +1702,9 @@ function organizer_slot_reg_status($organizer, $slot) {
 					if(organizer_with_grading()) {
                     	$output = organizer_get_img('pix/slot_pending_24x24.png', '',
                             get_string('reg_status_slot_pending', 'organizer'));
+					} else {					
+						$output = organizer_get_img('pix/student_slot_expired_24x24.png', '',
+								get_string('reg_status_slot_expired', 'organizer'));
 					}
                 } else if ($app->attended == 0 && $app->allownewappointments == 0) {
                     $output = organizer_get_img('pix/no_24x24.png', '', get_string('reg_status_slot_not_attended', 'organizer'));
