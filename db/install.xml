@@ -21,6 +21,7 @@
         <FIELD NAME="grade" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="relativedeadline" NEXT="queue"/>
         <FIELD NAME="queue" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="grade" NEXT="visibility" COMMENT="Flag to trigger waiting queues for slot appointments."/>
         <FIELD NAME="visibility" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="queue"/>
+        <FIELD NAME="hidecalendar" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="visibility"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
