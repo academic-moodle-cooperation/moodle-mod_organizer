@@ -148,7 +148,7 @@
     color:grey;
 }
 
-.finalgrade {
+#organizer_main_cointainer .finalgrade {
 	margin-left: 0.1em;
     cursor:help;
 	color: red;
