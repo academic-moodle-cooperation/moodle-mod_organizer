@@ -89,6 +89,9 @@ function organizer_make_legend($params) {
                     organizer_get_img('pix/anon.png', '', get_string('legend_anonymous', 'organizer'), '') . ' '
                             . get_string('legend_anonymous', 'organizer'), 'width: 20%');
             $output .= organizer_make_cell(
+                    organizer_get_img('pix/slotanon.png', '', get_string('legend_halfanonymous', 'organizer'), '') . ' '
+                            . get_string('legend_halfanonymous', 'organizer'), 'width: 20%');
+            $output .= organizer_make_cell(
                     organizer_get_img('pix/applicant.gif', '', get_string('legend_group_applicant', 'organizer'), '') . ' '
                             . get_string('legend_group_applicant', 'organizer'), 'width: 20%');
             $output .= organizer_make_cell(
@@ -97,7 +100,6 @@ function organizer_make_legend($params) {
             $output .= organizer_make_cell(
                     organizer_get_img('pix/feedback.png', '', get_string('legend_feedback', 'organizer'), '') . ' '
                             . get_string('legend_feedback', 'organizer'), 'width: 20%');
-            $output .= organizer_make_cell(' ', 'width: 20%');
             $output .= html_writer::end_tag('tr');
             break;
         case ORGANIZER_TAB_STUDENT_VIEW:
@@ -143,6 +145,23 @@ function organizer_make_legend($params) {
                     organizer_get_img('pix/organizer_expired_24x24.png', '',
                             get_string('reg_status_organizer_expired', 'organizer'), '') . ' '
                             . get_string('reg_status_organizer_expired', 'organizer'), 'width: 20%');
+            $output .= html_writer::end_tag('tr');
+           $output .= html_writer::start_tag('tr');
+            $output .= organizer_make_cell(
+                    organizer_get_img('pix/anon.png', '', get_string('legend_anonymous', 'organizer'), '') . ' '
+                            . get_string('legend_anonymous', 'organizer'), 'width: 20%');
+            $output .= organizer_make_cell(
+                    organizer_get_img('pix/slotanon.png', '', get_string('legend_halfanonymous', 'organizer'), '') . ' '
+                            . get_string('legend_halfanonymous', 'organizer'), 'width: 20%');
+            $output .= organizer_make_cell(
+                    organizer_get_img('pix/applicant.gif', '', get_string('legend_group_applicant', 'organizer'), '') . ' '
+                            . get_string('legend_group_applicant', 'organizer'), 'width: 20%');
+            $output .= organizer_make_cell(
+                    organizer_get_img('pix/feedback2.png', '', get_string('legend_comments', 'organizer'), '') . ' '
+                            . get_string('legend_comments', 'organizer'), 'width: 20%');
+            $output .= organizer_make_cell(
+                    organizer_get_img('pix/feedback.png', '', get_string('legend_feedback', 'organizer'), '') . ' '
+                            . get_string('legend_feedback', 'organizer'), 'width: 20%');
             $output .= html_writer::end_tag('tr');
             break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
@@ -221,6 +240,8 @@ function organizer_make_legend($params) {
             $output .= organizer_make_cell(' ', 'width: 20%');
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::end_tag('tr');
+            break;
+        case ORGANIZER_ASSIGNMENT_VIEW:
             break;
         default:
             print_error('Unknown view mode: ' . $params['mode']);

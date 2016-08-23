@@ -748,8 +748,8 @@ class organizer_add_slots_form extends moodleform {
     private function _get_teacher_list() {
         list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
-        $teachersraw = get_users_by_capability($context, 'mod/organizer:addslots');
-
+		$teachersraw = get_users_by_capability($context, 'mod/organizer:leadslots');
+		
         $teachers = array();
         foreach ($teachersraw as $teacher) {
             $a = new stdClass();

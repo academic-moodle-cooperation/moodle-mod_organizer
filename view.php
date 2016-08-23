@@ -29,6 +29,7 @@
 define("ORGANIZER_TAB_APPOINTMENTS_VIEW", 1);
 define("ORGANIZER_TAB_STUDENT_VIEW", 2);
 define("ORGANIZER_TAB_REGISTRATION_STATUS_VIEW", 3);
+define("ORGANIZER_ASSIGNMENT_VIEW", 4);
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/../../calendar/lib.php');
@@ -41,6 +42,14 @@ $instance = organizer_get_course_module_data_new();
 require_login($instance->course, false, $instance->cm);
 
 $params = organizer_load_params($instance);
+
+if(isset($_SESSION["organizer_new_instance"])) {
+	if($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW && ("".$_SESSION["organizer_new_instance"]=="".$instance->organizer->id)) {
+		$_SESSION["organizer_new_instance"] = null;
+		$redirecturl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
+		redirect($redirecturl);
+	}
+}
 
 $url = organizer_create_url($params);
 $logurl = 'view.php?id=' . $params['id'] . '&mode=' . $params['mode'];
@@ -114,6 +123,13 @@ switch ($params['mode']) {
             print_error('You do not have the permission to view this page!');
         }
         break;
+    case ORGANIZER_ASSIGNMENT_VIEW:
+        if (has_capability('mod/organizer:assignslots', $instance->context)) {
+            echo organizer_generate_assignment_view($params, $instance, $popups);
+        } else {
+            print_error('You do not have the permission to view this page!');
+        }
+        break;
     default:
         print_error("Invalid view mode: {$params['mode']}");
         break;
@@ -182,7 +198,11 @@ function organizer_load_params($instance) {
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             $params['sort'] = optional_param('sort', 'status', PARAM_ALPHA);
             break;
-    }
+		case ORGANIZER_ASSIGNMENT_VIEW:
+            $params['assignid'] = required_param('assignid', PARAM_INT);
+            $params['sort'] = optional_param('sort', 'datetime', PARAM_ALPHA);
+            break;    
+	}
 
     $params['slots'] = optional_param_array('slots', array(), PARAM_INT);
     $params['pdir'] = optional_param('pdir', 'ASC', PARAM_ALPHA);

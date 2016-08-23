@@ -124,7 +124,7 @@ foreach ($organizers as $organizer) {
         $row[] = organizer_get_overview_student($organizer, true);
         $app = organizer_get_last_user_appointment($organizer, null, false);
         if ($app) {
-            $row[] = organizer_display_grade($organizer, $app->grade);
+            $row[] = organizer_display_grade($organizer, $app->grade, $app->userid);
         } else {
             $row[] = '-';
         }

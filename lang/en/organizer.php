@@ -65,6 +65,7 @@ $string['eventslotviewed'] = 'Slots viewed.';
 $string['eventappointmentadded'] = 'Student registered to a slot.';
 $string['eventappointmentcommented'] = 'Appoinement has been commented.';
 $string['eventappointmentevaluated'] = 'Appointment has been evaluated.';
+$string['eventappointmentassigned'] = 'Appointment has been assigned by teacher.';
 $string['eventappointmentremoved'] = 'Student unregistered from a slot.';
 $string['eventappointmentremindersent'] = 'Appointment reminder sent.';
 $string['eventappointmentlistprinted'] = 'Appoinement list has been printed.';
@@ -206,10 +207,17 @@ $string['eval_grade'] = 'Grade';
 $string['eval_feedback'] = 'Feedback';
 $string['eval_allow_new_appointments'] = 'Allow reappointment';
 
+$string['assign_title'] = 'Assign appointment';
+$string['assign'] = 'Assign';
+$string['slotassignedby'] = 'Slot assigned by';
+$string['slotlistempty'] = 'No slots were found.';
+$string['assignsuccess'] = 'The slot has been assigned successfully and the participant(s) has been notified.';
+
 $string['evaluate'] = 'Evaluate';
 $string['eval_header'] = 'Selected time slots';
-
 $string['collision'] = 'Warning! Collision detected with following event(s):';
+$string['nofreeslots'] = 'No free slots available.';
+$string['availableslotsfor'] = 'Available slots for';
 
 $string['btn_add'] = 'Add new slots';
 $string['btn_edit'] = 'Edit selected slots';
@@ -227,6 +235,7 @@ $string['btn_unqueue'] = 'Remove from Queue';
 $string['btn_reeval'] = 'Re-evaluate';
 $string['btn_eval_short'] = 'Grade';
 $string['btn_remind'] = 'Send reminder';
+$string['btn_assign'] = 'Assign slot';
 $string['btn_save'] = 'Save comment';
 $string['btn_send'] = 'Send';
 
@@ -254,6 +263,8 @@ $string['group_slot_full'] = "Slot taken";
 $string['slot_anonymous'] = "Slot anonymous";
 $string['slot_slotvisible'] = "Members only visible if own slot";
 $string['slot_visible'] = "Members of slot always visible";
+$string['inwaitingqueue'] = "Waitinglist";
+$string['position'] = 'Position in queue';
 
 $string['addslots_placesinfo'] = 'This action will create {$a->numplaces} new possible places, making a total of {$a->totalplaces} possible places for {$a->numstudents} students.';
 $string['addslots_placesinfo_group'] = 'This action will create {$a->numplaces} new possible places, making a total of {$a->totalplaces} possible places for {$a->numgroups} groups.';
@@ -371,6 +382,7 @@ $string['configdigest_label'] = 'Send appointment digest to teachers';
 $string['organizer:addinstance'] = 'Add a new organizer';
 $string['organizer:comment'] = 'Add comments';
 $string['organizer:addslots'] = 'Add new time slots';
+$string['organizer:leadslots'] = 'Lead time slots';
 $string['organizer:editslots'] = 'Edit existing time slots';
 $string['organizer:evalslots'] = 'Grade completed time slots';
 $string['organizer:deleteslots'] = 'Delete existing time slots';
@@ -384,6 +396,7 @@ $string['organizer:viewallslots'] = 'View all time slots as a teacher';
 $string['organizer:viewmyslots'] = 'View own time slots as a teacher';
 $string['organizer:viewstudentview'] = 'View all time slots as a student';
 $string['organizer:viewregistrations'] = 'View status of student registrations';
+$string['organizer:assignslots'] = 'Assign time slot to a student';
 
 $string['messageprovider:test'] = 'Organizer Test Message';
 $string['messageprovider:appointment_reminder:student'] = 'Organizer appointment reminder';
@@ -395,7 +408,9 @@ $string['messageprovider:group_registration_notify:student'] = 'Organizer groupr
 $string['messageprovider:register_reminder:student'] = 'Organizer registration reminder';
 $string['messageprovider:edit_notify:student'] = 'Organizer changes';
 $string['messageprovider:edit_notify:teacher'] = 'Organizer changes (Teacher)';
-$string['messageprovider:slotdeleted_notify:student'] = 'Organizer slots cancled';
+$string['messageprovider:slotdeleted_notify:student'] = 'Organizer slots cancelled';
+$string['messageprovider:assign_notify:student'] = 'Organizer assignment by teacher';
+$string['messageprovider:assign_notify:teacher'] = 'Organizer assignment';
 
 $string['reg_status_organizer_expired'] = 'Organizer expired';
 $string['reg_status_slot_expired'] = 'Slot expired';
@@ -417,6 +432,7 @@ $string['legend_past_deadline'] = 'Slot past deadline';
 $string['legend_due'] = 'Slot due';
 $string['legend_organizer_expired'] = 'Organizer expired';
 $string['legend_anonymous'] = 'Anonymous slot';
+$string['legend_halfanonymous'] = 'Only participants of own slot visible';
 
 $string['legend_group_applicant'] = 'Applicant of the group';
 $string['legend_comments'] = 'Student/Teacher comments';
@@ -442,23 +458,23 @@ $string['modformwarningplural'] = 'These fields cannot be edited as there are ap
 
 // slotdeleted student
 
-$string['slotdeleted_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment cancled';
+$string['slotdeleted_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment cancelled';
 $string['slotdeleted_notify:student:fullmessage'] = 'Hello {$a->receivername}!
 
 Your appointment in the course {$a->courseshortname} on {$a->date} at {$a->time} in {$a->location} was cancelled.
 Note that you have no longer an appointment in the organizer {$a->organizername}.
 Please follow the link to make a new appointment: {$a->courselink}';
-$string['slotdeleted_notify:student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->organizername} was cancled.';
+$string['slotdeleted_notify:student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in organizer "{$a->organizername}" was cancelled.';
 
 // slotdeleted student group
 
-$string['slotdeleted_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment cancled';
+$string['slotdeleted_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment cancelled';
 $string['slotdeleted_notify:student:group:fullmessage'] = 'Hello {$a->receivername}!
 
 Your appointment in the course {$a->courseshortname} on {$a->date} at {$a->time} in {$a->location} was cancelled.
 Note that you have no longer an appointment in the organizer {$a->organizername}.
 Please follow the link to make a new appointment: {$a->courselink}';
-$string['slotdeleted_notify:student:group:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->organizername} was cancled.';
+$string['slotdeleted_notify:student:group:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in organizer "{$a->organizername}" was cancelled.';
 
 // register teacher register
 
@@ -700,7 +716,7 @@ As a part of the course {$a->courseid} {$a->coursefullname}, you either still ha
 {$a->custommessage}
 
 Moodle Messaging System';
-$string['register_reminder:student:smallmessage'] = 'Please register to a new time slot.';
+$string['register_reminder:student:smallmessage'] = 'Please register to a (new) time slot.';
 
 // register reminder ??? group
 
@@ -713,7 +729,7 @@ As a part of the course {$a->courseid} {$a->coursefullname}, your group {$a->gro
 {$a->custommessage}
 
 Moodle Messaging System';
-$string['register_reminder:group:smallmessage'] = 'Please register your group to a new time slot.';
+$string['register_reminder:group:smallmessage'] = 'Please register your group to a (new) time slot.';
 
 // register reminder student group
 
@@ -815,6 +831,66 @@ As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} ha
 
 Moodle Messaging System';
 $string['group_registration_notify:student:unregister:smallmessage'] = '{$a->sendername} has unregistered your group {$a->groupname} from the time slot on {$a->date} at {$a->time}.';
+
+// assign student
+
+$string['assign_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment assigned by teacher';
+$string['assign_notify:student:fullmessage'] =
+'Hello {$a->receivername}!
+
+As a part of the course {$a->courseid} {$a->coursefullname}, an appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to you by {$a->sendername}.
+
+Teacher: {$a->slot_teacher}
+Location: {$a->slot_location}
+Date: {$a->date} at {$a->time}
+
+Moodle Messaging System';
+$string['assign_notify:student:smallmessage'] = 'An appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to you by {$a->sendername}.';
+
+// assign student group
+
+$string['assign_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment assigned by teacher';
+$string['assign_notify:student:group:fullmessage'] =
+'Hello {$a->receivername}!
+
+As a part of the course {$a->courseid} {$a->coursefullname}, an appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to your group {$a->groupname} by {$a->sendername}.
+
+Teacher: {$a->slot_teacher}
+Location: {$a->slot_location}
+Date: {$a->date} at {$a->time}
+
+Moodle Messaging System';
+$string['assign_notify:student:group:smallmessage'] = 'An appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to your group {$a->groupname} by {$a->sendername}.';
+
+// assign teacher
+
+$string['assign_notify:teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment assigned';
+$string['assign_notify:teacher:fullmessage'] =
+'Hello {$a->receivername}!
+
+As a part of the course {$a->courseid} {$a->coursefullname}, an appointment with {$a->participantname} on {$a->date} at {$a->time} has been assigned to you by {$a->sendername}.
+
+Participant: {$a->participantname}
+Location: {$a->slot_location}
+Date: {$a->date} at {$a->time}
+
+Moodle Messaging System';
+$string['assign_notify:teacher:smallmessage'] = 'An appointment with {$a->sendername} on {$a->date} at {$a->time} has been assigned by you by {$a->sendername}';
+
+// assign teacher group
+
+$string['assign_notify:teacher:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment assigned';
+$string['assign_notify:teacher:group:fullmessage'] =
+'Hello {$a->receivername}!
+
+As a part of the course {$a->courseid} {$a->coursefullname}, an appointment with group {$a->groupname} on {$a->date} at {$a->time} has been assigned to you by {$a->sendername}.
+
+Group: {$a->groupname}
+Location: {$a->slot_location}
+Date: {$a->date} at {$a->time}
+
+Moodle Messaging System';
+$string['assign_notify:teacher:group:smallmessage'] = 'An appointment with group {$a->groupname} on {$a->date} at {$a->time} has been assigned to you by {$a->sendername}.';
 
 // appointment reminder teacher
 
@@ -1003,3 +1079,16 @@ $string['visibility_all'] = 'Visible';
 
 $string['hidecalendar'] = 'Hide calendar';
 $string['hidecalendar_help'] = 'Check to hide the calendar in this organizer';
+
+$string['finalgrade'] = 'This value has been set in the gradebook and can not be changed withe organizer.';
+
+$string['selectedslots'] = 'Selected slots';
+$string['actionlink_edit'] = 'edit';
+$string['actionlink_delete'] = 'delete';
+$string['actionlink_eval'] = 'grade';
+$string['actionlink_print'] = 'print';
+$string['btn_start'] = 'Start';
+$string['noslotsselected'] = 'No slots selected!';
+$string['norightpage'] = 'You are not allowed to call up this page.';
+
+

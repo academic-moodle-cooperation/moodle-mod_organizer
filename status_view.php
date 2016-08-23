@@ -20,6 +20,7 @@
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author        Andreas Windbichler
  * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -49,6 +50,7 @@ function organizer_generate_registration_table_content($columns, $params) {
                     if ($groupmode) {
                         $members = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$entry->id}");
                         $list = "<em>$entry->name</em><br/ >";
+						$list .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified);
                         foreach ($members as $member) {
                             $idnumber = get_user_idnumber($member);
 
@@ -64,7 +66,7 @@ function organizer_generate_registration_table_content($columns, $params) {
                         }
                         $row->cells[] = new html_table_cell($list);
                     } else {
-                        $row->cells[] = new html_table_cell(get_name_link($entry->id) . " ({$entry->idnumber})");
+                        $row->cells[] = new html_table_cell(get_name_link($entry->id) . " ({$entry->idnumber})" . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified));
                     }
                     break;
                 case 'registered':
@@ -142,12 +144,12 @@ function organizer_get_status_table_entries_group($params) {
             WHEN a2.id IS NULL THEN 4
         ELSE -1
         END AS status, a2.starttime, a2.duration, a2.location, a2.teacherid, a2.applicantid,
-        a2.comments, a2.teachervisible, a2.slotid
+        a2.comments, a2.teachervisible, a2.slotid, a2.teacherapplicantid, a2.teacherapplicanttimemodified
         FROM {groups} g
         LEFT JOIN
         (SELECT
         a.id, a.groupid, s.id as slotid, s.starttime, s.location, s.teacherid, s.teachervisible,
-        s.duration, a.applicantid, a.comments,
+        s.duration, a.applicantid, a.comments, a.teacherapplicantid, a.teacherapplicanttimemodified,
         (SELECT MAX(attended) FROM mdl_organizer_slot_appointments a3 WHERE a3.groupid = a.groupid) AS attended
         FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id
@@ -221,11 +223,11 @@ function organizer_get_status_table_entries($params) {
         ELSE -1
         END AS status,
         a2.starttime, a2.duration, a2.attended, a2.location, a2.grade, a2.comments,
-        a2.feedback, a2.teacherid, a2.userid, a2.teachervisible, a2.slotid
+        a2.feedback, a2.teacherid, a2.userid, a2.teachervisible, a2.slotid, a2.teacherapplicantid, a2.teacherapplicanttimemodified
         FROM {user} u
         LEFT JOIN
         (SELECT a.id, a.attended, a.grade, a.feedback, a.userid, s.starttime, s.location,
-        s.teacherid, s.comments, s.duration, s.teachervisible, s.id as slotid
+        s.teacherid, s.comments, s.duration, s.teachervisible, s.id as slotid, a.teacherapplicantid, a.teacherapplicanttimemodified
         FROM {organizer_slot_appointments} a INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid ORDER BY s.starttime DESC) a2 ON u.id = a2.userid
         WHERE u.id $insql
@@ -234,3 +236,4 @@ function organizer_get_status_table_entries($params) {
         $orderby";
     return $DB->get_records_sql($query, $par);
 }
+

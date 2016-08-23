@@ -19,7 +19,8 @@
  *
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at) 
+ * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author        Andreas Windbichler
  * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -91,10 +92,12 @@ function organizer_generate_appointments_view($params, $instance, &$popups) {
     global $PAGE;
     $PAGE->requires->js_init_call('M.mod_organizer.init_checkboxes');
 
+    $organizerexpired = isset($instance->organizer->duedate) && $instance->organizer->duedate - time() < 0;
+
     $output = organizer_generate_tab_row($params, $instance->context);
     $output .= organizer_make_infobox($params, $instance->organizer, $instance->context, $popups);
     $output .= organizer_begin_form($params);
-    $output .= organizer_generate_button_bar($params, $instance->organizer, $instance->context);
+    $output .= organizer_generate_button_bar($params, $organizerexpired);
 
     $columns = array('select', 'datetime', 'location', 'participants', 'teacher', 'details');
     $align = array('center', 'left', 'left', 'left', 'left', 'center');
@@ -108,7 +111,7 @@ function organizer_generate_appointments_view($params, $instance, &$popups) {
     $table->align = $align;
 
     $output .= organizer_render_table_with_footer($table);
-    $output .= organizer_generate_button_bar($params, $instance->organizer, $instance->context);
+    $output .= organizer_generate_actionlink_bar($instance->context, $organizerexpired);
     $output .= organizer_end_form();
 
     return $output;
@@ -178,11 +181,37 @@ function organizer_generate_registration_status_view($params, $instance, &$popup
     return $output;
 }
 
+function organizer_generate_assignment_view($params, $instance, &$popups) {
+
+    if ($instance->organizer->isgrouporganizer) {
+		$content = get_string('availableslotsfor', 'organizer') .' <strong>' . organizer_fetch_groupname($params['assignid']) . '</strong>';
+	} else {
+		$content = get_string('availableslotsfor', 'organizer') .' <strong>' . organizer_get_name_link($params['assignid']) . '</strong>';
+	}
+	$output = organizer_make_section('assign', $content);
+
+	$columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
+	$align = array('left', 'left', 'left', 'left', 'center', 'center');
+	$sortable = array('datetime', 'location', 'teacher');
+
+	$table = new html_table();
+	$table->id = 'slot_overview';
+	$table->attributes['class'] = 'generaltable boxaligncenter overview';
+	$table->head = organizer_generate_table_header($columns, $sortable, $params);
+	$table->data = organizer_generate_assignment_table_content($columns, $params, $instance->organizer, $popups, false, false);
+	$table->align = $align;
+
+	$output .= organizer_render_table_with_footer($table);
+
+    return $output;
+}
+
 function organizer_begin_form($params) {
     $url = new moodle_url('/mod/organizer/view_action.php');
     $output = '<form name="viewform" action="' . $url->out() . '" method="post">';
     $output .= '<input type="hidden" name="id" value="' . $params['id'] . '" />';
     $output .= '<input type="hidden" name="mode" value="' . $params['mode'] . '" />';
+    $output .= '<input type="hidden" name="sesskey" value="' . sesskey() . '" />';
 
     return $output;
 }
@@ -221,49 +250,49 @@ function organizer_generate_tab_row($params, $context) {
     }
 }
 
-function organizer_generate_button_bar($params, $organizer, $context) {
-    // TODO Remove old stuff // TODO disable buttons if necessary.
-    $organizerexpired = isset($organizer->duedate) && $organizer->duedate - time() < 0;
+function organizer_generate_button_bar($params, $organizerexpired) {
 
-    $output = '<div name="button_bar" class="buttons mdl-align">';
+    $output = '<div name="button_bar" class="buttons">';
 
-    if (has_capability("mod/organizer:addslots", $context, null, true)) {
-        $slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
-        $output .= '<input type="submit" value="' . get_string('btn_add', 'organizer') .
-            '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsaddurl . '\');" ' .
-            ($organizerexpired ? 'disabled ' : '') . '/>';
-    }
-
-    if (has_capability("mod/organizer:editslots", $context, null, true)) {
-        $sloteditsurl = new moodle_url('/mod/organizer/slots_edit.php', array('id' => $params['id']));
-        $output .= '<input type="submit" value="' . get_string('btn_edit', 'organizer') .
-            '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $sloteditsurl . '\');" ' .
-            ($organizerexpired ? 'disabled ' : '') . '/>';
-    }
-
-    if (has_capability("mod/organizer:deleteslots", $context, null, true)) {
-        $slotsdeleteurl = new moodle_url('/mod/organizer/slots_delete.php', array('id' => $params['id']));
-        $output .= '<input type="submit" value="' . get_string('btn_delete', 'organizer') .
-            '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsdeleteurl . '\');" ' .
-            ($organizerexpired ? 'disabled ' : '') . '/>';
-    }
-
-    if (has_capability("mod/organizer:printslots", $context, null, true)) {
-        $slotsprinturl = new moodle_url('/mod/organizer/slots_print.php', array('id' => $params['id']));
-        $output .= '<input type="submit" value="' . get_string('btn_print', 'organizer') .
-            '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsprinturl . '\');" />';
-    }
-
-    if (has_capability("mod/organizer:evalslots", $context, null, true)) {
-        $slotsevalurl = new moodle_url('/mod/organizer/slots_eval.php', array('id' => $params['id']));
-        $output .= '<input type="submit" value="' . get_string('btn_eval', 'organizer') .
-            '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsevalurl . '\');" />';
-    }
+	$slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
+	$output .= '<input type="submit" value="' . get_string('btn_add', 'organizer') .
+		'" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsaddurl . '\');" ' .
+		($organizerexpired ? 'disabled ' : '') . '/>';
 
     $output .= '</div>';
 
     return $output;
 }
+
+
+function organizer_generate_actionlink_bar($context, $organizerexpired) {
+
+    $output = '<div name="actionlink_bar" class="buttons mdl-align">';
+
+	$output .= html_writer::span(get_string('selectedslots', 'organizer'));
+	
+    if (has_capability("mod/organizer:editslots", $context, null, true) && !$organizerexpired) {
+		$actions['edit'] = get_string('actionlink_edit', 'organizer');
+    }
+    if (has_capability("mod/organizer:deleteslots", $context, null, true) && !$organizerexpired) {
+		$actions['delete'] = get_string('actionlink_delete', 'organizer');
+    }
+    if (has_capability("mod/organizer:printslots", $context, null, true)) {
+		$actions['print'] = get_string('actionlink_print', 'organizer');
+    }
+    if (has_capability("mod/organizer:evalslots", $context, null, true)) {
+		$actions['eval'] = get_string('actionlink_eval', 'organizer');
+    }
+
+	$output .= html_writer::select($actions, 'bulkaction', '', array(''=> 'choosedots'), array('style' => 'margin-left:0.3em;margin-right:0.3em;'));
+	$output .= '<input type="submit" value="' . get_string('btn_start', 'organizer') . '" ' .
+            ($organizerexpired ? 'disabled ' : '') . '/>';
+
+    $output .= '</div>';
+
+    return $output;
+}
+
 
 function organizer_generate_table_header($columns, $sortable, $params, $usersort = false) {
     global $OUTPUT;
@@ -679,13 +708,13 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
             . "
         END AS status, a2.starttime, a2.duration, a2.location, a2.locationlink,
         a2.teacherid, a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible,
-        a2.slotid, a2.allownewappointments, a2.id AS appid
+        a2.slotid, a2.allownewappointments, a2.id AS appid, a2.teacherapplicantid, a2.teacherapplicanttimemodified
         FROM {groups} g
         LEFT JOIN
         (SELECT
         a.id, a.groupid, a.allownewappointments, s.id as slotid, s.starttime, s.location,
         s.locationlink, s.teacherid, s.teachervisible,
-        s.duration, a.applicantid, a.comments, s.comments AS teachercomments,
+        s.duration, a.applicantid, a.comments, s.comments AS teachercomments, a.teacherapplicantid, a.teacherapplicanttimemodified,
         (SELECT MAX(a3.attended) FROM {organizer_slot_appointments} a3
         WHERE a3.groupid = a.groupid GROUP BY a3.slotid ORDER BY a3.slotid DESC LIMIT 1) AS attended
         FROM {organizer_slot_appointments} a
@@ -693,10 +722,12 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON g.id = a2.groupid
         WHERE g.id $insql
         GROUP BY g.id, g.name, status, a2.starttime, a2.duration, a2.location, a2.locationlink,
-            a2.teacherid, a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible, a2.slotid, a2.allownewappointments, a2.id
+            a2.teacherid, a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible, a2.slotid, a2.allownewappointments
         $orderby";
 
-    return $DB->get_records_sql($query, $par);
+	$rs = $DB->get_records_sql($query, $par);
+		
+    return $rs;
 }
 
 function organizer_organizer_get_status_table_entries($params) {
@@ -762,12 +793,12 @@ function organizer_organizer_get_status_table_entries($params) {
         END AS status,
         a2.starttime, a2.duration, a2.attended, a2.location, a2.locationlink,
         a2.grade, a2.comments, a2.teachercomments, a2.feedback, a2.teacherid,
-        a2.userid, a2.teachervisible, a2.slotid, a2.allownewappointments, a2.id AS appid
+        a2.userid, a2.teachervisible, a2.slotid, a2.allownewappointments, a2.id AS appid, a2.teacherapplicantid, a2.teacherapplicanttimemodified
         FROM {user} u
         LEFT JOIN
         (SELECT a.id, a.attended, a.grade, a.feedback, a.comments, a.userid,
         a.allownewappointments, s.starttime, s.location, s.locationlink, s.teacherid,
-        s.comments AS teachercomments, s.duration, s.teachervisible, s.id AS slotid
+        s.comments AS teachercomments, s.duration, s.teachervisible, s.id AS slotid, a.teacherapplicantid, a.teacherapplicanttimemodified
         FROM {organizer_slot_appointments} a INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON u.id = a2.userid
         WHERE u.id $insql
@@ -802,13 +833,15 @@ function organizer_organizer_generate_registration_table_content($columns, $para
         return $rows;
     }
 
+	$queueable = organizer_is_queueable();
+	
     foreach ($entries as $entry) {
         if ($entry->status == ORGANIZER_APP_STATUS_INVALID) {
             continue;
         }
 
         $row = new html_table_row();
-
+		
         foreach ($columns as $column) {
             switch ($column) {
                 case 'group':
@@ -823,7 +856,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 'SELECT userid FROM {groups_members} gm
                                 INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
                                 $orderby, array('groupid' => $entry->id));
-                        $list = "<em>$entry->name</em><br/ >";
+                        $list = "<em>$entry->name</em>" . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) . "<br/ >";
                         foreach ($members as $member) {
                             $idnumber = organizer_get_user_idnumber($member);
 
@@ -842,7 +875,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                         $cell = $row->cells[] = new html_table_cell($list);
                     } else {
                         $cell = $row->cells[] = new html_table_cell(
-                                organizer_get_name_link($entry->id) . ($entry->idnumber ? " ($entry->idnumber)" : ""));
+                                organizer_get_name_link($entry->id) . ($entry->idnumber ? " ($entry->idnumber)" : "") . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) );
                     }
                     break;
                 case 'status':
@@ -863,15 +896,24 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 'SELECT userid FROM {groups_members} gm
                                 INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
                                 $orderby, array('groupid' => $entry->id));
-                        $list = '';
+						$list = "";		
                         foreach ($members as $member) {
-                            $list .= '<br />';
-                            $list .= organizer_reg_organizer_app_details($organizer, $member, $popups);
+							if($queueable) {
+								$list .= organizer_reg_waitinglist_status($organizer->id, $member, $groupmode);
+							}
+							if($list!="") break;
+							$list .= '<br />';
+                            $list .= organizer_reg_organizer_app_details($organizer, $member, $popups, $groupmode);
                         }
                         $cell = $row->cells[] = new html_table_cell($list);
                     } else {
-                        $cell = $row->cells[] = new html_table_cell(
-                                organizer_reg_organizer_app_details($organizer, $entry->id, $popups));
+						if($queueable) {
+							$outcell = organizer_reg_waitinglist_status($organizer->id, $userid, $groupmode);
+						} else {
+	                        $outcell = '';
+						}
+						$outcell .= organizer_reg_organizer_app_details($organizer, $entry->id, $popups, $groupmode);
+                        $cell = $row->cells[] = new html_table_cell($outcell);
                     }
 
                     break;
@@ -895,11 +937,78 @@ function organizer_organizer_generate_registration_table_content($columns, $para
     return $rows;
 }
 
+function organizer_generate_assignment_table_content($columns, $params, $organizer, $popups) {
+    global $DB;
+
+    $translate = array('datetime' => "starttime {$params['dir']}", 'location' => "location {$params['dir']}",
+            'teacher' => "lastname {$params['dir']}, firstname {$params['dir']}");
+
+    $order = $translate[$params['sort']];
+	$assignid = $params['assignid'];
+
+	$sqlparams = array('organizerid' => $organizer->id);
+	$query = "SELECT s.*, u.firstname, u.lastname FROM {organizer_slots} s
+	INNER JOIN {user} u ON s.teacherid = u.id WHERE s.organizerid = :organizerid ORDER BY $order";
+	$slots = $DB->get_records_sql($query, $sqlparams);
+
+    $rows = array();
+    if (count($slots) != 0) {
+        $numshown = 0;
+        foreach ($slots as $slot) {
+			if(organizer_slot_is_free($slot, $assignid)) {
+		        $row = new html_table_row();
+				foreach ($columns as $column) {
+					switch ($column) {
+						case 'datetime':
+							$cell = $row->cells[] = new html_table_cell(organizer_date_time($slot));
+							break;
+						case 'location':
+							$cell = $row->cells[] = new html_table_cell(organizer_location_link($slot));
+							break;
+						case 'participants':
+							$cell = $row->cells[] = new html_table_cell(
+									organizer_get_participant_list($params, $slot, null, $popups));
+							break;
+						case 'teacher':
+							$cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $slot, $popups));
+							break;
+						case 'details':
+							$cell = $row->cells[] = new html_table_cell(organizer_slot_status($params, $slot));
+							break;
+						case 'status':
+							$cell = $row->cells[] = new html_table_cell(organizer_slot_reg_status($organizer, $slot));
+							break;
+						case 'actions':
+							$cell = $row->cells[] = new html_table_cell(organizer_get_assign_button($slot->id, $params));
+							break;
+						default:
+							print_error("Unrecognized column type: $column");
+					}  // end switch
+	
+					$cell->style .= ' vertical-align: middle;';
+				} // end foreach column
+				$numshown++;
+		        $rows[] = $row;
+			} // end is_free_slot
+        } // end foreach slot
+	} // end if slots
+	
+	if($numshown==0) { // if no slots shown
+		$row = new html_table_row();
+		$cell = new html_table_cell(get_string('slotlistempty', 'organizer'));
+		$cell->colspan = count($columns);
+		$row->cells[] = $cell;
+		$rows[] = $row;
+    } // end if no slots shown
+    return $rows;
+}
+
 function organizer_get_participant_entry($entry) {
     $icon = ' ' . (isset($entry->comments) && $entry->comments != '' ?
             organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments) :
             organizer_get_img('pix/transparent.png', '', ''));
-    return organizer_get_name_link($entry->id) . " {$icon}<br/>({$entry->idnumber})";
+	$participantentry = organizer_get_name_link($entry->id) . " {$icon}<br/>({$entry->idnumber})" . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified);		
+    return $participantentry;
 }
 
 function organizer_app_details($params, $appointment, &$popups) {
@@ -917,11 +1026,11 @@ function organizer_app_details($params, $appointment, &$popups) {
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
     if ($organizer->grade != 0) 
-        $list .= organizer_display_grade($organizer, $appointment->grade);
+        $list .= organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
 
    if ($appointment->feedback)
        $list .= organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback, $popups);
-
+			
     return $list;
 }
 
@@ -1024,15 +1133,15 @@ function organizer_teacher_data($params, $slot, &$popups) {
     return $output;
 }
 
-function organizer_reg_organizer_app_details($organizer, $userid, &$popups) {
+function organizer_reg_organizer_app_details($organizer, $userid, &$popups, $groupmode) {
     $appointment = organizer_get_last_user_appointment($organizer, $userid, false);
     if ($appointment) {
         $list = '';
-        if (organizer_is_group_mode()) {
+        if ($groupmode) {
             $list .= organizer_get_attended_icon($appointment) . ' ';
         }
         if ($organizer->grade != 0) {
-            $list .= organizer_display_grade($organizer, $appointment->grade);
+            $list .= organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
         }
         $list .= ' ' . (isset($appointment->feedback) && $appointment->feedback != '' ?
                 organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback, $popups) : '');
@@ -1043,6 +1152,47 @@ function organizer_reg_organizer_app_details($organizer, $userid, &$popups) {
     return $list;
 }
 
+function organizer_reg_waitinglist_status($organizerid, $userid, $groupmode) {
+	global $DB;
+
+	$list = "";
+	if($groupmode) {
+		$group = organizer_fetch_user_group($userid);
+		$query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.teacherid, s.location, t.firstname, t.lastname FROM {organizer_slot_queues} q 
+				INNER JOIN {organizer_slots} s ON s.id = q.slotid
+				INNER JOIN {user} t ON s.teacherid = t.id
+				WHERE q.groupid = :groupid and s.organizerid = :organizerid";
+		$par = array('groupid' => $group->id, 'organizerid' => $organizerid);
+	} else {
+		$query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.teacherid, s.location, t.firstname, t.lastname FROM {user} u
+				INNER JOIN {organizer_slot_queues} q ON q.userid = u.id
+				INNER JOIN {organizer_slots} s ON s.id = q.slotid
+				INNER JOIN {user} t ON s.teacherid = t.id
+				WHERE u.id = :userid and s.organizerid = :organizerid";
+		$par = array('userid' => $userid, 'organizerid' => $organizerid);		
+	}
+	if($slot = $DB->get_record_sql($query, $par)) {
+		$slotx = new organizer_slot($slot->id);
+		if($groupmode) {
+			$position = $slotx->is_group_in_queue($group->id);
+		} else {
+			$position = $slotx->is_user_in_queue($userid);
+		}
+		$list = get_string('inwaitingqueue','organizer');
+		$slotinfo = str_replace("<br />", " ", organizer_date_time($slot));
+		$slotinfo .= "\n" . get_string('teacherid', 'organizer') . ": ";
+		$slotinfo .= $slot->teacherid ? $slot->firstname . " ". $slot->lastname : "-";
+		$slotinfo .= "\n" . get_string('location', 'organizer') . ": ";
+		$slotinfo .= $slot->location ? $slot->location : "-";
+		$slotinfo .= "\n" . get_string('position', 'organizer') . ": ";
+		$slotinfo .= $position;
+		$list .= "<span style=\"cursor:help;\"> " . organizer_get_img('../../pix/docs.png', $slotinfo, $slotinfo) . "</span>";				
+	}
+	
+	return $list;
+
+}
+
 function organizer_teacher_action_new($params, $entry, $context) {
     global $OUTPUT;
 	$evalenabled = has_capability('mod/organizer:evalslots', $context, null, true);
@@ -1050,7 +1200,9 @@ function organizer_teacher_action_new($params, $entry, $context) {
 			array('id' => $params['id'], 'slots[]' => $entry->slotid));   
 	$remindurl = new moodle_url('/mod/organizer/send_reminder.php',
             array('id' => $params['id'], 'user' => $entry->id));
-
+	$assignurl = new moodle_url('/mod/organizer/view.php',
+        	    array('id' => $params['id'], 'sort' => 'datetime', 'mode' => '4', 'assignid' => $entry->id));
+	
     $buttons = array();
 
     switch ($entry->status) {
@@ -1100,6 +1252,12 @@ function organizer_teacher_action_new($params, $entry, $context) {
             $button->url = $remindurl;
             $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true);
             $buttons[] = $button;
+			
+			$button = new stdClass();
+			$button->text = get_string("btn_assign", 'organizer');
+			$button->url = $assignurl;
+			$button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
+			$buttons[] = $button;
 
             $button = new stdClass();
             $button->text = get_string("btn_reeval", 'organizer');
@@ -1114,6 +1272,13 @@ function organizer_teacher_action_new($params, $entry, $context) {
             $button->url = $remindurl;
             $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true);
             $buttons[] = $button;
+
+			$button = new stdClass();
+			$button->text = get_string("btn_assign", 'organizer');
+			$button->url = $assignurl;
+			$button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
+			$buttons[] = $button;
+
             break;
         default:
             print_error("Wrong status code: $entry->status");
@@ -1159,6 +1324,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
 			$output .= $name . ($idnumber ? " ($idnumber) " : " ");
 			$output .= ($isgroupmode && $app->userid == $app->applicantid) ?
 					organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+			$output .= 	organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);		
 			$output .= organizer_app_details($params, $app, $popups);
 			$output .= "</div>";
 		} else if ($slot->visibility != ORGANIZER_VISIBILITY_ANONYMOUS && (organizer_is_my_slot($slot) || $slot->visibility == ORGANIZER_VISIBILITY_ALL) ) {
@@ -1166,6 +1332,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
 			$output .= $name . ($idnumber ? " ($idnumber) " : " ");
 			$output .= ($isgroupmode && $app->userid == $app->applicantid) ?
 					organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+			$output .= 	organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);		
 			$output .= "</div>";
 		}
 	}
@@ -1187,9 +1354,9 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
 					$a->inqueue = $inqueue;
 					$slotx = new organizer_slot($slot);
 					if($a->queueposition = $slotx->is_group_in_queue()) {
-						$output .= "<span style=\"color: red;\">&nbsp;<em>(" . get_string('places_inqueue_withposition', 'organizer', $a) . ")</em></span>";
+						$output .= organizer_write_places_inqueue_position($a);
 					} else {					
-						$output .= "<span style=\"color: red;\">&nbsp;<em>(" . get_string('places_inqueue', 'organizer', $a) . ")</em></span>";
+						$output .= organizer_write_places_inqueue($a, $slot, $params);
 					}
 				}
 			}
@@ -1224,9 +1391,9 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
 					$a->inqueue = $inqueue;
 				    $slotx = new organizer_slot($slot);
 					if($a->queueposition = $slotx->is_user_in_queue($USER->id)) {
-						$output .= "<span style=\"color: red;\">&nbsp;<em>(" . get_string('places_inqueue_withposition', 'organizer', $a) . ")</em></span>";
+						$output .= organizer_write_places_inqueue_position($a);
 					} else {					
-						$output .= "<span style=\"color: red;\">&nbsp;<em>(" . get_string('places_inqueue', 'organizer', $a) . ")</em></span>";
+						$output .= organizer_write_places_inqueue($a, $slot, $params);
 					}
 				}
 			}
@@ -1293,7 +1460,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
             if ($ismyslot) {
                 $idnumber = organizer_get_user_idnumber($app->userid);
                 $content .= organizer_get_name_link($app->userid) .
-                            ($idnumber ? " ($idnumber) " : " ") . '<br />';
+                            ($idnumber ? " ($idnumber) " : " ") . organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified) . '<br />';
             }
         } else { // Not anonymous.
             if ($groupmode) {
@@ -1302,7 +1469,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                     $content = '<em>' . get_string('nogroup', 'organizer') . '</em><br />';
                 } else {
                     $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
-                    $content = "<em>{$groupname}</em><br />";
+                    $content = "<em>{$groupname}</em>" . organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified) . "<br />";
                 }
             }
 
@@ -1317,6 +1484,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
 						$content .= ($appointment->userid == $appointment->applicantid) ?
 							organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
 					}
+					if (!$groupmode) $content .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid, $appointment->teacherapplicanttimemodified);				
 					$content .= '<br />';
 				}
 			}
@@ -1333,7 +1501,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                 $app = reset($appointments);
 				if ($app !== false) {
                 	$groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
-                	$list = "<em>{$groupname}</em><br />";
+                	$list = "<em>{$groupname}</em>" . organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified) . "<br />";
 				} else {				
 	                $list = '';
 				}
@@ -1349,7 +1517,9 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                     $list .= ' ';
                     $list .= (organizer_is_group_mode() && $appointment->userid == $appointment->applicantid) ? organizer_get_img(
                                     'pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
-                }
+                } else {
+					$list .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid, $appointment->teacherapplicanttimemodified);
+				}
                 $list .= organizer_app_details($params, $appointment, $popups) . '</div>';
             }
             $content .= $list;
@@ -1382,9 +1552,9 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
 				if ($inqueue) {
 					$a->inqueue = $inqueue;
 					if($a->queueposition = $slotx->is_user_in_queue($USER->id)) {
-						$content .= "<span style=\"color: red;\">&nbsp;<em>(" . get_string('places_inqueue_withposition', 'organizer', $a) . ")</em></span>";
+						$content .= organizer_write_places_inqueue_position($a);
 					} else {					
-						$content .= "<span style=\"color: red;\">&nbsp;<em>(" . get_string('places_inqueue', 'organizer', $a) . ")</em></span>";
+						$content .= organizer_write_places_inqueue($a, $slot, $params);
 					}
 				}
 			}
@@ -1405,9 +1575,9 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
 			        $a = new stdClass();
 					$a->inqueue = $inqueue;
 					if($a->queueposition = $slotx->is_group_in_queue()) {
-						$content .= "<span style=\"color: red;\">&nbsp;<em>(" . get_string('places_inqueue_withposition', 'organizer', $a) . ")</em></span>";
+						$content .= organizer_write_places_inqueue_position($a);
 					} else {					
-						$content .= "<span style=\"color: red;\">&nbsp;<em>(" . get_string('places_inqueue', 'organizer', $a) . ")</em></span>";
+						$content .= organizer_write_places_inqueue($a, $slot, $params);
 					}
 				}
 			}
@@ -1532,6 +1702,9 @@ function organizer_slot_reg_status($organizer, $slot) {
 					if(organizer_with_grading()) {
                     	$output = organizer_get_img('pix/slot_pending_24x24.png', '',
                             get_string('reg_status_slot_pending', 'organizer'));
+					} else {					
+						$output = organizer_get_img('pix/student_slot_expired_24x24.png', '',
+								get_string('reg_status_slot_expired', 'organizer'));
 					}
                 } else if ($app->attended == 0 && $app->allownewappointments == 0) {
                     $output = organizer_get_img('pix/no_24x24.png', '', get_string('reg_status_slot_not_attended', 'organizer'));
@@ -1670,6 +1843,15 @@ function organizer_get_reg_button($type, $slotid, $params, $disabled = false) {
             array('disabled' => $disabled));
 }
 
+function organizer_get_assign_button($slotid, $params) {
+    global $OUTPUT;
+
+    $actionurl = new moodle_url('/mod/organizer/slot_assign.php',
+            array('id' => $params['id'], 'mode' => $params['mode'], 'assignid' => $params['assignid'], 'slot' => $slotid));
+
+    return $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'), 'post');
+}
+
 function organizer_get_status_icon_new($status) {
     switch ($status) {
         case ORGANIZER_APP_STATUS_ATTENDED:
@@ -1736,3 +1918,65 @@ function organizer_popup_icon($type, $content, &$popups) {
     $iconid = organizer_register_popup($type, $content, $popups);
     return organizer_get_img($icons[$type], '', '', $iconid);
 }
+
+function organizer_slot_is_free($slot, $userid) {
+
+	$slotx = new organizer_slot($slot);
+	if (!$slotx->is_past_due() && !$slotx->is_full() && $slotx->is_available() ) {
+
+		$apps = organizer_get_all_user_appointments($slotx->organizerid, $userid);
+		foreach ($apps as $app) {  // is own slot?
+			if ($app->slotid == $slotx->id) {
+				return false;
+			}
+		}
+		return true;
+	}
+		
+	return false;
+}
+
+function organizer_write_places_inqueue_position($a) {
+	
+	$output = "";
+	$output .= "<span style=\"color: red;\">&nbsp;(" . get_string('places_inqueue_withposition', 'organizer', $a) . ")</span>";
+	return $output;
+}
+
+function organizer_write_places_inqueue($a, $slot, $params) {
+	
+	$output = "";
+	$output .= "<span style=\"color: red;\">&nbsp;(" . get_string('places_inqueue', 'organizer', $a);
+	if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW) {
+		$wlinfo = organizer_get_entries_queue($slot);
+		$output .= "<span style=\"cursor:help;\"> " . organizer_get_img('../../pix/docs.png', $wlinfo, $wlinfo) . "</span>";
+	}
+	$output .= ")</span>";
+	return $output;
+}
+
+function organizer_get_entries_queue($slot){
+	global $DB;
+
+	$output = "";
+	$params = array('slotid' => $slot->id);
+	$slotquery = 'SELECT u.firstname, u.lastname
+				FROM {organizer_slots} s
+				INNER JOIN {organizer_slot_queues} q ON s.id = q.slotid
+				INNER JOIN {user} u ON u.id = q.userid
+				WHERE s.id = :slotid
+				ORDER BY q.id';
+
+	if($queue_entries = $DB->get_records_sql($slotquery, $params)) {
+		$i = 0;
+		$lf = "";
+		foreach($queue_entries as $qe) {
+			$i++;
+			$output .= $lf . $i . ". " . $qe->firstname . " " . $qe->lastname;
+			$lf = "\n";
+		} 
+	}
+	
+	return $output;
+}
+

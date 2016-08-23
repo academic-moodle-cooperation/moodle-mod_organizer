@@ -39,14 +39,13 @@ $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ACTION);
 $user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
-$slots = optional_param_array('slots', array(), PARAM_INT);
+$slots = optional_param_array('slots', null, PARAM_INT);
 $app = optional_param('app', null, PARAM_INT);
 $tsort = optional_param('tsort', null, PARAM_ALPHA);
 
 $url = new moodle_url('/mod/organizer/view_action.php');
 $url->param('id', $cm->id);
 $url->param('mode', $mode);
-$url->param('action', $action);
 $url->param('sesskey', sesskey());
 
 $PAGE->set_url($url);
@@ -61,9 +60,9 @@ $jsmodule = array(
 );
 $PAGE->requires->js_module($jsmodule);
 
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
+$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode));
 
-$logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
+$logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode;
 
 require_capability('mod/organizer:editslots', $context);
 

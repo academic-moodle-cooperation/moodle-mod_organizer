@@ -141,8 +141,16 @@
 
 #organizer_main_cointainer a.action{
     white-space:nowrap;
+	display: block;
 }
 
 #organizer_main_cointainer a.disabled{
     color:grey;
 }
+
+#organizer_main_cointainer .finalgrade {
+	margin-left: 0.1em;
+    cursor:help;
+	color: red;
+}
+
