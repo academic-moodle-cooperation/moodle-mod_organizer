@@ -650,7 +650,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
 }
 
 function organizer_get_span_cell($text, $colspan) {
-    $cell = $defaultrow->cells[] = new html_table_cell();
+    $cell = new html_table_cell();
     $cell->colspan = $colspan;
     $cell->style = 'text-align: center; vertical-align: middle;';
     $cell->text = $text;
@@ -687,7 +687,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
     $par = array('now1' => time(), 'now2' => time(), 'organizerid' => $organizer->id);
     $par = array_merge($par, $inparams);
 
-    $query = "SELECT DISTINCT
+    $query = "SELECT DISTINCT 
         g.id, g.name,
         CASE
             WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 0 
@@ -1974,7 +1974,7 @@ function organizer_get_entries_queue($slot){
 
 	$output = "";
 	$paramssql = array('slotid' => $slot->id);
-	$slotquery = 'SELECT u.id, u.firstname, u.lastname
+	$slotquery = 'SELECT u.id, u.firstname, u.lastname, q.id
 				FROM {organizer_slots} s
 				INNER JOIN {organizer_slot_queues} q ON s.id = q.slotid
 				INNER JOIN {user} u ON u.id = q.userid
@@ -1999,7 +1999,7 @@ function organizer_get_entries_queue_group($slot){
 
     $output = "";
     $paramssql = array('slotid' => $slot->id);
-    $slotquery = 'SELECT DISTINCT g.id, g.name
+    $slotquery = 'SELECT DISTINCT g.id, g.name, q.id
 				FROM {organizer_slots} s
 				INNER JOIN {organizer_slot_queues} q ON s.id = q.slotid
 				INNER JOIN {groups} g ON g.id = q.groupid
