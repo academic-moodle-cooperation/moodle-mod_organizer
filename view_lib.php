@@ -858,7 +858,8 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 'SELECT userid FROM {groups_members} gm
                                 INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
                                 $orderby, array('groupid' => $entry->id));
-                        $list = "<em>$entry->name</em>" . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) . "<br/ >";
+                        $list = "<em>$entry->name</em>" .
+                            organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) . "<br/ >";
                         foreach ($members as $member) {
                             $idnumber = organizer_get_user_idnumber($member);
 
@@ -877,7 +878,8 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                         $cell = $row->cells[] = new html_table_cell($list);
                     } else {
                         $cell = $row->cells[] = new html_table_cell(
-                                organizer_get_name_link($entry->id) . ($entry->idnumber ? " ($entry->idnumber)" : "") . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) );
+                                organizer_get_name_link($entry->id) .
+                                ($entry->idnumber ? " ($entry->idnumber)" : "") . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) );
                     }
                     break;
                 case 'status':
@@ -910,7 +912,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                         $cell = $row->cells[] = new html_table_cell($list);
                     } else {
 						if($queueable) {
-							$outcell = organizer_reg_waitinglist_status($organizer->id, $userid, $groupmode);
+							$outcell = organizer_reg_waitinglist_status($organizer->id, 0, $groupmode);
 						} else {
 	                        $outcell = '';
 						}
@@ -1154,7 +1156,7 @@ function organizer_reg_organizer_app_details($organizer, $userid, &$popups, $gro
     return $list;
 }
 
-function organizer_reg_waitinglist_status($organizerid, $userid, $groupmode) {
+function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupmode) {
 	global $DB;
 
 	$list = "";
