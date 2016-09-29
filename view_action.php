@@ -186,7 +186,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 
 	
 	if ($action == ORGANIZER_ACTION_UNREGISTER) {
-	    $success = organizer_unregister_appointment($slot, $groupid);
+	    $success = organizer_unregister_appointment($slot, $groupid, $organizer->id);
 	} else {
 		$success = organizer_delete_from_queue($slot, $USER->id, $groupid);
 	}

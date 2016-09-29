@@ -37,22 +37,22 @@ function organizer_get_last_user_appointment($organizer, $userid = null, $mergeg
         $organizer = $DB->get_record('organizer', array('id' => $organizer));
     }
 
-    $params = array('userid' => $userid, 'organizerid' => $organizer->id);
+    $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
     $query = "SELECT a.* FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.organizerid = :organizerid AND a.userid = :userid" .
             ($getevaluated ? " AND a.attended IS NOT NULL " : " ") .
             "ORDER BY a.id DESC";
-    $apps = $DB->get_records_sql($query, $params);
+    $apps = $DB->get_records_sql($query, $paramssql);
     $app = reset($apps);
 
     if ($organizer->isgrouporganizer && $mergegroupapps && $app !== false) {
-        $params = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
+        $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
         $query = "SELECT a.* FROM {organizer_slot_appointments} a
                 INNER JOIN {organizer_slots} s ON a.slotid = s.id
                 WHERE s.organizerid = :organizerid AND s.id = :slotid
                 ORDER BY a.id DESC";
-        $groupapps = $DB->get_records_sql($query, $params);
+        $groupapps = $DB->get_records_sql($query, $paramssql);
 
         $appcount = 0;
         $someoneattended = false;
@@ -87,21 +87,21 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
         $organizer = $DB->get_record('organizer', array('id' => $organizer));
     }
 
-    $params = array('userid' => $userid, 'organizerid' => $organizer->id);
+    $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
     $query = "SELECT a.* FROM {organizer_slot_appointments} a
     INNER JOIN {organizer_slots} s ON a.slotid = s.id
     WHERE s.organizerid = :organizerid AND a.userid = :userid
     ORDER BY a.id DESC";
-    $apps = $DB->get_records_sql($query, $params);
+    $apps = $DB->get_records_sql($query, $paramssql);
 
     $app = reset($apps);
     if ($organizer->isgrouporganizer && $mergegroupapps && $app !== false) {
-        $params = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
+        $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
         $query = "SELECT a.* FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid AND s.id = :slotid
         ORDER BY a.id DESC";
-        $groupapps = $DB->get_records_sql($query, $params);
+        $groupapps = $DB->get_records_sql($query, $paramssql);
 
         $appcount = 0;
         $someoneattended = false;
@@ -369,8 +369,7 @@ class organizer_slot {
     private function load_queue() {
     	global $DB;
     	if (!$this->queue) {
-    		$this->queue = $DB->get_records('organizer_slot_queues', array('slotid' => $this->slot->id),
-    				'id ASC');
+    		$this->queue = $DB->get_records('organizer_slot_queues', array('slotid' => $this->slot->id), 'id ASC');
     	}
     }	
 
@@ -378,21 +377,24 @@ class organizer_slot {
     private function load_queue_group() {
     	global $DB;
     	if (!$this->queue_group) {
-			$select = 'slotid = ' . $this->slot->id . ' group by groupid order by id asc ';
-    		$this->queue_group = $DB->get_records_select('organizer_slot_queues', $select);
+    	    $sql = "SELECT q.groupid FROM (SELECT groupid, slotid FROM {organizer_slot_queues} ORDER BY id asc) q
+                    WHERE q.slotid = :slotid
+                    GROUP BY q.groupid";
+            $paramssql = array('slotid' => $this->slot->id);
+    		$this->queue_group = $DB->get_records_sql($sql, $paramssql);
     	}
     }	
 }
 
 function organizer_user_has_access($slotid) {
-    global $USER, $DB;
+    global $DB;
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
     $moduleid = $DB->get_field('modules', 'id', array('name' => 'organizer'));
     $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
     $courseid = $DB->get_field('course_modules', 'course', array('module' => $moduleid, 'instance' => $organizer->id));
     $groups = groups_get_user_groups($courseid);
     $groupingid = $DB->get_field('course_modules', 'groupingid',
-            array('module' => $moduleid, 'instance' => $organizer->id));
+        array('module' => $moduleid, 'instance' => $organizer->id));
     if (!isset($groups[$groupingid]) || !count($groups[$groupingid])) {
         return false;
     }

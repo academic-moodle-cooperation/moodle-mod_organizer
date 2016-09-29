@@ -156,7 +156,8 @@ function organizer_get_status_table_entries_group($params) {
         WHERE s.organizerid = :organizerid ORDER BY s.starttime DESC) a2 ON g.id = a2.groupid
         WHERE g.id $insql
         GROUP BY g.id, g.name, status, a2.starttime, a2.duration, a2.location, a2.teacherid,
-            a2.applicantid, a2.comments, a2.teachervisible, a2.slotid
+            a2.applicantid, a2.comments, a2.teachervisible, a2.slotid,
+            a2.teacherapplicantid, a2.teacherapplicanttimemodified
         $orderby";
     return $DB->get_records_sql($query, $par);
 }
@@ -223,7 +224,8 @@ function organizer_get_status_table_entries($params) {
         ELSE -1
         END AS status,
         a2.starttime, a2.duration, a2.attended, a2.location, a2.grade, a2.comments,
-        a2.feedback, a2.teacherid, a2.userid, a2.teachervisible, a2.slotid, a2.teacherapplicantid, a2.teacherapplicanttimemodified
+        a2.feedback, a2.teacherid, a2.userid, a2.teachervisible, a2.slotid, 
+        a2.teacherapplicantid, a2.teacherapplicanttimemodified
         FROM {user} u
         LEFT JOIN
         (SELECT a.id, a.attended, a.grade, a.feedback, a.userid, s.starttime, s.location,
@@ -232,7 +234,8 @@ function organizer_get_status_table_entries($params) {
         WHERE s.organizerid = :organizerid ORDER BY s.starttime DESC) a2 ON u.id = a2.userid
         WHERE u.id $insql
         GROUP BY u.id, u.firstname, u.lastname, u.idnumber, status, a2.starttime, a2.duration, a2.attended,
-            a2.location, a2.grade, a2.comments, a2.feedback, a2.teacherid, a2.userid, a2.teachervisible, a2.slotid
+            a2.location, a2.grade, a2.comments, a2.feedback, a2.teacherid, a2.userid, a2.teachervisible, a2.slotid,
+            a2.teacherapplicantid, a2.teacherapplicanttimemodified
         $orderby";
     return $DB->get_records_sql($query, $par);
 }
