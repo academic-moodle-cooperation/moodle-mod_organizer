@@ -650,7 +650,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
 }
 
 function organizer_get_span_cell($text, $colspan) {
-    $cell = $defaultrow->cells[] = new html_table_cell();
+    $cell = new html_table_cell();
     $cell->colspan = $colspan;
     $cell->style = 'text-align: center; vertical-align: middle;';
     $cell->text = $text;
@@ -660,7 +660,7 @@ function organizer_get_span_cell($text, $colspan) {
 
 function organizer_organizer_organizer_get_status_table_entries_group($params) {
     global $DB;
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    list($cm, , $organizer, ) = organizer_get_course_module_data();
 
     $query = "SELECT g.id FROM {groups} g
             INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
@@ -687,25 +687,24 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
     $par = array('now1' => time(), 'now2' => time(), 'organizerid' => $organizer->id);
     $par = array_merge($par, $inparams);
 
-    $query = "SELECT DISTINCT
+    $query = "SELECT DISTINCT 
         g.id, g.name,
         CASE
-            WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 0 THEN " . ORGANIZER_APP_STATUS_ATTENDED
-            . "
-            WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 1  THEN "
-            . ORGANIZER_APP_STATUS_ATTENDED_REAPP
-            . "
-            WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime <= :now1 THEN " . ORGANIZER_APP_STATUS_PENDING
-            . "
-            WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime > :now2 THEN " . ORGANIZER_APP_STATUS_REGISTERED
-            . "
-            WHEN a2.id IS NOT NULL AND a2.attended = 0 AND a2.allownewappointments = 0 THEN " . ORGANIZER_APP_STATUS_NOT_ATTENDED
-            . "
-            WHEN a2.id IS NOT NULL AND a2.attended = 0 AND a2.allownewappointments = 1 THEN "
-            . ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP . "
-            WHEN a2.id IS NULL THEN " . ORGANIZER_APP_STATUS_NOT_REGISTERED . "
-            ELSE " . ORGANIZER_APP_STATUS_INVALID
-            . "
+            WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 0 
+                THEN " . ORGANIZER_APP_STATUS_ATTENDED . "
+            WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 1  
+                THEN " . ORGANIZER_APP_STATUS_ATTENDED_REAPP . "
+            WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime <= :now1 
+                THEN " . ORGANIZER_APP_STATUS_PENDING . "
+            WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime > :now2 
+                THEN " . ORGANIZER_APP_STATUS_REGISTERED . "
+            WHEN a2.id IS NOT NULL AND a2.attended = 0 AND a2.allownewappointments = 0 
+                THEN " . ORGANIZER_APP_STATUS_NOT_ATTENDED . "
+            WHEN a2.id IS NOT NULL AND a2.attended = 0 AND a2.allownewappointments = 1 
+                THEN " . ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP . "
+            WHEN a2.id IS NULL 
+                THEN " . ORGANIZER_APP_STATUS_NOT_REGISTERED . "
+            ELSE " . ORGANIZER_APP_STATUS_INVALID . "
         END AS status, a2.starttime, a2.duration, a2.location, a2.locationlink,
         a2.teacherid, a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible,
         a2.slotid, a2.allownewappointments, a2.id AS appid, a2.teacherapplicantid, a2.teacherapplicanttimemodified
@@ -722,7 +721,8 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON g.id = a2.groupid
         WHERE g.id $insql
         GROUP BY g.id, g.name, status, a2.starttime, a2.duration, a2.location, a2.locationlink,
-            a2.teacherid, a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible, a2.slotid, a2.allownewappointments
+            a2.teacherid, a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible, a2.slotid, 
+            a2.allownewappointments, a2.id, a2.teacherapplicantid, a2.teacherapplicanttimemodified
         $orderby";
 
 	$rs = $DB->get_records_sql($query, $par);
@@ -774,38 +774,40 @@ function organizer_organizer_get_status_table_entries($params) {
     $query = "SELECT DISTINCT
         u.id, u.firstname, u.lastname, u.idnumber,
         CASE
-        WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 0 THEN " . ORGANIZER_APP_STATUS_ATTENDED
-            . "
-            WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 1  THEN "
-            . ORGANIZER_APP_STATUS_ATTENDED_REAPP
-            . "
-            WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime <= :now1 THEN " . ORGANIZER_APP_STATUS_PENDING
-            . "
-            WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime > :now2 THEN " . ORGANIZER_APP_STATUS_REGISTERED
-            . "
-            WHEN a2.id IS NOT NULL AND a2.attended = 0 AND a2.allownewappointments = 0 THEN " . ORGANIZER_APP_STATUS_NOT_ATTENDED
-            . "
-            WHEN a2.id IS NOT NULL AND a2.attended = 0 AND a2.allownewappointments = 1 THEN "
-            . ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP . "
-            WHEN a2.id IS NULL THEN " . ORGANIZER_APP_STATUS_NOT_REGISTERED . "
-            ELSE " . ORGANIZER_APP_STATUS_INVALID
-            . "
+        WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 0 
+            THEN " . ORGANIZER_APP_STATUS_ATTENDED . "
+        WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 1  
+            THEN " . ORGANIZER_APP_STATUS_ATTENDED_REAPP . "
+        WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime <= :now1 
+            THEN " . ORGANIZER_APP_STATUS_PENDING . "
+        WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime > :now2 
+            THEN " . ORGANIZER_APP_STATUS_REGISTERED . "
+        WHEN a2.id IS NOT NULL AND a2.attended = 0 AND a2.allownewappointments = 0 
+            THEN " . ORGANIZER_APP_STATUS_NOT_ATTENDED . "
+        WHEN a2.id IS NOT NULL AND a2.attended = 0 AND a2.allownewappointments = 1 
+            THEN " . ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP . "
+        WHEN a2.id IS NULL 
+            THEN " . ORGANIZER_APP_STATUS_NOT_REGISTERED . "
+        ELSE " . ORGANIZER_APP_STATUS_INVALID . "
         END AS status,
         a2.starttime, a2.duration, a2.attended, a2.location, a2.locationlink,
         a2.grade, a2.comments, a2.teachercomments, a2.feedback, a2.teacherid,
-        a2.userid, a2.teachervisible, a2.slotid, a2.allownewappointments, a2.id AS appid, a2.teacherapplicantid, a2.teacherapplicanttimemodified
+        a2.userid, a2.teachervisible, a2.slotid, a2.allownewappointments, a2.id AS appid, 
+        a2.teacherapplicantid, a2.teacherapplicanttimemodified
         FROM {user} u
         LEFT JOIN
         (SELECT a.id, a.attended, a.grade, a.feedback, a.comments, a.userid,
         a.allownewappointments, s.starttime, s.location, s.locationlink, s.teacherid,
-        s.comments AS teachercomments, s.duration, s.teachervisible, s.id AS slotid, a.teacherapplicantid, a.teacherapplicanttimemodified
+        s.comments AS teachercomments, s.duration, s.teachervisible, s.id AS slotid,
+        a.teacherapplicantid, a.teacherapplicanttimemodified
         FROM {organizer_slot_appointments} a INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON u.id = a2.userid
         WHERE u.id $insql
         GROUP BY u.id, a2.id, u.firstname, u.lastname, u.idnumber, status,
         a2.starttime, a2.duration, a2.attended, a2.location, a2.locationlink,
         a2.grade, a2.comments, a2.teachercomments, a2.feedback, a2.teacherid,
-        a2.userid, a2.teachervisible, a2.slotid, a2.allownewappointments
+        a2.userid, a2.teachervisible, a2.slotid, a2.allownewappointments,
+        a2.teacherapplicantid, a2.teacherapplicanttimemodified
         $orderby";
 
     return $DB->get_records_sql($query, $par);
@@ -856,7 +858,8 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 'SELECT userid FROM {groups_members} gm
                                 INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
                                 $orderby, array('groupid' => $entry->id));
-                        $list = "<em>$entry->name</em>" . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) . "<br/ >";
+                        $list = "<em>$entry->name</em>" .
+                            organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) . "<br/ >";
                         foreach ($members as $member) {
                             $idnumber = organizer_get_user_idnumber($member);
 
@@ -875,7 +878,8 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                         $cell = $row->cells[] = new html_table_cell($list);
                     } else {
                         $cell = $row->cells[] = new html_table_cell(
-                                organizer_get_name_link($entry->id) . ($entry->idnumber ? " ($entry->idnumber)" : "") . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) );
+                                organizer_get_name_link($entry->id) .
+                                ($entry->idnumber ? " ($entry->idnumber)" : "") . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) );
                     }
                     break;
                 case 'status':
@@ -908,7 +912,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                         $cell = $row->cells[] = new html_table_cell($list);
                     } else {
 						if($queueable) {
-							$outcell = organizer_reg_waitinglist_status($organizer->id, $userid, $groupmode);
+							$outcell = organizer_reg_waitinglist_status($organizer->id, 0, $groupmode);
 						} else {
 	                        $outcell = '';
 						}
@@ -1152,7 +1156,7 @@ function organizer_reg_organizer_app_details($organizer, $userid, &$popups, $gro
     return $list;
 }
 
-function organizer_reg_waitinglist_status($organizerid, $userid, $groupmode) {
+function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupmode) {
 	global $DB;
 
 	$list = "";
@@ -1348,10 +1352,13 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
 			. "</em></span><br />";
 			// Waiting list
 			if (organizer_is_queueable()) {
-				$select = 'slotid = ' . $slot->id . ' group by groupid';
-    			$inqueue = count($DB->get_records_select('organizer_slot_queues', $select));
-				if ($inqueue) {
-					$a->inqueue = $inqueue;
+                $sql = "SELECT COUNT(distinct q.groupid) FROM {organizer_slot_queues} q
+                        WHERE q.slotid = :slotid";
+                $paramssql = array('slotid' => $slot->id);
+                $inqueues = $DB->count_records_sql($sql, $paramssql);
+                if ($inqueues) {
+                    $a = new stdClass();
+                    $a->inqueue = $inqueues;
 					$slotx = new organizer_slot($slot);
 					if($a->queueposition = $slotx->is_group_in_queue()) {
 						$output .= organizer_write_places_inqueue_position($a);
@@ -1569,11 +1576,13 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                     . "</em></span>";
 			// Waiting list
 			if (organizer_is_queueable()) {
-				$select = 'slotid = ' . $slot->id . ' group by groupid';
-    			$inqueue = count($DB->get_records_select('organizer_slot_queues', $select));
-				if ($inqueue) {
+                $sql = "SELECT COUNT(distinct q.groupid) FROM {organizer_slot_queues} q
+                        WHERE q.slotid = :slotid";
+                $paramssql = array('slotid' => $slot->id);
+                $inqueues = $DB->count_records_sql($sql, $paramssql);
+				if ($inqueues) {
 			        $a = new stdClass();
-					$a->inqueue = $inqueue;
+					$a->inqueue = $inqueues;
 					if($a->queueposition = $slotx->is_group_in_queue()) {
 						$content .= organizer_write_places_inqueue_position($a);
 					} else {					
@@ -1947,10 +1956,15 @@ function organizer_write_places_inqueue($a, $slot, $params) {
 	
 	$output = "";
 	$output .= "<span style=\"color: red;\">&nbsp;(" . get_string('places_inqueue', 'organizer', $a);
-	if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW) {
-		$wlinfo = organizer_get_entries_queue($slot);
-		$output .= "<span style=\"cursor:help;\"> " . organizer_get_img('../../pix/docs.png', $wlinfo, $wlinfo) . "</span>";
-	}
+	if($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW || $slot->visibility == ORGANIZER_VISIBILITY_ALL) {
+            if(organizer_is_group_mode()) {
+                $wlinfo = organizer_get_entries_queue_group($slot);
+            } else {
+                $wlinfo = organizer_get_entries_queue($slot);
+            }
+            $output .= "<span style=\"cursor:help;\"> " .
+                    organizer_get_img('../../pix/docs.png', $wlinfo, $wlinfo) . "</span>";
+    }
 	$output .= ")</span>";
 	return $output;
 }
@@ -1959,15 +1973,15 @@ function organizer_get_entries_queue($slot){
 	global $DB;
 
 	$output = "";
-	$params = array('slotid' => $slot->id);
-	$slotquery = 'SELECT u.firstname, u.lastname
+	$paramssql = array('slotid' => $slot->id);
+	$slotquery = 'SELECT u.id, u.firstname, u.lastname, q.id
 				FROM {organizer_slots} s
 				INNER JOIN {organizer_slot_queues} q ON s.id = q.slotid
 				INNER JOIN {user} u ON u.id = q.userid
 				WHERE s.id = :slotid
 				ORDER BY q.id';
 
-	if($queue_entries = $DB->get_records_sql($slotquery, $params)) {
+	if($queue_entries = $DB->get_records_sql($slotquery, $paramssql)) {
 		$i = 0;
 		$lf = "";
 		foreach($queue_entries as $qe) {
@@ -1980,3 +1994,27 @@ function organizer_get_entries_queue($slot){
 	return $output;
 }
 
+function organizer_get_entries_queue_group($slot){
+    global $DB;
+
+    $output = "";
+    $paramssql = array('slotid' => $slot->id);
+    $slotquery = 'SELECT DISTINCT g.id, g.name, q.id
+				FROM {organizer_slots} s
+				INNER JOIN {organizer_slot_queues} q ON s.id = q.slotid
+				INNER JOIN {groups} g ON g.id = q.groupid
+				WHERE s.id = :slotid
+				ORDER BY q.id';
+
+    if($queue_entries = $DB->get_records_sql($slotquery, $paramssql)) {
+        $i = 0;
+        $lf = "";
+        foreach($queue_entries as $qe) {
+            $i++;
+            $output .= $lf . $i . ". " . $qe->name;
+            $lf = "\n";
+        }
+    }
+
+    return $output;
+}

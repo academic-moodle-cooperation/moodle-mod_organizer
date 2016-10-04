@@ -134,7 +134,7 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                         'style'     => $table->align[$key] . $table->size[$key] . $heading->style,
                         'scope'     => $heading->scope,
                         'colspan'   => $heading->colspan,
-                    ));
+                ));
 
                 $tagtype = 'td';
                 if ($heading->header === true) {
@@ -163,8 +163,7 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
 
         foreach ($table->data as $key => $row) {
             if (($row === 'hr') && ($countcols)) {
-                $output .= html_writer::tag('td',
-                    html_writer::tag('div', '', array('class' => 'tabledivider')),
+                $output .= html_writer::tag('td', html_writer::tag('div', '', array('class' => 'tabledivider')),
                     array('colspan' => $countcols));
             } else {
                 // Convert array rows to html_table_rows and cell strings to html_table_cell objects.

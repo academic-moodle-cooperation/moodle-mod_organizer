@@ -419,8 +419,8 @@ function organizer_get_finalgrade_overwritten($organizerid, $userid) {
     global $DB;
 
 	$params = array('organizerid' => $organizerid, 'userid' => $userid);
-	$query = "SELECT gg.rawgrade, gg.finalgrade FROM mdl_grade_items gi 
-			inner join mdl_grade_grades gg on gg.itemid = gi.id 
+	$query = "SELECT gg.rawgrade, gg.finalgrade FROM {grade_items} gi 
+			inner join {grade_grades} gg on gg.itemid = gi.id 
 			where gi.itemtype = 'mod' and gi.itemmodule = 'organizer' 
 			and gi.iteminstance = :organizerid and gg.userid = :userid";
 	if($grades = $DB->get_record_sql($query, $params)) {	
