@@ -35,6 +35,7 @@ $string['organizername'] = 'Name des Terminplaners';
 $string['organizer'] = 'Terminplaner';
 $string['pluginadministration'] = 'Terminplaner Administration';
 $string['pluginname'] = 'Terminplaner';
+$string['search:activity'] = 'Terminplaner - Aktivitätsinformation';
 $string['isgrouporganizer'] = 'Gruppentermine';
 $string['isgrouporganizer_help'] = "Ankreuzen um den Terminplaner im Gruppenmodus zu verwenden. Statt einzelner Benutzer/innen können sich Gruppen für Termine anmelden. Wenn nicht angekreuzt ist es trotzdem möglich mehrere Benutzer/innen zu einem einzelnen Termin zuzulassen.";
 $string['appointmentdatetime'] = 'Datum & Zeit';
@@ -65,7 +66,7 @@ $string['eventslotviewed'] = 'Termin angezeigt.';
 $string['eventappointmentadded'] = 'Teilnehmer/in hat sich zu einem Termin angemeldet.';
 $string['eventappointmentcommented'] = 'Termin wurde kommentiert.';
 $string['eventappointmentevaluated'] = 'Termin wurde bewertet.';
-$string['eventappointmentassigned'] = 'Termin wurde durch Lehrende/n zugewiesen.';
+$string['eventappointmentassigned'] = 'Termin wurde durch Trainer/in zugewiesen.';
 $string['eventappointmentremoved'] = 'Teilnehmer/in wurde von einem Termin abgemeldet.';
 $string['eventappointmentremindersent'] = 'Terminerinnerung zu Anmeldung zu einem Termin gesendet.';
 $string['eventappointmentlistprinted'] = 'Terminliste wurde gedruckt.';
@@ -398,7 +399,7 @@ $string['messageprovider:register_reminder:student'] = 'Terminplaner Registrieru
 $string['messageprovider:edit_notify:student'] = 'Terminplaner Änderungen';
 $string['messageprovider:edit_notify:teacher'] = 'Terminplaner Änderungen (Trainer/in)';
 $string['messageprovider:slotdeleted_notify:student'] = 'Terminplaner Slot absagen';
-$string['messageprovider:assign_notify:student'] = 'Terminplaner Zuweisung durch Lehrende/n';
+$string['messageprovider:assign_notify:student'] = 'Terminplaner Zuweisung durch Trainer/in';
 $string['messageprovider:assign_notify:teacher'] = 'Terminplaner Zuweisung';
 
 /* Message templates following.
@@ -705,7 +706,7 @@ $string['group_registration_notify:student:reregister:group:smallmessage'] = '{$
 
 // assign student
 
-$string['assign_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin durch Lehrende/n zugewiesen';
+$string['assign_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin durch Trainier/in zugewiesen';
 $string['assign_notify:student:fullmessage'] =
 'Hallo {$a->receivername}!
 
@@ -720,7 +721,7 @@ $string['assign_notify:student:smallmessage'] = 'Termin am {$a->date} um {$a->ti
 
 // assign student group
 
-$string['assign_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppen-Termin durch Lehrende/n zugewiesen';
+$string['assign_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppen-Termin durch Trainier/in zugewiesen';
 $string['assign_notify:student:group:fullmessage'] =
 'Hallo {$a->receivername}!
 
