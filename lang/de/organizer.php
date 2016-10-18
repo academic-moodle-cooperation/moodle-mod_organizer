@@ -35,6 +35,7 @@ $string['organizername'] = 'Name des Terminplaners';
 $string['organizer'] = 'Terminplaner';
 $string['pluginadministration'] = 'Terminplaner Administration';
 $string['pluginname'] = 'Terminplaner';
+$string['crontaskname'] = 'Terminplaner cron Job';
 $string['search:activity'] = 'Terminplaner - Aktivitätsinformation';
 $string['isgrouporganizer'] = 'Gruppentermine';
 $string['isgrouporganizer_help'] = "Ankreuzen um den Terminplaner im Gruppenmodus zu verwenden. Statt einzelner Benutzer/innen können sich Gruppen für Termine anmelden. Wenn nicht angekreuzt ist es trotzdem möglich mehrere Benutzer/innen zu einem einzelnen Termin zuzulassen.";

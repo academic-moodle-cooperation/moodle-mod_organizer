@@ -35,6 +35,7 @@ $string['organizername'] = 'Organizer name';
 $string['organizer'] = 'Organizer';
 $string['pluginadministration'] = 'Organizer administration';
 $string['pluginname'] = 'Organizer';
+$string['crontaskname'] = 'Organizer cron job';
 $string['search:activity'] = 'Organizer - activity information';
 $string['isgrouporganizer'] = 'Group appointments';
 $string['isgrouporganizer_help'] = "Check this if you want this organizer to deal with groups instead of individual users. Note that, if left unchecked, the organizer still allows more users to attend the same appointment.";
