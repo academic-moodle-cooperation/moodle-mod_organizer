@@ -284,9 +284,9 @@ function organizer_generate_actionlink_bar($context, $organizerexpired) {
 		$actions['eval'] = get_string('actionlink_eval', 'organizer');
     }
 
-	$output .= html_writer::select($actions, 'bulkaction', '', array(''=> 'choosedots'), array('style' => 'margin-left:0.3em;margin-right:0.3em;'));
-	$output .= '<input type="submit" value="' . get_string('btn_start', 'organizer') . '" ' .
-            ($organizerexpired ? 'disabled ' : '') . '/>';
+	$output .= html_writer::select($actions, 'bulkaction', '', array(''=> 'choosedots'),
+        array('style' => 'margin-left:0.3em;margin-right:0.3em;'));
+	$output .= '<input type="submit" value="' . get_string('btn_start', 'organizer') . '"/>';
 
     $output .= '</div>';
 
