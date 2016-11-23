@@ -332,8 +332,9 @@ class MTablePDF extends \pdf {
                 if (!is_array($value)) {
                     $row[$idx] = array("rowspan" => 0, "data" => $value);
                 } else if (!isset($value["data"])) {
-                    print_error("Error: you need to set a value for [\"data\"]");
-                    exit();
+                    $row[$idx] = array("rowspan" => 0, "data" => " ");
+                    //print_error("Error: you need to set a value for [\"data\"]");
+                    //exit();
                 } else {
                     if (!isset($value["rowspan"])) {
                         $row[$idx]["rowspan"] = 0;
