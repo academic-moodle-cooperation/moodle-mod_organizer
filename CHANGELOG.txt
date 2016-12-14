@@ -1,0 +1,89 @@
+CHANGELOG
+=========
+
+3.2.0 (201?-??-??)
+------------------
+
+* Moodle 3.2 compatible version
+
+
+3.1.5 (2016-11-15)
+------------------
+
+* [FIXED] #3826 Slots without registration can not be printed
+
+
+3.1.4 (2016-10-21)
+------------------
+
+* [FIXED] #3771 Expired organizer can not be graded and slots can not be printed
+
+
+3.1.3 (2016-09-09)
+------------------
+
+* [FIXED] #3754 PostgreSQL database error on tab registration status
+
+
+3.1.2 (2016-08-30)
+------------------
+
+* [FIXED] #3691 Fails on new installation
+
+
+3.1.0 (2016-07-21)
+------------------
+
+* Moodle 3.1 compatible version
+* [FEATURE] #3556 Enhanced legend
+* [FEATURE] #3254 After creating a new organizer the user will be sent to the "Add a new
+  slot" page immediately
+* [FEATURE] #3114 Action-buttons in up-to-date moodle style
+* [FEATURE] #3118 Improve wording of email messages (location)
+* [FEATURE] #3132 Show participants in the waiting list of a slot to teachers
+* [FEATURE] #2788 Capability for the responsibility for time slots
+* [FEATURE] #3128 Add student to slot manually
+* [FIXED] #3602 CSS
+* [FIXED] #3349 Reminder e-mail not sent to group
+* [FIXED] #3333 Wrong person cited in email on assignment of a slot
+* [FIXED] #3286 Import of gradings
+* [FIXED] #3325 Assignment of group slot by teacher
+* [FIXED] #3311 Teachers can not be set to unvisible after application time expired
+* [FIXED] #3313 Slots with duration > 36000 seconds (9h10m) are not possible
+* [FIXED] #3322 Time specification in PDF
+
+
+3.0.0 (2016-04-18)
+------------------
+
+* Moodle 3.0 compatible version
+* [FEATURE] #3135 Make grading suppressible
+* [FEATURE] #2778 New visibility statuses of slots for students
+* [FEATURE] #2678 Create a waiting list for time slots that are fully booked
+* [FIXED] #3116 Group appointments mode without grouping possible
+* [FIXED] #3234 Students get notified constantly after the slot appointment is over, delete waiting
+  queue entries when instance not queueable anymore
+
+
+2.9 (2016-01-28)
+----------------
+
+* Moodle 2.9 compatible version
+
+
+2.8 (2015-07-17)
+----------------
+
+* Moodle 2.8 compatible version
+
+
+2.7 (2015-01-21)
+----------------
+
+* Moodle 2.7 compatible version
+
+
+2.6 (2014-03-31)
+----------------
+
+* First release for Moodle 2.6

@@ -15,22 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php
- *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Thomas Niedermaier
+ * @author    Ivan Sakic
+ * @author    Katarzyna Potocka
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2016111500;
-$plugin->release = "v3.2.0"; // User-friendly version number.
-$plugin->maturity = MATURITY_STABLE;
-$plugin->requires = 2014041100; // Requires this Moodle version.
-$plugin->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics).
+$plugin->version   = 2016111500;
+$plugin->requires  = 2016110800;
+$plugin->component = 'mod_organizer';
+$plugin->maturity  = MATURITY_STABLE;
+$plugin->release   = "v3.2.0";
