@@ -119,6 +119,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $message = new \core\message\message();
     $message->component = 'mod_organizer';
     $message->name = "$namesplit[0]:$namesplit[1]";
+    $message->courseid = $cm->course;
     $message->notification = 1;
     $message->fullmessageformat = FORMAT_PLAIN;
     $message->userfrom = $sender;
