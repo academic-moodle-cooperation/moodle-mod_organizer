@@ -115,8 +115,8 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
         $namesplit[0] = "eval_notify";
     }
 
-    $message = new stdClass();
-    $message->modulename = 'organizer';
+
+    $message = new \core\message\message();
     $message->component = 'mod_organizer';
     $message->name = "$namesplit[0]:$namesplit[1]";
     $message->notification = 1;
@@ -130,7 +130,6 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     }
 
     $message->subject = get_string("$type:subject", 'organizer', $strings);
-    $message->message = get_string("$type:fullmessage", 'organizer', $strings);
     $message->fullmessage = get_string("$type:fullmessage", 'organizer', $strings);
     $message->fullmessagehtml = organizer_make_html(get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm,
             $course);
