@@ -102,13 +102,13 @@ function organizer_add_appointment_slots($data) {
     $cm = get_coursemodule_from_id('organizer', $data->id);
     $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
 
-    if (!isset($data->finalslots)) {
+    if (!isset($data->newslots)) {
         return $count;
     }
 
     $timezone = new DateTimeZone(date_default_timezone_get());
 
-    foreach ($data->finalslots as $slot) {
+    foreach ($data->newslots as $slot) {
         if (!$slot['selected']) {
             continue;
         }

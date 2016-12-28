@@ -127,6 +127,21 @@ class organizer_add_slots_form extends moodleform {
         $notificationtime[1]->removeOption(1);
         $mform->addHelpButton('notificationtime', 'notificationtime', 'organizer');
 
+        $group = array();
+        $group[] = $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer'),
+            array('optional' => false, 'defaultunit' => 86400));
+        $group[] = $mform->createElement('static', '', '', get_string('relative_deadline_before', 'organizer')
+            . '&nbsp;&nbsp;&nbsp;' . get_string('relative_deadline_now', 'organizer'));
+        $group[] = $mform->createElement('checkbox', 'now', '', null);
+
+        $mform->setDefault('availablefrom', 86400 * 7);
+        $mform->setDefault('now', 1);
+        $mform->insertElementBefore(
+            $mform->createElement('group', 'availablefromgroup', get_string('availablefrom', 'organizer'), $group,
+                ORGANIZER_SPACING, false), 'notificationtime');
+        $mform->addHelpButton('availablefromgroup', 'availablefrom', 'organizer');
+
+
         $mform->addElement('header', 'slotperiod', get_string('slotperiodheader', 'organizer'));
         $mform->addHelpButton('slotperiod', 'slotperiodheader', 'organizer');
 
@@ -140,6 +155,20 @@ class organizer_add_slots_form extends moodleform {
 
         $mform->addElement('header', 'other', get_string('otherheader', 'organizer'));
 
+        $totalslots = 0;
+        for ($day = 0; $day < ORGANIZER_NUM_DAYS; $day++) {
+            $first = true;
+
+            $dayslot = $this->_create_day_slot_group($day, $totalslots, $first);
+            $mform->insertElementBefore(
+                $mform->createElement('group', "slotgroup{$totalslots}", '', $dayslot, ORGANIZER_SPACING, false),
+                'other');
+            $totalslots++;
+            if ($day != ORGANIZER_NUM_DAYS - 1) {
+                $mform->insertElementBefore($mform->createElement('html', '<hr />'), 'other');
+            }
+        }
+
         $mform->addElement('textarea', 'comments', get_string('appointmentcomments', 'organizer'),
                 array('wrap' => 'virtual', 'rows' => '10', 'cols' => '60'));
         $mform->setType('comments', PARAM_RAW);
@@ -147,9 +176,7 @@ class organizer_add_slots_form extends moodleform {
 
         $buttonarray = array();
 
-        $buttonarray[] = &$mform->createElement('submit', 'reviewslots', get_string('reviewsubmit', 'organizer'));
         $buttonarray[] = &$mform->createElement('submit', 'createslots', get_string('createsubmit', 'organizer'));
-        $buttonarray[] = &$mform->createElement('submit', 'back', get_string('back', 'organizer'));
         $buttonarray[] = &$mform->createElement('cancel');
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
@@ -158,41 +185,13 @@ class organizer_add_slots_form extends moodleform {
 
     public function definition_after_data() {
         $mform = &$this->_form;
-        $this->step = 1;
 
-        if (isset($mform->_submitValues['reviewslots'])) {
-            $noerrors = $this->_validation_step1($mform->_submitValues);
+        if (isset($mform->_submitValues['newslots'])) {  // create
+            // check for errors
+            $data['noerrors'] = $this->_validation_step1($mform->_submitValues);
 
-            if (!$noerrors) {
-                $this->_add_slot_fields();
-
-                $buttons = &$mform->getElement('buttonar')->getElements();
-                $this->_hide_button($buttons[1]);
-            } else {
-                $this->_add_review_slots();
-                $this->_add_dummy_fields_for_back();
-
-                $this->_freeze_fields();
-
-                $buttons = &$mform->getElement('buttonar')->getElements();
-
-                $this->_hide_button($buttons[0]);
-
-                if (isset($mform->_submitValues['comments']) && $mform->_submitValues['comments'] != '') {
-                    $mform->getElement('comments')->freeze();
-                } else {
-                    $mform->removeElement('comments');
-                    $mform->removeElement('other');
-                }
-            }
-        } else if (isset($mform->_submitValues['createslots'])) {
-            $this->_add_dummy_fields();
-        } else {
-            $this->_add_slot_fields();
-
-            $buttons = &$mform->getElement('buttonar')->getElements();
-            $this->_hide_button($buttons[1]);
-            $this->_hide_button($buttons[2]);
+        } else { // slot_add is loaded in the first place
+//            $this->_add_slot_fields();
         }
     }
 
@@ -213,14 +212,18 @@ class organizer_add_slots_form extends moodleform {
             $errors['gap'] = get_string('err_fullminutegap', 'organizer');
         }
 
+        // notification time full number and positive?
         if (!$this->_converts_to_int($data['notificationtime']) || $data['notificationtime'] <= 0) {
             $errors['notificationtime'] = get_string('err_posint', 'organizer');
         }
 
-        if (!isset($data['now']) && (!$this->_converts_to_int($data['availablefrom']) || $data['availablefrom'] <= 0)) {
+        // "availablefrom" int?
+        if (!isset($data['now']) && (!$this->_converts_to_int($data['availablefrom']['number']) || $data['availablefrom']['number'] <= 0)) {
             $errors['availablefromgroup'] = get_string('err_posint', 'organizer');
         }
 
+        // "startdate" in the past?
+        // "startdate" after the "enddate"?
         if ($data['startdate'] != 0 && $data['enddate'] != 0) {
             $today = mktime(0, 0, 0, date("m", time()), date("d", time()), date("Y", time()));
             if ($data['startdate'] < $today) {
@@ -232,12 +235,17 @@ class organizer_add_slots_form extends moodleform {
             }
         }
 
+        // get the gap
+        $gap = $data['gap']['number'] * $data['gap']['timeunit'];
+
+        // for new slots:
         if (isset($data['newslots'])) {
             $invalidslots = array();
             $slots = $data['newslots'];
 
             $slotcount = 0;
 
+            // slot "from" after slot "to"?
             for ($i = 0; $i < count($slots); $i++) {
                 $slot = $slots[$i];
                 if ($slot['selected'] && ($slot['from'] >= $slot['to'])) {
@@ -249,20 +257,21 @@ class organizer_add_slots_form extends moodleform {
                 }
             }
 
+
+            // are there overlapping slots? Is the gap considered?
             for ($i = 0; $i < count($slots); $i++) {
                 $currentslot = $slots[$i];
                 if (in_array($i, $invalidslots)) {
                     continue;
                 }
                 $message = ' ';
-				// anscheinend nicht notwendig: $currentslot_to_plus_gap = $currentslot['to'] um gap erhoehen und diese Variable stattdessen verwenden
                 for ($j = 0; $j < $i; $j++) {
                     $otherslot = $slots[$j];
                     if (!in_array($j, $invalidslots) && $currentslot['day'] == $otherslot['day']
-                    && ($this->_between($currentslot['from'], $otherslot['from'], $otherslot['to'])
-                            || $this->_between($currentslot['to'], $otherslot['from'], $otherslot['to'])
-                            || $this->_between($otherslot['from'], $currentslot['from'], $currentslot['to'])
-                            || $this->_between($otherslot['to'], $currentslot['from'], $currentslot['to']))) {
+                    && ($this->_between($currentslot['from'], $otherslot['from']-$gap, $otherslot['to']+$gap)
+                            || $this->_between($currentslot['to'], $otherslot['from']-$gap, $otherslot['to']+$gap)
+                            || $this->_between($otherslot['from'], $currentslot['from']-$gap, $currentslot['to']+$gap)
+                            || $this->_between($otherslot['to'], $currentslot['from']-$gap, $currentslot['to']+$gap))) {
 
                         $message .= '(' . $this->pickeroptions[$otherslot['from']] . '-'
                                 . $this->pickeroptions[$otherslot['to']] . '), ';
@@ -278,12 +287,17 @@ class organizer_add_slots_form extends moodleform {
         return $errors;
     }
 
-    private function _validation_step1($data) {
+    private function _validation_step1($data) { // checks form to submit
+
+        // maxparticipants not int or negative?
         if (isset($data['isgrouporganizer']) && $data['isgrouporganizer'] == 0 &&
             (!$this->_converts_to_int($data['maxparticipants']) || $data['maxparticipants'] <= 0)) {
             return false;
         }
 
+        // location empty?
+        // duration not negative and full minute?
+        // notificationtime not int or negative?
         if ($data['location'] == ''
         || !($data['duration']['number'] * $data['duration']['timeunit'] % 60 == 0)
         || $data['duration']['number'] <= 0 
@@ -294,15 +308,21 @@ class organizer_add_slots_form extends moodleform {
             return false;
         }
 
-        if (isset($data['availablefrom']) && is_array($data['availablefrom'])) {
+        // availablefrom not int or negative?
+        if (isset($data['availablefrom']) && is_array($data['availablefrom']['number'])) {
             if (!$this->_converts_to_int($data['availablefrom']['number']) || $data['availablefrom']['number'] <= 0) {
                 return false;
             }
         }
 
+        // get the gap
+        $gap = $data['gap']['number'] * $data['gap']['timeunit'];
+
+        // for new slots:
         if (isset($data['newslots'])) {
             $slots = $data['newslots'];
 
+            // is "from" before "to"?
             for ($i = 0; $i < count($slots); $i++) {
                 $slot = $slots[$i];
                 if ($slot['selected'] && ($slot['from'] >= $slot['to'])) {
@@ -310,16 +330,17 @@ class organizer_add_slots_form extends moodleform {
                 }
             }
 
+
+            // are there overlapping slots? Is the gap considered?
             for ($i = 0; $i < count($slots); $i++) {
                 $currentslot = $slots[$i];
-				//  anscheinend nicht notwendig: $currentslot_to_plus_gap = $currentslot['to'] um gap erhoehen und diese Variable stattdessen verwenden
                 for ($j = 0; $j < $i; $j++) {
                     $otherslot = $slots[$j];
                     if ($currentslot['day'] == $otherslot['day']
-                    && ($this->_between($currentslot['from'], $otherslot['from'], $otherslot['to'])
-                            || $this->_between($currentslot['to'], $otherslot['from'], $otherslot['to'])
-                            || $this->_between($otherslot['from'], $currentslot['from'], $currentslot['to'])
-                            || $this->_between($otherslot['to'], $currentslot['from'], $currentslot['to']))) {
+                    && ($this->_between($currentslot['from'], $otherslot['from']-$gap, $otherslot['to']+$gap)
+                            || $this->_between($currentslot['to'], $otherslot['from']-$gap, $otherslot['to']+$gap)
+                            || $this->_between($otherslot['from'], $currentslot['from']-$gap, $currentslot['to']+$gap)
+                            || $this->_between($otherslot['to'], $currentslot['from']-$gap, $currentslot['to']+$gap))) {
 
                         return false;
                     }
@@ -357,18 +378,17 @@ class organizer_add_slots_form extends moodleform {
     }
 
 
-
+    /*
+     * called from definition_after_data
+     * if slot_add is loaded at first place
+     */
     private function _add_slot_fields() {
         $mform = &$this->_form;
 
-        if (!isset($mform->_submitValues['reviewslots']) && !isset($mform->_submitValues['back'])) {
+        if (isset($mform->_submitValues['now'])) {
             $now = true;
         } else {
-            if (isset($mform->_submitValues['now'])) {
-                $now = true;
-            } else {
-                $now = false;
-            }
+            $now = false;
         }
 
         $group = array();
@@ -449,10 +469,13 @@ class organizer_add_slots_form extends moodleform {
         $dayslot[] = $mform->createElement('static', '', '',
                 get_string("day_$day", 'organizer') . ' ' . get_string('slotfrom', 'organizer'));
         $dayslot[] = $mform->createElement('hidden', "{$name}[day]", $day);
+        $mform->setType("{$name}[day]", PARAM_RAW);
         $dayslot[] = $mform->createElement('select', "{$name}[from]", '', $this->pickeroptions);
+        $mform->setType("{$name}[from]", PARAM_INT);
         $mform->setDefault("{$name}[from]", 8 * 3600);
         $dayslot[] = $mform->createElement('static', '', '', get_string('slotto', 'organizer'));
         $dayslot[] = $mform->createElement('select', "{$name}[to]", '', $this->pickeroptions);
+        $mform->setType("{$name}[to]", PARAM_INT);
         $mform->setDefault("{$name}[to]", 8 * 3600);
 
         if ($isfirst) {
@@ -460,6 +483,26 @@ class organizer_add_slots_form extends moodleform {
         }
         return $dayslot;
     }
+
+private function _add_new_slots() {
+
+    $mform = &$this->_form;
+
+    if (isset($mform->_submitValues['now'])) {
+        $mform->insertElementBefore(
+            $mform->createElement('static', 'availablefromdummy', get_string('availablefrom', 'organizer'),
+                get_string('relative_deadline_now', 'organizer')), 'notificationtime');
+        $mform->addHelpButton('availablefromdummy', 'availablefrom', 'organizer');
+        $mform->addElement('hidden', 'availablefrom', 0);
+    } else {
+        $mform->insertElementBefore(
+            $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer')),
+            'notificationtime');
+        $mform->addHelpButton('availablefrom', 'availablefrom', 'organizer');
+    }
+
+
+}
 
     private function _add_review_slots() {
         $mform = &$this->_form;
