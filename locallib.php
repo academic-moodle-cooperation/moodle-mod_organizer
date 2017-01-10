@@ -18,6 +18,7 @@
  * locallib.php
  *
  * @package       mod_organizer
+ * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @author        Andreas Windbichler
@@ -107,12 +108,14 @@ function organizer_add_appointment_slots($data) {
     }
 
     $timezone = new DateTimeZone(date_default_timezone_get());
+    $startdate = $data->startdate;
 
     foreach ($data->newslots as $slot) {
         if (!$slot['selected']) {
             continue;
         }
 
+        $slot['date'] = organizer_get_day_date($slot['day'], $startdate);
         $transitions = $timezone->getTransitions($slot['date'], $slot['date'] + $slot['from']);
         $dstoffset = 0;
 
@@ -166,6 +169,66 @@ function organizer_add_appointment_slots($data) {
     }
 
     return $count;
+}
+
+function organizer_get_day_date($day, $startdate) {
+    $date = null;
+
+    switch($day) {
+        case 0:
+            if(date('w', $startdate) == 1) {
+                $date = $startdate;
+            } else {
+                $date = strtotime("next Monday", $startdate);
+            }
+            break;
+        case 1:
+            if(date('w', $startdate) == 2) {
+                $date = $startdate;
+            } else {
+                $date = strtotime("next Tuesday", $startdate);
+            }
+            break;
+        case 2:
+            if(date('w', $startdate) == 3) {
+                $date = $startdate;
+            } else {
+                $date = strtotime("next Wednesday", $startdate);
+            }
+            break;
+        case 3:
+            if(date('w', $startdate) == 4) {
+                $date = $startdate;
+            } else {
+                $date = strtotime("next Thursday", $startdate);
+            }
+            break;
+        case 4:
+            if(date('w', $startdate) == 5) {
+                $date = $startdate;
+            } else {
+                $date = strtotime("next Friday", $startdate);
+            }
+            break;
+        case 5:
+            if(date('w', $startdate) == 6) {
+                $date = $startdate;
+            } else {
+                $date = strtotime("next Saturday", $startdate);
+            }
+            break;
+        case 6:
+            if(date('w', $startdate) == 7) {
+                $date = $startdate;
+            } else {
+                $date = strtotime("next Sunday", $startdate);
+            }
+            break;
+        default:
+            $date = null;
+    }
+
+    return $date;
 }
 
 function organizer_add_event_slot($cmid, $slot) {

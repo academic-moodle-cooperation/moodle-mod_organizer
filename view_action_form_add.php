@@ -184,18 +184,19 @@ class organizer_add_slots_form extends moodleform {
     }
 
     public function definition_after_data() {
+        echo "definition_after_data";
         $mform = &$this->_form;
 
-        if (isset($mform->_submitValues['newslots'])) {  // create
+        if(isset($mform->_submitValues['addday'])) {  // add new time slots for a specific day
+            $this->_add_slot_fields();
+        } else if (isset($mform->_submitValues['newslots'])) {  // newslotsform submitted
             // check for errors
             $data['noerrors'] = $this->_validation_step1($mform->_submitValues);
-
-        } else { // slot_add is loaded in the first place
-//            $this->_add_slot_fields();
         }
     }
 
     public function validation($data, $files) {
+        echo "validation";
         $errors = parent::validation($data, $files);
 
         if (!$this->_converts_to_int($data['maxparticipants']) || $data['maxparticipants'] <= 0) {
@@ -288,6 +289,7 @@ class organizer_add_slots_form extends moodleform {
     }
 
     private function _validation_step1($data) { // checks form to submit
+        echo "validation_step1";
 
         // maxparticipants not int or negative?
         if (isset($data['isgrouporganizer']) && $data['isgrouporganizer'] == 0 &&
@@ -840,9 +842,7 @@ private function _add_new_slots() {
 
         $PAGE->requires->js_init_call('M.mod_organizer.init_add_form', null, false, $jsmodule);
 
-        $PAGE->requires->strings_for_js(array(
-                'confirm_conflicts'
-        ), 'organizer');
+        $PAGE->requires->strings_for_js(array('confirm_conflicts'), 'organizer');
 
         $mform = &$this->_form;
 

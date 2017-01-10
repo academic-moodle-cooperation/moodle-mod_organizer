@@ -69,29 +69,33 @@ require_capability('mod/organizer:addslots', $context);
 $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
 
 if ($data = $mform->get_data()) {
-    $count = count($slotids = organizer_add_appointment_slots($data));
-    if ($count == 0) {
-        $redirecturl->param('messages[]', 'message_warning_no_slots_added');
-    } else {
-        $event = \mod_organizer\event\slot_created::create(array(
+    if(!isset($mform->_submitValues['addday'])) {
+        $count = count($slotids = organizer_add_appointment_slots($data));
+        if ($count == 0) {
+            $redirecturl->param('messages[]', 'message_warning_no_slots_added');
+        } else {
+            $event = \mod_organizer\event\slot_created::create(array(
                 'objectid' => $PAGE->cm->id,
                 'context' => $PAGE->context
-        ));
-        $event->trigger();
+            ));
+            $event->trigger();
 
-        $redirecturl->param('data[count]', $count);
-        if ($count == 1) {
-            $redirecturl->param('messages[]', 'message_info_slots_added_sg');
-        } else {
-            $redirecturl->param('messages[]', 'message_info_slots_added_pl');
-        }
+            $redirecturl->param('data[count]', $count);
+            if ($count == 1) {
+                $redirecturl->param('messages[]', 'message_info_slots_added_sg');
+            } else {
+                $redirecturl->param('messages[]', 'message_info_slots_added_pl');
+            }
 
-        $redirecturl = $redirecturl->out();
-        foreach ($slotids as $slotid) {
-            $redirecturl .= '&slots[]=' . $slotid;
+            $redirecturl = $redirecturl->out();
+            foreach ($slotids as $slotid) {
+                $redirecturl .= '&slots[]=' . $slotid;
+            }
         }
+        redirect($redirecturl);
+    } else {
+        organizer_display_form($mform, get_string('title_add', 'organizer'));
     }
-    redirect($redirecturl);
 } else if ($mform->is_cancelled()) {
     redirect($redirecturl);
 } else {
