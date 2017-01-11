@@ -63,7 +63,6 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
-
 require_capability('mod/organizer:addslots', $context);
 
 $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));

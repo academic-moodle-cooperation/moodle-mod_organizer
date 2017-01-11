@@ -42,7 +42,7 @@ class organizer_add_slots_form extends moodleform {
     private $pickeroptions;
 
     protected function definition() {
-        global $USER;
+        global $USER, $PAGE;
 
         $this->_init_arrays();
         $this->_add_scroll_fix();
@@ -181,6 +181,11 @@ class organizer_add_slots_form extends moodleform {
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
+
+        $params = new \stdClass();
+        $params->totalslots = $totalslots;
+        $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', array($params));
+
     }
 
     public function definition_after_data() {
@@ -447,7 +452,11 @@ class organizer_add_slots_form extends moodleform {
             }
 
             if ($addday == $day || !$dayset) {
-                $dayslot = $this->_create_day_slot_group($day, $totalslots, $first);
+                $newday = $day + ORGANIZER_NUM_DAYS;
+                while(isset($slots[$newday])) {
+                    $newday += $day + ORGANIZER_NUM_DAYS;
+                }
+                $dayslot = $this->_create_day_slot_group($newday, $totalslots, false);
                 $mform->insertElementBefore(
                         $mform->createElement('group', "slotgroup{$totalslots}", '', $dayslot, ORGANIZER_SPACING, false),
                         'other');
@@ -481,7 +490,8 @@ class organizer_add_slots_form extends moodleform {
         $mform->setDefault("{$name}[to]", 8 * 3600);
 
         if ($isfirst) {
-            $dayslot[] = $mform->createElement('submit', "addday[{$day}]", get_string('newslot', 'organizer'));
+            $dayslot[] = $mform->createElement('button', "addday[{$day}]", get_string('newslot', 'organizer'),
+                array('slot' => $day, 'style' => 'display:none;', 'class' => 'adddayslot'));
         }
         return $dayslot;
     }
