@@ -721,7 +721,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON g.id = a2.groupid
-        WHERE g.id $insql
+        WHERE g.id $insql AND a2.id is not null
         $orderby";
 
 	$rs = $DB->get_records_sql($query, $par);
@@ -832,16 +832,6 @@ function organizer_organizer_generate_registration_table_content($columns, $para
         $cell->style .= ' vertical-align: middle; text-align: center;';
         $rows[] = $row;
         return $rows;
-    } else if (count($entries) == 1) {
-        reset($entries);
-        if(current($entries)->id == "") {
-            $row = new html_table_row();
-            $cell = $row->cells[] = new html_table_cell(get_string('no_slots', 'organizer'));
-            $cell->colspan = 7;
-            $cell->style .= ' vertical-align: middle; text-align: center;';
-            $rows[] = $row;
-            return $rows;
-        }
     }
 
 	$queueable = organizer_is_queueable();
