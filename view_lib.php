@@ -688,7 +688,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
     $par = array_merge($par, $inparams);
 
     $query = "SELECT DISTINCT 
-        g.id, g.name,
+        a2.id AS appid, g.id, g.name,
         CASE
             WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 0 
                 THEN " . ORGANIZER_APP_STATUS_ATTENDED . "
@@ -707,7 +707,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
             ELSE " . ORGANIZER_APP_STATUS_INVALID . "
         END AS status, a2.starttime, a2.duration, a2.location, a2.locationlink,
         a2.teacherid, a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible,
-        a2.slotid, a2.allownewappointments, a2.id AS appid, a2.teacherapplicantid, a2.teacherapplicanttimemodified
+        a2.slotid, a2.allownewappointments, a2.teacherapplicantid, a2.teacherapplicanttimemodified
 
         FROM {groups} g
         LEFT JOIN
@@ -725,6 +725,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         $orderby";
 
 	$rs = $DB->get_records_sql($query, $par);
+    var_dump($rs);
 		
     return $rs;
 }
