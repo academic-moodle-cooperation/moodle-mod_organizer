@@ -848,88 +848,88 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                 if ($entry->status == ORGANIZER_APP_STATUS_INVALID) {
                     continue;
                 }
-                if ($entry->id != $group) {
-                    continue;
+                if ($entry->id == $group) {
+                    break;
+                }
+            }
+
+            $row = new html_table_row();
+
+            foreach ($columns as $column) {
+                switch ($column) {
+                    case 'group':
+                    case 'participants':
+                        if ($params['psort'] == 'id') {
+                            $orderby = "ORDER BY idnumber {$params['pdir']}, lastname ASC, firstname ASC";
+                        } else {
+                            $orderby = "ORDER BY lastname {$params['pdir']}, firstname {$params['pdir']}, idnumber ASC";
+                        }
+                        $members = $DB->get_fieldset_sql(
+                            'SELECT userid FROM {groups_members} gm
+                        INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
+                            $orderby, array('groupid' => $entry->id));
+                        $list = "<em>$entry->name</em>" .
+                            organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) . "<br/ >";
+                        foreach ($members as $member) {
+                            $idnumber = organizer_get_user_idnumber($member);
+
+                            $list .= organizer_get_name_link($member) . ($idnumber ? " ($idnumber) " : " ")
+                                . ($entry->comments != '' ?
+                                    organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments) :
+                                    organizer_get_img('pix/transparent.png', '', ''));
+                            if ($member == $entry->applicantid) {
+                                $list .= ' '
+                                    . organizer_get_img('pix/applicant.gif', 'applicant',
+                                        get_string('applicant', 'organizer')) . '<br/>';
+                            } else {
+                                $list .= ' ' . organizer_get_img('pix/transparent.png', '', '') . '<br />';
+                            }
+                        }
+                        $cell = $row->cells[] = new html_table_cell($list);
+                        break;
+                    case 'status':
+                        $cell = $row->cells[] = new html_table_cell(organizer_get_status_icon_new($entry->status));
+                        break;
+                    case 'datetime':
+                        $cell = $row->cells[] = new html_table_cell(organizer_date_time($entry));
+                        $cell->style .= " text-align: left;";
+                        break;
+                    case 'appdetails':
+                        if ($params['psort'] == 'id') {
+                            $orderby = "ORDER BY idnumber {$params['pdir']}, lastname ASC, firstname ASC";
+                        } else {
+                            $orderby = "ORDER BY lastname {$params['pdir']}, firstname {$params['pdir']}, idnumber ASC";
+                        }
+                        $members = $DB->get_fieldset_sql(
+                            'SELECT userid FROM {groups_members} gm
+                        INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
+                            $orderby, array('groupid' => $entry->id));
+                        $list = "";
+                        foreach ($members as $member) {
+                            if ($queueable) {
+                                $list .= organizer_reg_waitinglist_status($organizer->id, $member, $groupmode);
+                            }
+                            if ($list != "") break;
+                            $list .= '<br />';
+                            $list .= organizer_reg_organizer_app_details($organizer, $member, $popups, $groupmode);
+                        }
+                        $cell = $row->cells[] = new html_table_cell($list);
+                        break;
+                    case 'location':
+                        $cell = $row->cells[] = new html_table_cell(organizer_location_link($entry));
+                        break;
+                    case 'teacher':
+                        $cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $entry, $popups));
+                        break;
+                    case 'actions':
+                        $cell = $row->cells[] = new html_table_cell(organizer_teacher_action_new($params, $entry, $context));
+                        $cell->style .= " text-align: center;";
+                        break;
                 }
 
-                $row = new html_table_row();
-
-                foreach ($columns as $column) {
-                    switch ($column) {
-                        case 'group':
-                        case 'participants':
-                            if ($params['psort'] == 'id') {
-                                $orderby = "ORDER BY idnumber {$params['pdir']}, lastname ASC, firstname ASC";
-                            } else {
-                                $orderby = "ORDER BY lastname {$params['pdir']}, firstname {$params['pdir']}, idnumber ASC";
-                            }
-                            $members = $DB->get_fieldset_sql(
-                                'SELECT userid FROM {groups_members} gm
-                            INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
-                                $orderby, array('groupid' => $entry->id));
-                            $list = "<em>$entry->name</em>" .
-                                organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified) . "<br/ >";
-                            foreach ($members as $member) {
-                                $idnumber = organizer_get_user_idnumber($member);
-
-                                $list .= organizer_get_name_link($member) . ($idnumber ? " ($idnumber) " : " ")
-                                    . ($entry->comments != '' ?
-                                        organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments) :
-                                        organizer_get_img('pix/transparent.png', '', ''));
-                                if ($member == $entry->applicantid) {
-                                    $list .= ' '
-                                        . organizer_get_img('pix/applicant.gif', 'applicant',
-                                            get_string('applicant', 'organizer')) . '<br/>';
-                                } else {
-                                    $list .= ' ' . organizer_get_img('pix/transparent.png', '', '') . '<br />';
-                                }
-                            }
-                            $cell = $row->cells[] = new html_table_cell($list);
-                            break;
-                        case 'status':
-                            $cell = $row->cells[] = new html_table_cell(organizer_get_status_icon_new($entry->status));
-                            break;
-                        case 'datetime':
-                            $cell = $row->cells[] = new html_table_cell(organizer_date_time($entry));
-                            $cell->style .= " text-align: left;";
-                            break;
-                        case 'appdetails':
-                            if ($params['psort'] == 'id') {
-                                $orderby = "ORDER BY idnumber {$params['pdir']}, lastname ASC, firstname ASC";
-                            } else {
-                                $orderby = "ORDER BY lastname {$params['pdir']}, firstname {$params['pdir']}, idnumber ASC";
-                            }
-                            $members = $DB->get_fieldset_sql(
-                                'SELECT userid FROM {groups_members} gm
-                            INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
-                                $orderby, array('groupid' => $entry->id));
-                            $list = "";
-                            foreach ($members as $member) {
-                                if ($queueable) {
-                                    $list .= organizer_reg_waitinglist_status($organizer->id, $member, $groupmode);
-                                }
-                                if ($list != "") break;
-                                $list .= '<br />';
-                                $list .= organizer_reg_organizer_app_details($organizer, $member, $popups, $groupmode);
-                            }
-                            $cell = $row->cells[] = new html_table_cell($list);
-                            break;
-                        case 'location':
-                            $cell = $row->cells[] = new html_table_cell(organizer_location_link($entry));
-                            break;
-                        case 'teacher':
-                            $cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $entry, $popups));
-                            break;
-                        case 'actions':
-                            $cell = $row->cells[] = new html_table_cell(organizer_teacher_action_new($params, $entry, $context));
-                            $cell->style .= " text-align: center;";
-                            break;
-                    }
-
-                    $cell->style .= ' vertical-align: middle;';
-                }
-                $rows[] = $row;
-            } // foreach entry
+                $cell->style .= ' vertical-align: middle;';
+            }
+            $rows[] = $row;
         }  // foreach group
     } else {  // no groupmode:
         foreach ($entries as $entry) {
