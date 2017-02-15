@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2017013100;
-$plugin->requires  = 2016110800;
+$plugin->requires  = 2016120500;
 $plugin->component = 'mod_organizer';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release   = "v3.2.0";
