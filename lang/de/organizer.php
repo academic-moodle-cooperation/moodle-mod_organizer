@@ -707,7 +707,7 @@ $string['group_registration_notify:student:reregister:group:smallmessage'] = '{$
 
 // assign student
 
-$string['assign_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin durch Trainier/in zugewiesen';
+$string['assign_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin durch Trainer/in zugewiesen';
 $string['assign_notify:student:fullmessage'] =
 'Hallo {$a->receivername}!
 
@@ -722,7 +722,7 @@ $string['assign_notify:student:smallmessage'] = 'Termin am {$a->date} um {$a->ti
 
 // assign student group
 
-$string['assign_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppen-Termin durch Trainier/in zugewiesen';
+$string['assign_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppen-Termin durch Trainer/in zugewiesen';
 $string['assign_notify:student:group:fullmessage'] =
 'Hallo {$a->receivername}!
 
