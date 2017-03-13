@@ -1696,6 +1696,11 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
     return '<img src="' . $src . '" alt="' . $alt . '" title="' . $title . '" id="' . $id . '" ' . $other . ' />';
 }
 
+function organizer_get_icon($iconname, $stringname) {
+    global $OUTPUT;
+    return $OUTPUT->pix_icon($iconname, get_string($stringname, 'organizer'), 'mod_organizer');
+}
+
 function organizer_slot_status($params, $slot) {
     $slotx = new organizer_slot($slot);
 
