@@ -1061,3 +1061,7 @@ $string['actionlink_print'] = 'drucken';
 $string['btn_start'] = 'Start';
 $string['noslotsselected'] = 'Sie haben keine Termine ausgewählt!';
 $string['norightpage'] = 'Sie haben nicht das Recht, diese Seite aufzurufen.';
+
+$string['Warning'] = 'Warnung!';
+$string['Info'] = 'Info';
+$string['Error'] = 'Fehler!';

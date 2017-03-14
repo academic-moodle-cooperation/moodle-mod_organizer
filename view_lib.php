@@ -876,13 +876,13 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                             $list .= organizer_get_name_link($member) . ($idnumber ? " ($idnumber) " : " ")
                                 . ($entry->comments != '' ?
                                     organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments) :
-                                    organizer_get_img('pix/transparent.png', '', ''));
+                                    organizer_get_icon('transparent', ''));
                             if ($member == $entry->applicantid) {
                                 $list .= ' '
-                                    . organizer_get_img('pix/applicant.gif', 'applicant',
+                                    . organizer_get_icon('applicant',
                                         get_string('applicant', 'organizer')) . '<br/>';
                             } else {
-                                $list .= ' ' . organizer_get_img('pix/transparent.png', '', '') . '<br />';
+                                $list .= ' ' . organizer_get_icon('transparent', '') . '<br />';
                             }
                         }
                         $cell = $row->cells[] = new html_table_cell($list);
@@ -1053,7 +1053,7 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
 function organizer_get_participant_entry($entry) {
     $icon = ' ' . (isset($entry->comments) && $entry->comments != '' ?
             organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments) :
-            organizer_get_img('pix/transparent.png', '', ''));
+            organizer_get_icon('transparent', ''));
 	$participantentry = organizer_get_name_link($entry->id) . " {$icon}<br/>({$entry->idnumber})" . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified);		
     return $participantentry;
 }
@@ -1067,7 +1067,7 @@ function organizer_app_details($params, $appointment, &$popups) {
 
     $list = $appointment->comments ?
             organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, s($appointment->comments), $popups) :
-			organizer_get_img('pix/transparent.png', '', '');
+			organizer_get_icon('transparent', '');
 	
     $list .= organizer_get_attended_icon($appointment);
 
@@ -1233,7 +1233,7 @@ function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupmode)
 		$slotinfo .= $slot->location ? $slot->location : "-";
 		$slotinfo .= "\n" . get_string('position', 'organizer') . ": ";
 		$slotinfo .= $position;
-		$list .= "<span style=\"cursor:help;\"> " . organizer_get_img('../../pix/docs.png', $slotinfo, $slotinfo) . "</span>";				
+		$list .= "<span style=\"cursor:help;\"> " . organizer_get_icon('docs', $slotinfo) . "</span>";
 	}
 	
 	return $list;
@@ -1370,7 +1370,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
 			$output .= "<div nowrap>";
 			$output .= $name . ($idnumber ? " ($idnumber) " : " ");
 			$output .= ($isgroupmode && $app->userid == $app->applicantid) ?
-					organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+					organizer_get_icon('applicant', get_string('applicant', 'organizer')) : '';
 			$output .= 	organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);		
 			$output .= organizer_app_details($params, $app, $popups);
 			$output .= "</div>";
@@ -1378,7 +1378,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
 			$output .= "<div nowrap>";
 			$output .= $name . ($idnumber ? " ($idnumber) " : " ");
 			$output .= ($isgroupmode && $app->userid == $app->applicantid) ?
-					organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+					organizer_get_icon('applicant', get_string('applicant', 'organizer')) : '';
 			$output .= 	organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);		
 			$output .= "</div>";
 		}
@@ -1452,9 +1452,9 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
     }
 
 	if ($slot->visibility == ORGANIZER_VISIBILITY_ANONYMOUS) {
-		$output .= organizer_get_img('pix/anon.png', 'anonymous', get_string('slot_anonymous', 'organizer'));
+		$output .= organizer_get_icon('anon', get_string('slot_anonymous', 'organizer'));
 	} else if ($slot->visibility == ORGANIZER_VISIBILITY_SLOT) {	
-		$output .= organizer_get_img('pix/slotanon.png', 'anonymous', get_string('slot_slotvisible', 'organizer'));
+		$output .= organizer_get_icon('slotanon', get_string('slot_slotvisible', 'organizer'));
 	}
 
     return $output;
@@ -1532,7 +1532,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
 					if ($groupmode) {
 						$content .= ' ';
 						$content .= ($appointment->userid == $appointment->applicantid) ?
-							organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+							organizer_get_icon('applicant', get_string('applicant', 'organizer')) : '';
 					}
 					if (!$groupmode) $content .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid, $appointment->teacherapplicanttimemodified);				
 					$content .= '<br />';
@@ -1565,8 +1565,8 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                 $list .= organizer_get_name_link($appointment->userid) . ($idnumber ? " ($idnumber)" : "");
                 if ($groupmode) {
                     $list .= ' ';
-                    $list .= (organizer_is_group_mode() && $appointment->userid == $appointment->applicantid) ? organizer_get_img(
-                                    'pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+                    $list .= (organizer_is_group_mode() && $appointment->userid == $appointment->applicantid) ? organizer_get_icon(
+                                    'applicant', get_string('applicant', 'organizer')) : '';
                 } else {
 					$list .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid, $appointment->teacherapplicanttimemodified);
 				}
@@ -1637,9 +1637,9 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
     }
 
 	if ($slot->visibility == ORGANIZER_VISIBILITY_ANONYMOUS) {
-		$content .= organizer_get_img('pix/anon.png', 'anonymous', get_string('slot_anonymous', 'organizer'));
+		$content .= organizer_get_icon('anon', get_string('slot_anonymous', 'organizer'));
 	} else if ($slot->visibility == ORGANIZER_VISIBILITY_SLOT) {	
-		$content .= organizer_get_img('pix/slotanon.png', 'anonymous', get_string('slot_slotvisible', 'organizer'));
+		$content .= organizer_get_icon('slotanon', get_string('slot_slotvisible', 'organizer'));
 	}
 
     return $content;
@@ -1649,25 +1649,25 @@ function organizer_get_attended_icon($appointment) {
     if (isset($appointment->attended)) {
         if ($appointment->attended == 1) {
             if ($appointment->allownewappointments) {
-                return organizer_get_img('pix/yes_reg_small.png', '',
+                return organizer_get_icon('yes_reg',
                     get_string('reg_status_slot_attended_reapp', 'organizer'));
             } else {
-                return organizer_get_img('pix/yes_small.png', '',
+                return organizer_get_icon('yes',
                     get_string('reg_status_slot_attended', 'organizer'));
             }
         } else {
             if ($appointment->allownewappointments ) {
-                return organizer_get_img('pix/no_reg_small.png', '',
+                return organizer_get_icon('no_reg',
                     get_string('reg_status_slot_not_attended_reapp', 'organizer'));
             } else {
-                return organizer_get_img('pix/no_small.png', '',
+                return organizer_get_icon('no',
                     get_string('reg_status_slot_not_attended', 'organizer'));
             }
         }
     }
 
 	if(organizer_with_grading()) {
-    	return organizer_get_img('pix/slot_pending_small.png', '', get_string('reg_status_slot_pending', 'organizer'));
+    	return organizer_get_icon('pending', get_string('reg_status_slot_pending', 'organizer'));
 	} else {
 		return "";
 	}
@@ -1696,10 +1696,11 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
     return '<img src="' . $src . '" alt="' . $alt . '" title="' . $title . '" id="' . $id . '" ' . $other . ' />';
 }
 
-function organizer_get_icon($iconname, $stringname) {
+function organizer_get_icon($iconname, $string) {
     global $OUTPUT;
-    return $OUTPUT->pix_icon($iconname, get_string($stringname, 'organizer'), 'mod_organizer');
+    return $OUTPUT->pix_icon($iconname, $string, 'mod_organizer');
 }
+
 
 function organizer_slot_status($params, $slot) {
     $slotx = new organizer_slot($slot);
@@ -1720,21 +1721,21 @@ function organizer_slot_status($params, $slot) {
 
     if ($slotevaluated) {
         return '<a href="' . $actionurl->out(false) . '">'
-                . organizer_get_img('pix/yes_24x24.png', '', get_string('img_title_evaluated', 'organizer')) . '</a>';
+                . organizer_get_icon('yes', get_string('img_title_evaluated', 'organizer')) . '</a>';
     } else if ($slotnoparticipants) {
-        return organizer_get_img('pix/no_participants_24x24.png', '', get_string('img_title_no_participants', 'organizer'));
+        return organizer_get_icon('no_participants', get_string('img_title_no_participants', 'organizer'));
     } else if ($slotpending) {
         return '<a href="' . $actionurl->out(false) . '">'
-                . organizer_get_img('pix/slot_pending_24x24.png', '', get_string('img_title_pending', 'organizer')) . '</a>';
+                . organizer_get_icon('pending', get_string('img_title_pending', 'organizer')) . '</a>';
     } else if ($slotgradeable) {
         return '<a href="' . $actionurl->out(false) . '">'
-                . organizer_get_img('pix/student_slot_past_deadline_24x24.png', '',
+                . organizer_get_icon('student_slot_past_deadline',
                         get_string('img_title_past_deadline', 'organizer')) . '</a>';
     } else if ($slotdueempty) {
-        return organizer_get_img('pix/student_slot_available_24x24.png', '', get_string('img_title_due', 'organizer'));
+        return organizer_get_icon('student_slot_available', get_string('img_title_due', 'organizer'));
     } else if ($slotdue) {
         return '<a href="' . $actionurl->out(false) . '">'
-                . organizer_get_img('pix/student_slot_available_24x24.png', '', get_string('img_title_due', 'organizer'))
+                . organizer_get_icon('student_slot_available', get_string('img_title_due', 'organizer'))
                 . '</a>';
     } else {
         print_error("This shouldn't happen.");
@@ -1749,7 +1750,7 @@ function organizer_slot_reg_status($organizer, $slot) {
     $app = organizer_get_last_user_appointment($organizer);
 
     if ($slotx->organizer_expired()) {
-        $output = organizer_get_img('pix/organizer_expired_24x24.png', '',
+        $output = organizer_get_icon('organizer_expired',
                 get_string('reg_status_organizer_expired', 'organizer'));
     } else if ($slotx->is_past_due()) {
         if ($app) {
@@ -1757,39 +1758,39 @@ function organizer_slot_reg_status($organizer, $slot) {
             if ($slotx->id == $regslot->id) {
                 if (!isset($app->attended)) {
 					if(organizer_with_grading()) {
-                    	$output = organizer_get_img('pix/slot_pending_24x24.png', '',
+                    	$output = organizer_get_icon('pending',
                             get_string('reg_status_slot_pending', 'organizer'));
 					} else {					
-						$output = organizer_get_img('pix/student_slot_expired_24x24.png', '',
+						$output = organizer_get_icon('student_slot_expired', '',
 								get_string('reg_status_slot_expired', 'organizer'));
 					}
                 } else if ($app->attended == 0 && $app->allownewappointments == 0) {
-                    $output = organizer_get_img('pix/no_24x24.png', '', get_string('reg_status_slot_not_attended', 'organizer'));
+                    $output = organizer_get_icon('no', get_string('reg_status_slot_not_attended', 'organizer'));
                 } else if ($app->attended == 1 && $app->allownewappointments == 0) {
-                    $output = organizer_get_img('pix/yes_24x24.png', '', get_string('reg_status_slot_attended', 'organizer'));
+                    $output = organizer_get_icon('yes', get_string('reg_status_slot_attended', 'organizer'));
                 } else if ($app->attended == 0 && $app->allownewappointments == 1) {
-                    $output = organizer_get_img('pix/no_reg_24x24.png', '',
+                    $output = organizer_get_icon('no_reg',
                             get_string('reg_status_slot_not_attended_reapp', 'organizer'));
                 } else if ($app->attended == 1 && $app->allownewappointments == 1) {
-                    $output = organizer_get_img('pix/yes_reg_24x24.png', '',
+                    $output = organizer_get_icon('yes_reg',
                             get_string('reg_status_slot_attended_reapp', 'organizer'));
                 }
             } else {
-                $output = organizer_get_img('pix/student_slot_expired_24x24.png', '',
+                $output = organizer_get_icon('student_slot_expired',
                         get_string('reg_status_slot_expired', 'organizer'));
             }
         } else {
-            $output = organizer_get_img('pix/student_slot_expired_24x24.png', '',
+            $output = organizer_get_icon('student_slot_expired',
                     get_string('reg_status_slot_expired', 'organizer'));
         }
     } else if ($slotx->is_past_deadline()) {
-        $output = organizer_get_img('pix/student_slot_past_deadline_24x24.png', '',
+        $output = organizer_get_icon('student_slot_past_deadline',
                 get_string('reg_status_slot_past_deadline', 'organizer'));
     } else {
         if ($slotx->is_full()) {
-            $output = organizer_get_img('pix/student_slot_full_24x24.png', '', get_string('reg_status_slot_full', 'organizer'));
+            $output = organizer_get_icon('student_slot_full', get_string('reg_status_slot_full', 'organizer'));
         } else {
-            $output = organizer_get_img('pix/student_slot_available_24x24.png', '',
+            $output = organizer_get_icon('student_slot_available', '',
                     get_string('reg_status_slot_available', 'organizer'));
         }
     }
@@ -1912,26 +1913,26 @@ function organizer_get_assign_button($slotid, $params) {
 function organizer_get_status_icon_new($status) {
     switch ($status) {
         case ORGANIZER_APP_STATUS_ATTENDED:
-            return organizer_get_img('pix/status_attended_24x24.png', '', get_string('reg_status_slot_attended', 'organizer'));
+            return organizer_get_icon('status_attended', get_string('reg_status_slot_attended', 'organizer'));
         case ORGANIZER_APP_STATUS_ATTENDED_REAPP:
-            return organizer_get_img('pix/status_attended_reapp_24x24.png', '',
+            return organizer_get_icon('status_attended_reapp',
                     get_string('reg_status_slot_attended_reapp', 'organizer'));
         case ORGANIZER_APP_STATUS_PENDING:
 			if(organizer_with_grading()) {
-				return organizer_get_img('pix/status_pending_24x24.png', '', get_string('reg_status_slot_pending', 'organizer'));
+				return organizer_get_icon('status_pending', get_string('reg_status_slot_pending', 'organizer'));
 			} else {
 				return "";
 			}
         case ORGANIZER_APP_STATUS_REGISTERED:
-            return organizer_get_img('pix/status_not_occured_24x24.png', '', get_string('reg_status_registered', 'organizer'));
+            return organizer_get_icon('status_not_occured', get_string('reg_status_registered', 'organizer'));
         case ORGANIZER_APP_STATUS_NOT_ATTENDED:
-            return organizer_get_img('pix/status_not_attended_24x24.png', '',
+            return organizer_get_icon('status_not_attended',
                     get_string('reg_status_slot_not_attended', 'organizer'));
         case ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP:
-            return organizer_get_img('pix/status_not_attended_reapp_24x24.png', '',
+            return organizer_get_icon('status_not_attended_reapp',
                     get_string('reg_status_slot_not_attended_reapp', 'organizer'));
         case ORGANIZER_APP_STATUS_NOT_REGISTERED:
-            return organizer_get_img('pix/status_not_registered_24x24.png', '',
+            return organizer_get_icon('status_not_registered',
                     get_string('reg_status_not_registered', 'organizer'));
         default:
             print_error("Wrong status code: $status");
@@ -1968,12 +1969,12 @@ function organizer_get_user_idnumber($userid) {
 
 function organizer_popup_icon($type, $content, &$popups) {
     $icons = array(
-            ORGANIZER_ICON_STUDENT_COMMENT => 'pix/feedback2.png',
-            ORGANIZER_ICON_TEACHER_COMMENT => 'pix/feedback2.png',
-            ORGANIZER_ICON_TEACHER_FEEDBACK => 'pix/feedback.png',
+            ORGANIZER_ICON_STUDENT_COMMENT => 'feedback2',
+            ORGANIZER_ICON_TEACHER_COMMENT => 'feedback2',
+            ORGANIZER_ICON_TEACHER_FEEDBACK => 'feedback',
     );
     $iconid = organizer_register_popup($type, $content, $popups);
-    return organizer_get_img($icons[$type], '', '', $iconid);
+    return organizer_get_icon($icons[$type], '');
 }
 
 function organizer_slot_is_free($slot, $userid) {
@@ -2011,7 +2012,7 @@ function organizer_write_places_inqueue($a, $slot, $params) {
                 $wlinfo = organizer_get_entries_queue($slot);
             }
             $output .= "<span style=\"cursor:help;\"> " .
-                    organizer_get_img('../../pix/docs.png', $wlinfo, $wlinfo) . "</span>";
+                    organizer_get_icon('docs', $wlinfo) . "</span>";
     }
 	$output .= ")</span>";
 	return $output;

@@ -1093,4 +1093,6 @@ $string['btn_start'] = 'Start';
 $string['noslotsselected'] = 'No slots selected!';
 $string['norightpage'] = 'You are not allowed to call up this page.';
 
-
+$string['Warning'] = 'Warning';
+$string['Info'] = 'Info';
+$string['Error'] = 'Error';

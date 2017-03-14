@@ -58,10 +58,9 @@ function organizer_generate_registration_table_content($columns, $params) {
                                     . (isset($entry->comments) ? get_img('i/feedback', '', $entry->comments) : '');
                             if ($member == $entry->applicantid) {
                                 $list .= ' '
-                                        . get_img('pix/applicant.png', 'applicant',
-                                                'This is the person that registered the group.') . '<br/>';
+                                        . organizer_get_icon('applicant', 'applicant') . '<br/>';
                             } else {
-                                $list .= ' ' . get_img('pix/transparent.png', 'applicant', '') . '<br/>';
+                                $list .= ' ' . organizer_get_icon('transparent', '') . '<br/>';
                             }
                         }
                         $row->cells[] = new html_table_cell($list);

@@ -413,8 +413,7 @@ class organizer_edit_slots_form extends moodleform {
         if (!$noshow) {
             $warningname = $name . '_warning';
             $text = get_string('warningtext1', 'organizer');
-            $columnicon = '<img src="' . $CFG->wwwroot . '/mod/organizer/pix/warning.png" title="' . $text . '" alt="'
-                    . $text . '" name="' . $warningname . '" />';
+            $columnicon = organizer_get_icon('warning', $text . ' '.  $warningname);
             return $columnicon;
         } else {
             return '';

@@ -37,26 +37,19 @@ function organizer_make_legend($params) {
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::start_tag('tr');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/yes_24x24.png', '', get_string('legend_evaluated', 'organizer'), '') . ' '
-                            . get_string('legend_evaluated', 'organizer'), 'width: 33%');
+                    organizer_get_icon_plus_string('yes', get_string('legend_evaluated', 'organizer')), 'width: 33%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/slot_pending_24x24.png', '', get_string('legend_pending', 'organizer'), '') . ' '
-                            . get_string('legend_pending', 'organizer'), 'width: 33%');
+                    organizer_get_icon_plus_string('pending', get_string('legend_pending', 'organizer')), 'width: 33%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/no_participants_24x24.png', '', get_string('legend_no_participants', 'organizer'), '')
-                            . ' ' . get_string('legend_no_participants', 'organizer'), 'width: 33%');
+                    organizer_get_icon_plus_string('no_participants', get_string('legend_no_participants', 'organizer')), 'width: 33%');
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::start_tag('tr');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/student_slot_available_24x24.png', '', get_string('legend_due', 'organizer'), '')
-                            . ' ' . get_string('legend_due', 'organizer'), 'width: 33%');
+                    organizer_get_icon_plus_string('student_slot_available', get_string('legend_due', 'organizer')), 'width: 33%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/student_slot_past_deadline_24x24.png', '',
-                            get_string('legend_past_deadline', 'organizer'), '') . ' '
-                            . get_string('legend_past_deadline', 'organizer'), 'width: 33%');
+                    organizer_get_icon_plus_string('student_slot_past_deadline', get_string('legend_past_deadline', 'organizer')), 'width: 33%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/organizer_expired_24x24.png', '', get_string('legend_organizer_expired', 'organizer'),
-                            '') . ' ' . get_string('legend_organizer_expired', 'organizer'), 'width: 33%');
+                    organizer_get_icon_plus_string('organizer_expired', get_string('legend_organizer_expired', 'organizer')), 'width: 33%');
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::end_tag('table');
             $output .= html_writer::start_tag('table',
@@ -69,37 +62,27 @@ function organizer_make_legend($params) {
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::start_tag('tr');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/yes_small.png', '', get_string('reg_status_slot_attended', 'organizer'), '') . ' '
-                            . get_string('reg_status_slot_attended', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('yes', get_string('reg_status_slot_attended', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/yes_reg_small.png', '', get_string('reg_status_slot_attended_reapp', 'organizer'), '')
-                            . ' ' . get_string('reg_status_slot_attended_reapp', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('yes_reg', get_string('reg_status_slot_attended_reapp', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/no_small.png', '', get_string('reg_status_slot_not_attended', 'organizer'), '') . ' '
-                            . get_string('reg_status_slot_not_attended', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('no', get_string('reg_status_slot_not_attended', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/no_reg_small.png', '', get_string('reg_status_slot_not_attended_reapp', 'organizer'),
-                            '') . ' ' . get_string('reg_status_slot_not_attended_reapp', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('no_reg', get_string('reg_status_slot_not_attended_reapp', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/slot_pending_small.png', '', get_string('reg_status_slot_pending', 'organizer'), '')
-                            . ' ' . get_string('reg_status_slot_pending', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('pending', get_string('reg_status_slot_pending', 'organizer')), 'width: 20%');
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::start_tag('tr');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/anon.png', '', get_string('legend_anonymous', 'organizer'), '') . ' '
-                            . get_string('legend_anonymous', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('anon', get_string('legend_anonymous', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/slotanon.png', '', get_string('legend_halfanonymous', 'organizer'), '') . ' '
-                            . get_string('legend_halfanonymous', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('slotanon', get_string('legend_halfanonymous', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/applicant.gif', '', get_string('legend_group_applicant', 'organizer'), '') . ' '
-                            . get_string('legend_group_applicant', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('applicant', get_string('legend_group_applicant', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/feedback2.png', '', get_string('legend_comments', 'organizer'), '') . ' '
-                            . get_string('legend_comments', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('feedback2', get_string('legend_comments', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/feedback.png', '', get_string('legend_feedback', 'organizer'), '') . ' '
-                            . get_string('legend_feedback', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('feedback', get_string('legend_feedback', 'organizer')), 'width: 20%');
             $output .= html_writer::end_tag('tr');
             break;
         case ORGANIZER_TAB_STUDENT_VIEW:
@@ -110,58 +93,39 @@ function organizer_make_legend($params) {
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::start_tag('tr');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/yes_24x24.png', '', get_string('reg_status_slot_attended', 'organizer'), '') . ' '
-                            . get_string('reg_status_slot_attended', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('yes', get_string('reg_status_slot_attended', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/yes_reg_24x24.png', '', get_string('reg_status_slot_attended_reapp', 'organizer'), '')
-                            . ' ' . get_string('reg_status_slot_attended_reapp', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('yes_reg', get_string('reg_status_slot_attended_reapp', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/no_24x24.png', '', get_string('reg_status_slot_not_attended', 'organizer'), '') . ' '
-                            . get_string('reg_status_slot_not_attended', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('no', get_string('reg_status_slot_not_attended', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/no_reg_24x24.png', '', get_string('reg_status_slot_not_attended_reapp', 'organizer'),
-                            '') . ' ' . get_string('reg_status_slot_not_attended_reapp', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('no_reg', get_string('reg_status_slot_not_attended_reapp', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/slot_pending_24x24.png', '', get_string('reg_status_slot_pending', 'organizer'), '')
-                            . ' ' . get_string('reg_status_slot_pending', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('pending', get_string('reg_status_slot_pending', 'organizer')), 'width: 20%');
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::start_tag('tr');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/student_slot_available_24x24.png', '',
-                            get_string('reg_status_slot_available', 'organizer'), '') . ' '
-                            . get_string('reg_status_slot_available', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('student_slot_available', get_string('reg_status_slot_available', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/student_slot_full_24x24.png', '', get_string('reg_status_slot_full', 'organizer'), '')
-                            . ' ' . get_string('reg_status_slot_full', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('student_slot_full', get_string('reg_status_slot_full', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/student_slot_past_deadline_24x24.png', '',
-                            get_string('reg_status_slot_past_deadline', 'organizer'), '') . ' '
-                            . get_string('reg_status_slot_past_deadline', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('student_slot_past_deadline', get_string('reg_status_slot_past_deadline', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/student_slot_expired_24x24.png', '',
-                            get_string('reg_status_slot_expired', 'organizer'), '') . ' '
-                            . get_string('reg_status_slot_expired', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('student_slot_expired', get_string('reg_status_slot_expired', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/organizer_expired_24x24.png', '',
-                            get_string('reg_status_organizer_expired', 'organizer'), '') . ' '
-                            . get_string('reg_status_organizer_expired', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('organizer_expired', get_string('reg_status_organizer_expired', 'organizer')), 'width: 20%');
             $output .= html_writer::end_tag('tr');
            $output .= html_writer::start_tag('tr');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/anon.png', '', get_string('legend_anonymous', 'organizer'), '') . ' '
-                            . get_string('legend_anonymous', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('anon', get_string('legend_anonymous', 'organizer'), get_string('legend_anonymous', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/slotanon.png', '', get_string('legend_halfanonymous', 'organizer'), '') . ' '
-                            . get_string('legend_halfanonymous', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('slotanon', get_string('legend_halfanonymous', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/applicant.gif', '', get_string('legend_group_applicant', 'organizer'), '') . ' '
-                            . get_string('legend_group_applicant', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('applicant', get_string('legend_group_applicant', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/feedback2.png', '', get_string('legend_comments', 'organizer'), '') . ' '
-                            . get_string('legend_comments', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('feedback2', get_string('legend_comments', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/feedback.png', '', get_string('legend_feedback', 'organizer'), '') . ' '
-                            . get_string('legend_feedback', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('feedback', get_string('legend_feedback', 'organizer')), 'width: 20%');
             $output .= html_writer::end_tag('tr');
             break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
@@ -172,32 +136,21 @@ function organizer_make_legend($params) {
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::start_tag('tr');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/status_attended_24x24.png', '', get_string('reg_status_slot_attended', 'organizer'),
-                            '') . ' ' . get_string('reg_status_slot_attended', 'organizer'), 'width: 25%');
+                    organizer_get_icon_plus_string('status_attended', get_string('reg_status_slot_attended', 'organizer')), 'width: 25%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/status_attended_reapp_24x24.png', '',
-                            get_string('reg_status_slot_attended_reapp', 'organizer'), '') . ' '
-                            . get_string('reg_status_slot_attended_reapp', 'organizer'), 'width: 25%');
+                    organizer_get_icon_plus_string('status_attended_reapp', get_string('reg_status_slot_attended_reapp', 'organizer')), 'width: 25%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/status_pending_24x24.png', '', get_string('reg_status_slot_pending', 'organizer'), '')
-                            . ' ' . get_string('reg_status_slot_pending', 'organizer'), 'width: 25%');
+                    organizer_get_icon_plus_string('status_pending', get_string('reg_status_slot_pending', 'organizer')), 'width: 25%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/status_not_occured_24x24.png', '', get_string('legend_not_occured', 'organizer'), '')
-                            . ' ' . get_string('legend_not_occured', 'organizer'), 'width: 25%');
+                    organizer_get_icon_plus_string('status_not_occured', get_string('legend_not_occured', 'organizer')), 'width: 25%');
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::start_tag('tr');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/status_not_registered_24x24.png', '',
-                            get_string('reg_status_not_registered', 'organizer'), '') . ' '
-                            . get_string('reg_status_not_registered', 'organizer'), 'width: 25%');
+                    organizer_get_icon_plus_string('status_not_registered', get_string('reg_status_not_registered', 'organizer')), 'width: 25%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/status_not_attended_24x24.png', '',
-                            get_string('reg_status_slot_not_attended', 'organizer'), '') . ' '
-                            . get_string('reg_status_slot_not_attended', 'organizer'), 'width: 25%');
+                    organizer_get_icon_plus_string('status_not_attended', get_string('reg_status_slot_not_attended', 'organizer')), 'width: 25%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/status_not_attended_reapp_24x24.png', '',
-                            get_string('reg_status_slot_not_attended_reapp', 'organizer'), '') . ' '
-                            . get_string('reg_status_slot_not_attended_reapp', 'organizer'), 'width: 25%');
+                    organizer_get_icon_plus_string('status_not_attended_reapp', get_string('reg_status_slot_not_attended_reapp', 'organizer')), 'width: 25%');
             $output .= organizer_make_cell(' ', 'width: 25%');
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::end_tag('table');
@@ -211,31 +164,23 @@ function organizer_make_legend($params) {
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::start_tag('tr');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/yes_small.png', '', get_string('reg_status_slot_attended', 'organizer'), '') . ' '
-                            . get_string('reg_status_slot_attended', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('yes', get_string('reg_status_slot_attended', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/yes_reg_small.png', '', get_string('reg_status_slot_attended_reapp', 'organizer'), '')
-                            . ' ' . get_string('reg_status_slot_attended_reapp', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('yes_reg', get_string('reg_status_slot_attended_reapp', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/no_small.png', '', get_string('reg_status_slot_not_attended', 'organizer'), '') . ' '
-                            . get_string('reg_status_slot_not_attended', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('no', get_string('reg_status_slot_not_attended', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/no_reg_small.png', '', get_string('reg_status_slot_not_attended_reapp', 'organizer'),
-                            '') . ' ' . get_string('reg_status_slot_not_attended_reapp', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('no_reg', get_string('reg_status_slot_not_attended_reapp', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/slot_pending_small.png', '', get_string('reg_status_slot_pending', 'organizer'), '')
-                            . ' ' . get_string('reg_status_slot_pending', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('pending', get_string('reg_status_slot_pending', 'organizer')), 'width: 20%');
             $output .= html_writer::end_tag('tr');
             $output .= html_writer::start_tag('tr');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/applicant.gif', '', get_string('legend_group_applicant', 'organizer'), '') . ' '
-                            . get_string('legend_group_applicant', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('applicant', get_string('legend_group_applicant', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/feedback2.png', '', get_string('legend_comments', 'organizer'), '') . ' '
-                            . get_string('legend_comments', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('feedback2', get_string('legend_comments', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(
-                    organizer_get_img('pix/feedback.png', '', get_string('legend_feedback', 'organizer'), '') . ' '
-                            . get_string('legend_feedback', 'organizer'), 'width: 20%');
+                    organizer_get_icon_plus_string('feedback', get_string('legend_feedback', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(' ', 'width: 20%');
             $output .= organizer_make_cell(' ', 'width: 20%');
             $output .= html_writer::end_tag('tr');
@@ -255,3 +200,9 @@ function organizer_make_cell($content, $style) {
     $output .= html_writer::end_tag('td');
     return $output;
 }
+
+function organizer_get_icon_plus_string($iconname, $string) {
+    global $OUTPUT;
+    return $OUTPUT->pix_icon($iconname, $string, 'mod_organizer') . ' ' . $string;
+}
+

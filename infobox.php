@@ -75,11 +75,11 @@ function organizer_make_section($name, $content, $hidden = false) {
 }
 function organizer_add_message_icon($message) {
     if (strpos($message, 'warning') !== false) {
-        return organizer_get_img('pix/message_warning.png', '', 'Warning');
+        return organizer_get_icon('message_warning', get_string('Warning', 'organizer'));
     } else if (strpos($message, 'info') !== false) {
-        return organizer_get_img('pix/message_info.png', '', 'Info');
+        return organizer_get_icon('message_info', get_string('Info', 'organizer'));
     } else if (strpos($message, 'error') !== false) {
-        return organizer_get_img('pix/message_error.png', '', 'Error');
+        return organizer_get_icon('message_error', get_string('Error', 'organizer'));
     } else {
         return '';
     }
