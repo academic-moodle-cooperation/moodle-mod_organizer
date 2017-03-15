@@ -901,7 +901,8 @@ function organizer_is_group_mode() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
     $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
-    return $DB->get_record('organizer', array('id' => $cm->instance), 'isgrouporganizer');
+    $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+    return $organizer->isgrouporganizer;
 }
 
 // Waiting list new function
