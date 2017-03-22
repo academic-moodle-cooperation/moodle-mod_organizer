@@ -102,7 +102,7 @@ $mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $m
 
 if ($data = $mform->get_data()) {
 
-	$recipient = $data->recipient;
+	$recipient = $data->user;
 
     $count = organizer_remind_all($recipient, $data->message_custommessage['text']);
 
@@ -136,7 +136,7 @@ function organizer_remind_all($recipient = null, $custommessage = "") {
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
     if ($recipient != null) {
-		if ($cm->groupingid == 0) {
+		if (!organizer_is_group_mode()) {
         	$entries = $DB->get_records_list('user', 'id', array($recipient));
 		} else {
         	$entries = organizer_fetch_groupusers($recipient);
