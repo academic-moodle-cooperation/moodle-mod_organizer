@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+3.2.1 (2017-03-28)
+------------------
+
+* [FIXED] #4350 Messages sent to group members although group mode is not activated
+* [FIXED] #4367 Page "Registration status" in goupmode lacks groups without registration
+
+
 3.2.0 (2017-01-31)
 ------------------
 
