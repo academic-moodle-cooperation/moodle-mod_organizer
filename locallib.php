@@ -915,20 +915,24 @@ function organizer_is_queueable() {
 }
 
 function organizer_fetch_my_group() {
-    global $DB, $USER;
 
-    $id = optional_param('id', 0, PARAM_INT);
-    $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
+    if (organizer_is_group_mode()) {
+        global $DB, $USER;
+        $id = optional_param('id', 0, PARAM_INT);
+        $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
 
-    $params = array('groupingid' => $cm->groupingid, 'userid' => $USER->id);
-    $query = "SELECT {groups}.* FROM {groups}
-                INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
-                INNER JOIN {groups_members} ON {groups}.id = {groups_members}.groupid
-                WHERE {groupings_groups}.groupingid = :groupingid
-                AND {groups_members}.userid = :userid
-                ORDER BY {groups}.name ASC";
-    $group = $DB->get_record_sql($query, $params);
-    return $group;
+        $params = array('groupingid' => $cm->groupingid, 'userid' => $USER->id);
+        $query = "SELECT {groups}.* FROM {groups}
+                    INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
+                    INNER JOIN {groups_members} ON {groups}.id = {groups_members}.groupid
+                    WHERE {groupings_groups}.groupingid = :groupingid
+                    AND {groups_members}.userid = :userid
+                    ORDER BY {groups}.name ASC";
+        $group = $DB->get_record_sql($query, $params);
+        return $group;
+    } else {
+        return false;
+    }
 }
 
 function organizer_fetch_user_group($userid) {
