@@ -863,7 +863,12 @@ function organizer_organizer_generate_registration_table_content($columns, $para
             foreach ($columns as $column) {
                 switch ($column) {
                     case 'group':
-                        $cell = $row->cells[] = new html_table_cell($group->name);
+                        $list = $group->name;
+                        if($groupentries) {
+                            $list .= organizer_get_teacherapplicant_output($entry->teacherapplicantid,
+                                $entry->teacherapplicanttimemodified);
+                        }
+                        $cell = $row->cells[] = new html_table_cell($list);
                         break;
                     case 'participants':
                         if ($params['psort'] == 'id') {
@@ -875,33 +880,41 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                             'SELECT userid FROM {groups_members} gm
                         INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
                             $orderby, array('groupid' => $group->id));
-                        $list = ""; 
-                        if($groupentries) {
-                            $list .= organizer_get_teacherapplicant_output($entry->teacherapplicantid,
-                                        $entry->teacherapplicanttimemodified);
-                        }
-                        $list .=  "<br/ >";
+                        $list = "<span style='display:table'>";
                         foreach ($members as $member) {
+                            $list .= "<span style='display:table-row'>";
                             $idnumber = organizer_get_user_idnumber($member);
-
-                            $list .= organizer_get_name_link($member) . ($idnumber ? " ($idnumber) " : " ");
+                            $list .= "<span style='display:table-cell'>" .
+                                organizer_get_name_link($member) . ($idnumber ? " ($idnumber) " : " ");
                             if($groupentries) {
-                                $list .= $entry->comments != '' ?
-                                    organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments) :
-                                    organizer_get_img('pix/transparent.png', '', '');
-                            }
-                            if ($groupentries) {
-                                if ($member == $entry->applicantid) {
-                                    $list .= ' '
-                                        . organizer_get_img('pix/applicant.gif', 'applicant',
-                                            get_string('applicant', 'organizer')) . '<br/>';
+                                if($member == $entry->applicantid) {
+                                    $list .= organizer_get_img('pix/applicant.gif', 'applicant',
+                                            get_string('applicant', 'organizer'));
                                 } else {
-                                    $list .= ' ' . organizer_get_img('pix/transparent.png', '', '') . '<br />';
+                                    $list .= " ";
                                 }
-                            } else {
-                                $list .= ' ' . organizer_get_img('pix/transparent.png', '', '') . '<br />';
                             }
+                            $list .= "</span>";
+                            if($groupentries) {
+                                if($entry->comments != '') {
+                                    $list .= "<span style='display:table-cell'>" .
+                                        organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments, $popups)
+                                        . "</span>";
+                                } else {
+                                    $list .= "<span style='display:table-cell'> </span>";
+                                }
+                            }
+                            if ($queueable) {
+                                $list .= "<span style='display:table-cell'>" .
+                                    organizer_reg_waitinglist_status($organizer->id, $member, $groupmode)
+                                    . "</span>";
+                            }
+                            $list .= "<span style='display:table-cell'>" .
+                                organizer_reg_organizer_app_details($organizer, $member, $popups, $groupmode)
+                                . "</span>";
+                            $list .= "</span>";
                         }
+                        $list .= "</span>";
                         $cell = $row->cells[] = new html_table_cell($list);
                         $cell->style .= " text-align: left;";
                         break;
@@ -924,34 +937,6 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                         }
                         break;
                     case 'appdetails':
-                        $list = "";
-                        if ($groupentries) {
-                            if ($params['psort'] == 'id') {
-                                $orderby = "ORDER BY idnumber {$params['pdir']}, lastname ASC, firstname ASC";
-                            } else {
-                                $orderby = "ORDER BY lastname {$params['pdir']}, firstname {$params['pdir']}, idnumber ASC";
-                            }
-                            $members = $DB->get_fieldset_sql(
-                                'SELECT userid FROM {groups_members} gm
-                        INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
-                                $orderby, array('groupid' => $entry->id));
-                            foreach ($members as $member) {
-                                if ($queueable) {
-                                    $list .= organizer_reg_waitinglist_status($organizer->id, $member, $groupmode);
-                                }
-                                if ($list != "") break;
-                                $list .= organizer_reg_organizer_app_details($organizer, $member, $popups, $groupmode);
-                            }
-                        }
-
-                        if ($list=="") {
-                            $list = "-";
-                            $cellstylestr = " text-align: center;";
-                        } else {
-                            $cellstylestr = " text-align: left;";
-                        }
-                        $cell = $row->cells[] = new html_table_cell($list);
-                        $cell->style .= $cellstylestr;
                         break;
                     case 'location':
                         if ($groupentries) {
@@ -1115,25 +1100,32 @@ function organizer_get_participant_entry($entry) {
 }
 
 function organizer_app_details($params, $appointment, &$popups) {
-    global $USER;
-	
+
     if (!isset($appointment)) {
         return '';
     }
 
-    $list = $appointment->comments ?
+    $list = '<span style="display:table-cell">';
+    $list .= $appointment->comments ?
             organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, s($appointment->comments), $popups) :
-			organizer_get_icon('transparent', '');
-	
+			" ";
+    $list .= '</span>';
+
+    $list .= '<span style="display:table-cell">';
     $list .= organizer_get_attended_icon($appointment);
+    $list .= '</span>';
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
-    if ($organizer->grade != 0) 
-        $list .= organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
+    list(, , $organizer, ) = organizer_get_course_module_data();
+    $list .= '<span style="display:table-cell">';
+    $list .=  $organizer->grade != 0 ?
+        organizer_display_grade($organizer, $appointment->grade, $appointment->userid) : " ";
+    $list .= '</span>';
 
-   if ($appointment->feedback)
-       $list .= organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback, $popups);
-			
+    $list .= '<span style="display:table-cell">';
+    $list .= $appointment->feedback ?
+        organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback, $popups) : " ";
+    $list .= '</span>';
+
     return $list;
 }
 
@@ -1434,45 +1426,59 @@ function organizer_teacher_action_new_noentries($params, $group, $context) {
     return $output;
 }
 
-function organizer_organizer_get_participant_list_infobox($params, $slot, $userid = 0, &$popups) {
+function organizer_organizer_get_participant_list_infobox($params, $slot, $userid = 0, &$popups)
+{
     global $DB, $USER;
 
-	$output = "";
-	
+    $output = "";
+
     if ($userid == null) {
         $userid = $USER->id;
     }
 
-	$isgroupmode = organizer_is_group_mode();
+    $isgroupmode = organizer_is_group_mode();
 
-	$apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
-	$firstapp = reset($apps);
+    $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
+    $firstapp = reset($apps);
 
-	if ($isgroupmode && $firstapp !== false) {
-		$groupname = $DB->get_field('groups', 'name', array('id' => $firstapp->groupid));
-		$output = "<em>{$groupname}</em><br />";
-	}
-	
+    if ($isgroupmode && $firstapp !== false) {
+        $groupname = $DB->get_field('groups', 'name', array('id' => $firstapp->groupid));
+        $output .= "<em>{$groupname}</em>" .
+            organizer_get_teacherapplicant_output($firstapp->teacherapplicantid,
+                $firstapp->teacherapplicanttimemodified)
+            . "<br />";
+    }
+
+    $output .= '<span style="display:table">';
 	foreach ($apps as $app) {
+        $output .= '<span style="display:table-row">';
 		$name = organizer_get_name_link($app->userid);
 		$idnumber = organizer_get_user_idnumber($app->userid);
 		if ($app->userid == $userid) {
-			$output .= "<div nowrap>";
+            $output .= '<span style="display:table-cell">';
 			$output .= $name . ($idnumber ? " ($idnumber) " : " ");
 			$output .= ($isgroupmode && $app->userid == $app->applicantid) ?
-					organizer_get_icon('applicant', get_string('applicant', 'organizer')) : '';
-			$output .= 	organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);		
+                organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+            $output .= '</span>';
+            if(!$isgroupmode) {
+                $output .= '<span style="display:table-cell">';
+                $output .= 	organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);
+                $output .= '</span>';
+            }
 			$output .= organizer_app_details($params, $app, $popups);
-			$output .= "</div>";
 		} else if ($slot->visibility != ORGANIZER_VISIBILITY_ANONYMOUS && (organizer_is_my_slot($slot) || $slot->visibility == ORGANIZER_VISIBILITY_ALL) ) {
-			$output .= "<div nowrap>";
+            $output .= '<span style="display:table-cell">';
 			$output .= $name . ($idnumber ? " ($idnumber) " : " ");
 			$output .= ($isgroupmode && $app->userid == $app->applicantid) ?
-					organizer_get_icon('applicant', get_string('applicant', 'organizer')) : '';
-			$output .= 	organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);		
-			$output .= "</div>";
+                organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+            if(!$isgroupmode) {
+                $output .= 	organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);
+            }
+            $output .= '</span>';
 		}
+        $output .= '</span>';
 	}
+    $output .= '</span>';
 
 	$a = new stdClass();
 
@@ -1615,18 +1621,24 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
 
 			$showparticipants = ($slot->visibility == ORGANIZER_VISIBILITY_ALL) || $ismyslot;
 			if ($showparticipants) {
+			    $content .= "<span style='display:table'>";
 				foreach ($appointments as $appointment) {
+                    $content .= "<span style='display:table-row'>";
 					$idnumber = organizer_get_user_idnumber($appointment->userid);
+                    $content .= "<span style='display:table-cell'>";
 					$content .= organizer_get_name_link($appointment->userid) .
 								($idnumber ? " ($idnumber) " : " ");
-					if ($groupmode) {
-						$content .= ' ';
+    				if ($groupmode) {
 						$content .= ($appointment->userid == $appointment->applicantid) ?
-							organizer_get_icon('applicant', get_string('applicant', 'organizer')) : '';
-					}
-					if (!$groupmode) $content .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid, $appointment->teacherapplicanttimemodified);				
-					$content .= '<br />';
+                            organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
+     				} else {
+                        $content .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid,
+                            $appointment->teacherapplicanttimemodified);
+                    }
+					$content .= '</span>';
+                    $content .= '</span>';
 				}
+                $content .= '</span>';
 			}
         }
 		
@@ -1637,31 +1649,34 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                 ('<em>' . get_string('nogroup', 'organizer') . '</em><br />') :
                 ('<em>' . get_string('noparticipants', 'organizer') . '</em><br />');
         } else {
+            $list = "";
             if ($groupmode) {
                 $app = reset($appointments);
 				if ($app !== false) {
                 	$groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
-                	$list = "<em>{$groupname}</em>" . organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified) . "<br />";
-				} else {				
-	                $list = '';
+                	$list .= "<em>{$groupname}</em>" .
+                        organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified)
+                        . "<br />";
 				}
-            } else {
-                $list = '';
             }
 
+            $list .= '<span style="display:table">';
             foreach ($appointments as $appointment) {
+                $list .= '<span style="display:table-row">';
+                $list .= '<span style="display:table-cell">';
                 $idnumber = organizer_get_user_idnumber($appointment->userid);
-                $list .= '<div>';
                 $list .= organizer_get_name_link($appointment->userid) . ($idnumber ? " ($idnumber)" : "");
                 if ($groupmode) {
-                    $list .= ' ';
-                    $list .= (organizer_is_group_mode() && $appointment->userid == $appointment->applicantid) ? organizer_get_icon(
-                                    'applicant', get_string('applicant', 'organizer')) : '';
+                    $list .= (organizer_is_group_mode() && $appointment->userid == $appointment->applicantid) ?
+                        organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
                 } else {
 					$list .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid, $appointment->teacherapplicanttimemodified);
 				}
-                $list .= organizer_app_details($params, $appointment, $popups) . '</div>';
+                $list .= '</span>';
+                $list .= organizer_app_details($params, $appointment, $popups);
+                $list .= '</span>';
             }
+            $list .= '</span>';
             $content .= $list;
         }
     }
