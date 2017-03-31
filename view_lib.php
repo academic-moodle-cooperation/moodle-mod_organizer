@@ -1099,7 +1099,7 @@ function organizer_get_participant_entry($entry) {
     return $participantentry;
 }
 
-function organizer_app_details($params, $appointment, &$popups) {
+function organizer_app_details($appointment, &$popups) {
 
     if (!isset($appointment)) {
         return '';
@@ -1116,10 +1116,14 @@ function organizer_app_details($params, $appointment, &$popups) {
     $list .= '</span>';
 
     list(, , $organizer, ) = organizer_get_course_module_data();
-    $list .= '<span style="display:table-cell">';
-    $list .=  $organizer->grade != 0 ?
-        organizer_display_grade($organizer, $appointment->grade, $appointment->userid) : " ";
-    $list .= '</span>';
+    if($organizer->grade != 0) {
+        $grade=organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
+        if($grade != get_string("nograde")) {
+            $list .= '<span style="display:table-cell;text-align:right">';
+            $list .=  $grade;
+            $list .= '</span>';
+        }
+    }
 
     $list .= '<span style="display:table-cell">';
     $list .= $appointment->feedback ?
@@ -1236,7 +1240,10 @@ function organizer_reg_organizer_app_details($organizer, $userid, &$popups, $gro
             $list .= organizer_get_attended_icon($appointment) . ' ';
         }
         if ($organizer->grade != 0) {
-            $list .= organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
+                $grade=organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
+                if($grade != get_string("nograde")) {
+                    $list .=  $grade;
+                }
         }
         $list .= ' ' . (isset($appointment->feedback) && $appointment->feedback != '' ?
                 organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback, $popups) : '');
@@ -1465,7 +1472,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
                 $output .= 	organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);
                 $output .= '</span>';
             }
-			$output .= organizer_app_details($params, $app, $popups);
+			$output .= organizer_app_details($app, $popups);
 		} else if ($slot->visibility != ORGANIZER_VISIBILITY_ANONYMOUS && (organizer_is_my_slot($slot) || $slot->visibility == ORGANIZER_VISIBILITY_ALL) ) {
             $output .= '<span style="display:table-cell">';
 			$output .= $name . ($idnumber ? " ($idnumber) " : " ");
@@ -1655,7 +1662,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
 				if ($app !== false) {
                 	$groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
                 	$list .= "<em>{$groupname}</em>" .
-                        organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified)
+                    organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified)
                         . "<br />";
 				}
             }
@@ -1670,10 +1677,11 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                     $list .= (organizer_is_group_mode() && $appointment->userid == $appointment->applicantid) ?
                         organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer')) : '';
                 } else {
-					$list .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid, $appointment->teacherapplicanttimemodified);
+					$list .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid,
+                        $appointment->teacherapplicanttimemodified);
 				}
                 $list .= '</span>';
-                $list .= organizer_app_details($params, $appointment, $popups);
+                $list .= organizer_app_details($appointment, $popups);
                 $list .= '</span>';
             }
             $list .= '</span>';
@@ -1755,18 +1763,18 @@ function organizer_get_attended_icon($appointment) {
         if ($appointment->attended == 1) {
             if ($appointment->allownewappointments) {
                 return organizer_get_icon('yes_reg',
-                    get_string('reg_status_slot_attended_reapp', 'organizer'), "big");
+                    get_string('reg_status_slot_attended_reapp', 'organizer'));
             } else {
                 return organizer_get_icon('yes',
-                    get_string('reg_status_slot_attended', 'organizer'), "big");
+                    get_string('reg_status_slot_attended', 'organizer'));
             }
         } else {
             if ($appointment->allownewappointments ) {
                 return organizer_get_icon('no_reg',
-                    get_string('reg_status_slot_not_attended_reapp', 'organizer'), "big");
+                    get_string('reg_status_slot_not_attended_reapp', 'organizer'));
             } else {
                 return organizer_get_icon('no',
-                    get_string('reg_status_slot_not_attended', 'organizer'), "big");
+                    get_string('reg_status_slot_not_attended', 'organizer'));
             }
         }
     }
