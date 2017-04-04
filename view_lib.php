@@ -1812,11 +1812,11 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
 function organizer_get_icon($iconname, $string, $size="small") {
     global $OUTPUT;
     if($size=="big") {
-        $attributes = array("width" => "32", "height" => "32");
+        return '<img src="' . $OUTPUT->pix_url($iconname, "mod_organizer") . '"
+                       alt="' . $string . '" title="' . $string . '" width="32" height="32" />';
     } else {
-        $attributes = array("width" => "16", "height" => "16");
+        return $OUTPUT->pix_icon($iconname, $string, 'mod_organizer', array("width" => "16", "height" => "16"));
     }
-    return $OUTPUT->pix_icon($iconname, $string, 'mod_organizer', $attributes);
 }
 
 
