@@ -115,9 +115,11 @@ function organizer_make_reminder_section($params, $context) {
     }
 }
 function organizer_make_description_section($organizer) {
-    $output = $organizer->intro;
+    global $OUTPUT;
+
+    $output = '<br>';
+    $output .= $organizer->intro;
     if ($organizer->isgrouporganizer) {
-        $output .= '<hr />';
         $group = organizer_fetch_my_group();
         if ($group) {
             $a = new stdClass();
@@ -128,7 +130,6 @@ function organizer_make_description_section($organizer) {
         }
     }
     if (isset($organizer->duedate)) {
-        $output .= '<hr />';
         $a = new stdClass();
         $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
         $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
@@ -138,10 +139,11 @@ function organizer_make_description_section($organizer) {
             $output .= '<p>' . get_string('infobox_organizer_expired', 'organizer', $a) . '</p>';
         }
     } else {
-        $output .= '<hr />';
         $output .= '<p>' . get_string('infobox_organizer_never_expires', 'organizer') . '</p>';
     }
-    return organizer_make_section('infobox_description', $output);
+    $output .= '<br>';
+
+    return $OUTPUT->box($output, 'generalbox', 'intro');
 }
 function organizer_make_myapp_section($params, $organizer, $app, &$popups) {
     global $DB;
