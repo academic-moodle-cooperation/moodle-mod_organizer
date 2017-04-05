@@ -81,8 +81,8 @@ if (organizer_is_group_mode()) {
 	$data->participant = $participantid;
 	$data->group = false;
 }
-organizer_prepare_and_send_message($data, 'assign_notify:student'); // Message.
-organizer_prepare_and_send_message($data, 'assign_notify:teacher'); // Message.
+organizer_prepare_and_send_message($data, 'assign_notify_student'); // Message.
+organizer_prepare_and_send_message($data, 'assign_notify_teacher'); // Message.
 
 $newurl = $redirecturl->out();
 

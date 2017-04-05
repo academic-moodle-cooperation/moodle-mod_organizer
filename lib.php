@@ -856,7 +856,7 @@ function organizer_cron() {
     $apps = $DB->get_records_sql($appsquery, $params);
     foreach ($apps as $app) {
         $success &= organizer_send_message(intval($app->teacherid), intval($app->userid), $app,
-                'appointment_reminder:student');
+                'appointment_reminder_student');
     }
 
     if (empty($apps)) {
@@ -920,7 +920,7 @@ function organizer_cron() {
 
             if ($found) {
                 $success &= $thissuccess = organizer_send_message(intval($teacherid), intval($teacherid), reset($slots),
-                        'appointment_reminder:teacher', $digest);
+                        'appointment_reminder_teacher', $digest);
 
                 if ($thissuccess) {
                     list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
@@ -963,7 +963,7 @@ function organizer_create_digest($teacherid) {
     }
 
     $success = organizer_send_message(intval($slot->teacherid), intval($slot->teacherid), $slot,
-            'appointment_reminder:teacher:digest', $digest);
+            'appointment_reminder_teacher:digest', $digest);
 
     return $success;
 }

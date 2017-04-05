@@ -87,7 +87,8 @@ if ($recipient != null) {
 
     // Filter all not registered and not attended.
     foreach ($entries as $entry) {
-        if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED || $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP) {
+        if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED ||
+            $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP) {
             $counter++;
             $recipients[] = $entry;
         }
@@ -133,7 +134,7 @@ die;
 function organizer_remind_all($recipient = null, $custommessage = "") {
     global $DB;
 
-    list($cm, $organizer, $context) = organizer_get_course_module_data();
+    list($cm, , $organizer, $context) = organizer_get_course_module_data();
 
     if ($recipient != null) {
 		if (!organizer_is_group_mode()) {
@@ -141,7 +142,7 @@ function organizer_remind_all($recipient = null, $custommessage = "") {
 		} else {
         	$entries = organizer_fetch_groupusers($recipient);
 		}
-    } else if ($cm->groupingid == 0) {
+    } else if (!organizer_is_group_mode()) {
         $entries = get_enrolled_users($context, 'mod/organizer:register');
     } else {
         $query = "SELECT u.* FROM {user} u
@@ -165,7 +166,7 @@ function organizer_remind_all($recipient = null, $custommessage = "") {
     foreach ($entries as $entry) {
         if (!in_array($entry->id, $nonrecepients)) {
             organizer_prepare_and_send_message(array('user' => $entry->id, 'organizer' => $organizer,
-                'custommessage' => $custommessage), 'register_reminder:student');
+                'custommessage' => $custommessage), 'register_reminder_student');
             $count++;
         }
     }

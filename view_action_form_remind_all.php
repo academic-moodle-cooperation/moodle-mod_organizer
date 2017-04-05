@@ -37,7 +37,6 @@ require_once(dirname(__FILE__) . '/view_lib.php');
 class organizer_remind_all_form extends moodleform {
 
     protected function definition() {
-        global $DB;
 
         $mform = $this->_form;
         $data = $this->_customdata;
@@ -78,8 +77,8 @@ class organizer_remind_all_form extends moodleform {
         }
         $buttonarray[] = &$mform->createElement('cancel');
 
-        $strautomessage = "register_reminder:";
-        $strautomessage .= ($organizer->isgrouporganizer == 0) ? "student" : "group";
+        $strautomessage = "register_reminder_student";
+        $strautomessage .= ($organizer->isgrouporganizer == 0) ? "" : ":group";
         $strautomessage .= ":fullmessage";
 
         $a = new stdClass();

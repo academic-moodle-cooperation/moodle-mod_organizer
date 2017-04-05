@@ -390,18 +390,18 @@ $string['organizer:viewregistrations'] = 'Status der Anmeldung von Teilnehmer/in
 $string['organizer:assignslots'] = 'Teilnehmer/innen Zeitslots zuweisen';
 
 $string['messageprovider:test'] = 'Terminplaner Test Nachricht';
-$string['messageprovider:appointment_reminder:student'] = 'Terminplaner Terminerinnerung';
-$string['messageprovider:appointment_reminder:teacher'] = 'Terminplaner Terminerinnerung (Trainer/in)';
+$string['messageprovider:appointment_reminder_student'] = 'Terminplaner Terminerinnerung';
+$string['messageprovider:appointment_reminder_teacher'] = 'Terminplaner Terminerinnerung (Trainer/in)';
 $string['messageprovider:manual_reminder:student'] = 'Terminplaner manuelle Terminerinnerung';
-$string['messageprovider:eval_notify:student'] = 'Terminplaner Bewertungsbenachrichtigung';
-$string['messageprovider:register_notify:teacher'] = 'Terminplaner Registrierungsbenachrichtigung';
+$string['messageprovider:eval_notify_student'] = 'Terminplaner Bewertungsbenachrichtigung';
+$string['messageprovider:register_notify_teacher'] = 'Terminplaner Registrierungsbenachrichtigung';
 $string['messageprovider:group_registration_notify:student'] = 'Terminplaner Gruppenregistrierung Benachrichtigung';
-$string['messageprovider:register_reminder:student'] = 'Terminplaner Registrierungserinnerung';
-$string['messageprovider:edit_notify:student'] = 'Terminplaner Änderungen';
-$string['messageprovider:edit_notify:teacher'] = 'Terminplaner Änderungen (Trainer/in)';
-$string['messageprovider:slotdeleted_notify:student'] = 'Terminplaner Slot absagen';
-$string['messageprovider:assign_notify:student'] = 'Terminplaner Zuweisung durch Trainer/in';
-$string['messageprovider:assign_notify:teacher'] = 'Terminplaner Zuweisung';
+$string['messageprovider:register_reminder_student'] = 'Terminplaner Registrierungserinnerung';
+$string['messageprovider:edit_notify_student'] = 'Terminplaner Änderungen';
+$string['messageprovider:edit_notify_teacher'] = 'Terminplaner Änderungen (Trainer/in)';
+$string['messageprovider:slotdeleted_notify_student'] = 'Terminplaner Slot absagen';
+$string['messageprovider:assign_notify_student'] = 'Terminplaner Zuweisung durch Trainer/in';
+$string['messageprovider:assign_notify_teacher'] = 'Terminplaner Zuweisung';
 
 /* Message templates following.
  * Please note that the following strings are available:
@@ -412,133 +412,133 @@ $string['messageprovider:assign_notify:teacher'] = 'Terminplaner Zuweisung';
 
 // slotdeleted student
 
-$string['slotdeleted_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin abgesagt';
-$string['slotdeleted_notify:student:fullmessage'] = 'Hallo {$a->receivername}!
+$string['slotdeleted_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin abgesagt';
+$string['slotdeleted_notify_student:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseshortname} wurde ihr Termin am {$a->date} um {$a->time} im/in {$a->location} abgesagt.
 Beachten Sie dabei, dass Sie keinen Termin mehr im Terminplaner {$a->organizername} haben!
 Für einen Ersatztermin folgen Sie bitte dem Link: {$a->courselink}';
-$string['slotdeleted_notify:student:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im Terminplaner "{$a->organizername}" wurde abgesagt.';
+$string['slotdeleted_notify_student:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im Terminplaner "{$a->organizername}" wurde abgesagt.';
 
 // slotdeleted student group
 
-$string['slotdeleted_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin abgesagt';
-$string['slotdeleted_notify:student:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['slotdeleted_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin abgesagt';
+$string['slotdeleted_notify_student:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseshortname} wurde ihr Termin am {$a->date} um {$a->time} im/in {$a->location} abgesagt.
 Beachten Sie dabei, dass Sie keinen Termin mehr im Terminplaner {$a->organizername} haben!
 Für einen Ersatztermin folgen Sie bitte dem Link: {$a->courselink}';
-$string['slotdeleted_notify:student:group:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im Terminplaner "{$a->organizername}" wurde abgesagt.';
+$string['slotdeleted_notify_student:group:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im Terminplaner "{$a->organizername}" wurde abgesagt.';
 
 // register teacher register
 
-$string['register_notify:teacher:register:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in angemeldet';
-$string['register_notify:teacher:register:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_notify_teacher:register:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in angemeldet';
+$string['register_notify_teacher:register:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Teilnehmer/in {$a->sendername} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} angemeldet.
 
 Moodle Messaging System';
-$string['register_notify:teacher:register:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} angemeldet.';
+$string['register_notify_teacher:register:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} angemeldet.';
 
 // register teacher queue
 
-$string['register_notify:teacher:queue:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in in Warteliste eingetragen';
-$string['register_notify:teacher:queue:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_notify_teacher:queue:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in in Warteliste eingetragen';
+$string['register_notify_teacher:queue:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Teilnehmer/in {$a->sendername} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} in die Warteliste eingetragen.
 
 Moodle Messaging System';
-$string['register_notify:teacher:queue:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} in die Warteliste eingetragen.';
+$string['register_notify_teacher:queue:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} in die Warteliste eingetragen.';
 
 // register teacher reregister
 
-$string['register_notify:teacher:reregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in umgemeldet';
-$string['register_notify:teacher:reregister:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_notify_teacher:reregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in umgemeldet';
+$string['register_notify_teacher:reregister:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Teilnehmer/in {$a->sendername} für den neuen Zeitslot am {$a->date} um {$a->time} im/in {$a->location} umgemeldet.
 
 Moodle Messaging System';
-$string['register_notify:teacher:reregister:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} umgemeldet.';
+$string['register_notify_teacher:reregister:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} umgemeldet.';
 
 // register teacher unregister
 
-$string['register_notify:teacher:unregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in abgemeldet';
-$string['register_notify:teacher:unregister:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_notify_teacher:unregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in abgemeldet';
+$string['register_notify_teacher:unregister:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Teilnehmer/in {$a->sendername} vom Zeitslot am {$a->date} um {$a->time} im/in {$a->location} abgemeldet.
 
 Moodle Messaging System';
-$string['register_notify:teacher:unregister:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich vom Zeitslot am {$a->date} um {$a->time} im/in {$a->location} abgemeldet.';
+$string['register_notify_teacher:unregister:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich vom Zeitslot am {$a->date} um {$a->time} im/in {$a->location} abgemeldet.';
 
 // register teacher unqueue
 
-$string['register_notify:teacher:unqueue:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in aus Warteliste ausgetragen';
-$string['register_notify:teacher:unqueue:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_notify_teacher:unqueue:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Teilnehmer/in aus Warteliste ausgetragen';
+$string['register_notify_teacher:unqueue:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Teilnehmer/in {$a->sendername} im  Zeitslot am {$a->date} um {$a->time} im/in {$a->location} aus der Warteliste ausgetragen.
 
 Moodle Messaging System';
-$string['register_notify:teacher:unqueue:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich im Zeitslot am {$a->date} um {$a->time} im/in {$a->location} aus der Warteliste ausgetragen.';
+$string['register_notify_teacher:unqueue:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat sich im Zeitslot am {$a->date} um {$a->time} im/in {$a->location} aus der Warteliste ausgetragen.';
 
 // register teacher register group
 
-$string['register_notify:teacher:register:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe angemeldet';
-$string['register_notify:teacher:register:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_notify_teacher:register:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe angemeldet';
+$string['register_notify_teacher:register:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Teilnehmer/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} angemeldet.
 
 Moodle Messaging System';
-$string['register_notify:teacher:register:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} angemeldet.';
+$string['register_notify_teacher:register:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} angemeldet.';
 
 // register teacher queue group
 
-$string['register_notify:teacher:queue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe in Warteliste eingetragen';
-$string['register_notify:teacher:queue:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_notify_teacher:queue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe in Warteliste eingetragen';
+$string['register_notify_teacher:queue:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Teilnehmer/in {$a->sendername} die Gruppe {$a->groupname} in die Warteliste für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} eingetragen.
 
 Moodle Messaging System';
-$string['register_notify:teacher:queue:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} in die Warteliste für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} eingetragen.';
+$string['register_notify_teacher:queue:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} in die Warteliste für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} eingetragen.';
 
 // register teacher reregister group
 
-$string['register_notify:teacher:reregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group umgemeldet';
-$string['register_notify:teacher:reregister:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_notify_teacher:reregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group umgemeldet';
+$string['register_notify_teacher:reregister:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Teilnehmer/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} umgemeldet.
 
 Moodle Messaging System';
-$string['register_notify:teacher:reregister:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} umgemeldet.';
+$string['register_notify_teacher:reregister:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} umgemeldet.';
 
 // register teacher unregister group
 
-$string['register_notify:teacher:unregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe abgemeldet';
-$string['register_notify:teacher:unregister:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_notify_teacher:unregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe abgemeldet';
+$string['register_notify_teacher:unregister:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Teilnehmer/in {$a->sendername} die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} abgemeldet.
 
 Moodle Messaging System';
-$string['register_notify:teacher:unregister:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} abgemeldet.';
+$string['register_notify_teacher:unregister:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} abgemeldet.';
 
 // register teacher unqueue group
 
-$string['register_notify:teacher:unqueue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe aus Warteliste ausgetragen';
-$string['register_notify:teacher:unqueue:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_notify_teacher:unqueue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppe aus Warteliste ausgetragen';
+$string['register_notify_teacher:unqueue:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat Teilnehmer/in {$a->sendername} die Gruppe {$a->groupname} aus der Warteliste für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} ausgetragen.
 
 Moodle Messaging System';
-$string['register_notify:teacher:unqueue:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} aus der Warteliste für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} ausgetragen.';
+$string['register_notify_teacher:unqueue:group:smallmessage'] = 'Teilnehmer/in {$a->sendername} hat die Gruppe {$a->groupname} aus der Warteliste für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} ausgetragen.';
 
 // eval student
 
-$string['eval_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin bewertet';
-$string['eval_notify:student:fullmessage'] = 'Hallo {$a->receivername}!
+$string['eval_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin bewertet';
+$string['eval_notify_student:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Termin mit {$a->sendername} am {$a->date} um {$a->time} im/in {$a->location} bewertet worden.
 
 Moodle Messaging System';
-$string['eval_notify:student:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im/in {$a->location} ist bewertet worden.';
+$string['eval_notify_student:smallmessage'] = 'Ihr Termin am {$a->date} um {$a->time} im/in {$a->location} ist bewertet worden.';
 
 // eval newappointment student
 
@@ -554,13 +554,13 @@ $string['eval_notify_newappointment:student:smallmessage'] = 'Ihr Termin am {$a-
 
 // eval student group.
 
-$string['eval_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin bewertet';
-$string['eval_notify:student:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['eval_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin bewertet';
+$string['eval_notify_student:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, ist Ihr Gruppentermin mit {$a->sendername} am {$a->date} um {$a->time} im/in {$a->location} bewertet worden.
 
 Moodle Messaging System';
-$string['eval_notify:student:group:smallmessage'] = 'Ihr Gruppentermin am {$a->date} um {$a->time} im/in {$a->location} ist bewertet worden.';
+$string['eval_notify_student:group:smallmessage'] = 'Ihr Gruppentermin am {$a->date} um {$a->time} im/in {$a->location} ist bewertet worden.';
 
 // eval newappointment student group
 
@@ -576,8 +576,8 @@ $string['eval_notify_newappointment:student:group:smallmessage'] = 'Ihr Gruppent
 
 // edit student
 
-$string['edit_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termindetails verändert';
-$string['edit_notify:student:fullmessage'] = 'Hallo {$a->receivername}!
+$string['edit_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termindetails verändert';
+$string['edit_notify_student:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, sind die Details des Termins mit {$a->sendername} am {$a->date} um {$a->time} verändert worden.
 
@@ -588,12 +588,12 @@ Kommentar:
 {$a->slot_comments}
 
 Moodle Messaging System';
-$string['edit_notify:student:smallmessage'] = 'Die Details des Termins mit {$a->sendername} am {$a->date} um {$a->time} sind verändert worden.';
+$string['edit_notify_student:smallmessage'] = 'Die Details des Termins mit {$a->sendername} am {$a->date} um {$a->time} sind verändert worden.';
 
 // edit student group
 
-$string['edit_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termindetails verändert';
-$string['edit_notify:student:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['edit_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termindetails verändert';
+$string['edit_notify_student:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, sind die Details des Gruppentermins mit {$a->sendername} am {$a->date} um {$a->time} verändert worden.
 
@@ -604,12 +604,12 @@ Kommentar:
 {$a->slot_comments}
 
 Moodle Messaging System';
-$string['edit_notify:student:group:smallmessage'] = 'Die Details des Gruppentermins mit {$a->sendername} am {$a->date} um {$a->time} sind verändert worden.';
+$string['edit_notify_student:group:smallmessage'] = 'Die Details des Gruppentermins mit {$a->sendername} am {$a->date} um {$a->time} sind verändert worden.';
 
 // edit teacher
 
-$string['edit_notify:teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termindetails verändert';
-$string['edit_notify:teacher:fullmessage'] = 'Hallo {$a->receivername}!
+$string['edit_notify_teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termindetails verändert';
+$string['edit_notify_teacher:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, sind die Details des Zeitslots am {$a->date} um {$a->time} von {$a->sendername} verändert worden.
 
@@ -620,12 +620,12 @@ Kommentar:
 {$a->slot_comments}
 
 Moodle Messaging System';
-$string['edit_notify:teacher:smallmessage'] = 'Die Details des Zeitslots am {$a->date} um {$a->time} sind von {$a->sendername} verändert worden.';
+$string['edit_notify_teacher:smallmessage'] = 'Die Details des Zeitslots am {$a->date} um {$a->time} sind von {$a->sendername} verändert worden.';
 
 // edit teacher group
 
-$string['edit_notify:teacher:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] -  Termindetails verändert';
-$string['edit_notify:teacher:group:fullmessage'] =
+$string['edit_notify_teacher:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] -  Termindetails verändert';
+$string['edit_notify_teacher:group:fullmessage'] =
 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, sind die Details des Zeitslots am {$a->date} um {$a->time} von {$a->sendername} verändert worden.
@@ -637,43 +637,43 @@ Kommentar:
 {$a->slot_comments}
 
 Moodle Messaging System';
-$string['edit_notify:teacher:group:smallmessage'] = 'Die Details des Zeitslots am {$a->date} um {$a->time} sind von {$a->sendername} verändert worden.';
+$string['edit_notify_teacher:group:smallmessage'] = 'Die Details des Zeitslots am {$a->date} um {$a->time} sind von {$a->sendername} verändert worden.';
 
 // register reminder student
 
-$string['register_reminder:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Anmeldungserinnerung';
-$string['register_reminder:student:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_reminder_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Anmeldungserinnerung';
+$string['register_reminder_student:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie sich entweder noch nicht für einen Zeitslot angemeldet, oder denjenigen verpasst für den Sie sich angemeldet haben.
 
 {$a->custommessage}
 
 Moodle Messaging System';
-$string['register_reminder:student:smallmessage'] = 'Bitte melden Sie sich für einen (neuen) Zeitslot an.';
+$string['register_reminder_student:smallmessage'] = 'Bitte melden Sie sich für einen (neuen) Zeitslot an.';
 
 // register reminder ??? group
 
-$string['register_reminder:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Anmeldungserinnerung';
-$string['register_reminder:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_reminder_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Anmeldungserinnerung';
+$string['register_reminder_student:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Ihre Gruppe {$a->groupname} entweder noch nicht für einen Zeitslot angemeldet, oder denjenigen verpasst für den Sie sich angemeldet hat.
 
 {$a->custommessage}
 
 Moodle Messaging System';
-$string['register_reminder:group:smallmessage'] = 'Bitte melden Sie sich für einen (neuen) Zeitslot an.';
+$string['register_reminder_student:group:smallmessage'] = 'Bitte melden Sie sich für einen (neuen) Zeitslot an.';
 
 // register reminder student group
 
-$string['register_reminder:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Anmeldungserinnerung';
-$string['register_reminder:student:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['register_reminder_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Anmeldungserinnerung';
+$string['register_reminder_student:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, hat sich Ihre Gruppe {$a->groupname} entweder noch nicht für einen Zeitslot angemeldet, oder denjenigen verpasst für den Sie sich angemeldet hat.
 
 {$a->custommessage}
 
 Moodle Messaging System';
-$string['register_reminder:student:group:smallmessage'] = 'Bitte melden Sie sich für einen neuen Zeitslot an.';
+$string['register_reminder_student:group:smallmessage'] = 'Bitte melden Sie sich für einen neuen Zeitslot an.';
 
 // group registration student register group
 
@@ -707,8 +707,8 @@ $string['group_registration_notify:student:reregister:group:smallmessage'] = '{$
 
 // assign student
 
-$string['assign_notify:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin durch Trainer/in zugewiesen';
-$string['assign_notify:student:fullmessage'] =
+$string['assign_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin durch Trainer/in zugewiesen';
+$string['assign_notify_student:fullmessage'] =
 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen der Zeitslot mit {$a->slot_teacher} am {$a->date} um {$a->time} im/in {$a->location} durch {$a->sendername} zugewiesen.
@@ -718,12 +718,12 @@ Ort: {$a->slot_location}
 Datum: {$a->date} at {$a->time}
 
 Moodle Messaging System';
-$string['assign_notify:student:smallmessage'] = 'Termin am {$a->date} um {$a->time} durch {$a->sendername} zugewiesen.';
+$string['assign_notify_student:smallmessage'] = 'Termin am {$a->date} um {$a->time} durch {$a->sendername} zugewiesen.';
 
 // assign student group
 
-$string['assign_notify:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppen-Termin durch Trainer/in zugewiesen';
-$string['assign_notify:student:group:fullmessage'] =
+$string['assign_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppen-Termin durch Trainer/in zugewiesen';
+$string['assign_notify_student:group:fullmessage'] =
 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihrer Gruppe {$a->groupname} der Zeitslot mit {$a->slot_teacher} am {$a->date} um {$a->time} im/in {$a->location} durch {$a->sendername} zugewiesen.
@@ -733,12 +733,12 @@ Ort: {$a->slot_location}
 Datum: {$a->date} at {$a->time}
 
 Moodle Messaging System';
-$string['assign_notify:student:group:smallmessage'] = 'Gruppen-Termin am {$a->date} um {$a->time} durch {$a->sendername} zugewiesen.';
+$string['assign_notify_student:group:smallmessage'] = 'Gruppen-Termin am {$a->date} um {$a->time} durch {$a->sendername} zugewiesen.';
 
 // assign teacher
 
-$string['assign_notify:teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin zugewiesen';
-$string['assign_notify:teacher:fullmessage'] =
+$string['assign_notify_teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin zugewiesen';
+$string['assign_notify_teacher:fullmessage'] =
 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen {$a->participantname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} von {$a->sendername} zugewiesen.
@@ -748,12 +748,12 @@ Ort: {$a->slot_location}
 Datum: {$a->date} at {$a->time}
 
 Moodle Messaging System';
-$string['assign_notify:teacher:smallmessage'] = 'Termin am {$a->date} um {$a->time} von {$a->sendername} zugewiesen.';
+$string['assign_notify_teacher:smallmessage'] = 'Termin am {$a->date} um {$a->time} von {$a->sendername} zugewiesen.';
 
 // assign teacher group
 
-$string['assign_notify:teacher:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppen-Termin zugewiesen';
-$string['assign_notify:teacher:group:fullmessage'] =
+$string['assign_notify_teacher:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppen-Termin zugewiesen';
+$string['assign_notify_teacher:group:fullmessage'] =
 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} von {$a->sendername} zugewiesen.
@@ -763,7 +763,7 @@ Ort: {$a->slot_location}
 Datum: {$a->date} at {$a->time}
 
 Moodle Messaging System';
-$string['assign_notify:teacher:group:smallmessage'] = 'Termin am {$a->date} um {$a->time} für Gruppe {$a->groupname} von {$a->sendername} zugewiesen.';
+$string['assign_notify_teacher:group:smallmessage'] = 'Termin am {$a->date} um {$a->time} für Gruppe {$a->groupname} von {$a->sendername} zugewiesen.';
 
 // group registration student unregister group
 
@@ -817,57 +817,57 @@ $string['group_registration_notify:student:unregister:smallmessage'] = '{$a->sen
 
 // appointment reminder teacher
 
-$string['appointment_reminder:teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Terminerinnerung';
-$string['appointment_reminder:teacher:fullmessage'] = 'Hallo {$a->receivername}!
+$string['appointment_reminder_teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Terminerinnerung';
+$string['appointment_reminder_teacher:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie einen Termin mit Teilnehmer/innen am {$a->date} um {$a->time} im/in {$a->location}.
 
 Moodle Messaging System';
-$string['appointment_reminder:teacher:smallmessage'] = 'Sie haben einen Termin mit Teilnehmer/innen am {$a->date} um {$a->time} im/in {$a->location}.';
+$string['appointment_reminder_teacher:smallmessage'] = 'Sie haben einen Termin mit Teilnehmer/innen am {$a->date} um {$a->time} im/in {$a->location}.';
 
 // appointment reminder teacher digest
 
-$string['appointment_reminder:teacher:digest:subject'] = 'Terminzusammenfassung';
-$string['appointment_reminder:teacher:digest:fullmessage'] = 'Hallo {$a->receivername}!
+$string['appointment_reminder_teacher:digest:subject'] = 'Terminzusammenfassung';
+$string['appointment_reminder_teacher:digest:fullmessage'] = 'Hallo {$a->receivername}!
 
 Sie haben morgen folgende Termine:
 
 {$a->digest}
 
 Moodle Messaging System';
-$string['appointment_reminder:teacher:digest:smallmessage'] = 'Sie haben eine zusammenfassende Nachricht bezüglich Ihre morgigen Termine erhalten.';
+$string['appointment_reminder_teacher:digest:smallmessage'] = 'Sie haben eine zusammenfassende Nachricht bezüglich Ihre morgigen Termine erhalten.';
 
 // appointment reminder teacher group digest
 
-$string['appointment_reminder:teacher:group:digest:subject'] = 'Terminzusammenfassung';
-$string['appointment_reminder:teacher:group:digest:fullmessage'] = 'Hallo {$a->receivername}!
+$string['appointment_reminder_teacher:group:digest:subject'] = 'Terminzusammenfassung';
+$string['appointment_reminder_teacher:group:digest:fullmessage'] = 'Hallo {$a->receivername}!
 
 Sie haben morgen folgende Termine:
 
 {$a->digest}
 
 Moodle Messaging System';
-$string['appointment_reminder:teacher:group:digest:smallmessage'] = 'Sie haben eine zusammenfassende Nachricht bezüglich Ihre morgigen Termine erhalten.';
+$string['appointment_reminder_teacher:group:digest:smallmessage'] = 'Sie haben eine zusammenfassende Nachricht bezüglich Ihre morgigen Termine erhalten.';
 
 // appointment reminder student
 
-$string['appointment_reminder:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Terminerinnerung';
-$string['appointment_reminder:student:fullmessage'] = 'Hallo {$a->receivername}!
+$string['appointment_reminder_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Terminerinnerung';
+$string['appointment_reminder_student:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie einen Termin mit {$a->sendername} am {$a->date} um {$a->time} im/in {$a->location}.
 
 Moodle Messaging System';
-$string['appointment_reminder:student:smallmessage'] = 'Sie haben einen Termin mit {$a->sendername} am {$a->date} um {$a->time} im/in {$a->location}.';
+$string['appointment_reminder_student:smallmessage'] = 'Sie haben einen Termin mit {$a->sendername} am {$a->date} um {$a->time} im/in {$a->location}.';
 
 // appointment reminder student group
 
-$string['appointment_reminder:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppenterminerinnerung';
-$string['appointment_reminder:student:group:fullmessage'] = 'Hallo {$a->receivername}!
+$string['appointment_reminder_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppenterminerinnerung';
+$string['appointment_reminder_student:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, haben Sie einen Gruppentermin mit {$a->sendername} am {$a->date} um {$a->time} im/in {$a->location}.
 
 Moodle Messaging System';
-$string['appointment_reminder:student:group:smallmessage'] = 'Sie haben einen Gruppentermin mit {$a->sendername} am {$a->date} um {$a->time} im/in {$a->location}.';
+$string['appointment_reminder_student:group:smallmessage'] = 'Sie haben einen Gruppentermin mit {$a->sendername} am {$a->date} um {$a->time} im/in {$a->location}.';
 
 $string['reg_status_organizer_expired'] = 'Terminplaner abgelaufen';
 $string['reg_status_slot_expired'] = 'Slot abgelaufen';

@@ -143,7 +143,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
                     'objectid' => $PAGE->cm->id,
                     'context' => $PAGE->context
             ));
-			organizer_prepare_and_send_message($slot, 'register_notify:teacher:queue'); // Message.
+			organizer_prepare_and_send_message($slot, 'register_notify_teacher:queue'); // Message.
 			if ($group) {
 				organizer_prepare_and_send_message($slot, 'group_registration_notify:student:queue');
 			}
@@ -152,7 +152,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
                     'objectid' => $PAGE->cm->id,
                     'context' => $PAGE->context
             ));
-			organizer_prepare_and_send_message($slot, 'register_notify:teacher:register'); // Message.
+			organizer_prepare_and_send_message($slot, 'register_notify_teacher:register'); // Message.
 			if ($group) {
 				organizer_prepare_and_send_message($slot, 'group_registration_notify:student:register');
 			}
@@ -197,7 +197,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 					'objectid' => $PAGE->cm->id,
 					'context' => $PAGE->context
 			));
-			organizer_prepare_and_send_message($slot, 'register_notify:teacher:unregister'); // Message.
+			organizer_prepare_and_send_message($slot, 'register_notify_teacher:unregister'); // Message.
 			if ($group) {
 				organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unregister');
 			}
@@ -206,7 +206,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 					'objectid' => $PAGE->cm->id,
 					'context' => $PAGE->context
 			));
-			organizer_prepare_and_send_message($slot, 'register_notify:teacher:unqueue'); // Message.
+			organizer_prepare_and_send_message($slot, 'register_notify_teacher:unqueue'); // Message.
 			if ($group) {
 				organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unqueue');
 			}
@@ -255,7 +255,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
         ));
         $event->trigger();
 
-        organizer_prepare_and_send_message($slot, 'register_notify:teacher:reregister');
+        organizer_prepare_and_send_message($slot, 'register_notify_teacher:reregister');
         if ($group) {
             organizer_prepare_and_send_message($slot, 'group_registration_notify:student:reregister');
         }

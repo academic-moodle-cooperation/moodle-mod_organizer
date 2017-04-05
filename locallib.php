@@ -488,7 +488,7 @@ function organizer_delete_appointment_slot($id) {
 
         foreach ($appointments as $appointment) {
             $reciever = intval($appointment->userid);
-            organizer_send_message($USER, $reciever, $slot, 'slotdeleted_notify:student');
+            organizer_send_message($USER, $reciever, $slot, 'slotdeleted_notify_student');
             $notifiedusers++;
         }
     }

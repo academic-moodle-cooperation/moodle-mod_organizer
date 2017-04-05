@@ -81,8 +81,8 @@ $mform = new organizer_edit_slots_form(null, array('id' => $cm->id, 'mode' => $m
 if ($data = $mform->get_data()) {
     $slotids = organizer_update_appointment_slot($data);
 
-    organizer_prepare_and_send_message($data, 'edit_notify:teacher');
-    organizer_prepare_and_send_message($data, 'edit_notify:student'); // Message.
+    organizer_prepare_and_send_message($data, 'edit_notify_teacher');
+    organizer_prepare_and_send_message($data, 'edit_notify_student'); // Message.
 
     $newurl = $redirecturl->out();
     foreach ($slotids as $slotid) {

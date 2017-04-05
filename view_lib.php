@@ -734,13 +734,14 @@ function organizer_organizer_get_status_table_entries($params) {
     global $DB;
     list($cm, , $organizer, $context) = organizer_get_course_module_data();
 
-    if ($cm->groupingid == 0) {
+    $studentids = array();
+
+    if (!$organizer->isgrouporganizer) {
         $students = get_enrolled_users($context, 'mod/organizer:register');
-        $studentids = array();
         foreach ($students as $student) {
             $studentids[] = $student->id;
         }
-    } else {
+    } else if($cm->groupingid != 0) {
         $query = "SELECT u.id FROM {user} u
             INNER JOIN {groups_members} gm ON u.id = gm.userid
             INNER JOIN {groups} g ON gm.groupid = g.id

@@ -86,7 +86,7 @@ $mform = new organizer_evaluate_slots_form(null, array('id' => $cm->id, 'mode' =
 if ($data = $mform->get_data()) {
     $slotids = organizer_evaluate_slots($data);
 
-    organizer_prepare_and_send_message($data, 'eval_notify:student'); // Message.
+    organizer_prepare_and_send_message($data, 'eval_notify_student'); // Message.
 
     $newurl = $redirecturl->out();
     foreach ($slotids as $slotid) {
