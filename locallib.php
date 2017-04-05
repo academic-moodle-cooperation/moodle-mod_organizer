@@ -436,7 +436,7 @@ function organizer_security_check_slots($slots) {
         return true;
     }
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    $organizer = organizer_get_organizer();
     list($insql, $inparams) = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
 
     $params = array_merge(array('organizerid' => $organizer->id), $inparams);
@@ -455,7 +455,7 @@ function organizer_security_check_apps($apps) {
         return true;
     }
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    $organizer = organizer_get_organizer();
     list($insql, $inparams) = $DB->get_in_or_equal($apps, SQL_PARAMS_NAMED);
 
     $params = array_merge(array('organizerid' => $organizer->id), $inparams);
@@ -483,7 +483,7 @@ function organizer_delete_appointment_slot($id) {
     $notifiedusers = 0;
 
     if (count($appointments) > 0) {
-        // Someone was allready registered to this slot.
+        // Someone was already registered to this slot.
         $slot = new organizer_slot($id);
 
         foreach ($appointments as $appointment) {
@@ -500,7 +500,6 @@ function organizer_delete_appointment_slot($id) {
     return $notifiedusers;
 }
 
-// Waiting list new function
 function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
     global $DB;
 
@@ -522,11 +521,8 @@ function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
     return true;
 }
 
-// Waiting list new function
 function organizer_delete_user_from_any_queue($organizerid, $userid, $groupid = null) {
     global $DB;
-
-    $ok = true;
 
     if($groupid) {
 		$params = array('organizerid' => $organizerid, 'groupid' => $groupid);
@@ -546,14 +542,12 @@ function organizer_delete_user_from_any_queue($organizerid, $userid, $groupid = 
 
 	foreach ($slot_queues as $slot_queue) {
 		$DB->delete_records('event', array('id' => $slot_queue->eventid));
-		// Tscpr: Petr Skoda told us that $DB->delete_records will throw an exeption if it fails, otherwise it always succeeds.
-		$ok &= $DB->delete_records('organizer_slot_queues', array('id' => $slot_queue->id));
+		$DB->delete_records('organizer_slot_queues', array('id' => $slot_queue->id));
 	}
 
-    return $ok;
+    return true;
 }
 
-// Waiting list new function
 function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid = 0) {
 	global $DB, $USER;
 
@@ -633,7 +627,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
         $mail->send();
     }
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    $cm = organizer_get_cm();
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
     organizer_add_event_slot($cm->id, $slot);
     sem_release($semaphore);
@@ -644,7 +638,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
 function organizer_register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0, $teacherapplicantid = null) {
     global $DB;
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    list($cm, , $organizer, ) = organizer_get_course_module_data();
 
     $appointment = new stdClass();
     $appointment->slotid = $slotid;
@@ -674,7 +668,7 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
 function organizer_queue_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0) {
     global $DB;
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    $cm = organizer_get_cm();
 
     $appointment = new stdClass();
     $appointment->slotid = $slotid;
@@ -741,7 +735,7 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
 		}
  	}
 
-    list($cm, , , ) = organizer_get_course_module_data();
+    $cm = organizer_get_cm();
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
     organizer_add_event_slot($cm->id, $slot);
     sem_release($semaphore);
@@ -816,7 +810,7 @@ function organizer_unregister_single_appointment($slotid, $userid) {
 function organizer_evaluate_slots($data) {
     global $DB;
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    $organizer = organizer_get_organizer();
 
     $slotids = array();
 
@@ -863,7 +857,7 @@ function organizer_get_course_module_data() {
         $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
     } else {
-        print_error('You must specify a course_module ID or an instance ID');
+        print_error('organizer_get_course_module_data: You must specify a course_module ID or an instance ID');
     }
 
     $context = context_module::instance($cm->id, MUST_EXIST);
@@ -889,13 +883,72 @@ function organizer_get_course_module_data_new() {
         $instance->cm = get_coursemodule_from_instance('organizer', $instance->organizer->id, $instance->course->id,
                 false, MUST_EXIST);
     } else {
-        print_error('You must specify a course_module ID or an instance ID');
+        print_error('organizer_get_course_module_data_new: You must specify a course_module ID or an instance ID');
     }
 
     $instance->context = context_module::instance($instance->cm->id, MUST_EXIST);
 
     return $instance;
 }
+
+function organizer_get_organizer() {
+    global $DB;
+
+    $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or.
+    $n = optional_param('o', 0, PARAM_INT); // Organizer instance ID - it should be named as the first character of the module.
+
+    if ($id) {
+        $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
+        $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+    } else if ($n) {
+        $organizer = $DB->get_record('organizer', array('id' => $n), '*', MUST_EXIST);
+    } else {
+        print_error('organizer_get_organizer: You must specify a course_module ID or an instance ID');
+    }
+
+    return $organizer;
+}
+
+function organizer_get_cm() {
+    global $DB;
+
+    $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or.
+    $n = optional_param('o', 0, PARAM_INT); // Organizer instance ID - it should be named as the first character of the module.
+
+    if ($id) {
+        $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
+    } else if ($n) {
+        $organizer = $DB->get_record('organizer', array('id' => $n), '*', MUST_EXIST);
+        $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
+    } else {
+        print_error('organizer_get_cm: You must specify a course_module ID or an instance ID');
+    }
+
+    return $cm;
+}
+
+function organizer_get_context() {
+    global $DB;
+
+    $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or.
+    $n = optional_param('o', 0, PARAM_INT); // Organizer instance ID - it should be named as the first character of the module.
+
+    if ($id) {
+        $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
+    } else if ($n) {
+        $organizer = $DB->get_record('organizer', array('id' => $n), '*', MUST_EXIST);
+        $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
+    } else {
+        print_error('organizer_get_context: You must specify a course_module ID or an instance ID');
+    }
+
+    $context = context_module::instance($cm->id, MUST_EXIST);
+
+    return $context;
+}
+
 
 function organizer_is_group_mode() {
     global $DB;

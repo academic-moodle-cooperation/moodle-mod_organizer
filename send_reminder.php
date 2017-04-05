@@ -133,7 +133,7 @@ die;
 function organizer_remind_all($recipient = null, $custommessage = "") {
     global $DB;
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    list($cm, $organizer, $context) = organizer_get_course_module_data();
 
     if ($recipient != null) {
 		if (!organizer_is_group_mode()) {

@@ -732,7 +732,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
 
 function organizer_organizer_get_status_table_entries($params) {
     global $DB;
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    list($cm, , $organizer, $context) = organizer_get_course_module_data();
 
     if ($cm->groupingid == 0) {
         $students = get_enrolled_users($context, 'mod/organizer:register');
@@ -816,7 +816,7 @@ function organizer_organizer_get_status_table_entries($params) {
 function organizer_organizer_generate_registration_table_content($columns, $params, $organizer, $context, &$popups) {
     global $DB;
 
-    list($cm, , , ) = organizer_get_course_module_data();
+    $cm = organizer_get_cm();
 
     $groupmode = $organizer->isgrouporganizer;
 
@@ -1115,7 +1115,7 @@ function organizer_app_details($appointment, &$popups) {
     $list .= organizer_get_attended_icon($appointment);
     $list .= '</span>';
 
-    list(, , $organizer, ) = organizer_get_course_module_data();
+    $organizer = organizer_get_organizer();
     if($organizer->grade != 0) {
         $grade=organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
         if($grade != get_string("nograde")) {
@@ -1177,7 +1177,7 @@ function organizer_teacher_data($params, $slot, &$popups) {
     $param = array('slotid' => $slot->id);
     $appointments = $DB->get_records_sql($query, $param);
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    $context = organizer_get_context();
 
     $canregister = has_capability('mod/organizer:register', $context, null, false);
     $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
@@ -1921,7 +1921,7 @@ function organizer_student_action($params, $slot) {
 
     $slotx = new organizer_slot($slot);
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    list(, , $organizer, $context) = organizer_get_course_module_data();
 
     $canregister = has_capability('mod/organizer:register', $context, null, false);
     $canunregister = has_capability('mod/organizer:unregister', $context, null, false);

@@ -392,7 +392,7 @@ class organizer_edit_slots_form extends moodleform {
     }
 
     private function _load_teachers() {
-        list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+        $context = organizer_get_context();
 
 		$teachersraw = get_users_by_capability($context, 'mod/organizer:leadslots');
 
@@ -444,7 +444,7 @@ class organizer_edit_slots_form extends moodleform {
 	
 	private function _get_instance_visibility() {
 	
-        list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+        $organizer = organizer_get_organizer();
 		
 		return	$organizer->visibility;
 	}

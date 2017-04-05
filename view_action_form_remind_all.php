@@ -55,7 +55,7 @@ class organizer_remind_all_form extends moodleform {
         $mform->addElement('hidden', 'user', $recipient);
         $mform->setType('user', PARAM_INT);
 
-        list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+        list(, $course, $organizer, ) = organizer_get_course_module_data();
 
         $buttonarray = array();
         if ($recipientscount > 0) {

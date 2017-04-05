@@ -581,7 +581,7 @@ class organizer_add_slots_form extends moodleform {
             $html = get_string('addslots_placesinfo_group', 'organizer', $a);
 
         } else {
-            list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+            list(, , $organizer, $context) = organizer_get_course_module_data();
             $slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
             $placecount = 0;
             foreach ($slots as $slot) {
@@ -746,7 +746,7 @@ class organizer_add_slots_form extends moodleform {
     }
 
     private function _get_teacher_list() {
-        list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+        $context = organizer_get_context();
 
 		$teachersraw = get_users_by_capability($context, 'mod/organizer:leadslots');
 		
@@ -812,7 +812,7 @@ class organizer_add_slots_form extends moodleform {
 	
 	private function _get_instance_visibility() {
 	
-        list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+       $organizer = organizer_get_organizer();
 		
 		return	$organizer->visibility;
 	}
