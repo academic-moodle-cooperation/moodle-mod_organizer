@@ -63,7 +63,7 @@ define(['jquery', 'core/log'], function($, log) {
 
             var originalfieldsetfieldset = originalfieldset.find('fieldset').first();
             var newfieldsetfieldset = newfieldset.find('fieldset').first();
-            newfieldsetfieldset.attr("id", originalfieldsetfieldset.attr("id") + "_1");
+            newfieldsetfieldset.attr("id", originalfieldsetfieldset.attr("id") + "_" + newslot_index);
             var fieldsetelements = newfieldset.find('input, select');
             var ix = 0;
             $.each(fieldsetelements, function() {
@@ -93,10 +93,14 @@ define(['jquery', 'core/log'], function($, log) {
 
             if(instance.lastslotid[day]!=undefined) {
                 $(instance.lastslotid[day]).after(newfieldset);
+                log.info("111", "organizer");
             } else {
                 $("#" + lastfieldsetfieldset.attr("id")).after(newfieldset);
+                log.info("222", "organizer");
             }
             instance.lastslotid[day] = "#" + newfieldsetfieldset.attr("id");
+            log.info(day, "organizer");
+            log.info(instance.lastslotid[day], "organizer");
         });
     };
 

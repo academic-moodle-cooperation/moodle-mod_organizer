@@ -194,7 +194,6 @@ class organizer_add_slots_form extends moodleform {
     }
 
     public function definition_after_data() {
-        echo "definition_after_data";
         $mform = &$this->_form;
 
         if(isset($mform->_submitValues['addday'])) {  // add new time slots for a specific day
@@ -206,7 +205,6 @@ class organizer_add_slots_form extends moodleform {
     }
 
     public function validation($data, $files) {
-        echo "validation";
         $errors = parent::validation($data, $files);
 
         if (!$this->_converts_to_int($data['maxparticipants']) || $data['maxparticipants'] <= 0) {
@@ -299,7 +297,6 @@ class organizer_add_slots_form extends moodleform {
     }
 
     private function _validation_step1($data) { // checks form to submit
-        echo "validation_step1";
 
         // maxparticipants not int or negative?
         if (isset($data['isgrouporganizer']) && $data['isgrouporganizer'] == 0 &&
