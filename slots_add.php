@@ -63,22 +63,19 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
-
 require_capability('mod/organizer:addslots', $context);
 
 $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
 
 if ($data = $mform->get_data()) {
-    if (isset($data->reviewslots) || isset($data->addday) || isset($data->back)) {
-        organizer_display_form($mform, get_string('title_add', 'organizer'));
-    } else if (isset($data->createslots)) {
+    if(!isset($mform->_submitValues['addday'])) {
         $count = count($slotids = organizer_add_appointment_slots($data));
         if ($count == 0) {
             $redirecturl->param('messages[]', 'message_warning_no_slots_added');
         } else {
             $event = \mod_organizer\event\slot_created::create(array(
-                    'objectid' => $PAGE->cm->id,
-                    'context' => $PAGE->context
+                'objectid' => $PAGE->cm->id,
+                'context' => $PAGE->context
             ));
             $event->trigger();
 
@@ -96,7 +93,7 @@ if ($data = $mform->get_data()) {
         }
         redirect($redirecturl);
     } else {
-        print_error('Something went wrong with the submission of the add action!');
+        organizer_display_form($mform, get_string('title_add', 'organizer'));
     }
 } else if ($mform->is_cancelled()) {
     redirect($redirecturl);
