@@ -42,67 +42,61 @@ define(['jquery', 'core/log'], function($, log) {
     instance.init = function(param) { // Parameter 'param' contains the parameter values!
 
         instance.totalslots = param.totalslots;
-        log.info("totalslots:" + instance.totalslots, "organizer");
+        instance.lastslotid = new Array;
 
         $('.adddayslot').css("display", "inline");
 
         $('[id^=id_addday_]').on('click', function () {
 
             var button = $(this);
-            var dayslot = button.attr("slot");
-            log.info("oldslot: " + dayslot, "organizer");
-            var newslot = instance.totalslots;
-            log.info("newslot: " + newslot, "organizer");
-            instance.totalslots++;
-            log.info("totalslots: " + instance.totalslots, "organizer");
-            var oldfieldset = $('<fieldset>').append(button.closest("fieldset").clone());
-            var newfieldset = oldfieldset.clone();
+            var day = button.attr("slot");
+            var newslot_index = instance.totalslots++;
+
+            // Clone original fieldset
+            var originalfieldset = $('<fieldset>').append(button.closest("fieldset").clone());
+            var newfieldset = originalfieldset.clone();
+
+            // newfieldset: remove addday-button
             newfieldset.find(':button').first().remove();
-            newfieldset.append('<input name="newslots[' + dayslot + '][day]" value="' + dayslot + '" type="hidden">');
-            var oldfieldsetfieldset = oldfieldset.find('fieldset').first();
+            // newfieldset: insert hidden field "day"
+            newfieldset.append('<input name="newslots[' + day + '][day]" value="' + day + '" type="hidden">');
+
+            var originalfieldsetfieldset = originalfieldset.find('fieldset').first();
             var newfieldsetfieldset = newfieldset.find('fieldset').first();
-            newfieldsetfieldset.attr("id", oldfieldsetfieldset.attr("id") + "_1");
-            log.info("newfieldset ID: " + newfieldsetfieldset.attr("id"), "organizer");
+            newfieldsetfieldset.attr("id", originalfieldsetfieldset.attr("id") + "_1");
             var fieldsetelements = newfieldset.find('input, select');
-            log.info("elements 1: " + fieldsetelements.length, "organizer");
             var ix = 0;
             $.each(fieldsetelements, function() {
-                log.info("ix: " + ix++, "organizer");
-                var oldid = $(this).attr("id");
-                if(oldid) {
-                    log.info("oldid: " + oldid, "organizer");
-                    var newid = oldid.replace("newslots_" + dayslot + "_", "newslots_" + newslot + "_");
+                var originalid = $(this).attr("id");
+                if(originalid) {
+                    var newid = originalid.replace("newslots_" + day + "_", "newslots_" + newslot_index + "_");
                     $(this).attr("id", newid);
-                    log.info("newid: " +  $(this).attr("id"), "organizer");
                 }
-                var oldname = $(this).attr("name");
-                if(oldname) {
-                    log.info("oldname: " + oldname, "organizer");
-                    var newname = oldname.replace("newslots[" + dayslot + "]", "newslots[" + newslot + "]");
+                var originalname = $(this).attr("name");
+                if(originalname) {
+                    var newname = originalname.replace("newslots[" + day + "]", "newslots[" + newslot_index + "]");
                     $(this).attr("name", newname);
-                    log.info("newname: " +  $(this).attr("name"), "organizer");
                 }
             });
             fieldsetelements = newfieldset.find('label');
-            log.info("elements 2: " + fieldsetelements.length, "organizer");
             ix = 0;
             $.each(fieldsetelements, function() {
-                log.info("ix: " + ix++, "organizer");
-                var oldfor = $(this).attr("for");
-                if(oldfor) {
-                    log.info("oldfor: " + oldfor, "organizer");
-                    var newfor = oldfor.replace("newslots_" + dayslot + "_", "newslots_" + newslot + "_");
+                var originalfor = $(this).attr("for");
+                if(originalfor) {
+                    var newfor = originalfor.replace("newslots_" + day + "_", "newslots_" + newslot_index + "_");
                     $(this).attr("for", newfor);
-                    log.info("newfor: " +  $(this).attr("for"), "organizer");
                 }
              });
-            var oldfieldsetparent = oldfieldsetfieldset.parent();
-            log.info("LASTfieldset: " +  oldfieldsetparent.html(), "organizer");
-            var lastfieldsetfieldset = oldfieldsetparent.find('fieldset').last();
-//            newfieldset.before( nextfieldset );
-            log.info("LASTfieldsetfieldset ID: " +  lastfieldsetfieldset.attr("id"), "organizer");
-            $("#" + lastfieldsetfieldset.attr("id")).after(newfieldset);
 
+            var originalfieldsetparent = originalfieldsetfieldset.parent();
+            var lastfieldsetfieldset = originalfieldsetparent.find('fieldset').last();
+
+            if(instance.lastslotid[day]!=undefined) {
+                $(instance.lastslotid[day]).after(newfieldset);
+            } else {
+                $("#" + lastfieldsetfieldset.attr("id")).after(newfieldset);
+            }
+            instance.lastslotid[day] = "#" + newfieldsetfieldset.attr("id");
         });
     };
 
