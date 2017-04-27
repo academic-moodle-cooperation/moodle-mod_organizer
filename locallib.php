@@ -49,14 +49,14 @@ if (!function_exists('sem_get')) {
     }
 }
 
-function organizer_load_events($teacherid, $startdate, $enddate) {
+function organizer_load_events($teacherid, $startdate, $enddate, $newsloteventid) {
     global $DB;
 
     $params = array('teacherid' => $teacherid, 'startdate1' => $startdate, 'enddate1' => $enddate,
-            'startdate2' => $startdate, 'enddate2' => $enddate);
+            'startdate2' => $startdate, 'enddate2' => $enddate, 'newsloteventid' => $newsloteventid);
     $query = "SELECT {event}.id, {event}.name, {event}.timestart, {event}.timeduration FROM {event}
             INNER JOIN {user} ON {user}.id = {event}.userid
-            WHERE {user}.id = :teacherid AND ({event}.timestart >= :startdate1
+            WHERE {user}.id = :teacherid AND {event}.id <> :newsloteventid AND ({event}.timestart >= :startdate1
                 AND {event}.timestart < :enddate1 OR ({event}.timestart + {event}.timeduration) >= :startdate2
                 AND ({event}.timestart + {event}.timeduration) < :enddate2)";
 
@@ -165,7 +165,7 @@ function organizer_add_appointment_slots($data) {
             unset($newslot->eventid);
 
             $events = organizer_load_events($newslot->teacherid, $newslot->starttime,
-                        $newslot->starttime + $newslot->duration);
+                        $newslot->starttime + $newslot->duration, $newslot->eventid);
             $collisions = organizer_check_collision($newslot->starttime,
                         $newslot->starttime + $newslot->duration, $events);
             $head = true;

@@ -65,7 +65,6 @@ define(['jquery', 'core/log'], function($, log) {
             var newfieldsetfieldset = newfieldset.find('fieldset').first();
             newfieldsetfieldset.attr("id", originalfieldsetfieldset.attr("id") + "_" + newslot_index);
             var fieldsetelements = newfieldset.find('input, select');
-            var ix = 0;
             $.each(fieldsetelements, function() {
                 var originalid = $(this).attr("id");
                 if(originalid) {
@@ -79,7 +78,6 @@ define(['jquery', 'core/log'], function($, log) {
                 }
             });
             fieldsetelements = newfieldset.find('label');
-            ix = 0;
             $.each(fieldsetelements, function() {
                 var originalfor = $(this).attr("for");
                 if(originalfor) {
@@ -93,14 +91,10 @@ define(['jquery', 'core/log'], function($, log) {
 
             if(instance.lastslotid[day]!=undefined) {
                 $(instance.lastslotid[day]).after(newfieldset);
-                log.info("111", "organizer");
             } else {
                 $("#" + lastfieldsetfieldset.attr("id")).after(newfieldset);
-                log.info("222", "organizer");
             }
             instance.lastslotid[day] = "#" + newfieldsetfieldset.attr("id");
-            log.info(day, "organizer");
-            log.info(instance.lastslotid[day], "organizer");
         });
     };
 

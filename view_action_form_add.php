@@ -183,14 +183,6 @@ class organizer_add_slots_form extends moodleform {
         $mform->setExpanded('slotperiod');
         $mform->setExpanded('other');
 
-//        $buttonarray = array();
-
-//        $buttonarray[] = &$mform->createElement('submit', 'createslots', get_string('createsubmit', 'organizer'));
-//        $buttonarray[] = &$mform->createElement('cancel');
-
-//        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
-//        $mform->closeHeaderBefore('buttonar');
-
         $this->add_action_buttons();
 
         $params = new \stdClass();
@@ -417,6 +409,8 @@ class organizer_add_slots_form extends moodleform {
                 'other');
         $mform->addHelpButton('slottimeframes', 'slottimeframesheader', 'organizer');
 
+        $mform->insertElementBefore($mform->createElement('html', '<hr />'), 'other');
+
         $totalslots = isset($mform->_submitValues['totalslots']) ? $mform->_submitValues['totalslots'] : 0;
 
         if (isset($mform->_submitValues['addday'])) {
@@ -469,7 +463,7 @@ class organizer_add_slots_form extends moodleform {
         $dayslot[] = $mform->createElement('advcheckbox', "{$name}[selected]", '', ORGANIZER_SPACING, null, array(0, 1));
         $mform->setDefault("{$name}[selected]", 0);
         $dayslot[] = $mform->createElement('static', '', '',
-                get_string("day_$weekday", 'organizer') . ' ' . get_string('slotfrom', 'organizer'));
+                get_string("day_$weekday", 'organizer') . '</span> ' . get_string('slotfrom', 'organizer'));
         $dayslot[] = $mform->createElement('hidden', "{$name}[day]", $day);
         $mform->setType("{$name}[day]", PARAM_RAW);
         $dayslot[] = $mform->createElement('select', "{$name}[from]", '', $this->pickeroptions);
@@ -482,7 +476,7 @@ class organizer_add_slots_form extends moodleform {
 
         if ($isfirst) {
             $dayslot[] = $mform->createElement('button', "addday[{$day}]", get_string('newslot', 'organizer'),
-                array('slot' => $day, 'style' => 'display:none;', 'class' => 'adddayslot'));
+                array('slot' => $day, 'class' => 'adddayslot'));
         }
         return $dayslot;
     }
