@@ -155,6 +155,7 @@ class organizer_add_slots_form extends moodleform {
 
         $mform->addElement('header', 'other', get_string('otherheader', 'organizer'));
 
+
         if(isset($_POST['newslots'])) {
             $days = count($_POST['newslots']);
         } else {
@@ -179,13 +180,18 @@ class organizer_add_slots_form extends moodleform {
         $mform->setType('comments', PARAM_RAW);
         $mform->addHelpButton('comments', 'appointmentcomments', 'organizer');
 
-        $buttonarray = array();
+        $mform->setExpanded('slotperiod');
+        $mform->setExpanded('other');
 
-        $buttonarray[] = &$mform->createElement('submit', 'createslots', get_string('createsubmit', 'organizer'));
-        $buttonarray[] = &$mform->createElement('cancel');
+//        $buttonarray = array();
 
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
-        $mform->closeHeaderBefore('buttonar');
+//        $buttonarray[] = &$mform->createElement('submit', 'createslots', get_string('createsubmit', 'organizer'));
+//        $buttonarray[] = &$mform->createElement('cancel');
+
+//        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+//        $mform->closeHeaderBefore('buttonar');
+
+        $this->add_action_buttons();
 
         $params = new \stdClass();
         $params->totalslots = $totalslots;
@@ -359,18 +365,6 @@ class organizer_add_slots_form extends moodleform {
         return true;
     }
 
-    private function _freeze_fields() {
-        $mform = &$this->_form;
-
-        $fields = array('teacherid', 'notificationtime', 'teachervisible', 'visibility',
-                'location', 'locationlink', 'comments', 'startdate',
-                'enddate', 'duration', 'gap', 'availablefrom', 'maxparticipants');
-
-        foreach ($fields as $field) {
-            $mform->getElement($field)->freeze();
-        }
-    }
-
     private function _converts_to_int($value) {
         if (is_numeric($value)) {
             if (intval($value) == floatval($value)) {
@@ -378,12 +372,6 @@ class organizer_add_slots_form extends moodleform {
             }
         }
         return false;
-    }
-
-    private function _hide_button(&$button) {
-        $attr = $button->getAttributes();
-        $attr['style'] = 'display: none;';
-        $button->setAttributes($attr);
     }
 
 
@@ -499,299 +487,7 @@ class organizer_add_slots_form extends moodleform {
         return $dayslot;
     }
 
-private function _add_new_slots() {
 
-    $mform = &$this->_form;
-
-    if (isset($mform->_submitValues['now'])) {
-        $mform->insertElementBefore(
-            $mform->createElement('static', 'availablefromdummy', get_string('availablefrom', 'organizer'),
-                get_string('relative_deadline_now', 'organizer')), 'notificationtime');
-        $mform->addHelpButton('availablefromdummy', 'availablefrom', 'organizer');
-        $mform->addElement('hidden', 'availablefrom', 0);
-    } else {
-        $mform->insertElementBefore(
-            $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer')),
-            'notificationtime');
-        $mform->addHelpButton('availablefrom', 'availablefrom', 'organizer');
-    }
-
-
-}
-
-    private function _add_review_slots() {
-        $mform = &$this->_form;
-
-        if (isset($mform->_submitValues['now'])) {
-            $mform->insertElementBefore(
-                    $mform->createElement('static', 'availablefromdummy', get_string('availablefrom', 'organizer'),
-                            get_string('relative_deadline_now', 'organizer')), 'notificationtime');
-            $mform->addHelpButton('availablefromdummy', 'availablefrom', 'organizer');
-            $mform->addElement('hidden', 'availablefrom', 0);
-        } else {
-            $mform->insertElementBefore(
-                    $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer')),
-                    'notificationtime');
-            $mform->addHelpButton('availablefrom', 'availablefrom', 'organizer');
-        }
-
-        $mform->insertElementBefore(
-                $mform->createElement('header', 'slottimeframes', get_string('rewievslotsheader', 'organizer')),
-                'other');
-
-        $slots = isset($mform->_submitValues['newslots']) ? $mform->_submitValues['newslots'] : array();
-
-        $startdate = mktime(0, 0, 0, $mform->_submitValues['startdate']['month'],
-                $mform->_submitValues['startdate']['day'], $mform->_submitValues['startdate']['year']);
-        $enddate = mktime(0, 0, 0, $mform->_submitValues['enddate']['month'], $mform->_submitValues['enddate']['day'],
-                $mform->_submitValues['enddate']['year']);
-
-        $teacherid = $mform->_submitValues['teacherid'];
-
-        $events = $this->_organizer_load_events($teacherid, $startdate, $enddate + ORGANIZER_DAY_IN_SECS);
-
-        $id = 0;
-        $totalslots = 0;
-
-        $collcount = 0;
-
-        for ($day = 0; $day < ORGANIZER_NUM_DAYS; $day++) {
-            $dayempty = true;
-            for ($date = $startdate; $date < $enddate + ORGANIZER_DAY_IN_SECS; $date += ORGANIZER_DAY_IN_SECS) {
-
-                $datedata = getdate($date);
-                $dayofweek = ($datedata['wday'] + 6) % 7;
-                if ($day == $dayofweek) {
-                    $heading = true;
-                    foreach ($slots as $slot) {
-                        if ($slot['selected'] && $slot['day'] == $day) {
-                            if ($heading) {
-                                $mform->insertElementBefore(
-                                        $mform->createElement('html',
-                                                '<strong>'
-                                                        . userdate($date,
-                                                                get_string('fulldatelongtemplate', 'organizer'))
-                                                        . '</strong><br />'), 'other');
-                                $heading = false;
-                            }
-                            $duration = $mform->_submitValues['duration']['number'];
-                            $unit = $mform->_submitValues['duration']['timeunit'];
-                            $gap = $mform->_submitValues['gap']['number'];
-                            $unitgap = $mform->_submitValues['gap']['timeunit'];
-
-                            $collisions = $this->_check_collision($slot, $date, $events);
-                            $collcount += count($collisions);
-
-                            $dayslot = $this->_create_slot_review_group($date, $id, $slot['from'], $slot['to'],
-                                    $duration, $unit, $gap, $unitgap);
-                            $mform->insertElementBefore(
-                                    $mform->createElement('group', "reviewgroup{$id}", '', $dayslot, ORGANIZER_SPACING, false),
-                                    'other');
-
-                            $head = true;
-                            foreach ($collisions as $event) {
-                                if ($head) {
-                                    $mform->insertElementBefore(
-                                            $mform->createElement('html',
-                                                    '<span class="error">' . get_string('collision', 'organizer')
-                                                            . '</span><br />'), 'other');
-                                    $head = false;
-                                }
-                                $mform->insertElementBefore(
-                                        $mform->createElement('html',
-                                                '&nbsp;&nbsp;- <strong>' . $event->name . '</strong> from '
-                                                        . userdate($event->timestart,
-                                                                get_string('timetemplate', 'organizer')) . ' to '
-                                                        . userdate($event->timestart + $event->timeduration,
-                                                                get_string('timetemplate', 'organizer')) . '<br />'),
-                                        'other');
-                            }
-                            $totalslots += intval(($slot['to'] - $slot['from']) / ( ($duration * $unit) + ($gap * $unitgap) ));
-
-                            $dayempty = false;
-
-                            $id++;
-                        }
-                    }
-                }
-            }
-
-            if ($dayempty) {
-                $mform->insertElementBefore(
-                        $mform->createElement('html',
-                                get_string('noslots', 'organizer') . ' '. get_string("day_$day", 'organizer')), 'other');
-            }
-            $mform->insertElementBefore($mform->createElement('html', '<hr />'), 'other');
-        }
-
-        global $DB;
-
-        if (organizer_is_group_mode()) {
-            list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
-            $slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
-
-            $a = new stdClass();
-            $a->numplaces = $totalslots;
-            $a->totalplaces = count($slots) + $a->numplaces;
-            $groups = groups_get_all_groups($course->id, 0, $cm->groupingid);
-            $a->numgroups = count($groups);
-
-            $html = get_string('addslots_placesinfo_group', 'organizer', $a);
-
-        } else {
-            list(, , $organizer, $context) = organizer_get_course_module_data();
-            $slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
-            $placecount = 0;
-            foreach ($slots as $slot) {
-                $placecount += $slot->maxparticipants;
-            }
-
-            $a = new stdClass();
-            $a->numplaces = $totalslots * $mform->_submitValues['maxparticipants'];
-            $a->totalplaces = $placecount + $a->numplaces;
-            $a->numstudents = count(get_enrolled_users($context, 'mod/organizer:register'));
-
-            $html = get_string('addslots_placesinfo', 'organizer', $a);
-        }
-
-        $mform->insertElementBefore($mform->createElement('html', $html), 'other');
-
-        if ($collcount > 0) {
-            $mform->addElement('hidden', "conflicts", true);
-        }
-
-        return true;
-    }
-
-    private function _create_slot_review_group($date, $id, $from, $to, $duration, $unit, $gap, $unitgap, $disabled = false) {
-        $mform = &$this->_form;
-        $name = "finalslots[{$id}]";
-
-        if ($unit == 1) {
-            $unitname = ($duration == 1) ? get_string('sec', 'organizer') : get_string('sec_pl', 'organizer');
-        } else if ($unit == 60) {
-            $unitname = ($duration == 1) ? get_string('min', 'organizer') : get_string('min_pl', 'organizer');
-        } else if ($unit == 3600) {
-            $unitname = ($duration == 1) ? get_string('hour', 'organizer') : get_string('hour_pl', 'organizer');
-        } else {
-            $unitname = ($duration == 1) ? get_string('day', 'organizer') : get_string('day_pl', 'organizer');
-        }
-
-        $a = new stdClass();
-
-        $a->starttime = gmdate('H:i', $from);
-        $a->endtime = gmdate('H:i', $to);
-        $a->duration = $duration;
-        $a->unit = $unitname;
-        $a->gap = $duration;
-        $a->unitgap = $unitname;
-        $a->totalslots = intval(($to - $from) / ( ($duration * $unit) + ($gap * $unitgap) ));
-
-        $dayslot = array();
-        $dayslot[] = $mform->createElement('advcheckbox', "{$name}[selected]", '',
-                ORGANIZER_SPACING . get_string('totalslots', 'organizer', $a),
-                $disabled ? array('disabled' => 'disabled', 'group' => 0) : null, array(0, 1));
-
-        $dayslot[] = $mform->createElement('hidden', "{$name}[date]", $date);
-        $dayslot[] = $mform->createElement('hidden', "{$name}[from]", $from);
-        $dayslot[] = $mform->createElement('hidden', "{$name}[to]", $to);
-
-        $dayslot[0]->setValue($disabled ? 0 : 1);
-
-        return $dayslot;
-    }
-
-    /**
-     * This is necessary to facilitate validation and proper handling of incoming
-     * data by QuickForm. These fields are never actually rendered.
-     * @param type $button
-     */
-    private function _add_dummy_fields() {
-        $mform = &$this->_form;
-
-        if (isset($mform->_submitValues['now'])) {
-            $mform->insertElementBefore(
-                    $mform->createElement('static', 'availablefromdummy', get_string('availablefrom', 'organizer'),
-                            get_string('relative_deadline_now', 'organizer')), 'notificationtime');
-            $mform->addElement('hidden', 'availablefrom', 0);
-            $mform->addElement('hidden', 'now', 1);
-        } else {
-            $mform->insertElementBefore(
-                    $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer')),
-                    'notificationtime');
-        }
-
-        if (isset($mform->_submitValues['finalslots'])) {
-            foreach ($mform->_submitValues['finalslots'] as $id => $slot) {
-                $name = "finalslots[{$id}]";
-                $mform->addElement('hidden', "{$name}[selected]", $slot['selected']);
-                $mform->addElement('hidden', "{$name}[date]", $slot['date']);
-                $mform->addElement('hidden', "{$name}[from]", $slot['from']);
-                $mform->addElement('hidden', "{$name}[to]", $slot['to']);
-            }
-        }
-    }
-
-    private function _add_dummy_fields_for_back() {
-        $mform = $this->_form;
-        if (isset($mform->_submitValues['newslots'])) {
-            foreach ($mform->_submitValues['newslots'] as $id => $slot) {
-                $name = "newslots[{$id}]";
-                $mform->addElement('hidden', "{$name}[selected]", $slot['selected']);
-                $mform->addElement('hidden', "{$name}[day]", $slot['day']);
-                $mform->addElement('hidden', "{$name}[from]", $slot['from']);
-                $mform->addElement('hidden', "{$name}[to]", $slot['to']);
-            }
-        }
-        if (isset($mform->_submitValues['now'])) {
-            $mform->addElement('hidden', 'now', $mform->_submitValues['now']);
-        }
-    }
-
-    /**
-     * Checks whether there any events in selected teacher's calendar that collide with the
-     * selected time frames for a given date.
-     * @param unknown_type $frame time frame to be tested for collision
-     * @param int $date particular date on which to make the check
-     * @param array $events an array of all events of a teacher that are relevant
-     * @return array an array of events in collision
-     */
-    private function _check_collision($frame, $date, $events) {
-        $collidingevents = array();
-        foreach ($events as $event) {
-            $framefrom = $frame['from'] + $date;
-            $frameto = $frame['to'] + $date;
-            $eventfrom = $event->timestart;
-            $eventto = $eventfrom + $event->timeduration;
-
-            if ($this->_between($framefrom, $eventfrom, $eventto) || $this->_between($frameto, $eventfrom, $eventto)
-                    || $this->_between($eventfrom, $framefrom, $frameto)
-                    || $this->_between($eventto, $framefrom, $frameto) || $framefrom == $eventfrom
-                    || $eventfrom == $eventto) {
-                $collidingevents[] = $event;
-            }
-        }
-        return $collidingevents;
-    }
-
-    /**
-     * Loads the events from the database in the period described in the POST header
-     * @return array of event objects
-     */
-    private function _organizer_load_events($teacherid, $startdate, $enddate) {
-        global $DB;
-
-        $params = array('teacherid' => $teacherid, 'startdate1' => $startdate, 'enddate1' => $enddate,
-                'startdate2' => $startdate, 'enddate2' => $enddate);
-
-        $query = "SELECT e.id, e.name, e.timestart, e.timeduration FROM {event} e
-                INNER JOIN {user} u ON u.id = e.userid
-                WHERE u.id = :teacherid AND (e.timestart >= :startdate1
-                AND e.timestart < :enddate1 OR (e.timestart + e.timeduration) >= :startdate2
-                AND (e.timestart + e.timeduration) < :enddate2) AND e.timeduration > 0";
-
-        return $DB->get_records_sql($query, $params);
-    }
 
     private function _get_visibilities() {
  

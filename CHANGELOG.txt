@@ -1,5 +1,11 @@
 CHANGELOG
 =========
+3.3.0 (2017-04-27)
+------------------
+
+* [FEATURE] #3257 Add a slot: only one page
+* [FIXED] #4405 Location gets lost when creating a slot
+
 
 3.2.1 (2017-03-28)
 ------------------

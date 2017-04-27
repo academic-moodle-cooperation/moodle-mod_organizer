@@ -69,7 +69,8 @@ $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mo
 
 if ($data = $mform->get_data()) {
     if(!isset($mform->_submitValues['addday'])) {
-        $count = count($slotids = organizer_add_appointment_slots($data));
+        list($slotids, $messages) = organizer_add_appointment_slots($data);
+        $count = count($slotids);
         if ($count == 0) {
             $redirecturl->param('messages[]', 'message_warning_no_slots_added');
         } else {
@@ -91,7 +92,11 @@ if ($data = $mform->get_data()) {
                 $redirecturl .= '&slots[]=' . $slotid;
             }
         }
-        redirect($redirecturl);
+        if($messages) {
+            redirect($redirecturl, $messages, 10);
+        } else {
+            redirect($redirecturl);
+        }
     } else {
         organizer_display_form($mform, get_string('title_add', 'organizer'));
     }

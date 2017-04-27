@@ -78,21 +78,29 @@ function organizer_get_name_link($user = 0) {
     return html_writer::link($profileurl, $name);
 }
 
-function organizer_check_collision($frame, $date, $events) {
+/**
+ * Checks if the given events are in the given time frame.
+ * @param unixtime $from
+ * @param unixtime to
+ * @return array an array of events
+ */
+function organizer_check_collision($from, $to, $events) {
     $collidingevents = array();
     foreach ($events as $event) {
-        $framefrom = $frame['from'] + $date;
-        $frameto = $frame['to'] + $date;
         $eventfrom = $event->timestart;
         $eventto = $eventfrom + $event->timeduration;
 
-        if (between($framefrom, $eventfrom, $eventto) || between($frameto, $eventfrom, $eventto)
-                || between($eventfrom, $framefrom, $frameto) || between($eventto, $framefrom, $frameto)
-                || $framefrom == $eventfrom || $eventfrom == $eventto) {
+        if (between($from, $eventfrom, $eventto) || between($to, $eventfrom, $eventto)
+                || between($eventfrom, $from, $to) || between($eventto, $from, $to)
+                || $from == $eventfrom || $eventfrom == $eventto) {
             $collidingevents[] = $event;
         }
     }
     return $collidingevents;
+}
+
+function between($num, $lower, $upper) {
+    return $num > $lower && $num < $upper;
 }
 
 function organizer_add_appointment_slots($data) {
@@ -109,6 +117,7 @@ function organizer_add_appointment_slots($data) {
 
     $timezone = new DateTimeZone(date_default_timezone_get());
     $startdate = $data->startdate;
+    $collisionmessages = "";
 
     foreach ($data->newslots as $slot) {
         if (!$slot['selected']) {
@@ -147,28 +156,49 @@ function organizer_add_appointment_slots($data) {
         }
 
         for ($time = $slot['from']; $time + $data->duration <= $slot['to']; $time += ($data->duration+$data->gap) ) {
-            $t = new DateTime();
-            $t->setTimestamp($slot['date']); // Sets the day.
 
-            $h = $time / 3600 % 24;
-            $m = $time / 60 % 60;
-            $s = $time % 60;
-
-            $t->setTime($h, $m, $s); // Set time of day.
-
-            $newslot->starttime = $t->getTimestamp();
-
+            $newslot->starttime = organizer_get_slotstarttime($slot['date'], $time);
             $newslot->id = $DB->insert_record('organizer_slots', $newslot);
 
             $newslot->eventid = organizer_add_event_slot($data->id, $newslot);
             $DB->update_record('organizer_slots', $newslot);
             unset($newslot->eventid);
 
+            $events = organizer_load_events($newslot->teacherid, $newslot->starttime,
+                        $newslot->starttime + $newslot->duration);
+            $collisions = organizer_check_collision($newslot->starttime,
+                        $newslot->starttime + $newslot->duration, $events);
+            $head = true;
+            $collisionmessage = "";
+            foreach ($collisions as $event) {
+                if ($head) {
+                    $collisionmessage .= '<span class="error">' . get_string('collision', 'organizer') .'</span><br />';
+                    $head = false;
+                }
+                $collisionmessage .= '<strong>' . $event->name . '</strong> from '
+                        . userdate($event->timestart,
+                            get_string('fulldatetimetemplate', 'organizer')) . ' to '
+                        . userdate($event->timestart + $event->timeduration,
+                            get_string('fulldatetimetemplate', 'organizer')) . '<br />';
+            }
+
             $count[] = $newslot->id;
+            $collisionmessages .= $collisionmessage;
         }
     }
 
-    return $count;
+    return array($count, $collisionmessages);
+}
+
+function organizer_get_slotstarttime($slotdate, $time) {
+    $t = new DateTime();
+    $t->setTimestamp($slotdate); // Sets the day.
+    $h = $time / 3600 % 24;
+    $m = $time / 60 % 60;
+    $s = $time % 60;
+    $t->setTime($h, $m, $s); // Set time of day.
+    $starttime = $t->getTimestamp();
+    return $starttime;
 }
 
 function organizer_get_day_date($day, $startdate) {
