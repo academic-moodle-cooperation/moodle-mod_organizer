@@ -25,7 +25,7 @@
  */
 
 
-define(['jquery', 'core/log'], function($, log) {
+define(['jquery', 'core/log'], function($) {
 
     /**
      * @constructor
@@ -33,7 +33,8 @@ define(['jquery', 'core/log'], function($, log) {
      */
     var Adddayslot = function() {
 
-        this.totalslots = 0;
+        this.totaldays = 0;
+        this.displayalldays = 0;
 
     };
 
@@ -41,61 +42,39 @@ define(['jquery', 'core/log'], function($, log) {
 
     instance.init = function(param) { // Parameter 'param' contains the parameter values!
 
-        instance.totalslots = param.totalslots;
-        instance.lastslotid = new Array;
+        instance.totaldays = param.totaldays;
+        instance.displayalldays = param.displayalldays;
 
-        $('.adddayslot').css("display", "inline");
+        if(instance.displayalldays==0) {
 
-        $('[id^=id_addday_]').on('click', function () {
-
-            var button = $(this);
-            var day = button.attr("slot");
-            var newslot_index = instance.totalslots++;
-
-            // Clone original fieldset
-            var originalfieldset = $('<fieldset>').append(button.closest("fieldset").clone());
-            var newfieldset = originalfieldset.clone();
-
-            // newfieldset: remove addday-button
-            newfieldset.find(':button').first().remove();
-            // newfieldset: insert hidden field "day"
-            newfieldset.append('<input name="newslots[' + day + '][day]" value="' + day + '" type="hidden">');
-
-            var originalfieldsetfieldset = originalfieldset.find('fieldset').first();
-            var newfieldsetfieldset = newfieldset.find('fieldset').first();
-            newfieldsetfieldset.attr("id", originalfieldsetfieldset.attr("id") + "_" + newslot_index);
-            var fieldsetelements = newfieldset.find('input, select');
-            $.each(fieldsetelements, function() {
-                var originalid = $(this).attr("id");
-                if(originalid) {
-                    var newid = originalid.replace("newslots_" + day + "_", "newslots_" + newslot_index + "_");
-                    $(this).attr("id", newid);
+            for(var i=instance.totaldays-1; i>0; i--) {
+                if($('#id_newslots_' + String(i) + '_day').val()==-1) {
+                    $('#fgroup_id_slotgroup' + String(i)).hide();
+                } else {
+                    break;
                 }
-                var originalname = $(this).attr("name");
-                if(originalname) {
-                    var newname = originalname.replace("newslots[" + day + "]", "newslots[" + newslot_index + "]");
-                    $(this).attr("name", newname);
+            }
+            if(i<instance.totaldays-1) {
+                $('#id_addday').hide();
+            }
+
+            $('[id^=fgroup_id_slotgroup]').change(function () {
+                var id =$(this).attr("id");
+                var nextindex = parseInt(id.replace("fgroup_id_slotgroup", "")) + 1;
+                $('#fgroup_id_slotgroup' + String(nextindex)).show();
+                if(nextindex==instance.totaldays) {
+                    $('#id_addday').show();
                 }
             });
-            fieldsetelements = newfieldset.find('label');
-            $.each(fieldsetelements, function() {
-                var originalfor = $(this).attr("for");
-                if(originalfor) {
-                    var newfor = originalfor.replace("newslots_" + day + "_", "newslots_" + newslot_index + "_");
-                    $(this).attr("for", newfor);
-                }
-             });
 
-            var originalfieldsetparent = originalfieldsetfieldset.parent();
-            var lastfieldsetfieldset = originalfieldsetparent.find('fieldset').last();
+        }
 
-            if(instance.lastslotid[day]!=undefined) {
-                $(instance.lastslotid[day]).after(newfieldset);
-            } else {
-                $("#" + lastfieldsetfieldset.attr("id")).after(newfieldset);
-            }
-            instance.lastslotid[day] = "#" + newfieldsetfieldset.attr("id");
-        });
+
+        if( $( "#id_now" ).prop( "checked") == true) {
+            $('[name^=availablefrom]').prop( "disabled", true );
+            $('#id_availablefrom_timeunit').prop( "disabled", true );
+        }
+
     };
 
     return instance;

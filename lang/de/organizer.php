@@ -130,6 +130,7 @@ $string['min_pl'] = 'mins';
 $string['sec_pl'] = 'seks';
 $string['slotfrom'] = ' von';
 $string['newslot'] = 'Weitere Slots hinzufügen';
+$string['weekdaylabel'] = 'Wochentermin';
 $string['slotto'] = 'bis';
 $string['btn_comment'] = 'Kommentar bearbeiten';
 $string['confirm_delete'] = 'Löschen';

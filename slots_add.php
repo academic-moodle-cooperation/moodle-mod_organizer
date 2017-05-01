@@ -67,8 +67,10 @@ require_capability('mod/organizer:addslots', $context);
 
 $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
 
-if ($data = $mform->get_data()) {
-    if(!isset($mform->_submitValues['addday'])) {
+if ($data = $mform->get_data()) {  // when page is called the first time (=empty form) or form data has errors: no data
+    if(isset($data->addday)) {  // additional slot field are to be displayed
+        organizer_display_form($mform, get_string('title_add', 'organizer'));
+    } else {  // submit button was pressed and submitted form data has no errors
         list($slotids, $messages) = organizer_add_appointment_slots($data);
         $count = count($slotids);
         if ($count == 0) {
@@ -97,12 +99,10 @@ if ($data = $mform->get_data()) {
         } else {
             redirect($redirecturl);
         }
-    } else {
-        organizer_display_form($mform, get_string('title_add', 'organizer'));
     }
-} else if ($mform->is_cancelled()) {
+} else if ($mform->is_cancelled()) {  // cancel button of form was pressed
     redirect($redirecturl);
-} else {
+} else { // display empty form initially or submitted form has errors
     organizer_display_form($mform, get_string('title_add', 'organizer'));
 }
 print_error('If you see this, something went wrong with add action!');

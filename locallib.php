@@ -120,7 +120,7 @@ function organizer_add_appointment_slots($data) {
     $collisionmessages = "";
 
     foreach ($data->newslots as $slot) {
-        if (!$slot['selected']) {
+        if ($slot['day']==-1) {
             continue;
         }
 
@@ -162,7 +162,6 @@ function organizer_add_appointment_slots($data) {
 
             $newslot->eventid = organizer_add_event_slot($data->id, $newslot);
             $DB->update_record('organizer_slots', $newslot);
-            unset($newslot->eventid);
 
             $events = organizer_load_events($newslot->teacherid, $newslot->starttime,
                         $newslot->starttime + $newslot->duration, $newslot->eventid);
@@ -781,7 +780,6 @@ function organizer_queue_single_appointment($slotid, $userid, $applicantid = 0, 
     return $appointment->id;
 }
 
-// Waiting list: function changed
 function organizer_reregister_appointment($slotid, $groupid = 0) {
     global $DB, $USER;
 
@@ -850,7 +848,6 @@ function organizer_get_active_appointment($userid, $organizerid) {
     return null;
 }
 
-// Waiting list: changed function
 function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
     global $DB, $USER;
 
@@ -884,14 +881,11 @@ function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
     return $ok;
 }
 
-// Waiting list: changed function
 function organizer_unregister_single_appointment($slotid, $userid) {
     global $DB;
 
-	$ok_register = true;
-	$ok_unqueue = true;
-    $slotx = new organizer_slot($slotid);
-    if($eventid = $DB->get_field('organizer_slot_appointments', 'eventid', array('userid' => $userid, 'slotid' => $slotid))) {
+    if($eventid = $DB->get_field('organizer_slot_appointments', 'eventid', array('userid' => $userid,
+        'slotid' => $slotid))) {
 	    $deleted = $DB->delete_records('event', array('id' => $eventid));
 	}
 
@@ -1051,7 +1045,6 @@ function organizer_is_group_mode() {
     return $organizer->isgrouporganizer;
 }
 
-// Waiting list new function
 function organizer_is_queueable() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);

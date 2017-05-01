@@ -66,9 +66,10 @@ class organizer_edit_slots_form extends moodleform {
     private function _get_defaults() {
         global $DB;
         $defaults = array();
-        $defset = array('teacherid' => false, 'visibility' => false,  'comments' => false, 'location' => false, 'locationlink' => false,
-                'maxparticipants' => false, 'availablefrom' => false, 'teachervisible' => false,
-                'notificationtime' => false);
+        $defset = array('teacherid' => false, 'visibility' => false,  'comments' => false,
+                        'location' => false, 'locationlink' => false,
+                        'maxparticipants' => false, 'availablefrom' => false, 'teachervisible' => false,
+                        'notificationtime' => false);
 
         $slotids = $this->_customdata['slots'];
 
@@ -170,11 +171,10 @@ class organizer_edit_slots_form extends moodleform {
         $mform = $this->_form;
 
         $buttonarray = array();
-
         $buttonarray[] = &$mform->createElement('submit', 'editsubmit', get_string('edit_submit', 'organizer'));
         $buttonarray[] = &$mform->createElement('reset', 'editreset', get_string('revert'));
-
         $buttonarray[] = &$mform->createElement('cancel');
+
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
     }
@@ -296,7 +296,7 @@ class organizer_edit_slots_form extends moodleform {
                 $this->_warning_icon('availablefrom', isset($defaults['availablefrom'])));
 
         $mform->setDefault('availablefrom', '');
-           $mform->setDefault('availablefrom[now]', $defaults['now']);
+        $mform->setDefault('availablefrom[now]', $defaults['now']);
 
         $mform->addGroup($group, 'availablefromgroup', get_string('availablefrom', 'organizer'), ORGANIZER_SPACING, false);
 

@@ -128,6 +128,7 @@ $string['min_pl'] = 'mins';
 $string['sec_pl'] = 'secs';
 $string['slotfrom'] = ' from';
 $string['newslot'] = 'Add more slots';
+$string['weekdaylabel'] = 'Weekday slot';
 $string['slotto'] = 'to';
 $string['btn_comment'] = 'Edit comment';
 $string['confirm_delete'] = 'Delete';
