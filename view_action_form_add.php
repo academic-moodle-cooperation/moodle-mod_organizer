@@ -184,12 +184,11 @@ class organizer_add_slots_form extends moodleform {
         $mform->addHelpButton('comments', 'appointmentcomments', 'organizer');
 
         $mform->setExpanded('slotperiod');
-        $mform->setExpanded('other');
 
         $this->add_action_buttons();
 
         $params = new \stdClass();
-        $params->totaldays = $totalslots;
+        $params->totalslots = $totalslots;
         $params->displayallslots = $displayallslots;
         $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', array($params));
     }

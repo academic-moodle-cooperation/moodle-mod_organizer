@@ -25,7 +25,7 @@
  */
 
 
-define(['jquery'], function($) {
+define(['jquery', 'core/log'], function($, log) {
 
     /**
      * @constructor
@@ -38,6 +38,7 @@ define(['jquery'], function($) {
 
     };
 
+
     var instance = new Adddayslot();
 
     instance.init = function(param) { // Parameter 'param' contains the parameter values!
@@ -45,11 +46,15 @@ define(['jquery'], function($) {
         instance.totalslots = param.totalslots;
         instance.displayallslots = param.displayallslots;
 
+        log.info(instance.totalslots, "totalslots");
+        log.info(instance.displayallslots, "displayallslots");
+
         if(instance.displayallslots==0) {
 
             for(var i=instance.totalslots-1; i>0; i--) {
                 if($('#id_newslots_' + String(i) + '_day').val()==-1) {
-                    $('#organizer_slotgroup' + String(i)).hide();
+                    $( "#id_newslots_" + String(i) + "_day" ).closest( ".form-group.row.fitem" ).hide(); //boost
+                    $( "#fgroup_id_slotgroup" + String(i)).hide(); //clean
                 } else {
                     break;
                 }
@@ -61,7 +66,8 @@ define(['jquery'], function($) {
             $('[id^=id_newslots_]').change(function () {
                 var id =$(this).attr("id");
                 var nextindex = parseInt(id.split("_")[2]) + 1;
-                $('#organizer_slotgroup' + String(nextindex)).show();
+                $( "#id_newslots_" + String(nextindex) + "_day" ).closest( ".form-group.row.fitem" ).show(); // boost
+                $( "#fgroup_id_slotgroup" + String(nextindex)).show(); // clean
                 if(nextindex==instance.totalslots) {
                     $('#id_addday').show();
                 }
@@ -71,8 +77,8 @@ define(['jquery'], function($) {
 
 
         if( $( "#id_now" ).prop( "checked") == true) {
-            $('[name^=availablefrom]').prop( "disabled", true );
-            $('#id_availablefrom_timeunit').prop( "disabled", true );
+            $('[name^=availablefrom]').prop("disabled", true);
+            $('#id_availablefrom_timeunit').prop("disabled", true);
         }
 
     };
