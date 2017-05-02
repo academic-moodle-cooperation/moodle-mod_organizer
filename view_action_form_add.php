@@ -159,21 +159,21 @@ class organizer_add_slots_form extends moodleform {
         $mform->addElement('header', 'other', get_string('otherheader', 'organizer'));
 
         if(isset($_POST['newslots'])) { // submitted form data
-            $totaldays = count($_POST['newslots']);
+            $totalslots = count($_POST['newslots']);
         } else {
-            $totaldays = ORGANIZER_NUM_DAYS;
+            $totalslots = ORGANIZER_NUM_DAYS;
         }
-        for ($day = 0; $day < $totaldays; $day++) {
-            $dayslot = $this->_create_day_slot_group($day);
-            $grouplabel = get_string("weekdaylabel", "organizer") . " " . ($day+1);
-            $mform->insertElementBefore(
-                $mform->createElement('group', "slotgroup{$day}", $grouplabel, $dayslot, ORGANIZER_SPACING, false), 'other');
+        for ($newslot_index = 0; $newslot_index < $totalslots; $newslot_index++) {
+            $slotgroup = $this->_create_day_slot_group($newslot_index);
+            $grouplabel = get_string("weekdaylabel", "organizer") . " " . ($newslot_index+1);
+            $mform->insertElementBefore($mform->createElement('group', "slotgroup{$newslot_index}",
+                                        $grouplabel, $slotgroup, ORGANIZER_SPACING, false), 'other');
         }
         if(isset($_POST['addday'])) {
-            $totaldays = $this->_add_slot_fields($day);
-            $displayalldays = 1;
+            $totalslots = $this->_add_slot_fields($newslot_index);
+            $displayallslots = 1;
         }  else {  // must be errors from formdata-checking
-            $displayalldays = 0;
+            $displayallslots = 0;
         }
         $mform->insertElementBefore(
                 $mform->createElement('submit', "addday", get_string('newslot', 'organizer')), 'other');
@@ -189,8 +189,8 @@ class organizer_add_slots_form extends moodleform {
         $this->add_action_buttons();
 
         $params = new \stdClass();
-        $params->totaldays = $totaldays;
-        $params->displayalldays = $displayalldays;
+        $params->totaldays = $totalslots;
+        $params->displayallslots = $displayallslots;
         $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', array($params));
     }
 
@@ -374,39 +374,39 @@ class organizer_add_slots_form extends moodleform {
      * Add additional slot fields
      * called from definition if adday-button was submitted
      */
-    private function _add_slot_fields($days) {
+    private function _add_slot_fields($newslot_next) {
        $mform = &$this->_form;
 
-        $totaldays = $days + ORGANIZER_NUM_DAYS_ADD;
-        for ($day = $days; $day < $totaldays; $day++) {
-                $dayslot = $this->_create_day_slot_group($day);
-                $grouplabel = get_string("weekdaylabel", "organizer") . " " . ($day+1);
-                $mform->insertElementBefore(
-                    $mform->createElement('group', "slotgroup{$day}", $grouplabel, $dayslot, ORGANIZER_SPACING, false), 'other');
+        $totalslots = $newslot_next + ORGANIZER_NUM_DAYS_ADD;
+        for ($slot = $newslot_next; $slot < $totalslots; $slot++) {
+                $slotgroup = $this->_create_day_slot_group($slot);
+                $grouplabel = get_string("weekdaylabel", "organizer") . " " . ($slot+1);
+                $mform->insertElementBefore($mform->createElement('group', 'organizer_slotgroup{$day}',
+                    $grouplabel, $slotgroup, ORGANIZER_SPACING, false), 'other');
         }
 
-        return $totaldays;
+        return $totalslots;
     }
 
-    private function _create_day_slot_group($id) {
+    private function _create_day_slot_group($newslot_index) {
         $mform = &$this->_form;
-        $name = "newslots[$id]";
-        $dayslot = array();
+        $name = "newslots[$newslot_index]";
+        $slotgroup = array();
 
-        $dayslot[] = $mform->createElement('select', "{$name}[day]", '', $this->weekdays);
+        $slotgroup[] = $mform->createElement('select', "{$name}[day]", '', $this->weekdays);
         $mform->setType("{$name}[day]", PARAM_INT);
         $mform->setDefault("{$name}[day]", -1);
 
-        $dayslot[] = $mform->createElement('static', '', '', get_string('slotfrom', 'organizer'));
-        $dayslot[] = $mform->createElement('select', "{$name}[from]", '', $this->pickeroptions);
+        $slotgroup[] = $mform->createElement('static', '', '', get_string('slotfrom', 'organizer'));
+        $slotgroup[] = $mform->createElement('select', "{$name}[from]", '', $this->pickeroptions);
         $mform->setType("{$name}[from]", PARAM_INT);
         $mform->setDefault("{$name}[from]", 8 * 3600);
-        $dayslot[] = $mform->createElement('static', '', '', get_string('slotto', 'organizer'));
-        $dayslot[] = $mform->createElement('select', "{$name}[to]", '', $this->pickeroptions);
+        $slotgroup[] = $mform->createElement('static', '', '', get_string('slotto', 'organizer'));
+        $slotgroup[] = $mform->createElement('select', "{$name}[to]", '', $this->pickeroptions);
         $mform->setType("{$name}[to]", PARAM_INT);
         $mform->setDefault("{$name}[to]", 8 * 3600);
 
-        return $dayslot;
+        return $slotgroup;
     }
 
 

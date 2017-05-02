@@ -25,7 +25,7 @@
  */
 
 
-define(['jquery', 'core/log'], function($) {
+define(['jquery'], function($) {
 
     /**
      * @constructor
@@ -33,8 +33,8 @@ define(['jquery', 'core/log'], function($) {
      */
     var Adddayslot = function() {
 
-        this.totaldays = 0;
-        this.displayalldays = 0;
+        this.totalslots = 0;
+        this.displayallslots = 0;
 
     };
 
@@ -42,27 +42,27 @@ define(['jquery', 'core/log'], function($) {
 
     instance.init = function(param) { // Parameter 'param' contains the parameter values!
 
-        instance.totaldays = param.totaldays;
-        instance.displayalldays = param.displayalldays;
+        instance.totalslots = param.totalslots;
+        instance.displayallslots = param.displayallslots;
 
-        if(instance.displayalldays==0) {
+        if(instance.displayallslots==0) {
 
-            for(var i=instance.totaldays-1; i>0; i--) {
+            for(var i=instance.totalslots-1; i>0; i--) {
                 if($('#id_newslots_' + String(i) + '_day').val()==-1) {
-                    $('#fgroup_id_slotgroup' + String(i)).hide();
+                    $('#organizer_slotgroup' + String(i)).hide();
                 } else {
                     break;
                 }
             }
-            if(i<instance.totaldays-1) {
+            if(i<instance.totalslots-1) {
                 $('#id_addday').hide();
             }
 
-            $('[id^=fgroup_id_slotgroup]').change(function () {
+            $('[id^=id_newslots_]').change(function () {
                 var id =$(this).attr("id");
-                var nextindex = parseInt(id.replace("fgroup_id_slotgroup", "")) + 1;
-                $('#fgroup_id_slotgroup' + String(nextindex)).show();
-                if(nextindex==instance.totaldays) {
+                var nextindex = parseInt(id.split("_")[2]) + 1;
+                $('#organizer_slotgroup' + String(nextindex)).show();
+                if(nextindex==instance.totalslots) {
                     $('#id_addday').show();
                 }
             });
