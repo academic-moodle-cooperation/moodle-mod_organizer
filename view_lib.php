@@ -1819,10 +1819,10 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
 function organizer_get_icon($iconname, $string, $size="small") {
     global $OUTPUT;
     if($size=="big") {
-        $icon = $OUTPUT->pix_icon($iconname, $string, 'mod_organizer', array("width" => "32", "height" => "32"));
+        $icon = organizer_get_img('pix/' . $iconname . '.png', $string, $string, '', 'width="32" height="32"');
         return $icon;
     } else {
-        $icon = $OUTPUT->pix_icon($iconname, $string, 'mod_organizer', array("width" => "16", "height" => "16"));
+        $icon = $OUTPUT->pix_icon($iconname, $string, 'mod_organizer');
         return $icon;
     }
 }
