@@ -307,7 +307,7 @@ function organizer_generate_table_header($columns, $sortable, $params, $usersort
             } else {
                 $columndir = $params['dir'] == 'ASC' ? 'DESC' : 'ASC';
                 $columnicon = $params['dir'] == 'ASC' ? 'up' : 'down';
-                $columnicon = ' ' . organizer_get_img($OUTPUT->pix_url('t/' . $columnicon), '', '');
+                $columnicon = ' ' . $OUTPUT->pix_icon('t/' . $columnicon, get_string( $columnicon));
             }
 
             $viewurl = new moodle_url('/mod/organizer/view.php',
@@ -322,7 +322,8 @@ function organizer_generate_table_header($columns, $sortable, $params, $usersort
         } else if ($column == 'participants' && $usersort) {
             if ($params['psort'] == 'name') {
                 $namedir = $params['pdir'] == 'ASC' ? 'DESC' : 'ASC';
-                $nameicon = ' ' . organizer_get_img($OUTPUT->pix_url('t/' . ($params['pdir'] == 'ASC' ? 'up' : 'down')), '', '');
+                $nameicon = $params['pdir'] == 'ASC' ? 'up' : 'down';
+                $nameicon = ' ' . $OUTPUT->pix_icon('t/' . $nameicon, get_string($nameicon));
             } else {
                 $namedir = 'ASC';
                 $nameicon = '';
@@ -330,7 +331,8 @@ function organizer_generate_table_header($columns, $sortable, $params, $usersort
 
             if ($params['psort'] == 'id') {
                 $iddir = $params['pdir'] == 'ASC' ? 'DESC' : 'ASC';
-                $idicon = ' ' . organizer_get_img($OUTPUT->pix_url('t/' . ($params['pdir'] == 'ASC' ? 'up' : 'down')), '', '');
+                $idicon = $params['pdir'] == 'ASC' ? 'up' : 'down';
+                $idicon = ' ' . $OUTPUT->pix_icon('t/' . $idicon, get_string($idicon));
             } else {
                 $iddir = 'ASC';
                 $idicon = '';
@@ -367,7 +369,7 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
             } else {
                 $columndir = $params['dir'] == 'ASC' ? 'DESC' : 'ASC';
                 $columnicon = $params['dir'] == 'ASC' ? 'up' : 'down';
-                $columnicon = ' ' . organizer_get_img($OUTPUT->pix_url('t/' . $columnicon), '', '');
+                $columnicon = ' ' . $OUTPUT->pix_icon('t/' . $columnicon, get_string($columnicon));
             }
 
             $viewurl = new moodle_url('/mod/organizer/view.php',
@@ -381,13 +383,14 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
             } else {
                 $columndir = $params['dir'] == 'ASC' ? 'DESC' : 'ASC';
                 $columnicon = $params['dir'] == 'ASC' ? 'up' : 'down';
-                $columnicon = ' ' . organizer_get_img($OUTPUT->pix_url('t/' . $columnicon), '', '');
+                $columnicon = ' ' . $OUTPUT->pix_icon('t/' . $columnicon, get_string($columnicon));
             }
             $viewurl = new moodle_url('/mod/organizer/view.php',
                     array('id' => $params['id'], 'mode' => $params['mode'], 'sort' => 'group', 'dir' => $columndir));
             if ($params['psort'] == 'name') {
                 $namedir = $params['pdir'] == 'ASC' ? 'DESC' : 'ASC';
-                $nameicon = ' ' . organizer_get_img($OUTPUT->pix_url('t/' . ($params['pdir'] == 'ASC' ? 'up' : 'down')), '', '');
+                $nameicon = $params['pdir'] == 'ASC' ? 'up' : 'down';
+                $nameicon = ' ' . $OUTPUT->pix_icon('t/' . $nameicon, get_string($nameicon));
             } else {
                 $namedir = 'ASC';
                 $nameicon = '';
@@ -395,7 +398,8 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
 
             if ($params['psort'] == 'id') {
                 $iddir = $params['pdir'] == 'ASC' ? 'DESC' : 'ASC';
-                $idicon = ' ' . organizer_get_img($OUTPUT->pix_url('t/' . ($params['pdir'] == 'ASC' ? 'up' : 'down')), '', '');
+                $idicon = $params['pdir'] == 'ASC' ? 'up' : 'down';
+                $idicon = ' ' . $OUTPUT->pix_icon('t/' . $idicon, get_string($idicon));
             } else {
                 $iddir = 'ASC';
                 $idicon = '';
@@ -415,7 +419,8 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
         } else if ($column == 'participants') {
             if ($params['sort'] == 'name') {
                 $namedir = $params['dir'] == 'ASC' ? 'DESC' : 'ASC';
-                $nameicon = ' ' . organizer_get_img($OUTPUT->pix_url('t/' . ($params['dir'] == 'ASC' ? 'up' : 'down')), '', '');
+                $nameicon = $params['dir'] == 'ASC' ? 'up' : 'down';
+                $nameicon = ' ' . $OUTPUT->pix_icon('t/' . $nameicon, get_string($nameicon));
             } else {
                 $namedir = 'ASC';
                 $nameicon = '';
@@ -423,7 +428,8 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
 
             if ($params['sort'] == 'id') {
                 $iddir = $params['dir'] == 'ASC' ? 'DESC' : 'ASC';
-                $idicon = ' ' . organizer_get_img($OUTPUT->pix_url('t/' . ($params['dir'] == 'ASC' ? 'up' : 'down')), '', '');
+                $idicon = $params['dir'] == 'ASC' ? 'up' : 'down';
+                $idicon = ' ' . $OUTPUT->pix_icon('t/' . $idicon, get_string($idicon));
             } else {
                 $iddir = 'ASC';
                 $idicon = '';
@@ -1813,10 +1819,11 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
 function organizer_get_icon($iconname, $string, $size="small") {
     global $OUTPUT;
     if($size=="big") {
-        return '<img src="' . $OUTPUT->pix_url($iconname, "mod_organizer") . '"
-                       alt="' . $string . '" title="' . $string . '" width="32" height="32" />';
+        $icon = $OUTPUT->pix_icon($iconname, $string, 'mod_organizer', array("width" => "32", "height" => "32"));
+        return $icon;
     } else {
-        return $OUTPUT->pix_icon($iconname, $string, 'mod_organizer', array("width" => "16", "height" => "16"));
+        $icon = $OUTPUT->pix_icon($iconname, $string, 'mod_organizer', array("width" => "16", "height" => "16"));
+        return $icon;
     }
 }
 

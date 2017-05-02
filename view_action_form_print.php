@@ -216,8 +216,8 @@ class organizer_print_slots_form extends moodleform {
             }
         }
 
-        $iconup = ' <img src="' . $OUTPUT->pix_url('t/up') . '" class="iconsmall" alt="up" />';
-        $icondown = ' <img src=' . $OUTPUT->pix_url('t/down') . '" class="iconsmall" alt="down" />';
+        $iconup = $OUTPUT->pix_icon('t/up', get_string('up'));
+        $icondown = $OUTPUT->pix_icon('t/down', get_string('down'));
 
         $header = array();
         foreach ($columns as $column) {
@@ -236,14 +236,10 @@ class organizer_print_slots_form extends moodleform {
             $content .= '" name="' . $column . '_cell">' . get_string("th_{$column}", 'organizer') . $icon;
             $content .= '</a>';
 
-            $imgattr = array(
-                    'src' => $OUTPUT->pix_url('t/switch_minus'),
-                    'alt' => get_string('hide'),
-                    'id' => "toggle_{$column}",
-                    'style' => 'cursor: pointer',
-                    'title' => get_string("th_{$column}", 'organizer'));
-
-            $content .= ' ' . html_writer::empty_tag('img', $imgattr);
+            $content .= ' ' . $OUTPUT->pix_icon('t/switch_minus', get_string('hide'), 'moodle',
+                array("id" => "toggle_{$column}", "style" => 'cursor: pointer',
+                    'title' => get_string("th_{$column}", 'organizer')
+            ));
 
             $cell = new html_table_cell($content);
             $cell->header = true;
