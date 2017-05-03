@@ -36,20 +36,20 @@ class queue_added extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'organizer_slot_queues';
     }
- 
+
     public static function get_name() {
         return get_string('eventqueueadded', 'mod_organizer');
     }
- 
+
     public function get_description() {
-    	return "The user with id {$this->userid} was added to the queue of a slot of the organizer activity " .
+        return "The user with id {$this->userid} was added to the queue of a slot of the organizer activity " .
             "with the course module id {$this->contextinstanceid}.";
     }
- 
+
     public function get_url() {
         return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
     }
- 
+
     public function get_legacy_logdata() {
         // Override if you are migrating an add_to_log() call.
         return array($this->courseid, 'mod_organizer', 'queue',

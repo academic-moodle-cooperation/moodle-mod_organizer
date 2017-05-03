@@ -72,21 +72,21 @@ class organizer_evaluate_slots_form extends moodleform {
 
         $now = time();
 
-		if($slotid = reset($data['slots'])) {
-			$slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-			$organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
-		}
+        if($slotid = reset($data['slots'])) {
+               $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
+               $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
+        }
 
         $i = 0;
         foreach ($data['slots'] as $slotid) {
 
-	        $mform->addElement('hidden', 'slots[' . $i++ . ']', $slotid);
- 
+            $mform->addElement('hidden', 'slots[' . $i++ . ']', $slotid);
+
             $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
 
             $appgroup = array();
             $checkboxname = "slotenable[{$slotid}]";
-			$appgroup[] = $mform->createElement('html', '<p>');
+            $appgroup[] = $mform->createElement('html', '<p>');
             $box = $appgroup[] = $mform->createElement('checkbox', $checkboxname);
             $mform->setDefault($checkboxname, true);
 
@@ -94,21 +94,21 @@ class organizer_evaluate_slots_form extends moodleform {
             $time = userdate($slot->starttime, get_string('timetemplate', 'organizer')) . ' - '
                     . userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
 
-           	$appgroup[] = $mform->createElement('static', '', '', " <strong>$date, $time</strong>");
+               $appgroup[] = $mform->createElement('static', '', '', " <strong>$date, $time</strong>");
 
             if ($slot->starttime > $now) {
-                $appgroup[] = $mform->createElement('html', 
+                $appgroup[] = $mform->createElement('html',
                         ' <em>(' . get_string('eval_not_occured', 'organizer') . ')</em>');
             }
 
-			$appgroup[] = $mform->createElement('html', '</p>');
+            $appgroup[] = $mform->createElement('html', '</p>');
 
             $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slotid));
 
             if ($organizer->isgrouporganizer && count($apps) != 0) {
                 $app = reset($apps);
                 $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
-                $appgroup[] = $mform->createElement('html', 
+                $appgroup[] = $mform->createElement('html',
                         "<br/><strong>$groupname</strong> " . get_string('eval_allow_new_appointments', 'organizer'));
                 $appgroup[] = $mform->createElement('advcheckbox', "allownewappointments", '', '',
                         array('group' => 0, 'class' => "allow{$slotid}"), array(0, 1));
@@ -131,8 +131,8 @@ class organizer_evaluate_slots_form extends moodleform {
                 $user = $DB->get_record('user', array('id' => $app->userid));
                 $name = "apps[{$app->id}]";
 
-				$finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $user->id);
-				
+                $finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $user->id);
+
                 $lastapp = organizer_get_last_user_appointment($organizer, $app->userid);
                 if ($lastapp->id != $app->id) {
                     $link = new moodle_url('/mod/organizer/view_action.php',
@@ -142,7 +142,7 @@ class organizer_evaluate_slots_form extends moodleform {
                     $title = $this->_organizer_get_name_link($user->id) . '<br/><em>' . get_string('cannot_eval', 'organizer')
                             . '</em> ' . html_writer::link($link, get_string('eval_link', 'organizer')) . '<br/>';
                     $appgroup = array();
-					$appgroup[] = $mform->createElement('static', '', '', $title);
+                    $appgroup[] = $mform->createElement('static', '', '', $title);
                 } else {
                     $title = $this->_organizer_get_name_link($user->id) . '<br/>';
 
@@ -153,21 +153,20 @@ class organizer_evaluate_slots_form extends moodleform {
 
                     $maxgrade = $organizer->grade;
                     if ($maxgrade != 0) {
-						
-	                    $grademenu = organizer_make_grades_menu_organizer($maxgrade);
-						if($finalgrade) {
-							$appgrade = $app->grade=="0" ? "-1" : $app->grade;
-							$appgroup[] = $mform->createElement('hidden', 'grade', $appgrade,
+
+                        $grademenu = organizer_make_grades_menu_organizer($maxgrade);
+                        if($finalgrade) {
+                                           $appgrade = $app->grade == "0" ? "-1" : $app->grade;
+                                           $appgroup[] = $mform->createElement('hidden', 'grade', $appgrade,
                                 array('class' => "allow{$slotid}"));
 
-    	                    $appgroup[] = $select = $mform->createElement('select', 'gradenothing', '', $grademenu, 
-																						array('disabled' => 'disabled'));
-		                    $appgroup[] = $mform->createElement('static', '', '', organizer_display_finalgrade($finalgrade));							
-						} else {
-	   	                    $appgroup[] = $mform->createElement('select', 'grade', '', $grademenu);
-						}					
+                                           $appgroup[] = $select = $mform->createElement('select', 'gradenothing', '', $grademenu,
+                                        array('disabled' => 'disabled'));
+                                        $appgroup[] = $mform->createElement('static', '', '', organizer_display_finalgrade($finalgrade));
+                        } else {
+                                           $appgroup[] = $mform->createElement('select', 'grade', '', $grademenu);
+                        }
                     }
-
 
                     $appgroup[] = $mform->createElement('html', '<span class="nobreak">');
                     $appgroup[] = $mform->createElement('static', '', '', get_string('eval_feedback', 'organizer'));
@@ -178,30 +177,30 @@ class organizer_evaluate_slots_form extends moodleform {
                         $appgroup[] = $mform->createElement('hidden', "allownewappointments", 0,
                                 array('class' => "allow{$slotid}"));
                     } else {
-		 				$appgroup[] = $mform->createElement('html', '<span class="nobreak">');
+                        $appgroup[] = $mform->createElement('html', '<span class="nobreak">');
                         $appgroup[] = $mform->createElement('static', '', '',
                                 get_string('eval_allow_new_appointments', 'organizer'));
-                       $appgroup[] = $mform->createElement('advcheckbox', "allownewappointments", '', '', null,
+                        $appgroup[] = $mform->createElement('advcheckbox', "allownewappointments", '', '', null,
                                 array(0, 1));
-		 				$appgroup[] = $mform->createElement('html', '</span>');
+                        $appgroup[] = $mform->createElement('html', '</span>');
                     }
 
                     $mform->disabledIf("{$name}[attended]", $checkboxname);
                     $mform->disabledIf("{$name}[grade]", $checkboxname);
                     $mform->disabledIf("{$name}[feedback]", $checkboxname);
                     $mform->disabledIf("{$name}[allownewappointments]", $checkboxname);
- 
+
                     $mform->setType("{$name}[attended]", PARAM_INT);
                     $mform->setDefault("{$name}[attended]", $app->attended);
 
                     if ($maxgrade != 0) {
                         $mform->setType("{$name}[grade]", PARAM_INT);
-						if($finalgrade) {
-                        	$mform->setType("{$name}[gradenothing]", PARAM_INT);
-	                        $mform->setDefault("{$name}[gradenothing]", $app->grade);
-						} else {
-	                        $mform->setDefault("{$name}[grade]", $app->grade);							
-						}
+                        if($finalgrade) {
+                                           $mform->setType("{$name}[gradenothing]", PARAM_INT);
+                                           $mform->setDefault("{$name}[gradenothing]", $app->grade);
+                        } else {
+                                           $mform->setDefault("{$name}[grade]", $app->grade);
+                        }
                     }
 
                     $mform->setType("{$name}[feedback]", PARAM_TEXT);
@@ -210,7 +209,6 @@ class organizer_evaluate_slots_form extends moodleform {
                     $mform->setType("{$name}[allownewappointments]", PARAM_INT);
                     $mform->setDefault("{$name}[allownewappointments]", $app->allownewappointments);
                 }
-
 
                 $mform->insertElementBefore($mform->createElement('group', $name, '', $appgroup, ' ', true), 'buttonar');
             }

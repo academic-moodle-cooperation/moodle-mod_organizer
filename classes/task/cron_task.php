@@ -27,8 +27,8 @@ namespace mod_organizer\task;
 class cron_task extends \core\task\scheduled_task {
 
     public function get_name() {
-    // Shown in admin screens
-    return get_string('crontaskname', 'mod_organizer');
+        // Shown in admin screens
+        return get_string('crontaskname', 'mod_organizer');
     }
 
     public function execute() {

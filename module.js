@@ -74,7 +74,7 @@ M.mod_organizer.init_add_form = function (Y) {
     var form1 = Y.one('#mform1');
 
     // for safari workaround
-    form1.all("input[type=submit]").on(['click','keypress'], function(e){        
+    form1.all("input[type=submit]").on(['click','keypress'], function(e){
         var sender = Y.one(e.target);
         var that = form1 = Y.one('#mform1');
         that.setData("callerid",sender.get('name'));
@@ -348,7 +348,7 @@ M.mod_organizer.init_infobox = function (Y) {
     }
 
     Y.one('#show_past_slots').on('click', toggle_past_slots);
-    Y.one('#show_my_slots_only').on('click', toggle_other_slots); //toggle_free_slots
+    Y.one('#show_my_slots_only').on('click', toggle_other_slots); // toggle_free_slots
     Y.one('#show_free_slots_only').on('click', toggle_free_slots);
     Y.one('#toggle_legend').on('click', toggle_legend);
 }

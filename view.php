@@ -44,11 +44,11 @@ require_login($instance->course, false, $instance->cm);
 $params = organizer_load_params($instance);
 
 if(isset($_SESSION["organizer_new_instance"])) {
-	if($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW && ("".$_SESSION["organizer_new_instance"]=="".$instance->organizer->id)) {
-		$_SESSION["organizer_new_instance"] = null;
-		$redirecturl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
-		redirect($redirecturl);
-	}
+    if($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW && ("".$_SESSION["organizer_new_instance"] == "".$instance->organizer->id)) {
+        $_SESSION["organizer_new_instance"] = null;
+        $redirecturl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
+        redirect($redirecturl);
+    }
 }
 
 $url = organizer_create_url($params);
@@ -73,8 +73,8 @@ $jsmodule = array(
 );
 $PAGE->requires->js_module($jsmodule);
 
-if($instance->organizer->hidecalendar!=1) {
-	organizer_add_calendar();
+if($instance->organizer->hidecalendar != 1) {
+    organizer_add_calendar();
 }
 
 echo $OUTPUT->header();
@@ -198,11 +198,11 @@ function organizer_load_params($instance) {
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             $params['sort'] = optional_param('sort', 'status', PARAM_ALPHA);
             break;
-		case ORGANIZER_ASSIGNMENT_VIEW:
+        case ORGANIZER_ASSIGNMENT_VIEW:
             $params['assignid'] = required_param('assignid', PARAM_INT);
             $params['sort'] = optional_param('sort', 'datetime', PARAM_ALPHA);
-            break;    
-	}
+            break;
+    }
 
     $params['slots'] = optional_param_array('slots', array(), PARAM_INT);
     $params['pdir'] = optional_param('pdir', 'ASC', PARAM_ALPHA);

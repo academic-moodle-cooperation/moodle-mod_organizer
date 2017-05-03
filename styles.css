@@ -141,7 +141,7 @@
 
 #organizer_main_cointainer a.action{
     white-space:nowrap;
-	display: block;
+    display: block;
 }
 
 #organizer_main_cointainer a.disabled{
@@ -149,8 +149,7 @@
 }
 
 #organizer_main_cointainer .finalgrade {
-	margin-left: 0.1em;
+    margin-left: 0.1em;
     cursor:help;
-	color: red;
+    color: red;
 }
-

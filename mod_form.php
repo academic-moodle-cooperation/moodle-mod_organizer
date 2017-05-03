@@ -73,7 +73,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
         $this->standard_intro_elements();
-		
+
         // MY ELEMENTS.
         $mform->addElement('header', 'availability', get_string('availability', 'organizer'));
 
@@ -97,9 +97,9 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->setExpanded('availability');
 
         $this->standard_grading_coursemodule_elements();
-        
+
         if (isset($organizerconfig->maximumgrade)) {
-	  		$mform->setDefault('grade', $organizerconfig->maximumgrade);
+            $mform->setDefault('grade', $organizerconfig->maximumgrade);
         }
         $mform->addElement('header', 'organizercommon', get_string('organizercommon', 'organizer'));
 
@@ -119,11 +119,11 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->setType('visibility', PARAM_INT);
         $mform->setDefault('visibility', ORGANIZER_VISIBILITY_SLOT);
         $mform->addHelpButton('visibility', 'visibility', 'organizer');
-         
-		 // Waiting list
-		$queuegroup = array();
+
+        // Waiting list
+        $queuegroup = array();
         $queuegroup[] = $mform->createElement('advcheckbox', 'queue',
-        		get_string('queue', 'organizer'), null, null, array(0, 1));
+                get_string('queue', 'organizer'), null, null, array(0, 1));
         $mform->setType('queue', PARAM_INT);
         $mform->addGroup($queuegroup, 'queuegroup', get_string('queue', 'organizer'), null, false);
         $mform->addHelpButton('queuegroup', 'queue', 'organizer');
@@ -137,12 +137,12 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->setDefault('emailteachers', $organizerconfig->emailteachers);
         $mform->addHelpButton('emailteachers', 'emailteachers', 'organizer');
 
-		$calendargroup = array();
+        $calendargroup = array();
         $calendargroup[] = $mform->createElement('advcheckbox', 'hidecalendar',
-        		get_string('hidecalendar', 'organizer'), null, null, array(0, 1));
+                get_string('hidecalendar', 'organizer'), null, null, array(0, 1));
         $mform->setType('calendar', PARAM_INT);
         $mform->setDefault('hidecalendar', 0);
-       	$mform->addGroup($calendargroup, 'calendargroup', get_string('hidecalendar', 'organizer'), null, false);
+           $mform->addGroup($calendargroup, 'calendargroup', get_string('hidecalendar', 'organizer'), null, false);
         $mform->addHelpButton('calendargroup', 'hidecalendar', 'organizer');
 
         if ($organizerconfig->absolutedeadline != 'never') {
@@ -265,13 +265,13 @@ class mod_organizer_mod_form extends moodleform_mod {
     }
 
     private function _get_visibilities() {
- 
+
         $visibilities = array();
-		$visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('visibility_all','organizer');
-		$visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('visibility_anonymous','organizer');
-		$visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('visibility_slot','organizer');
- 
+        $visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('visibility_all','organizer');
+        $visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('visibility_anonymous','organizer');
+        $visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('visibility_slot','organizer');
+
         return $visibilities;
     }
-	
+
 }

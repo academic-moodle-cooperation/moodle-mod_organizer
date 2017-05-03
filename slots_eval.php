@@ -69,7 +69,7 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 require_capability('mod/organizer:evalslots', $context);
 
 if(!is_null($slot)){
-	$slots = array($slot);
+    $slots = array($slot);
 }
 
 if (!$slots) {

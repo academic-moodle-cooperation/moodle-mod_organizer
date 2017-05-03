@@ -626,8 +626,7 @@ $string['edit_notify_teacher:smallmessage'] = 'Die Details des Zeitslots am {$a-
 // edit teacher group
 
 $string['edit_notify_teacher:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] -  Termindetails verändert';
-$string['edit_notify_teacher:group:fullmessage'] =
-'Hallo {$a->receivername}!
+$string['edit_notify_teacher:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, sind die Details des Zeitslots am {$a->date} um {$a->time} von {$a->sendername} verändert worden.
 
@@ -709,8 +708,7 @@ $string['group_registration_notify:student:reregister:group:smallmessage'] = '{$
 // assign student
 
 $string['assign_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin durch Trainer/in zugewiesen';
-$string['assign_notify_student:fullmessage'] =
-'Hallo {$a->receivername}!
+$string['assign_notify_student:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen der Zeitslot mit {$a->slot_teacher} am {$a->date} um {$a->time} im/in {$a->location} durch {$a->sendername} zugewiesen.
 
@@ -724,8 +722,7 @@ $string['assign_notify_student:smallmessage'] = 'Termin am {$a->date} um {$a->ti
 // assign student group
 
 $string['assign_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppen-Termin durch Trainer/in zugewiesen';
-$string['assign_notify_student:group:fullmessage'] =
-'Hallo {$a->receivername}!
+$string['assign_notify_student:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihrer Gruppe {$a->groupname} der Zeitslot mit {$a->slot_teacher} am {$a->date} um {$a->time} im/in {$a->location} durch {$a->sendername} zugewiesen.
 
@@ -739,8 +736,7 @@ $string['assign_notify_student:group:smallmessage'] = 'Gruppen-Termin am {$a->da
 // assign teacher
 
 $string['assign_notify_teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Termin zugewiesen';
-$string['assign_notify_teacher:fullmessage'] =
-'Hallo {$a->receivername}!
+$string['assign_notify_teacher:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen {$a->participantname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} von {$a->sendername} zugewiesen.
 
@@ -754,8 +750,7 @@ $string['assign_notify_teacher:smallmessage'] = 'Termin am {$a->date} um {$a->ti
 // assign teacher group
 
 $string['assign_notify_teacher:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Gruppen-Termin zugewiesen';
-$string['assign_notify_teacher:group:fullmessage'] =
-'Hallo {$a->receivername}!
+$string['assign_notify_teacher:group:fullmessage'] = 'Hallo {$a->receivername}!
 
 Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen die Gruppe {$a->groupname} für den Zeitslot am {$a->date} um {$a->time} im/in {$a->location} von {$a->sendername} zugewiesen.
 

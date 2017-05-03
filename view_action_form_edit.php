@@ -158,11 +158,10 @@ class organizer_edit_slots_form extends moodleform {
             }
         }
 
-
-		if (!isset($defaults['visibility']) && !$defset['visibility']) {
-			$instance = organizer_get_course_module_data_new();
-			$defaults['visibility'] = $instance->organizer->visibility;
-		}
+        if (!isset($defaults['visibility']) && !$defset['visibility']) {
+               $instance = organizer_get_course_module_data_new();
+               $defaults['visibility'] = $instance->organizer->visibility;
+        }
 
         return $defaults;
     }
@@ -394,7 +393,7 @@ class organizer_edit_slots_form extends moodleform {
     private function _load_teachers() {
         $context = organizer_get_context();
 
-		$teachersraw = get_users_by_capability($context, 'mod/organizer:leadslots');
+        $teachersraw = get_users_by_capability($context, 'mod/organizer:leadslots');
 
         $teachers = array();
         foreach ($teachersraw as $teacher) {
@@ -431,22 +430,22 @@ class organizer_edit_slots_form extends moodleform {
             return 1;
         }
     }
-	
+
     private function _get_visibilities() {
- 
+
         $visibilities = array();
-		$visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('slot_visible','organizer');
-		$visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('slot_anonymous','organizer');
-		$visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('slot_slotvisible','organizer');
- 
+        $visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('slot_visible','organizer');
+        $visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('slot_anonymous','organizer');
+        $visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('slot_slotvisible','organizer');
+
         return $visibilities;
     }
-	
-	private function _get_instance_visibility() {
-	
+
+    private function _get_instance_visibility() {
+
         $organizer = organizer_get_organizer();
-		
-		return	$organizer->visibility;
-	}
-	
+
+        return    $organizer->visibility;
+    }
+
 }

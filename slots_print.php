@@ -319,8 +319,7 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
         $dosort = "";
     }
 
-    $allowsubmissionsfromdate = $allowsubmissionsfromdate ?
-        userdate($allowsubmissionsfromdate) : get_string('pdf_notactive', 'organizer');
+    $allowsubmissionsfromdate = $allowsubmissionsfromdate ? userdate($allowsubmissionsfromdate) : get_string('pdf_notactive', 'organizer');
     $timedue = $timedue ? userdate($timedue) : get_string('pdf_notactive', 'organizer');
 
     $mpdftable = new MTablePDF($orientation, $columnwitdh);
@@ -336,7 +335,7 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
     $mpdftable->setColumnFormat($columnformats);
     $entries = organizer_fetch_table_entries($slots, $dosort);
     $rowspan = 0;
-	$isgroupmode = organizer_is_group_mode();
+    $isgroupmode = organizer_is_group_mode();
     foreach ($entries as $entry) {
         $row = array();
         if ($rowspan == 0) {
@@ -377,7 +376,8 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
                         $row[] = null;
                     } else {
                         $groupname = isset($entry->groupname) ? $entry->groupname : '';
-						if ($organizer->isgrouporganizer) $groupname .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
+                        if ($organizer->isgrouporganizer) { $groupname .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
+                        }
                         $row[] = array('data' => $groupname, 'rowspan' => $rowspan - 1);
                     }
                     break;
@@ -387,7 +387,8 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
                     $a->firstname = $entry->firstname;
                     $a->lastname = $entry->lastname;
                     $name = get_string('fullname_template', 'organizer', $a);
-					if (!$organizer->isgrouporganizer) $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
+                    if (!$organizer->isgrouporganizer) { $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
+                    }
                     $row[] = array('data' => $name, 'rowspan' => 0);
                     break;
                 case 'email':

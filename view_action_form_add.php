@@ -165,7 +165,7 @@ class organizer_add_slots_form extends moodleform {
         }
         for ($newslot_index = 0; $newslot_index < $totalslots; $newslot_index++) {
             $slotgroup = $this->_create_day_slot_group($newslot_index);
-            $grouplabel = get_string("weekdaylabel", "organizer") . " " . ($newslot_index+1);
+            $grouplabel = get_string("weekdaylabel", "organizer") . " " . ($newslot_index + 1);
             $mform->insertElementBefore($mform->createElement('group', "slotgroup{$newslot_index}",
                                         $grouplabel, $slotgroup, ORGANIZER_SPACING, false), 'other');
         }
@@ -265,7 +265,6 @@ class organizer_add_slots_form extends moodleform {
                 }
             }
 
-
             // are there overlapping slots? Is the gap considered?
             for ($i = 0; $i < count($slots); $i++) {
                 $currentslot = $slots[$i];
@@ -276,10 +275,10 @@ class organizer_add_slots_form extends moodleform {
                 for ($j = 0; $j < $i; $j++) {
                     $otherslot = $slots[$j];
                     if (!in_array($j, $invalidslots) && $currentslot['day'] == $otherslot['day']
-                    && ($this->_between($currentslot['from'], $otherslot['from']-$gap, $otherslot['to']+$gap)
-                            || $this->_between($currentslot['to'], $otherslot['from']-$gap, $otherslot['to']+$gap)
-                            || $this->_between($otherslot['from'], $currentslot['from']-$gap, $currentslot['to']+$gap)
-                            || $this->_between($otherslot['to'], $currentslot['from']-$gap, $currentslot['to']+$gap))) {
+                    && ($this->_between($currentslot['from'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
+                            || $this->_between($currentslot['to'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
+                            || $this->_between($otherslot['from'], $currentslot['from'] - $gap, $currentslot['to'] + $gap)
+                            || $this->_between($otherslot['to'], $currentslot['from'] - $gap, $currentslot['to'] + $gap))) {
 
                         $message .= '(' . $this->pickeroptions[$otherslot['from']] . '-'
                                 . $this->pickeroptions[$otherslot['to']] . '), ';
@@ -295,7 +294,8 @@ class organizer_add_slots_form extends moodleform {
         return $errors;
     }
 
-    private function _validation_step1($data) { // checks form to submit
+    private function _validation_step1($data) {
+        // checks form to submit
 
         // maxparticipants not int or negative?
         if (isset($data['isgrouporganizer']) && $data['isgrouporganizer'] == 0 &&
@@ -308,10 +308,10 @@ class organizer_add_slots_form extends moodleform {
         // notificationtime not int or negative?
         if ($data['location'] == ''
         || !($data['duration']['number'] * $data['duration']['timeunit'] % 60 == 0)
-        || $data['duration']['number'] <= 0 
+        || $data['duration']['number'] <= 0
         || !($data['gap']['number'] * $data['gap']['timeunit'] % 60 == 0)
-        || $data['gap']['number'] < 0 
-		|| !$this->_converts_to_int($data['notificationtime']['number'])
+        || $data['gap']['number'] < 0
+        || !$this->_converts_to_int($data['notificationtime']['number'])
         || $data['notificationtime']['number'] <= 0) {
             return false;
         }
@@ -333,11 +333,10 @@ class organizer_add_slots_form extends moodleform {
             // is "from" before "to"?
             for ($i = 0; $i < count($slots); $i++) {
                 $slot = $slots[$i];
-                if ($slot['day'] !=-1 && ($slot['from'] >= $slot['to'])) {
+                if ($slot['day'] != -1 && ($slot['from'] >= $slot['to'])) {
                     return false;
                 }
             }
-
 
             // are there overlapping slots? Is the gap considered?
             for ($i = 0; $i < count($slots); $i++) {
@@ -346,10 +345,10 @@ class organizer_add_slots_form extends moodleform {
                     $otherslot = $slots[$j];
                     if ($currentslot['day'] == $otherslot['day']
                         && ($currentslot['day'] != -1 && $otherslot['day'] != -1)
-                        && ($this->_between($currentslot['from'], $otherslot['from']-$gap, $otherslot['to']+$gap)
-                            || $this->_between($currentslot['to'], $otherslot['from']-$gap, $otherslot['to']+$gap)
-                            || $this->_between($otherslot['from'], $currentslot['from']-$gap, $currentslot['to']+$gap)
-                            || $this->_between($otherslot['to'], $currentslot['from']-$gap, $currentslot['to']+$gap)))
+                        && ($this->_between($currentslot['from'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
+                            || $this->_between($currentslot['to'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
+                            || $this->_between($otherslot['from'], $currentslot['from'] - $gap, $currentslot['to'] + $gap)
+                            || $this->_between($otherslot['to'], $currentslot['from'] - $gap, $currentslot['to'] + $gap)))
                     {
                         return false;
                     }
@@ -374,12 +373,12 @@ class organizer_add_slots_form extends moodleform {
      * called from definition if adday-button was submitted
      */
     private function _add_slot_fields($newslot_next) {
-       $mform = &$this->_form;
+        $mform = &$this->_form;
 
         $totalslots = $newslot_next + ORGANIZER_NUM_DAYS_ADD;
         for ($slot = $newslot_next; $slot < $totalslots; $slot++) {
                 $slotgroup = $this->_create_day_slot_group($slot);
-                $grouplabel = get_string("weekdaylabel", "organizer") . " " . ($slot+1);
+                $grouplabel = get_string("weekdaylabel", "organizer") . " " . ($slot + 1);
                 $mform->insertElementBefore($mform->createElement('group', 'organizer_slotgroup{$day}',
                     $grouplabel, $slotgroup, ORGANIZER_SPACING, false), 'other');
         }
@@ -411,20 +410,20 @@ class organizer_add_slots_form extends moodleform {
 
 
     private function _get_visibilities() {
- 
+
         $visibilities = array();
-		$visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('visibility_all','organizer');
-		$visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('visibility_anonymous','organizer');
-		$visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('visibility_slot','organizer');
- 
+        $visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('visibility_all','organizer');
+        $visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('visibility_anonymous','organizer');
+        $visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('visibility_slot','organizer');
+
         return $visibilities;
     }
 
     private function _get_teacher_list() {
         $context = organizer_get_context();
 
-		$teachersraw = get_users_by_capability($context, 'mod/organizer:leadslots');
-		
+        $teachersraw = get_users_by_capability($context, 'mod/organizer:leadslots');
+
         $teachers = array();
         foreach ($teachersraw as $teacher) {
             $a = new stdClass();
@@ -492,12 +491,12 @@ class organizer_add_slots_form extends moodleform {
         $mform->addElement('hidden', 'scrolly', isset($data->scrolly) ? $data->scrolly : 0);
         $mform->setType('scrolly', PARAM_BOOL);
     }
-	
-	private function _get_instance_visibility() {
-	
-       $organizer = organizer_get_organizer();
-		
-		return	$organizer->visibility;
-	}
+
+    private function _get_instance_visibility() {
+
+          $organizer = organizer_get_organizer();
+
+        return    $organizer->visibility;
+    }
 
 }

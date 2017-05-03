@@ -95,8 +95,7 @@ foreach ($courses as $course) {
             $organizer->emailteachers = $scheduler->emailteachers;
             $organizer->allowregistrationsfromdate = null;
             $organizer->duedate = $scheduler->changeuntil > 0 ? $scheduler->changeuntil : null;
-            $organizer->relativedeadline = $scheduler->changebefore > 0 ?
-                $scheduler->changebefore : ORGANIZER_DEFAULT_ORGANIZER_RELATIVEDEADLINE;
+            $organizer->relativedeadline = $scheduler->changebefore > 0 ? $scheduler->changebefore : ORGANIZER_DEFAULT_ORGANIZER_RELATIVEDEADLINE;
             $organizer->grade = ORGANIZER_DEFAULT_ORGANIZER_GRADE;
 
             echo "done.\n";

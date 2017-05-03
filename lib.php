@@ -63,8 +63,8 @@ function organizer_add_instance($organizer) {
     $organizer->id = $DB->insert_record('organizer', $organizer);
 
     organizer_grade_item_update($organizer);
-	
-	$_SESSION["organizer_new_instance"] = $organizer->id;
+
+    $_SESSION["organizer_new_instance"] = $organizer->id;
 
     return $organizer->id;
 }
@@ -91,9 +91,9 @@ function organizer_update_instance($organizer) {
         $organizer->duedate = null;
     }
 
-	// waiting list
+    // waiting list
     if (isset($organizer->queue) && $organizer->queue == 0) {
-		organizer_remove_waitingqueueentries($organizer);
+        organizer_remove_waitingqueueentries($organizer);
     }
 
     organizer_grade_item_update($organizer);
@@ -374,17 +374,17 @@ function organizer_display_grade($organizer, $grade, $userid) {
 
     if ($organizer->grade >= 0) {    // Normal number.
         if ($grade == -1 || $grade == null) {
-			if($finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid)) {
-				return organizer_display_finalgrade($finalgrade);
-			} else {
-            	return $nograde;
-			}
+            if($finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid)) {
+                      return organizer_display_finalgrade($finalgrade);
+            } else {
+                      return $nograde;
+            }
         } else {
             $returnstr = organizer_clean_num($grade) . '/' . organizer_clean_num($organizer->grade);
-			if($finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid)) {
-				$returnstr .=  organizer_display_finalgrade($finalgrade);
-			}
-			return $returnstr;
+            if($finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid)) {
+                      $returnstr .= organizer_display_finalgrade($finalgrade);
+            }
+            return $returnstr;
         }
     } else {    // Scale.
         if (empty($scalegrades[$organizer->id])) {
@@ -407,33 +407,35 @@ function organizer_display_grade($organizer, $grade, $userid) {
 
 function organizer_display_finalgrade($finalgrade) {
     $nograde = get_string('nograde');
-	
-	if($finalgrade) {
-		return html_writer::span('(' . $finalgrade . ')', 'finalgrade', array('title' => get_string('finalgrade', 'organizer')));
-	} else {
-		return $nograde;	
-	}
+
+    if($finalgrade) {
+        return html_writer::span('(' . $finalgrade . ')', 'finalgrade', array('title' => get_string('finalgrade', 'organizer')));
+    } else {
+        return $nograde;
+    }
 }
 
 function organizer_get_finalgrade_overwritten($organizerid, $userid) {
     global $DB;
 
-	$params = array('organizerid' => $organizerid, 'userid' => $userid);
-	$query = "SELECT gg.rawgrade, gg.finalgrade FROM {grade_items} gi 
+    $params = array('organizerid' => $organizerid, 'userid' => $userid);
+    $query = "SELECT gg.rawgrade, gg.finalgrade FROM {grade_items} gi 
 			inner join {grade_grades} gg on gg.itemid = gi.id 
 			where gi.itemtype = 'mod' and gi.itemmodule = 'organizer' 
 			and gi.iteminstance = :organizerid and gg.userid = :userid";
-	if($grades = $DB->get_record_sql($query, $params)) {	
-		if(is_null($grades->rawgrade)) $grades->rawgrade = 0;
-		if(is_null($grades->finalgrade)) $grades->finalgrade = 0;
-		if($grades->rawgrade != $grades->finalgrade) {
-			return organizer_clean_num($grades->finalgrade);
-		} else {
-			return false;	
-		}
-	} else {
-		return false;
-	}
+    if($grades = $DB->get_record_sql($query, $params)) {
+        if(is_null($grades->rawgrade)) { $grades->rawgrade = 0;
+        }
+        if(is_null($grades->finalgrade)) { $grades->finalgrade = 0;
+        }
+        if($grades->rawgrade != $grades->finalgrade) {
+            return organizer_clean_num($grades->finalgrade);
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
 }
 
 // Tscpr: we can strip the trailing _organizer in this function name...
@@ -608,11 +610,11 @@ function organizer_fetch_group($organizer, $userid = null) {
         $organizer = $DB->get_record('organizer', array('id' => $organizer));
     }
 
-	$usergrouparrays = groups_get_user_groups($organizer->course, $userid);
-	$usergroups = reset($usergrouparrays);
-	$usergroup = reset($usergroups);
-	$group = groups_get_group($usergroup);
-	
+    $usergrouparrays = groups_get_user_groups($organizer->course, $userid);
+    $usergroups = reset($usergrouparrays);
+    $usergroup = reset($usergroups);
+    $group = groups_get_group($usergroup);
+
     return $group;
 }
 
@@ -640,8 +642,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
             $a->groupname = $group->name;
-            $completedapp = get_string('mymoodle_completed_app_group', 'organizer', $a) . ($forindex ? '' :
-                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+            $completedapp = get_string('mymoodle_completed_app_group', 'organizer', $a) . ($forindex ? '' : "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $completedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -655,8 +656,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
             $a->groupname = $group->name;
 
-            $missedapp = get_string('mymoodle_missed_app_group', 'organizer', $a) . ($forindex ? '' :
-                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+            $missedapp = get_string('mymoodle_missed_app_group', 'organizer', $a) . ($forindex ? '' : "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $missedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -718,8 +718,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a = new stdClass();
             $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-            $completedapp = get_string('mymoodle_completed_app', 'organizer', $a) . ($forindex ? '' :
-                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+            $completedapp = get_string('mymoodle_completed_app', 'organizer', $a) . ($forindex ? '' : "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $completedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -730,8 +729,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a = new stdClass();
             $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-            $missedapp = get_string('mymoodle_missed_app', 'organizer', $a) . ($forindex ? '' :
-                "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+            $missedapp = get_string('mymoodle_missed_app', 'organizer', $a) . ($forindex ? '' : "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $missedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -1087,9 +1085,9 @@ function organizer_get_coursemodule_info($coursemodule) {
 
 // waiting list
 function organizer_remove_waitingqueueentries($organizer) {
-	global $DB;
+    global $DB;
 
-	$query = "slotid in (select id from {organizer_slots} where organizerid = ".$organizer->id.")";
-	$ok = $DB->delete_records_select('organizer_slot_queues', $query);
-	return $ok;
+    $query = "slotid in (select id from {organizer_slots} where organizerid = ".$organizer->id.")";
+    $ok = $DB->delete_records_select('organizer_slot_queues', $query);
+    return $ok;
 }

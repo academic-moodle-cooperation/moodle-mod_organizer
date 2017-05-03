@@ -64,9 +64,9 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 
 $groupid = null;
 $participantid = null;
 if (organizer_is_group_mode()) {
-	$groupid = $assignid;
+    $groupid = $assignid;
 } else {
-	$participantid = $assignid;
+    $participantid = $assignid;
 }
 
 $appointment_id = organizer_register_appointment($slotid, $groupid, $participantid, false, $USER->id);
@@ -75,11 +75,11 @@ $data = new stdClass();
 $data->selectedslot = $slotid;
 
 if (organizer_is_group_mode()) {
-	$data->group = $groupid;
-	$data->participant = false;
+    $data->group = $groupid;
+    $data->participant = false;
 } else {
-	$data->participant = $participantid;
-	$data->group = false;
+    $data->participant = $participantid;
+    $data->group = false;
 }
 organizer_prepare_and_send_message($data, 'assign_notify_student'); // Message.
 organizer_prepare_and_send_message($data, 'assign_notify_teacher'); // Message.
@@ -87,8 +87,8 @@ organizer_prepare_and_send_message($data, 'assign_notify_teacher'); // Message.
 $newurl = $redirecturl->out();
 
 $event = \mod_organizer\event\appointment_assigned::create(array(
-		'objectid' => $PAGE->cm->id,
-		'context' => $PAGE->context
+        'objectid' => $PAGE->cm->id,
+        'context' => $PAGE->context
 ));
 $event->trigger();
 

@@ -79,46 +79,46 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
 if($bulkaction) {
-	if(!$slots) {
-	    $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
-    	redirect($redirecturl);
-	} else {
-		$slotsarray="";
-		foreach($slots as $slot) {
-			$slotsarray .= "&slots[]=".$slot;
-		}
-	    $organizerexpired = isset($organizer->duedate) && $organizer->duedate - time() < 0;
-		switch($bulkaction) {
-			case 'edit':
-			    require_capability('mod/organizer:editslots', $context);
-				$redirecturl = new moodle_url('/mod/organizer/slots_edit.php', 
-						array('id' => $cm->id, 'mode' => $mode)) . $slotsarray;
-				redirect($redirecturl);
-				break;
-			case 'delete':
-			    require_capability('mod/organizer:deleteslots', $context);
-				$redirecturl = new moodle_url('/mod/organizer/slots_delete.php', 
-						array('id' => $cm->id, 'mode' => $mode)) . $slotsarray;
-				redirect($redirecturl);
-				break;
-			case 'print':
-			    require_capability('mod/organizer:printslots', $context);
-				$redirecturl = new moodle_url('/mod/organizer/slots_print.php', 
-						array('id' => $cm->id, 'mode' => $mode)) . $slotsarray;
-				redirect($redirecturl);
-				break;
-			case 'eval':
-			    require_capability('mod/organizer:evalslots', $context);
-				$redirecturl = new moodle_url('/mod/organizer/slots_eval.php', 
-						array('id' => $cm->id, 'mode' => $mode)) . $slotsarray;
-				redirect($redirecturl);
-				break;
-			default:
-				print_error('Unknown bulkaction!');
-				die;	
-		}
-	}
-			
+    if(!$slots) {
+        $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+        redirect($redirecturl);
+    } else {
+        $slotsarray = "";
+        foreach($slots as $slot) {
+            $slotsarray .= "&slots[]=".$slot;
+        }
+        $organizerexpired = isset($organizer->duedate) && $organizer->duedate - time() < 0;
+        switch($bulkaction) {
+            case 'edit':
+                require_capability('mod/organizer:editslots', $context);
+                $redirecturl = new moodle_url('/mod/organizer/slots_edit.php',
+                  array('id' => $cm->id, 'mode' => $mode)) . $slotsarray;
+                redirect($redirecturl);
+             break;
+            case 'delete':
+                require_capability('mod/organizer:deleteslots', $context);
+                $redirecturl = new moodle_url('/mod/organizer/slots_delete.php',
+                  array('id' => $cm->id, 'mode' => $mode)) . $slotsarray;
+                redirect($redirecturl);
+             break;
+            case 'print':
+                require_capability('mod/organizer:printslots', $context);
+                $redirecturl = new moodle_url('/mod/organizer/slots_print.php',
+                  array('id' => $cm->id, 'mode' => $mode)) . $slotsarray;
+                redirect($redirecturl);
+             break;
+            case 'eval':
+                require_capability('mod/organizer:evalslots', $context);
+                $redirecturl = new moodle_url('/mod/organizer/slots_eval.php',
+                  array('id' => $cm->id, 'mode' => $mode)) . $slotsarray;
+                redirect($redirecturl);
+             break;
+            default:
+                print_error('Unknown bulkaction!');
+             die;
+        }
+    }
+
 }
 
 if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {  // Waiting list
@@ -137,25 +137,25 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
     $success = organizer_register_appointment($slot, $groupid);
 
     if ($success) {
-		// Waiting list
+        // Waiting list
         if ($action == ORGANIZER_ACTION_QUEUE) {
             $event = \mod_organizer\event\queue_added::create(array(
                     'objectid' => $PAGE->cm->id,
                     'context' => $PAGE->context
             ));
-			organizer_prepare_and_send_message($slot, 'register_notify_teacher:queue'); // Message.
-			if ($group) {
-				organizer_prepare_and_send_message($slot, 'group_registration_notify:student:queue');
-			}
+            organizer_prepare_and_send_message($slot, 'register_notify_teacher:queue'); // Message.
+            if ($group) {
+                      organizer_prepare_and_send_message($slot, 'group_registration_notify:student:queue');
+            }
         } else {
             $event = \mod_organizer\event\appointment_added::create(array(
                     'objectid' => $PAGE->cm->id,
                     'context' => $PAGE->context
             ));
-			organizer_prepare_and_send_message($slot, 'register_notify_teacher:register'); // Message.
-			if ($group) {
-				organizer_prepare_and_send_message($slot, 'group_registration_notify:student:register');
-			}
+            organizer_prepare_and_send_message($slot, 'register_notify_teacher:register'); // Message.
+            if ($group) {
+                      organizer_prepare_and_send_message($slot, 'group_registration_notify:student:register');
+            }
         }
         $event->trigger();
 
@@ -184,36 +184,36 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
     $group = organizer_fetch_my_group();
     $groupid = $group ? $group->id : 0;
 
-	
-	if ($action == ORGANIZER_ACTION_UNREGISTER) {
-	    $success = organizer_unregister_appointment($slot, $groupid, $organizer->id);
-	} else {
-		$success = organizer_delete_from_queue($slot, $USER->id, $groupid);
-	}
 
-	if($success) {
-		if ($action == ORGANIZER_ACTION_UNREGISTER) {
-			$event = \mod_organizer\event\appointment_removed::create(array(
-					'objectid' => $PAGE->cm->id,
-					'context' => $PAGE->context
-			));
-			organizer_prepare_and_send_message($slot, 'register_notify_teacher:unregister'); // Message.
-			if ($group) {
-				organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unregister');
-			}
-		} else {  // Waiting list
-			$event = \mod_organizer\event\queue_removed::create(array(
-					'objectid' => $PAGE->cm->id,
-					'context' => $PAGE->context
-			));
-			organizer_prepare_and_send_message($slot, 'register_notify_teacher:unqueue'); // Message.
-			if ($group) {
-				organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unqueue');
-			}
-		}
-		$event->trigger();
-	
-	
+    if ($action == ORGANIZER_ACTION_UNREGISTER) {
+        $success = organizer_unregister_appointment($slot, $groupid, $organizer->id);
+    } else {
+        $success = organizer_delete_from_queue($slot, $USER->id, $groupid);
+    }
+
+    if($success) {
+        if ($action == ORGANIZER_ACTION_UNREGISTER) {
+            $event = \mod_organizer\event\appointment_removed::create(array(
+              'objectid' => $PAGE->cm->id,
+              'context' => $PAGE->context
+            ));
+            organizer_prepare_and_send_message($slot, 'register_notify_teacher:unregister'); // Message.
+            if ($group) {
+                organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unregister');
+            }
+        } else {  // Waiting list
+            $event = \mod_organizer\event\queue_removed::create(array(
+              'objectid' => $PAGE->cm->id,
+              'context' => $PAGE->context
+            ));
+            organizer_prepare_and_send_message($slot, 'register_notify_teacher:unqueue'); // Message.
+            if ($group) {
+                organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unqueue');
+            }
+        }
+        $event->trigger();
+
+
     } else {
         if ($action == ORGANIZER_ACTION_UNREGISTER) {
             $redirecturl->param('messages[]', 'message_error_unknown_unregister');
@@ -310,12 +310,12 @@ function organizer_organizer_student_action_allowed($action, $slot) {
     $disabled = $myslotpending || $organizerdisabled ||
         $slotdisabled || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
-	// Waiting list
-	$isalreadyinqueue = false;
+    // Waiting list
+    $isalreadyinqueue = false;
     if ($organizer->isgrouporganizer) {
-    	$isalreadyinqueue = $slotx->is_group_in_queue();
+        $isalreadyinqueue = $slotx->is_group_in_queue();
     } else {
-    	$isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
+        $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
     }
 
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
@@ -338,12 +338,12 @@ function organizer_organizer_student_action_allowed($action, $slot) {
     }
 
     // Waiting list
-	$result = !$disabled && ($action == $allowedaction);
+    $result = !$disabled && ($action == $allowedaction);
     if (!$result && $isqueueable &&  $action == ORGANIZER_ACTION_QUEUE) {
-        $result = true;     
+        $result = true;
     }
     if (!$result && $isalreadyinqueue && $action == ORGANIZER_ACTION_UNQUEUE) {
-    	$result = true;
+        $result = true;
     }
 
     return $result;

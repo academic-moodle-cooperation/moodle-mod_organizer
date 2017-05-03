@@ -115,7 +115,7 @@ function organizer_make_legend($params) {
             $output .= organizer_make_cell(
                     organizer_get_icon_plus_string('organizer_expired', get_string('reg_status_organizer_expired', 'organizer')), 'width: 20%');
             $output .= html_writer::end_tag('tr');
-           $output .= html_writer::start_tag('tr');
+            $output .= html_writer::start_tag('tr');
             $output .= organizer_make_cell(
                     organizer_get_icon_plus_string('anon', get_string('legend_anonymous', 'organizer'), get_string('legend_anonymous', 'organizer')), 'width: 20%');
             $output .= organizer_make_cell(

@@ -38,7 +38,6 @@ define(['jquery', 'core/log'], function($, log) {
 
     };
 
-
     var instance = new Adddayslot();
 
     instance.init = function(param) { // Parameter 'param' contains the parameter values!
@@ -49,32 +48,31 @@ define(['jquery', 'core/log'], function($, log) {
         log.info(instance.totalslots, "totalslots");
         log.info(instance.displayallslots, "displayallslots");
 
-        if(instance.displayallslots==0) {
+        if(instance.displayallslots == 0) {
 
-            for(var i=instance.totalslots-1; i>0; i--) {
-                if($('#id_newslots_' + String(i) + '_day').val()==-1) {
-                    $( "#id_newslots_" + String(i) + "_day" ).closest( ".form-group.row.fitem" ).hide(); //boost
-                    $( "#fgroup_id_slotgroup" + String(i)).hide(); //clean
+            for(var i = instance.totalslots - 1; i > 0; i--) {
+                if($('#id_newslots_' + String(i) + '_day').val() == -1) {
+                    $( "#id_newslots_" + String(i) + "_day" ).closest( ".form-group.row.fitem" ).hide(); // boost
+                    $( "#fgroup_id_slotgroup" + String(i)).hide(); // clean
                 } else {
                     break;
                 }
             }
-            if(i<instance.totalslots-1) {
+            if(i < instance.totalslots - 1) {
                 $('#id_addday').hide();
             }
 
             $('[id^=id_newslots_]').change(function () {
-                var id =$(this).attr("id");
+                var id = $(this).attr("id");
                 var nextindex = parseInt(id.split("_")[2]) + 1;
                 $( "#id_newslots_" + String(nextindex) + "_day" ).closest( ".form-group.row.fitem" ).show(); // boost
                 $( "#fgroup_id_slotgroup" + String(nextindex)).show(); // clean
-                if(nextindex==instance.totalslots) {
+                if(nextindex == instance.totalslots) {
                     $('#id_addday').show();
                 }
             });
 
         }
-
 
         if( $( "#id_now" ).prop( "checked") == true) {
             $('[name^=availablefrom]').prop("disabled", true);
@@ -86,4 +84,3 @@ define(['jquery', 'core/log'], function($, log) {
     return instance;
 
 });
-

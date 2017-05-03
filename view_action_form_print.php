@@ -80,13 +80,13 @@ class organizer_print_slots_form extends moodleform {
         $selcols = array('datetime', 'location', 'teacher', 'participant');
         if (array_search('idnumber', $identityfields) !== false) {
             $selcols[] = 'idnumber';
-        } 
+        }
         if (array_search('email', $identityfields) !== false) {
             $selcols[] = 'email';
-        } 		
-		$selcols[] = 'attended';
-		$selcols[] = 'grade';
-		$selcols[] = 'feedback';
+        }
+        $selcols[] = 'attended';
+        $selcols[] = 'grade';
+        $selcols[] = 'feedback';
 
         if ($isgrouporganizer) {
             array_splice($selcols, 3, 0, 'groupname');
@@ -198,8 +198,8 @@ class organizer_print_slots_form extends moodleform {
         );
 
         $PAGE->requires->js_init_call('M.mod_organizer.init_organizer_print_slots_form', null, false, $jsmodule);
-		
-		$isgrouporganizer = organizer_is_group_mode();
+
+        $isgrouporganizer = organizer_is_group_mode();
 
         $table = new html_table();
         $table->id = 'print_preview';
@@ -335,7 +335,8 @@ class organizer_print_slots_form extends moodleform {
                         case 'groupname':
                             $groupname = $entry->groupname;
                             $content = "<span name='{$column}_cell'>" . $groupname . '</span>';
-							if ($isgrouporganizer) $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
+                            if ($isgrouporganizer) { $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
+                            }
                             $cell = new html_table_cell($content);
                             $cell->rowspan = $entry->rowspan;
                             $cell->style = 'vertical-align: middle;';
@@ -353,7 +354,8 @@ class organizer_print_slots_form extends moodleform {
                         $a->lastname = $entry->lastname;
                         $name = get_string('fullname_template', 'organizer', $a);
                         $content = "<span name='{$column}_cell'>" . $name . '</span>';
-						if (!$isgrouporganizer) $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
+                        if (!$isgrouporganizer) { $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
+                        }
                         $cell = new html_table_cell($content);
                         $cell->style = 'vertical-align: middle;';
                         $row->cells[] = $cell;

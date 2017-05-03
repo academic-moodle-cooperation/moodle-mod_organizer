@@ -50,7 +50,7 @@ function organizer_generate_registration_table_content($columns, $params) {
                     if ($groupmode) {
                         $members = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$entry->id}");
                         $list = "<em>$entry->name</em><br/ >";
-						$list .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified);
+                        $list .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified);
                         foreach ($members as $member) {
                             $idnumber = get_user_idnumber($member);
 
