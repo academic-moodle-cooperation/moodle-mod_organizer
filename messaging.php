@@ -65,14 +65,22 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $strings->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
 
     if ($namesplit[0] == "edit_notify") {
-        $strings->slot_teacher = $slot->teachervisible == 1 ? fullname($DB->get_record('user', array('id' => $slot->teacherid)), true) : get_string('teacherinvisible', 'organizer');
+        if ($slot->teachervisible == 1) {
+            $strings->slot_teacher = fullname($DB->get_record('user', array('id' => $slot->teacherid)), true);
+        } else {
+            $strings->slot_teacher = get_string('teacherinvisible', 'organizer');
+        }
         $strings->slot_location = organizer_location_link($slot);
         $strings->slot_maxparticipants = $slot->maxparticipants;
         $strings->slot_comments = s($slot->comments);
     }
 
     if ($namesplit[0] == "assign_notify") {
-        $strings->slot_teacher = $slot->teachervisible == 1 ? fullname($DB->get_record('user', array('id' => $slot->teacherid)), true) : get_string('teacherinvisible', 'organizer');
+        if ($slot->teachervisible == 1) {
+            fullname($DB->get_record('user', array('id' => $slot->teacherid)), true);
+        } else {
+            get_string('teacherinvisible', 'organizer');
+        }
         $strings->slot_location = organizer_location_link($slot);
         if (isset($customdata['participantname'])) {
                $strings->participantname = $customdata['participantname'];
@@ -105,10 +113,10 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
         $namesplit[0] = "eval_notify";
     }
 
-    if(count($namesplit) == 1) {
+    if (count($namesplit) == 1) {
         $messagename = "$namesplit[0]";
     } else {
-        $messagename = "$namesplit[0]:$namesplit[1]";
+        $messagename = "$namesplit[0]_$namesplit[1]";
     }
     $message = new \core\message\message();
     $message->component = 'mod_organizer';
