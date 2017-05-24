@@ -116,75 +116,81 @@ function organizer_add_appointment_slots($data) {
     }
 
     $timezone = new DateTimeZone(date_default_timezone_get());
-    $startdate = $data->startdate;
     $collisionmessages = "";
+    $startdate = $data->startdate;
+    $enddate = $data->enddate;
 
-    foreach ($data->newslots as $slot) {
-        if ($slot['day'] == -1) {
-            continue;
-        }
+    for ($mondaydate = strtotime('monday this week', $startdate); $mondaydate <= $enddate; $mondaydate += 604800) {
 
-        $slot['date'] = organizer_get_day_date($slot['day'], $startdate);
-        $transitions = $timezone->getTransitions($slot['date'], $slot['date'] + $slot['from']);
-        $dstoffset = 0;
+        foreach ($data->newslots as $slot) {
+            if ($slot['day'] == -1) {
+                continue;
+            }
+            $slot['date'] = organizer_get_day_date($slot['day'], $mondaydate);
+            if ($slot['date'] < $startdate || $slot['date'] > $enddate) {
+                continue;
+            }
+            $transitions = $timezone->getTransitions($slot['date'], $slot['date'] + $slot['from']);
+            $dstoffset = 0;
 
-        foreach ($transitions as $trans) {
-            $dstoffset += $trans['isdst'] ? ($trans['offset']) : ( + $trans['offset']);
-        }
+            foreach ($transitions as $trans) {
+                $dstoffset += $trans['isdst'] ? ($trans['offset']) : (+$trans['offset']);
+            }
 
-        $newslot = new stdClass();
-        $newslot->maxparticipants = $data->maxparticipants;
-        $newslot->visibility = $data->visibility;
-        $newslot->timemodified = time();
-        $newslot->teacherid = $data->teacherid;
-        $newslot->teachervisible = isset($data->teachervisible) ? 1 : 0;
-        $newslot->notificationtime = $data->notificationtime;
-        $newslot->availablefrom = isset($data->availablefrom) ? $data->availablefrom : 0;
-        $newslot->location = $data->location;
-        $newslot->locationlink = $data->locationlink;
-        $newslot->isgroupappointment = $organizer->isgrouporganizer;
-        $newslot->duration = $data->duration;
-        $newslot->comments = (isset($data->comments)) ? $data->comments : '';
-        $newslot->organizerid = $organizer->id;
+            $newslot = new stdClass();
+            $newslot->maxparticipants = $data->maxparticipants;
+            $newslot->visibility = $data->visibility;
+            $newslot->timemodified = time();
+            $newslot->teacherid = $data->teacherid;
+            $newslot->teachervisible = isset($data->teachervisible) ? 1 : 0;
+            $newslot->notificationtime = $data->notificationtime;
+            $newslot->availablefrom = isset($data->availablefrom) ? $data->availablefrom : 0;
+            $newslot->location = $data->location;
+            $newslot->locationlink = $data->locationlink;
+            $newslot->isgroupappointment = $organizer->isgrouporganizer;
+            $newslot->duration = $data->duration;
+            $newslot->comments = (isset($data->comments)) ? $data->comments : '';
+            $newslot->organizerid = $organizer->id;
 
-        if (!isset($data->duration) || $data->duration < 1) {
-            print_error('Duration is invalid (not set or < 1). No slots will be added. Contact support!');
-        }
+            if (!isset($data->duration) || $data->duration < 1) {
+                print_error('Duration is invalid (not set or < 1). No slots will be added. Contact support!');
+            }
 
-        if (!isset($data->gap) || $data->gap < 0) {
-            print_error('Gap is invalid (not set or < 0). No slots will be added. Contact support!');
-        }
+            if (!isset($data->gap) || $data->gap < 0) {
+                print_error('Gap is invalid (not set or < 0). No slots will be added. Contact support!');
+            }
 
-        for ($time = $slot['from']; $time + $data->duration <= $slot['to']; $time += ($data->duration + $data->gap)) {
+            for ($time = $slot['from']; $time + $data->duration <= $slot['to']; $time += ($data->duration + $data->gap)) {
 
-            $newslot->starttime = organizer_get_slotstarttime($slot['date'], $time);
-            $newslot->id = $DB->insert_record('organizer_slots', $newslot);
+                $newslot->starttime = organizer_get_slotstarttime($slot['date'], $time);
+                $newslot->id = $DB->insert_record('organizer_slots', $newslot);
 
-            $newslot->eventid = organizer_add_event_slot($data->id, $newslot);
-            $DB->update_record('organizer_slots', $newslot);
+                $newslot->eventid = organizer_add_event_slot($data->id, $newslot);
+                $DB->update_record('organizer_slots', $newslot);
 
-            $events = organizer_load_events($newslot->teacherid, $newslot->starttime,
-                        $newslot->starttime + $newslot->duration, $newslot->eventid);
-            $collisions = organizer_check_collision($newslot->starttime,
-                        $newslot->starttime + $newslot->duration, $events);
-            $head = true;
-            $collisionmessage = "";
-            foreach ($collisions as $event) {
-                if ($head) {
-                    $collisionmessage .= '<span class="error">' . get_string('collision', 'organizer') .'</span><br />';
-                    $head = false;
-                }
-                $collisionmessage .= '<strong>' . $event->name . '</strong> from '
+                $events = organizer_load_events($newslot->teacherid, $newslot->starttime,
+                    $newslot->starttime + $newslot->duration, $newslot->eventid);
+                $collisions = organizer_check_collision($newslot->starttime,
+                    $newslot->starttime + $newslot->duration, $events);
+                $head = true;
+                $collisionmessage = "";
+                foreach ($collisions as $event) {
+                    if ($head) {
+                        $collisionmessage .= '<span class="error">' . get_string('collision', 'organizer') . '</span><br />';
+                        $head = false;
+                    }
+                    $collisionmessage .= '<strong>' . $event->name . '</strong> from '
                         . userdate($event->timestart,
                             get_string('fulldatetimetemplate', 'organizer')) . ' to '
                         . userdate($event->timestart + $event->timeduration,
                             get_string('fulldatetimetemplate', 'organizer')) . '<br />';
-            }
+                }
 
-            $count[] = $newslot->id;
-            $collisionmessages .= $collisionmessage;
-        }
-    }
+                $count[] = $newslot->id;
+                $collisionmessages .= $collisionmessage;
+            }
+        } // End foreach slot
+    } // End for week
 
     return array($count, $collisionmessages);
 }

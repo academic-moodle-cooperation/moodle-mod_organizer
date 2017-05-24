@@ -68,7 +68,7 @@ require_capability('mod/organizer:addslots', $context);
 $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
 
 if ($data = $mform->get_data()) {  // when page is called the first time (=empty form) or form data has errors: no data
-    if(isset($data->addday)) {  // additional slot field are to be displayed
+    if (isset($data->addday)) {  // additional slot fields are to be displayed
         organizer_display_form($mform, get_string('title_add', 'organizer'));
     } else {  // submit button was pressed and submitted form data has no errors
         list($slotids, $messages) = organizer_add_appointment_slots($data);
@@ -94,7 +94,7 @@ if ($data = $mform->get_data()) {  // when page is called the first time (=empty
                 $redirecturl .= '&slots[]=' . $slotid;
             }
         }
-        if($messages) {
+        if ($messages) {
             redirect($redirecturl, $messages, 10);
         } else {
             redirect($redirecturl);
