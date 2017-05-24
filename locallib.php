@@ -929,11 +929,11 @@ function organizer_evaluate_slots($data) {
     return $slotids;
 }
 
-function organizer_get_course_module_data() {
+function organizer_get_course_module_data($id = null, $n = null) {
     global $DB;
 
-    $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or.
-    $n = optional_param('o', 0, PARAM_INT); // Organizer instance ID - it should be named as the first character of the module.
+    $id = $id == null ? optional_param('id', 0, PARAM_INT) : $id; // Course_module ID, or.
+    $n = $n == null ? optional_param('o', 0, PARAM_INT) : $n; // Organizer instance ID - it should be named as the first character of the module.
 
     if ($id) {
         $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);

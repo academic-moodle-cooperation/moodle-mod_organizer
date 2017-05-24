@@ -26,6 +26,8 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 define('ORGANIZER_ENABLE_MESSAGING', 1);
 
 require_once(dirname(__FILE__) . '/locallib.php');
@@ -33,7 +35,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 function organizer_send_message($sender, $receiver, $slot, $type, $digest = null, $customdata = array()) {
     global $DB;
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $slot->organizerid);
 
     $sender = is_int($sender) ? $DB->get_record('user', array('id' => $sender)) : $sender;
     $receiver = is_int($receiver) ? $DB->get_record('user', array('id' => $receiver)) : $receiver;
