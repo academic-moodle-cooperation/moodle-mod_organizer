@@ -27,8 +27,16 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 $messageproviders = array(
         'register_notify_teacher' => array('capability' => 'mod/organizer:receivemessagesteacher',
+                'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
+        'register_notify_teacher_register' => array('capability' => 'mod/organizer:receivemessagesteacher',
+                'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
+        'register_notify_teacher_reregister' => array('capability' => 'mod/organizer:receivemessagesteacher',
+                'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
+        'register_notify_teacher_unregister' => array('capability' => 'mod/organizer:receivemessagesteacher',
                 'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
         'appointment_reminder_teacher' => array('capability' => 'mod/organizer:receivemessagesteacher',
                 'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
@@ -40,7 +48,7 @@ $messageproviders = array(
                 'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
         'eval_notify_student' => array('capability' => 'mod/organizer:receivemessagesstudent',
                 'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
-        'group_registration_notify:student' => array('capability' => 'mod/organizer:receivemessagesstudent',
+        'group_registration_notify_student' => array('capability' => 'mod/organizer:receivemessagesstudent',
                 'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
         'edit_notify_student' => array('capability' => 'mod/organizer:receivemessagesstudent',
                 'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
