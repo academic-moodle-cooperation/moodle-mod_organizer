@@ -1062,3 +1062,6 @@ $string['norightpage'] = 'You are not allowed to call up this page.';
 $string['Warning'] = 'Warning';
 $string['Info'] = 'Info';
 $string['Error'] = 'Error';
+
+$string['msgnocheckboxselected'] = 'No slot is selected!';
+$string['msgnoactionselected'] = 'No action is choosen!';

@@ -1802,13 +1802,14 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
     return '<img src="' . $src . '" alt="' . $alt . '" title="' . $title . '" id="' . $id . '" ' . $other . ' />';
 }
 
-function organizer_get_icon($iconname, $string, $size="small") {
+function organizer_get_icon($iconname, $string, $size="small", $id="") {
     global $OUTPUT;
     if($size == "big") {
-        $icon = organizer_get_img('pix/' . $iconname . '.png', $string, $string, '', 'width="32" height="32"');
+        $icon = organizer_get_img('pix/' . $iconname . '.png', $string, $string, $id, 'width="32" height="32"');
         return $icon;
     } else {
-        $icon = $OUTPUT->pix_icon($iconname, $string, 'mod_organizer');
+        $attributes = $id != '' ? array('id' => $id) : array();
+        $icon = $OUTPUT->pix_icon($iconname, $string, 'mod_organizer', $attributes);
         return $icon;
     }
 }
@@ -2085,7 +2086,7 @@ function organizer_popup_icon($type, $content, &$popups) {
             ORGANIZER_ICON_TEACHER_FEEDBACK => 'feedback',
     );
     $iconid = organizer_register_popup($type, $content, $popups);
-    return organizer_get_icon($icons[$type], '');
+    return organizer_get_icon($icons[$type], '', '', $iconid);
 }
 
 function organizer_slot_is_free($slot, $userid) {

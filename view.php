@@ -92,6 +92,11 @@ switch ($params['mode']) {
             $event->trigger();
 
             echo organizer_generate_appointments_view($params, $instance, $popups);
+            $params = new \stdClass();
+            $params->msgnocheckboxselected = get_string('msgnocheckboxselected', 'organizer');
+            $params->msgnoactionselected = get_string('msgnoactionselected', 'organizer');
+            $PAGE->requires->js_call_amd('mod_organizer/actionselectbutton', 'init', array($params));
+
         } else {
             print_error('You do not have the permission to view this page!');
         }
