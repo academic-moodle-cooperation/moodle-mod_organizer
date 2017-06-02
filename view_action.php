@@ -48,8 +48,8 @@ require_login($course, false, $cm);
 require_sesskey();
 
 $mode = optional_param('mode', null, PARAM_INT);
-$action = optional_param('action', null, PARAM_ACTION);
-$bulkaction = optional_param('bulkaction', null, PARAM_ACTION);
+$action = optional_param('action', null, PARAM_ALPHA);
+$bulkaction = optional_param('bulkaction', null, PARAM_ALPHA);
 $user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = optional_param_array('slots', array(), PARAM_INT);
@@ -80,8 +80,8 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 
 if($bulkaction) {
     if(!$slots) {
-        $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
-        redirect($redirecturl);
+        // If an action is chosen but no slots were selected: redirect with message
+        redirect($redirecturl->out(), get_string('message_warning_no_slots_selected', 'organizer'), 5);
     } else {
         $slotsarray = "";
         foreach($slots as $slot) {
@@ -271,7 +271,8 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 
 } else {
 
-    print_error('Either a wrong method or no method was selected!');
+    // If no actionselectbutton was chosen: redirect with message
+    redirect($redirecturl->out(), get_string('message_error_noactionchosen', 'organizer'), 5);
 
 }
 

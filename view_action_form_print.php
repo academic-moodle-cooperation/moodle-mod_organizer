@@ -117,7 +117,7 @@ class organizer_print_slots_form extends moodleform {
         $pppgroup = array();
         $pppgroup[] = &$mform->createElement('text', 'entriesperpage', get_string('numentries', 'organizer'), array('size' => '2'));
         $pppgroup[] = &$mform->createElement('advcheckbox', 'printperpage_optimal',
-                get_string('stroptimal', 'organizer'), get_string('stroptimal', 'organizer'), array("group" => 1));
+                '', get_string('stroptimal', 'organizer'), array("group" => 1));
 
         $mform->addGroup($pppgroup, 'printperpagegrp', get_string('numentries', 'organizer'), array(' '), false);
         $mform->setType('entriesperpage', PARAM_INT);

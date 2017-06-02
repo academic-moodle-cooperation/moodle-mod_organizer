@@ -1023,6 +1023,7 @@ $string['message_error_slot_full_group'] = 'Dieser Slot ist vergeben!';
 
 $string['message_error_unknown_unqueue'] = 'Ihr Wartelisten-Eintrag konnte nicht entfernt werden! Unbekannter Fehler.';
 $string['message_error_unknown_unregister'] = 'Ihre Registrierung konnte nicht entfernt werden! Unbekannter Fehler.';
+$string['message_error_noactionchosen'] = 'Wählen Sie eine Aktion aus und drücken Sie dann auf den Start-Button.';
 
 $string['organizer_remind_all_title'] = 'Erinnerungen versenden';
 $string['can_reregister'] = 'Sie können sich für einen anderen Termin neu anmelden.';
@@ -1064,6 +1065,3 @@ $string['norightpage'] = 'Sie haben nicht das Recht, diese Seite aufzurufen.';
 $string['Warning'] = 'Warnung!';
 $string['Info'] = 'Info';
 $string['Error'] = 'Fehler!';
-
-$string['msgnocheckboxselected'] = 'Es wurde kein Termin ausgewählt';
-$string['msgnoactionselected'] = 'Es wurde keine Aktion ausgewählt';

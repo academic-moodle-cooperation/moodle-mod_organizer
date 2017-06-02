@@ -1021,6 +1021,7 @@ $string['message_error_slot_full_group'] = 'This timeslot is already taken!';
 
 $string['message_error_unknown_unqueue'] = 'Your waiting list entry could not be removed! Unknown error.';
 $string['message_error_unknown_unregister'] = 'Your registration could not be removed! Unknown error.';
+$string['message_error_noactionchosen'] = 'Please choose an action before pressing the Start button.';
 
 $string['organizer_remind_all_title'] = 'Send reminders';
 $string['can_reregister'] = 'You can re-registed to another appointment.';
@@ -1062,6 +1063,3 @@ $string['norightpage'] = 'You are not allowed to call up this page.';
 $string['Warning'] = 'Warning';
 $string['Info'] = 'Info';
 $string['Error'] = 'Error';
-
-$string['msgnocheckboxselected'] = 'No slot is selected!';
-$string['msgnoactionselected'] = 'No action is choosen!';
