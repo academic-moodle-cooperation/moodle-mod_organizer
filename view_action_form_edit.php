@@ -171,7 +171,7 @@ class organizer_edit_slots_form extends moodleform {
 
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'editsubmit', get_string('edit_submit', 'organizer'));
-        $buttonarray[] = &$mform->createElement('reset', 'editreset', get_string('revert'));
+        $buttonarray[] = &$mform->createElement('reset', 'editreset', get_string('revert'), array('class' => 'btn btn-secondary'));
         $buttonarray[] = &$mform->createElement('cancel');
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);

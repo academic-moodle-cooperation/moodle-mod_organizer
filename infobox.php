@@ -206,7 +206,7 @@ function organizer_make_slotoptions_section($params) {
                 get_string('infobox_showslots', 'organizer') . '</p>';
 
     $output .= '</div>';
-    $output .= '<div style="float:right;"><input id="toggle_legend" type="button" value="' .
+    $output .= '<div style="float:right;"><input id="toggle_legend" class= "btn btn-secondary" type="button" value="' .
             get_string('infobox_showlegend', 'organizer') . '" /></div>';
     $output .= '<div class="clearer"></div>';
     return organizer_make_section('infobox_slotoverview', $output) .

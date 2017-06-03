@@ -256,7 +256,7 @@ function organizer_generate_button_bar($params, $organizerexpired) {
     $output = '<div name="button_bar" class="buttons">';
 
     $slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
-    $output .= '<input type="submit" value="' . get_string('btn_add', 'organizer') .
+    $output .= '<input class="btn btn-primary" type="submit" value="' . get_string('btn_add', 'organizer') .
     '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsaddurl . '\');" ' .
     ($organizerexpired ? 'disabled ' : '') . '/>';
 
@@ -287,7 +287,7 @@ function organizer_generate_actionlink_bar($context, $organizerexpired) {
 
     $output .= html_writer::select($actions, 'bulkaction', array('edit' => get_string('actionlink_edit', 'organizer')), null,
         array('style' => 'margin-left:0.3em;margin-right:0.3em;'));
-    $output .= '<input type="submit" class="btn_start" value="' . get_string('btn_start', 'organizer') . '"/>';
+    $output .= '<input type="submit" class="btn btn-primary" value="' . get_string('btn_start', 'organizer') . '"/>';
 
     $output .= '</div>';
 

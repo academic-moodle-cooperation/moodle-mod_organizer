@@ -236,7 +236,7 @@ class organizer_print_slots_form extends moodleform {
             $content .= '" name="' . $column . '_cell">' . get_string("th_{$column}", 'organizer') . $icon;
             $content .= '</a>';
 
-            $content .= ' ' . $OUTPUT->pix_icon('t/switch_minus', get_string('hide'), 'moodle',
+            $content .= ' ' . $OUTPUT->image_icon('t/switch_minus', get_string('hide'), 'moodle',
                 array("id" => "toggle_{$column}", "style" => 'cursor: pointer',
                     'title' => get_string("th_{$column}", 'organizer')
             ));
