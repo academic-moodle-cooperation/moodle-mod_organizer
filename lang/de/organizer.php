@@ -983,6 +983,7 @@ $string['eventteacheranonymous'] = 'einem/einer anonymen Trainer/in';
 $string['eventtitle'] = '{$a->coursename} / {$a->organizername}: {$a->appwith}';
 
 $string['eventtemplate'] = '{$a->courselink} / {$a->organizerlink}: {$a->appwith} {$a->with} {$a->participants}<br />Ort: {$a->location}<br />';
+$string['eventtemplatewithoutlinks'] = '{$a->coursename} / {$a->organizername}: {$a->appwith} {$a->with} {$a->participants}<br />Ort: {$a->location}<br />';
 $string['eventtemplatecomment'] = 'Kommentar:<br />{$a}<br />';
 
 $string['fulldatetimelongtemplate'] = '%A %d. %B %Y %H:%M';

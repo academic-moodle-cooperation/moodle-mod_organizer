@@ -37,6 +37,9 @@ define('ORGANIZER_VISIBILITY_ALL', 0);
 define('ORGANIZER_VISIBILITY_ANONYMOUS', 1);
 define('ORGANIZER_VISIBILITY_SLOT', 2);
 
+define('ORGANIZER_CALENDAR_EVENTTYPE_PARTICIPANT', 'Participant');
+define('ORGANIZER_CALENDAR_EVENTTYPE_TEACHER', 'Teacher');
+
 require_once(dirname(__FILE__) . '/slotlib.php');
 
 /**
@@ -642,7 +645,9 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
             $a->groupname = $group->name;
-            $completedapp = get_string('mymoodle_completed_app_group', 'organizer', $a) . ($forindex ? '' : "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+            $completedapp = get_string('mymoodle_completed_app_group', 'organizer', $a) .
+                    ($forindex ? '' : "<br />(" . get_string('grade') . ": " .
+                            organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $completedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -656,7 +661,9 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
             $a->groupname = $group->name;
 
-            $missedapp = get_string('mymoodle_missed_app_group', 'organizer', $a) . ($forindex ? '' : "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+            $missedapp = get_string('mymoodle_missed_app_group', 'organizer', $a) .
+                    ($forindex ? '' : "<br />(" . get_string('grade') . ": " .
+                            organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $missedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -1090,4 +1097,42 @@ function organizer_remove_waitingqueueentries($organizer) {
     $query = "slotid in (select id from {organizer_slots} where organizerid = ".$organizer->id.")";
     $ok = $DB->delete_records_select('organizer_slot_queues', $query);
     return $ok;
+}
+
+
+/**
+ * This function receives a calendar event and returns the action associated with it, or null if there is none.
+ *
+ * This is used by block_myoverview in order to display the event appropriately. If null is returned then the event
+ * is not displayed on the block.
+ *
+ * @param calendar_event $event
+ * @param \core_calendar\action_factory $factory
+ * @return \core_calendar\local\event\entities\action_interface|null
+ */
+function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
+                                                       \core_calendar\action_factory $factory) {
+
+    global $CFG, $USER;
+
+    require_once($CFG->dirroot . '/mod/organizer/locallib.php');
+
+    $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
+    $context = context_module::instance($cm->id);
+
+
+    $name = get_string('organizer', 'organizer');
+    $url = new \moodle_url('/mod/organizer/view.php', [
+        'id' => $cm->id,
+        'action' => 'show'
+    ]);
+    $itemcount = 1;
+    $actionable = true;
+
+    return $factory->create_instance(
+        $name,
+        $url,
+        $itemcount,
+        $actionable
+    );
 }
