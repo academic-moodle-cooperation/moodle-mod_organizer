@@ -37,8 +37,8 @@ define('ORGANIZER_VISIBILITY_ALL', 0);
 define('ORGANIZER_VISIBILITY_ANONYMOUS', 1);
 define('ORGANIZER_VISIBILITY_SLOT', 2);
 
-define('ORGANIZER_CALENDAR_EVENTTYPE_PARTICIPANT', 'Participant');
-define('ORGANIZER_CALENDAR_EVENTTYPE_TEACHER', 'Teacher');
+define('ORGANIZER_CALENDAR_EVENTTYPE_SLOT', 'Slot');
+define('ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT', 'Appointment');
 
 require_once(dirname(__FILE__) . '/slotlib.php');
 
@@ -1113,13 +1113,11 @@ function organizer_remove_waitingqueueentries($organizer) {
 function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
                                                        \core_calendar\action_factory $factory) {
 
-    global $CFG, $USER;
+    global $CFG;
 
     require_once($CFG->dirroot . '/mod/organizer/locallib.php');
 
     $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
-    $context = context_module::instance($cm->id);
-
 
     $name = get_string('organizer', 'organizer');
     $url = new \moodle_url('/mod/organizer/view.php', [
@@ -1136,3 +1134,40 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
         $actionable
     );
 }
+
+/**
+ * Is the event visible?
+ *
+ * This is used to determine global visibility of an event in all places throughout Moodle. For example,
+ * the ASSIGN_EVENT_TYPE_GRADINGDUE event will not be shown to students on their calendar, and
+ * ASSIGN_EVENT_TYPE_DUE events will not be shown to teachers.
+ *
+ * @param calendar_event $event
+ * @return bool Returns true if the event is visible to the current user, false otherwise.
+ */
+function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
+    global $CFG, $USER, $DB;
+
+    require_once($CFG->dirroot . '/mod/organizer/locallib.php');
+
+    $props = $event->properties();
+    if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
+        $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
+        if ($props->groupid!=0) {
+            $usergroup = organizer_fetch_user_group($props->userid);
+            $isvisible = $props->groupid == $usergroup ? true : false;
+        } else {
+            $isvisible = $userid == $USER->id ? true : false;
+        }
+    } else {
+        $context = context_module::instance($props->instance, MUST_EXIST);
+        if (has_capability('mod/organizer:viewallslots', $context)) {
+            $isvisible = true;
+        } else {
+            $isvisible = false;
+        }
+    }
+
+    return $isvisible;
+}
+

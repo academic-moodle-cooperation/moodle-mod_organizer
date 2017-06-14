@@ -978,7 +978,7 @@ $string['maillink'] = 'The organizer is available <a href="{$a}">here</a>.';
 
 // Section.
 
-$string['eventnoparticipants'] = 'no participants';
+$string['eventnoparticipants'] = 'No participants';
 $string['eventteacheranonymous'] = 'an anonymous teacher';
 
 $string['eventwith'] = 'with';

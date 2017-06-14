@@ -977,7 +977,7 @@ $string['eventappwith:group'] = 'Gruppentermin';
 $string['eventwith'] = 'mit';
 $string['eventwithout'] = '';
 
-$string['eventnoparticipants'] = 'ohne Teilnehmer/innen';
+$string['eventnoparticipants'] = 'Ohne Teilnehmer/innen';
 $string['eventteacheranonymous'] = 'einem/einer anonymen Trainer/in';
 
 $string['eventtitle'] = '{$a->coursename} / {$a->organizername}: {$a->appwith}';

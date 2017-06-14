@@ -304,7 +304,7 @@ function organizer_add_event_slot($cmid, $slot) {
             $a->participants = $memberlist;
         } else {
             $a->appwith = get_string('eventappwith:group', 'organizer');
-            $a->with = get_string('eventwithout', 'organizer');
+            $a->with = "-";
             $a->participants = get_string('eventnoparticipants', 'organizer');
         }
     } else {
@@ -319,7 +319,7 @@ function organizer_add_event_slot($cmid, $slot) {
             $a->participants = trim($a->participants, ", ");
         } else {
             $a->appwith = get_string('eventappwith:single', 'organizer');
-            $a->with = get_string('eventwithout', 'organizer');
+            $a->with = "-";
             $a->participants = get_string('eventnoparticipants', 'organizer');
         }
     }
@@ -336,43 +336,17 @@ function organizer_add_event_slot($cmid, $slot) {
         $eventdescription .= get_string('eventtemplatecomment', 'organizer', $slot->comments);
     }
 
-    /*
-    $event = new stdClass();
-    $event->name = get_string('eventtitle', 'organizer', $a);
-    $event->description = get_string('eventtemplate', 'organizer', $a);
-    if ($slot->comments != "") {
-        $event->description .= get_string('eventtemplatecomment', 'organizer', $slot->comments);
-    }
-    $event->format = 1;
-    $event->courseid = 0;
-    $event->groupid = 0;
-    $event->userid = $slot->teacherid;
-    $event->repeatid = 0;
-    $event->modulename = 0;
-    $event->instance = $cmid;
-    $event->eventtype = 'user';
-    $event->timestart = $slot->starttime;
-    $event->timeduration = $slot->duration;
-    $event->visible = 1;
-    $event->sequence = 1;
-    $event->timemodified = time();
-    */
     if (isset($slot->eventid)) {
-
-        /*
-        $event->id = $slot->eventid;
-        $DB->update_record('event', $event);
-        */
-        return organizer_change_calendarevent($slot->eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_TEACHER,
-                $cmid, $slot->teacherid, $slot->starttime, $slot->duration);
+        return organizer_change_calendarevent($slot->eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_SLOT,
+                $slot->teacherid, $slot->starttime, $slot->duration, 0, $slot->id);
     } else {
-        return organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_TEACHER,
-                $cmid, $slot->teacherid, $slot->starttime, $slot->duration);
+        return organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_SLOT,
+                $slot->teacherid, $slot->starttime, $slot->duration, 0, $slot->id);
     }
 }
 
 function organizer_add_event_appointment($cmid, $appointment) {
-    global $DB;
+    global $DB, $USER;
 
     if (is_number($appointment)) {
         $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $appointment));
@@ -397,7 +371,8 @@ function organizer_add_event_appointment($cmid, $appointment) {
         $a->appwith = get_string('eventappwith:group', 'organizer');
         $a->with = get_string('eventwith', 'organizer');
         $group = groups_get_group($appointment->groupid);
-        $users = groups_get_members($group->id);
+        $groupid = $group->id;
+        $users = groups_get_members($groupid);
         if ($slot->teachervisible) {
             $memberlist = organizer_get_name_link($slot->teacherid) . " ({$group->name}: ";
         } else {
@@ -410,6 +385,7 @@ function organizer_add_event_appointment($cmid, $appointment) {
         $memberlist .= ")";
         $a->participants = $memberlist;
     } else {
+        $groupid = 0;
         $a->appwith = get_string('eventappwith:single', 'organizer');
         $a->with = get_string('eventwith', 'organizer');
         if ($slot->teachervisible) {
@@ -427,29 +403,15 @@ function organizer_add_event_appointment($cmid, $appointment) {
 
     $a->description = $slot->comments;
 
-    $event = new stdClass();
-    $event->name = get_string('eventtitle', 'organizer', $a);
-    $event->description = get_string('eventtemplate', 'organizer', $a);
-    $event->format = 1;
-    $event->courseid = 0;
-    $event->groupid = 0;
-    $event->userid = $appointment->userid;
-    $event->repeatid = 0;
-    $event->modulename = 0;
-    $event->instance = $cmid;
-    $event->eventtype = 'user';
-    $event->timestart = $slot->starttime;
-    $event->timeduration = $slot->duration;
-    $event->visible = 1;
-    $event->sequence = 1;
-    $event->timemodified = time();
+    $eventtitle = get_string('eventtitle', 'organizer', $a);
+    $eventdescription = get_string('eventtemplatewithoutlinks', 'organizer', $a);
 
     if (isset($appointment->eventid)) {
-        $event->id = $appointment->eventid;
-        $DB->update_record('event', $event);
-        return $event->id;
+        return organizer_change_calendarevent($appointment->eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
+            $USER->id, $slot->starttime, $slot->duration, $groupid);
     } else {
-        return $DB->insert_record('event', $event);
+        return organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
+            $USER->id, $slot->starttime, $slot->duration, $groupid);
     }
 }
 
@@ -1248,8 +1210,8 @@ function organizer_fetch_groupusers($groupid) {
 }
 
 
-function organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, $eventtype, $cmid, $userid,
-        $timestart, $duration) {
+function organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, $eventtype, $userid,
+        $timestart, $duration, $group) {
     global $CFG;
 
     require_once($CFG->dirroot.'/calendar/lib.php');
@@ -1263,23 +1225,27 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
         'text' => $intro,
         'format' => $organizer->introformat
     );
-    $event->courseid = $organizer->course;
-    $event->groupid = 0;
-    $event->userid = $userid;
+    if ($eventtype==ORGANIZER_CALENDAR_EVENTTYPE_SLOT){
+        $event->userid = $userid;
+        $event->courseid = 0;
+    } else {
+        $event->userid = 0;
+        $event->courseid = $organizer->course;
+    }
+    $event->groupid = $group;
     $event->modulename = 'organizer';
-    $event->instance = $cmid;
+    $event->instance = $organizer->id;
     $event->timestart = $timestart;
     $event->timesort = $timestart;
     $event->timeduration = $duration;
     $event->visible = instance_is_visible('organizer', $organizer);
-    $event->timestamp = time();
 
-    calendar_event::create($event);
+    calendar_event::create($event, false);
     return $event->id;
 }
 
-function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $eventdescription, $eventtype, $cmid, $userid,
-        $timestart, $duration) {
+function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
+        $timestart, $duration, $group) {
     global $CFG;
 
     require_once($CFG->dirroot.'/calendar/lib.php');
@@ -1295,17 +1261,21 @@ function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $even
         'text' => $intro,
         'format' => $organizer->introformat
     );
-    $data->courseid = $organizer->course;
-    $data->groupid = 0;
-    $data->userid = $userid;
+    if ($eventtype==ORGANIZER_CALENDAR_EVENTTYPE_SLOT){
+        $event->userid = $userid;
+        $event->courseid = 0;
+    } else {
+        $event->userid = 0;
+        $event->courseid = $organizer->course;
+    }
+    $data->groupid = $group;
     $data->modulename = 'organizer';
-    $data->instance = $cmid;
+    $data->instance = $organizer->id;
     $data->timestart = $timestart;
     $data->timesort = $timestart;
     $data->timeduration = $duration;
     $data->visible = instance_is_visible('organizer', $organizer);
-    $data->timestamp = time();
 
-    $event->update($data);
+    $event->update($data, false);
     return $event->id;
 }
