@@ -265,6 +265,7 @@ $string['mymoodle_registered_group_short'] = '{$a->registered}/{$a->total} Grupp
 $string['mymoodle_attended_group_short'] = '{$a->attended}/{$a->total} Gruppen teilgenommen';
 
 $string['mymoodle_next_slot'] = 'Nächster Slot am {$a->date} um {$a->time}';
+$string['mymoodle_app_slot'] = 'Termin am {$a->date} um {$a->time}';
 $string['mymoodle_no_slots'] = 'Keine bevorstehenden Slots';
 $string['mymoodle_completed_app'] = 'Sie haben Ihren Termin am {$a->date} um {$a->time} abgeschlossen';
 $string['mymoodle_completed_app_group'] = 'Ihre Gruppe {$a->groupname} hat am Termin am {$a->date} um {$a->time} teilgenommen';

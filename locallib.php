@@ -408,10 +408,10 @@ function organizer_add_event_appointment($cmid, $appointment) {
 
     if (isset($appointment->eventid)) {
         return organizer_change_calendarevent($appointment->eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
-            $USER->id, $slot->starttime, $slot->duration, $groupid);
+            $USER->id, $slot->starttime, $slot->duration, $groupid, $appointment);
     } else {
         return organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
-            $USER->id, $slot->starttime, $slot->duration, $groupid);
+            $USER->id, $slot->starttime, $slot->duration, $groupid, $appointment);
     }
 }
 
@@ -1211,7 +1211,7 @@ function organizer_fetch_groupusers($groupid) {
 
 
 function organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, $eventtype, $userid,
-        $timestart, $duration, $group) {
+        $timestart, $duration, $group, $uuid) {
     global $CFG;
 
     require_once($CFG->dirroot.'/calendar/lib.php');
@@ -1239,13 +1239,14 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
     $event->timesort = $timestart;
     $event->timeduration = $duration;
     $event->visible = instance_is_visible('organizer', $organizer);
+    $event->uuid = $uuid;
 
     calendar_event::create($event, false);
     return $event->id;
 }
 
 function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
-        $timestart, $duration, $group) {
+        $timestart, $duration, $group, $uuid) {
     global $CFG;
 
     require_once($CFG->dirroot.'/calendar/lib.php');
@@ -1275,6 +1276,7 @@ function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $even
     $data->timesort = $timestart;
     $data->timeduration = $duration;
     $data->visible = instance_is_visible('organizer', $organizer);
+    $data->uuid = $uuid;
 
     $event->update($data, false);
     return $event->id;

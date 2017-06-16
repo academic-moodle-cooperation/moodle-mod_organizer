@@ -37,8 +37,9 @@ define('ORGANIZER_VISIBILITY_ALL', 0);
 define('ORGANIZER_VISIBILITY_ANONYMOUS', 1);
 define('ORGANIZER_VISIBILITY_SLOT', 2);
 
-define('ORGANIZER_CALENDAR_EVENTTYPE_SLOT', 'Slot');
 define('ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT', 'Appointment');
+define('ORGANIZER_CALENDAR_EVENTTYPE_SLOT', 'Slot');
+define('ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE', 'Instance');
 
 require_once(dirname(__FILE__) . '/slotlib.php');
 
@@ -68,6 +69,8 @@ function organizer_add_instance($organizer) {
     organizer_grade_item_update($organizer);
 
     $_SESSION["organizer_new_instance"] = $organizer->id;
+
+    organizer_create_calendarevent_instance($organizer->id);
 
     return $organizer->id;
 }
@@ -556,48 +559,45 @@ function organizer_get_counters($organizer) {
     return $a;
 }
 
-function organizer_get_overview_teacher($organizer) {
+function organizer_get_overview_teacher($organizer, $eventtype, $slotid) {
     global $DB, $USER;
 
-    $str = '<div class="assignment overview">';
-    $str .= organizer_get_overview_link($organizer);
+    $str = "";
 
-    $a = organizer_get_counters($organizer);
+    if ($eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) { // Whole organizer instance
+        $a = organizer_get_counters($organizer);
 
-    if ($organizer->isgrouporganizer) {
-        $reg = get_string('mymoodle_registered_group', 'organizer', $a);
-        $att = get_string('mymoodle_attended_group', 'organizer', $a);
+        if ($organizer->isgrouporganizer) {
+            $reg = get_string('mymoodle_registered_group', 'organizer', $a);
+            $att = get_string('mymoodle_attended_group', 'organizer', $a);
 
-        $str .= '<div class="info organizerinfo">'.$reg.'</div><div class="info organizerinfo">'.$att.'</div>';
-    } else {
-        $reg = get_string('mymoodle_registered', 'organizer', $a);
-        $att = get_string('mymoodle_attended', 'organizer', $a);
+        } else {
+            $reg = get_string('mymoodle_registered', 'organizer', $a);
+            $att = get_string('mymoodle_attended', 'organizer', $a);
 
-        $str .= '<div class="info organizerinfo">'.$reg.'</div><div class="info organizerinfo">'.$att.'</div>';
+        }
+
+        $str = $reg . ' / ' . $att;
+    } else {  // A single slot
+
+        $now = time();
+
+        $slot = $DB->get_records_sql('SELECT * FROM {organizer_slots} INNER JOIN {organizer_slot_appointments} ON 
+            {organizer_slots}.id = {organizer_slot_appointments}.slotid 
+            WHERE {organizer_slot_appointments}.slotid = :slotid AND 
+            {organizer_slots}.starttime > :now ', array('slotid' => $slotid, 'now' => $now));
+
+        $appslot = reset($slot);
+
+        if ($appslot) {
+            $a = new stdClass();
+            $a->date = userdate($appslot->starttime, get_string('fulldatetemplate', 'organizer'));
+            $a->time = userdate($appslot->starttime, get_string('timetemplate', 'organizer'));
+            $appslot = get_string('mymoodle_app_slot', 'organizer', $a);
+            $str = $appslot;
+        }
     }
 
-    $now = time();
-
-    $slot = $DB->get_records_sql('SELECT * FROM {organizer_slots} WHERE
-            {organizer_slots}.teacherid = :uid AND
-            {organizer_slots}.organizerid = :oid AND
-            {organizer_slots}.starttime > :now
-            ORDER BY {organizer_slots}.starttime ASC', array('uid' => $USER->id, 'oid' => $organizer->id, 'now' => $now));
-
-    $nextslot = reset($slot);
-
-    if ($nextslot) {
-        $a = new stdClass();
-        $a->date = userdate($nextslot->starttime, get_string('fulldatetemplate', 'organizer'));
-        $a->time = userdate($nextslot->starttime, get_string('timetemplate', 'organizer'));
-        $nextslot = get_string('mymoodle_next_slot', 'organizer', $a);
-        $str .= '<div class="info organizerinfo">'.$nextslot.'</div>';
-    } else {
-        $noslots = get_string('mymoodle_no_slots', 'organizer');
-        $str .= '<div class="info organizerinfo">'.$noslots.'</div>';
-    }
-
-    $str .= '</div>';
 
     return $str;
 }
@@ -633,6 +633,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
         $str = '';
         $class = "";
         $element = "p";
+        $eventstr = "";
     }
 
     if ($organizer->isgrouporganizer) {
@@ -653,6 +654,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             }
 
             $str .= "<{$element} {$class}>$completedapp</{$element}>";
+            $eventstr .= " " . $completedapp;
         } else if ($app && isset($app->attended) && (int) $app->attended === 0) {
             $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
 
@@ -669,6 +671,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             }
 
             $str .= "<{$element} {$class}>$missedapp</{$element}>";
+            $eventstr .= " " . $missedapp;
 
             if (isset($organizer->duedate)) {
                 $a = new stdClass();
@@ -680,6 +683,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
                     $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
                 }
                 $str .= "<{$element} {$class}>$orgexpires</{$element}>";
+                $eventstr .= " " . $orgexpires;
             }
         } else if ($app && !isset($app->attended)) {
             $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
@@ -698,13 +702,16 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             if ($slot->starttime > time()) {
                 $upcomingapp = get_string('mymoodle_upcoming_app_group', 'organizer', $a);
                 $str .= "<{$element} {$class}>$upcomingapp</{$element}>";
+                $eventstr .= " " . $upcomingapp;
             } else {
                 $pending = get_string('mymoodle_pending_app_group', 'organizer', $a);
                 $str .= "<{$element} {$class}>$pending</{$element}>";
+                $eventstr .= " " . $pending;
             }
         } else {
             $noregslot = get_string('mymoodle_no_reg_slot', 'organizer');
             $str .= "<{$element} {$class}>$noregslot</{$element}>";
+            $eventstr .= " " . $noregslot;
 
             if (isset($organizer->duedate)) {
                 $a = new stdClass();
@@ -716,6 +723,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
                     $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
                 }
                 $str .= "<{$element} {$class}>$orgexpires</{$element}>";
+                $eventstr .= " " . $orgexpires;
             }
         }
     } else {
@@ -731,6 +739,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             }
 
             $str .= "<{$element} {$class}>$completedapp</{$element}>";
+            $eventstr .= " " . $completedapp;
         } else if ($app && isset($app->attended) && (int) $app->attended === 0) {
             $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
             $a = new stdClass();
@@ -742,6 +751,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             }
 
             $str .= "<{$element} {$class}>$missedapp</{$element}>";
+            $eventstr .= " " . $missedapp;
             if (isset($organizer->duedate)) {
                 $a = new stdClass();
                 $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
@@ -752,6 +762,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
                     $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
                 }
                 $str .= "<{$element} {$class}>$orgexpires</{$element}>";
+                $eventstr .= " " . $orgexpires;
             }
         } else if ($app && !isset($app->attended)) {
             $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
@@ -769,13 +780,16 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             if ($slot->starttime > time()) {
                 $upcomingapp = get_string('mymoodle_upcoming_app', 'organizer', $a);
                 $str .= "<{$element} {$class}>$upcomingapp</{$element}>";
+                $eventstr .= " " . $upcomingapp;
             } else {
                 $pending = get_string('mymoodle_pending_app', 'organizer', $a);
                 $str .= "<{$element} {$class}>$pending</{$element}>";
+                $eventstr .= " " . $pending;
             }
         } else {
             $noregslot = get_string('mymoodle_no_reg_slot', 'organizer');
             $str .= "<{$element} {$class}>$noregslot</{$element}>";
+            $eventstr .= " " . $noregslot;
 
             if (isset($organizer->duedate)) {
                 $a = new stdClass();
@@ -787,15 +801,18 @@ function organizer_get_overview_student($organizer, $forindex = false) {
                     $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
                 }
                 $str .= '<'.$element.' '.$class.'>'.$orgexpires.'</'.$element.'>';
+                $eventstr .= " " . $orgexpires;
             }
         }
     }
 
     if (!$forindex) {
-        $str .= '</div>';
+        // $str .= '</div>';
+        return $eventstr;
+    } else {
+        return $str;
     }
 
-    return $str;
 }
 
 function organizer_print_overview($courses, &$htmlarray) {
@@ -1113,13 +1130,21 @@ function organizer_remove_waitingqueueentries($organizer) {
 function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
                                                        \core_calendar\action_factory $factory) {
 
-    global $CFG;
+    global $CFG, $DB;
 
     require_once($CFG->dirroot . '/mod/organizer/locallib.php');
 
     $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
 
-    $name = get_string('organizer', 'organizer');
+    $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+
+    $props = $event->properties();
+    if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
+        $name = organizer_get_overview_student($organizer);
+    } else {
+        $name = organizer_get_overview_teacher($organizer, $props->eventtype, $props->uuid);
+    }
+
     $url = new \moodle_url('/mod/organizer/view.php', [
         'id' => $cm->id,
         'action' => 'show'
@@ -1170,4 +1195,45 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
 
     return $isvisible;
 }
+
+
+function organizer_create_calendarevent_instance($organizerid) {
+    global $CFG, $DB;
+
+    require_once($CFG->dirroot.'/calendar/lib.php');
+
+    $organizer = $DB->get_record('organizer', array('id' => $organizerid));
+    $course = $DB->get_record('course', array('id' => $organizer->course));
+
+    $now = time();
+
+    $event = new stdClass();
+    $event->eventtype = ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE;
+    $event->type = CALENDAR_EVENT_TYPE_ACTION;
+    $event->name = get_string('organizer', 'organizer') . ": " . $organizer->name;
+    $intro = get_string("course") . ": " . $course->fullname;
+    $event->description = array(
+        'text' => $intro,
+        'format' => $organizer->introformat
+    );
+    $event->courseid = $organizer->course;
+    $event->modulename = 'organizer';
+    $event->instance = $organizer->id;
+    $event->timestart = $now;
+    $event->timesort = $now;
+    $event->duration = 0;
+    $event->visible = instance_is_visible('organizer', $organizer);
+
+    calendar_event::create($event, false);
+    return $event->id;
+}
+
+
+
+
+
+
+
+
+
 
