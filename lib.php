@@ -39,7 +39,6 @@ define('ORGANIZER_VISIBILITY_SLOT', 2);
 
 define('ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT', 'Appointment');
 define('ORGANIZER_CALENDAR_EVENTTYPE_SLOT', 'Slot');
-define('ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE', 'Instance');
 
 require_once(dirname(__FILE__) . '/slotlib.php');
 
@@ -70,9 +69,7 @@ function organizer_add_instance($organizer) {
 
     $_SESSION["organizer_new_instance"] = $organizer->id;
 
-    if (isset($organizer->allowregistrationsfromdate) && $organizer->allowregistrationsfromdate != null) {
-        organizer_create_calendarevent_instance($organizer->id);
-    }
+    organizer_create_calendarevent_instance($organizer->id);
 
     return $organizer->id;
 }
@@ -561,46 +558,29 @@ function organizer_get_counters($organizer) {
     return $a;
 }
 
-function organizer_get_overview_teacher($organizer, $eventtype, $slotid) {
+function organizer_get_eventaction_slot_teacher($slotid) {
     global $DB;
 
-    $str = "";
+    $now = time();
 
-    if ($eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) { // Whole organizer instance
-        $a = organizer_get_counters($organizer);
+    $slot = $DB->get_records_sql('SELECT * FROM {organizer_slots} INNER JOIN {organizer_slot_appointments} ON 
+        {organizer_slots}.id = {organizer_slot_appointments}.slotid 
+        WHERE {organizer_slot_appointments}.slotid = :slotid AND 
+        {organizer_slots}.starttime > :now ', array('slotid' => $slotid, 'now' => $now));
 
-        if ($organizer->isgrouporganizer) {
-            $reg = get_string('mymoodle_registered_group', 'organizer', $a);
-            $att = get_string('mymoodle_attended_group', 'organizer', $a);
+    $appslot = reset($slot);
 
-        } else {
-            $reg = get_string('mymoodle_registered', 'organizer', $a);
-            $att = get_string('mymoodle_attended', 'organizer', $a);
+    $slotstr = "";
 
-        }
-
-        $str = $reg . ' / ' . $att;
-    } else {  // A single slot
-
-        $now = time();
-
-        $slot = $DB->get_records_sql('SELECT * FROM {organizer_slots} INNER JOIN {organizer_slot_appointments} ON 
-            {organizer_slots}.id = {organizer_slot_appointments}.slotid 
-            WHERE {organizer_slot_appointments}.slotid = :slotid AND 
-            {organizer_slots}.starttime > :now ', array('slotid' => $slotid, 'now' => $now));
-
-        $appslot = reset($slot);
-
-        if ($appslot) {
-            $a = new stdClass();
-            $a->date = userdate($appslot->starttime, get_string('fulldatetemplate', 'organizer'));
-            $a->time = userdate($appslot->starttime, get_string('timetemplate', 'organizer'));
-            $str = get_string('mymoodle_app_slot', 'organizer', $a);
-        }
+    if ($appslot) {
+        $a = new stdClass();
+        $a->date = userdate($appslot->starttime, get_string('fulldatetemplate', 'organizer'));
+        $a->time = userdate($appslot->starttime, get_string('timetemplate', 'organizer'));
+        $slotstr = get_string('mymoodle_app_slot', 'organizer', $a);
     }
 
 
-    return $str;
+    return $slotstr;
 }
 
 function organizer_fetch_group($organizer, $userid = null) {
@@ -622,7 +602,7 @@ function organizer_fetch_group($organizer, $userid = null) {
     return $group;
 }
 
-function organizer_get_overview_student($organizer, $forindex = false) {
+function organizer_get_eventaction_student($organizer, $forindex = false) {
     global $DB;
 
     if (!$forindex) {
@@ -829,9 +809,9 @@ function organizer_print_overview($courses, &$htmlarray) {
 
     foreach ($organizers as $organizer) {
         if (organizer_is_student_in_course($organizer->course, $USER->id)) {
-            $str = organizer_get_overview_student($organizer);
+            $str = organizer_get_eventaction_student($organizer);
         } else {
-            $str = organizer_get_overview_teacher($organizer);
+            $str = organizer_get_eventaction_slot_teacher($organizer);
         }
 
         if (empty($htmlarray[$organizer->course]['organizer'])) {
@@ -1141,9 +1121,9 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
 
     $props = $event->properties();
     if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
-        $name = organizer_get_overview_student($organizer);
+        $name = organizer_get_eventaction_student($organizer);
     } else {
-        $name = organizer_get_overview_teacher($organizer, $props->eventtype, $props->uuid);
+        $name = organizer_get_eventaction_slot_teacher($props->uuid);
     }
 
     if ($name) {
@@ -1168,9 +1148,7 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
 /**
  * Is the event visible?
  *
- * This is used to determine global visibility of an event in all places throughout Moodle. For example,
- * the ASSIGN_EVENT_TYPE_GRADINGDUE event will not be shown to students on their calendar, and
- * ASSIGN_EVENT_TYPE_DUE events will not be shown to teachers.
+ * This is used to determine global visibility of an event in all places throughout Moodle.
  *
  * @param calendar_event $event
  * @return bool Returns true if the event is visible to the current user, false otherwise.
@@ -1200,43 +1178,3 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
 
     return $isvisible;
 }
-
-
-function organizer_create_calendarevent_instance($organizerid) {
-    global $CFG, $DB;
-
-    require_once($CFG->dirroot.'/calendar/lib.php');
-
-    $organizer = $DB->get_record('organizer', array('id' => $organizerid));
-    $course = $DB->get_record('course', array('id' => $organizer->course));
-    
-    $event = new stdClass();
-    $event->eventtype = ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE;
-    $event->type = CALENDAR_EVENT_TYPE_ACTION;
-    $event->name = get_string('organizer', 'organizer') . ": " . $organizer->name;
-    $intro = get_string("course") . ": " . $course->fullname;
-    $event->description = array(
-        'text' => $intro,
-        'format' => $organizer->introformat
-    );
-    $event->courseid = $organizer->course;
-    $event->modulename = 'organizer';
-    $event->instance = $organizer->id;
-    $event->timestart = $organizer->allowregistrationsfromdate;
-    $event->timesort = $organizer->allowregistrationsfromdate;
-    $event->duration = 0;
-    $event->visible = instance_is_visible('organizer', $organizer);
-
-    calendar_event::create($event, false);
-    return $event->id;
-}
-
-
-
-
-
-
-
-
-
-
