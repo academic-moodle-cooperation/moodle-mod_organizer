@@ -408,10 +408,10 @@ function organizer_add_event_appointment($cmid, $appointment) {
 
     if (isset($appointment->eventid)) {
         return organizer_change_calendarevent($appointment->eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
-            $USER->id, $slot->starttime, $slot->duration, $groupid, $appointment);
+            $USER->id, $slot->starttime, $slot->duration, $groupid, 0);
     } else {
         return organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
-            $USER->id, $slot->starttime, $slot->duration, $groupid, $appointment);
+            $USER->id, $slot->starttime, $slot->duration, $groupid, 0);
     }
 }
 

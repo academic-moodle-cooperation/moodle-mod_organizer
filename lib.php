@@ -70,7 +70,9 @@ function organizer_add_instance($organizer) {
 
     $_SESSION["organizer_new_instance"] = $organizer->id;
 
-    organizer_create_calendarevent_instance($organizer->id);
+    if (isset($organizer->allowregistrationsfromdate) && $organizer->allowregistrationsfromdate != null) {
+        organizer_create_calendarevent_instance($organizer->id);
+    }
 
     return $organizer->id;
 }
@@ -560,7 +562,7 @@ function organizer_get_counters($organizer) {
 }
 
 function organizer_get_overview_teacher($organizer, $eventtype, $slotid) {
-    global $DB, $USER;
+    global $DB;
 
     $str = "";
 
@@ -593,8 +595,7 @@ function organizer_get_overview_teacher($organizer, $eventtype, $slotid) {
             $a = new stdClass();
             $a->date = userdate($appslot->starttime, get_string('fulldatetemplate', 'organizer'));
             $a->time = userdate($appslot->starttime, get_string('timetemplate', 'organizer'));
-            $appslot = get_string('mymoodle_app_slot', 'organizer', $a);
-            $str = $appslot;
+            $str = get_string('mymoodle_app_slot', 'organizer', $a);
         }
     }
 
@@ -1145,19 +1146,23 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
         $name = organizer_get_overview_teacher($organizer, $props->eventtype, $props->uuid);
     }
 
-    $url = new \moodle_url('/mod/organizer/view.php', [
-        'id' => $cm->id,
-        'action' => 'show'
-    ]);
-    $itemcount = 1;
-    $actionable = true;
+    if ($name) {
+        $url = new \moodle_url('/mod/organizer/view.php', [
+                'id' => $cm->id,
+                'action' => 'show'
+        ]);
+        $itemcount = 1;
+        $actionable = true;
 
-    return $factory->create_instance(
-        $name,
-        $url,
-        $itemcount,
-        $actionable
-    );
+        return $factory->create_instance(
+                $name,
+                $url,
+                $itemcount,
+                $actionable
+        );
+    } else {
+        return false;
+    }
 }
 
 /**
@@ -1204,9 +1209,7 @@ function organizer_create_calendarevent_instance($organizerid) {
 
     $organizer = $DB->get_record('organizer', array('id' => $organizerid));
     $course = $DB->get_record('course', array('id' => $organizer->course));
-
-    $now = time();
-
+    
     $event = new stdClass();
     $event->eventtype = ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE;
     $event->type = CALENDAR_EVENT_TYPE_ACTION;
@@ -1219,8 +1222,8 @@ function organizer_create_calendarevent_instance($organizerid) {
     $event->courseid = $organizer->course;
     $event->modulename = 'organizer';
     $event->instance = $organizer->id;
-    $event->timestart = $now;
-    $event->timesort = $now;
+    $event->timestart = $organizer->allowregistrationsfromdate;
+    $event->timesort = $organizer->allowregistrationsfromdate;
     $event->duration = 0;
     $event->visible = instance_is_visible('organizer', $organizer);
 
