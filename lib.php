@@ -20,6 +20,7 @@
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author        Andreas Windbichler
  * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -39,6 +40,8 @@ define('ORGANIZER_VISIBILITY_SLOT', 2);
 
 define('ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT', 'Appointment');
 define('ORGANIZER_CALENDAR_EVENTTYPE_SLOT', 'Slot');
+
+define('ONEWEEK', 604800);
 
 require_once(dirname(__FILE__) . '/slotlib.php');
 
@@ -68,8 +71,6 @@ function organizer_add_instance($organizer) {
     organizer_grade_item_update($organizer);
 
     $_SESSION["organizer_new_instance"] = $organizer->id;
-
-    organizer_create_calendarevent_instance($organizer->id);
 
     return $organizer->id;
 }
@@ -558,15 +559,19 @@ function organizer_get_counters($organizer) {
     return $a;
 }
 
-function organizer_get_eventaction_slot_teacher($slotid) {
+function organizer_get_eventaction_slot_teacher($eventid) {
     global $DB;
 
+    $slotid = $DB->get_field("event", "uuid", array("id" => $eventid));
+
     $now = time();
+    $displayeventto = $now + ONEWEEK;
 
     $slot = $DB->get_records_sql('SELECT * FROM {organizer_slots} INNER JOIN {organizer_slot_appointments} ON 
         {organizer_slots}.id = {organizer_slot_appointments}.slotid 
         WHERE {organizer_slot_appointments}.slotid = :slotid AND 
-        {organizer_slots}.starttime > :now ', array('slotid' => $slotid, 'now' => $now));
+        {organizer_slots}.starttime > :now AND {organizer_slots}.starttime < :displayeventto',
+            array('slotid' => $slotid, 'now' => $now, 'displayeventto' => $displayeventto));
 
     $appslot = reset($slot);
 
@@ -1110,7 +1115,6 @@ function organizer_remove_waitingqueueentries($organizer) {
  */
 function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
                                                        \core_calendar\action_factory $factory) {
-
     global $CFG, $DB;
 
     require_once($CFG->dirroot . '/mod/organizer/locallib.php');
@@ -1123,7 +1127,7 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
     if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
         $name = organizer_get_eventaction_student($organizer);
     } else {
-        $name = organizer_get_eventaction_slot_teacher($props->uuid);
+        $name = organizer_get_eventaction_slot_teacher($props->id);
     }
 
     if ($name) {
