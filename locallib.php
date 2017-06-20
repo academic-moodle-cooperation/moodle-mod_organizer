@@ -1054,11 +1054,13 @@ function organizer_fetch_my_group() {
     }
 }
 
-function organizer_fetch_user_group($userid) {
+function organizer_fetch_user_group($userid, $cmid = null) {
     global $DB;
 
-    $id = optional_param('id', 0, PARAM_INT);
-    $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
+    if ($cmid==null) {
+        $cmid = optional_param('id', 0, PARAM_INT);
+    }
+    $cm = get_coursemodule_from_id('organizer', $cmid, 0, false, MUST_EXIST);
 
     $params = array('groupingid' => $cm->groupingid, 'userid' => $userid);
     $query = "SELECT {groups}.id FROM {groups}

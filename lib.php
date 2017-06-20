@@ -1166,8 +1166,9 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
     if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
         $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
         if ($props->groupid!=0) {
-            $usergroup = organizer_fetch_user_group($props->userid);
-            $isvisible = $props->groupid == $usergroup ? true : false;
+            $cm = get_coursemodule_from_instance('organizer', $props->instance, $props->courseid, false, MUST_EXIST);
+            $usergroup = organizer_fetch_user_group($props->userid, $cm->id);
+            $isvisible = $props->groupid == $usergroup->id ? true : false;
         } else {
             $isvisible = $userid == $USER->id ? true : false;
         }
