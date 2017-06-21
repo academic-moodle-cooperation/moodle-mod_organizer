@@ -1228,11 +1228,7 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
         'format' => $organizer->introformat
     );
     $event->userid = $userid;
-    if ($eventtype==ORGANIZER_CALENDAR_EVENTTYPE_SLOT){
-        $event->courseid = 0;
-    } else {
-        $event->courseid = $organizer->course;
-    }
+    $event->courseid = $organizer->course;
     $event->groupid = $group;
     $event->modulename = 'organizer';
     $event->instance = $organizer->id;
