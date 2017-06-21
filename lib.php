@@ -194,7 +194,7 @@ function organizer_get_overview_link($organizer) {
 
     $cm = get_fast_modinfo($organizer->course)->instances['organizer'][$organizer->id];
 
-    $class = $organizer->visible == 0 ? "dimmed" : "";
+    $class = instance_is_visible('organizer', $organizer) ? "" : "dimmed";
 
     return '<div class="name">' . get_string('modulename', 'organizer') . ': <a class="' . $class . '" title="' . $organizer->name
             . '" href="' . $CFG->wwwroot . '/mod/organizer/view.php?id=' . $cm->id . '">'
