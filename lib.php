@@ -621,8 +621,9 @@ function organizer_get_eventaction_student($organizer, $forindex = false) {
         $str = '';
         $class = "";
         $element = "p";
-        $eventstr = "";
     }
+
+    $eventstr = "";
 
     if ($organizer->isgrouporganizer) {
         $group = organizer_fetch_group($organizer);
