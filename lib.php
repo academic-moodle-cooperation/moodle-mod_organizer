@@ -192,10 +192,12 @@ function organizer_print_recent_activity($course, $viewfullnames, $timestart) {
 function organizer_get_overview_link($organizer) {
     global $CFG;
 
+    $cm = get_fast_modinfo($organizer->course)->instances['organizer'][$organizer->id];
+
     $class = $organizer->visible == 0 ? "dimmed" : "";
 
     return '<div class="name">' . get_string('modulename', 'organizer') . ': <a class="' . $class . '" title="' . $organizer->name
-            . '" href="' . $CFG->wwwroot . '/mod/organizer/view.php?id=' . $organizer->coursemodule . '">'
+            . '" href="' . $CFG->wwwroot . '/mod/organizer/view.php?id=' . $cm->id . '">'
             . $organizer->name . '</a> </div>';
 }
 
