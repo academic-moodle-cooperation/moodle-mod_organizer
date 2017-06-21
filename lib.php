@@ -586,7 +586,6 @@ function organizer_get_eventaction_slot_teacher($eventid) {
         $slotstr = get_string('mymoodle_app_slot', 'organizer', $a);
     }
 
-
     return $slotstr;
 }
 
@@ -1129,7 +1128,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
 
     $props = $event->properties();
 
-    if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
+    if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) { // Userid is of the participant
         if($organizer = $DB->get_record('organizer', array('id' => $props->instance), '*', MUST_EXIST)) {
             if(!instance_is_visible('organizer', $organizer)) {
                 return false;
@@ -1139,12 +1138,13 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
         }
         $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
         $isvisible = $userid == $USER->id ? true : false;
-    } else {
+    } else {  // Eventtype slot: userid of teacher
         $context = context_module::instance($cm->id, MUST_EXIST);
         if (has_capability('mod/organizer:viewallslots', $context)) {
             $isvisible = true;
         } else {
-            $isvisible = false;
+            $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
+            $isvisible = $userid == $USER->id ? true : false;
         }
     }
 
