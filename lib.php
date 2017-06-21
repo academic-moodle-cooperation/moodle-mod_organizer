@@ -1122,8 +1122,9 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
 
     require_once($CFG->dirroot . '/mod/organizer/locallib.php');
 
-    $props = $event->properties();
+    $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
 
+    $props = $event->properties();
 
     if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
         if($organizer = $DB->get_record('organizer', array('id' => $props->instance), '*', MUST_EXIST)) {
@@ -1136,7 +1137,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
         $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
         $isvisible = $userid == $USER->id ? true : false;
     } else {
-        $context = context_module::instance($props->instance, MUST_EXIST);
+        $context = context_module::instance($cm->id, MUST_EXIST);
         if (has_capability('mod/organizer:viewallslots', $context)) {
             $isvisible = true;
         } else {
