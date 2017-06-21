@@ -41,7 +41,7 @@ define('ORGANIZER_VISIBILITY_SLOT', 2);
 define('ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT', 'Appointment');
 define('ORGANIZER_CALENDAR_EVENTTYPE_SLOT', 'Slot');
 
-define('ONEWEEK', 604800);
+define('EIGHTDAYS', 691200);
 
 require_once(dirname(__FILE__) . '/slotlib.php');
 
@@ -565,7 +565,7 @@ function organizer_get_eventaction_slot_teacher($eventid) {
     $slotid = $DB->get_field("event", "uuid", array("id" => $eventid));
 
     $now = time();
-    $displayeventto = $now + ONEWEEK;
+    $displayeventto = $now + EIGHTDAYS;
 
     $slot = $DB->get_records_sql('SELECT * FROM {organizer_slots} INNER JOIN {organizer_slot_appointments} ON 
         {organizer_slots}.id = {organizer_slot_appointments}.slotid 
@@ -793,51 +793,11 @@ function organizer_get_eventaction_student($organizer, $forindex = false) {
     }
 
     if (!$forindex) {
-        // $str .= '</div>';
         return $eventstr;
     } else {
         return $str;
     }
 
-}
-
-function organizer_print_overview($courses, &$htmlarray) {
-    global $USER;
-
-    if (empty($courses) || !is_array($courses) || count($courses) == 0) {
-        return array();
-    }
-
-    if (!$organizers = get_all_instances_in_courses('organizer', $courses)) {
-        return;
-    }
-
-    foreach ($organizers as $organizer) {
-        if (organizer_is_student_in_course($organizer->course, $USER->id)) {
-            $str = organizer_get_eventaction_student($organizer);
-        } else {
-            $str = organizer_get_eventaction_slot_teacher($organizer);
-        }
-
-        if (empty($htmlarray[$organizer->course]['organizer'])) {
-            $htmlarray[$organizer->course]['organizer'] = $str;
-        } else {
-            $htmlarray[$organizer->course]['organizer'] .= $str;
-        }
-    }
-}
-
-// FIXME replace this one with an alternative over capabilities.
-function organizer_is_student_in_course($courseid, $userid) {
-    global $DB;
-
-    $stud = $DB->get_records_sql('SELECT * FROM {role_assignments}
-            INNER JOIN {context} ON {role_assignments}.contextid = {context}.id
-            WHERE {role_assignments}.roleid = 5
-                AND {context}.instanceid = :courseid
-                AND {role_assignments}.userid = :userid', array('courseid' => $courseid,
-                                                                'userid'   => $userid));
-    return count($stud) > 0;
 }
 
 /**
@@ -1163,15 +1123,18 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
     require_once($CFG->dirroot . '/mod/organizer/locallib.php');
 
     $props = $event->properties();
+
+
     if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
-        $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
-        if ($props->groupid!=0) {
-            $cm = get_coursemodule_from_instance('organizer', $props->instance, $props->courseid, false, MUST_EXIST);
-            $usergroup = organizer_fetch_user_group($props->userid, $cm->id);
-            $isvisible = $props->groupid == $usergroup->id ? true : false;
+        if($organizer = $DB->get_record('organizer', array('id' => $props->instance), '*', MUST_EXIST)) {
+            if(!instance_is_visible('organizer', $organizer)) {
+                return false;
+            }
         } else {
-            $isvisible = $userid == $USER->id ? true : false;
+            return false;
         }
+        $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
+        $isvisible = $userid == $USER->id ? true : false;
     } else {
         $context = context_module::instance($props->instance, MUST_EXIST);
         if (has_capability('mod/organizer:viewallslots', $context)) {

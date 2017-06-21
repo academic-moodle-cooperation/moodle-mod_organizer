@@ -407,11 +407,11 @@ function organizer_add_event_appointment($cmid, $appointment) {
     $eventdescription = get_string('eventtemplatewithoutlinks', 'organizer', $a);
 
     if (isset($appointment->eventid)) {
-        return organizer_change_calendarevent($appointment->eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
-            $USER->id, $slot->starttime, $slot->duration, $groupid, 0);
+        return organizer_change_calendarevent($appointment->eventid, $organizer, $eventtitle, $eventdescription,
+                ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT, $appointment->userid, $slot->starttime, $slot->duration, $groupid, 0);
     } else {
         return organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
-            $USER->id, $slot->starttime, $slot->duration, $groupid, 0);
+                $appointment->userid, $slot->starttime, $slot->duration, $groupid, 0);
     }
 }
 
@@ -1227,11 +1227,10 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
         'text' => $intro,
         'format' => $organizer->introformat
     );
+    $event->userid = $userid;
     if ($eventtype==ORGANIZER_CALENDAR_EVENTTYPE_SLOT){
-        $event->userid = $userid;
         $event->courseid = 0;
     } else {
-        $event->userid = 0;
         $event->courseid = $organizer->course;
     }
     $event->groupid = $group;
@@ -1240,7 +1239,7 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
     $event->timestart = $timestart;
     $event->timesort = $timestart;
     $event->timeduration = $duration;
-    $event->visible = instance_is_visible('organizer', $organizer);
+    $event->visible = 1;
     $event->uuid = $uuid;
 
     calendar_event::create($event, false);
@@ -1264,11 +1263,10 @@ function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $even
         'text' => $intro,
         'format' => $organizer->introformat
     );
+    $event->userid = $userid;
     if ($eventtype==ORGANIZER_CALENDAR_EVENTTYPE_SLOT){
-        $event->userid = $userid;
         $event->courseid = 0;
     } else {
-        $event->userid = 0;
         $event->courseid = $organizer->course;
     }
     $data->groupid = $group;
@@ -1277,7 +1275,7 @@ function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $even
     $data->timestart = $timestart;
     $data->timesort = $timestart;
     $data->timeduration = $duration;
-    $data->visible = instance_is_visible('organizer', $organizer);
+    $data->visible = 1;
     $data->uuid = $uuid;
 
     $event->update($data, false);
