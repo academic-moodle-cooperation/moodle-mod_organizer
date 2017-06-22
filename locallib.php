@@ -1260,11 +1260,7 @@ function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $even
         'format' => $organizer->introformat
     );
     $event->userid = $userid;
-    if ($eventtype==ORGANIZER_CALENDAR_EVENTTYPE_SLOT){
-        $event->courseid = 0;
-    } else {
-        $event->courseid = $organizer->course;
-    }
+    $event->courseid = $organizer->course;
     $data->groupid = $group;
     $data->modulename = 'organizer';
     $data->instance = $organizer->id;

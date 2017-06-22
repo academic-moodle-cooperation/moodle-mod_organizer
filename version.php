@@ -32,5 +32,5 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version = 2017062100;
 $plugin->release = "v3.3.0"; // User-friendly version number.
 $plugin->maturity = MATURITY_STABLE;
-$plugin->requires = 2014041100; // Requires this Moodle version.
+$plugin->requires = 2017051200; // Requires this Moodle version.
 $plugin->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics).

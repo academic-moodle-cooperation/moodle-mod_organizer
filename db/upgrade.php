@@ -20,6 +20,7 @@
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author        Andreas Windbichler
  * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -343,6 +344,26 @@ function xmldb_organizer_upgrade($oldversion) {
 
         // Organizer savepoint reached.
         upgrade_mod_savepoint(true, 2016062800, 'organizer');
+    }
+
+    if ($oldversion < 2017062100) {
+
+        require_once(dirname(__FILE__) . '/../locallib.php');
+
+        $now = time();
+        $query = 'SELECT {organizer_slots}.eventid, {organizer_slots}.teacherid, {organizer_slot_appointments}.userid  
+                  FROM {organizer_slots} INNER JOIN {organizer_slot_appointments} ON 
+                  {organizer_slots}.id = {organizer_slot_appointments}.slotid 
+                  WHERE {organizer_slots}.starttime > :now ';
+        $records = $DB->get_records_sql($query, array('now' => $now));
+
+        foreach ($records as $record) {
+
+            organizer_change_calendarevent($record->eventid, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
+                    $timestart, $duration, $group, $uuid)
+        }
+
+        upgrade_mod_savepoint(true, 2017062100, 'organizer');
     }
 
     return true;
