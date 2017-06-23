@@ -353,7 +353,7 @@ function xmldb_organizer_upgrade($oldversion) {
         require_once(dirname(__FILE__) . '/../locallib.php');
 
         $now = time();
-        $query = 'SELECT {organizer_slots}.eventid, {organizer_slots}.id slotid, {organizer_slot_appointments}.id appid,
+        $query = 'SELECT {organizer_slot_appointments}.id appid, {organizer_slots}.eventid, {organizer_slots}.id slotid,
                   {organizer_slots}.teacherid slotuser,
                   {organizer_slot_appointments}.userid appuser,
                   {event}.userid eventuser,
