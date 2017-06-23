@@ -346,25 +346,48 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2016062800, 'organizer');
     }
 
-    if ($oldversion < 2017062100) {
+    if ($oldversion < 2017062300) {
+
+        // Changing forthcoming events created with organizer version 3.2 and before to work with calender action events
 
         require_once(dirname(__FILE__) . '/../locallib.php');
 
         $now = time();
-        $query = 'SELECT {organizer_slots}.eventid, {organizer_slots}.teacherid, {organizer_slot_appointments}.userid  
-                  FROM {organizer_slots} INNER JOIN {organizer_slot_appointments} ON 
-                  {organizer_slots}.id = {organizer_slot_appointments}.slotid 
-                  WHERE {organizer_slots}.starttime > :now ';
-        $records = $DB->get_records_sql($query, array('now' => $now));
+        $query = 'SELECT {organizer_slots}.eventid, {organizer_slots}.id slotid, {organizer_slot_appointments}.id appid,
+                  {organizer_slots}.teacherid slotuser,
+                  {organizer_slot_appointments}.userid appuser,
+                  {event}.userid eventuser,
+                  {organizer_slots}.organizerid
+                  FROM {organizer_slots} INNER JOIN {organizer_slot_appointments} ON
+                  {organizer_slots}.id = {organizer_slot_appointments}.slotid INNER JOIN {event} ON
+                  {organizer_slots}.eventid = {event}.id
+                  WHERE {event}.modulename <> :modulename';
+        $records = $DB->get_records_sql($query, array('modulename' => 'organizer'));
+
+        $query = "SELECT e.* FROM {event} e WHERE e.id = :eventid";
 
         foreach ($records as $record) {
 
-            organizer_change_calendarevent($record->eventid, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
-                    $timestart, $duration, $group, $uuid)
+            $event = $DB->get_record_sql($query, array("eventid" => $record->eventid));
+            $courseid = $DB->get_field('organizer', 'course', array ('id' => $record->organizerid));
+
+            $event->type = CALENDAR_EVENT_TYPE_ACTION;
+            $event->courseid = $courseid;
+            $event->modulename = 'organizer';
+
+            if ($record->eventuser == $record->appuser) {
+                $event->uuid = $record->appid;
+                $event->eventtype = ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT;
+            } else {
+                if ($record->eventuser == $record->slotuser) {
+                    $event->uuid = $record->slotid;
+                    $event->eventtype = ORGANIZER_CALENDAR_EVENTTYPE_SLOT;
+                }
+            }
+            $update = $DB->update_record('event', $event);
         }
 
-        upgrade_mod_savepoint(true, 2017062100, 'organizer');
+        upgrade_mod_savepoint(true, 2017062300, 'organizer');
     }
-
     return true;
 }
