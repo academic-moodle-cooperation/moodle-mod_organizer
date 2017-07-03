@@ -40,6 +40,7 @@ define('ORGANIZER_VISIBILITY_SLOT', 2);
 
 define('ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT', 'Appointment');
 define('ORGANIZER_CALENDAR_EVENTTYPE_SLOT', 'Slot');
+define('ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE', 'Instance');
 
 define('EIGHTDAYS', 691200);
 
@@ -69,6 +70,8 @@ function organizer_add_instance($organizer) {
     $organizer->id = $DB->insert_record('organizer', $organizer);
 
     organizer_grade_item_update($organizer);
+
+    organizer_change_event_instance($organizer->id);
 
     $_SESSION["organizer_new_instance"] = $organizer->id;
 
@@ -103,6 +106,11 @@ function organizer_update_instance($organizer) {
     }
 
     organizer_grade_item_update($organizer);
+
+    $eventid = $DB->get_field('event', 'id',
+            array('instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE));
+
+    organizer_change_event_instance($organizer->id, $eventid);
 
     return $DB->update_record('organizer', $organizer);
 }
@@ -200,6 +208,7 @@ function organizer_get_overview_link($organizer) {
             . '" href="' . $CFG->wwwroot . '/mod/organizer/view.php?id=' . $cm->id . '">'
             . $organizer->name . '</a> </div>';
 }
+
 
 function organizer_reset_course_form_definition(&$mform) {
     $mform->addElement('header', 'organizerheader', get_string('modulenameplural', 'organizer'));
@@ -588,6 +597,29 @@ function organizer_get_eventaction_slot_teacher($eventid) {
 
     return $slotstr;
 }
+
+
+function organizer_get_eventaction_instance_teacher($organizer) {
+
+    $a = organizer_get_counters($organizer);
+
+    if ($organizer->isgrouporganizer) {
+        if ($a->attended == 0) {
+            $str = get_string('mymoodle_registered_group_short', 'organizer', $a);
+        } else {
+            $str = get_string('mymoodle_attended_group_short', 'organizer', $a);
+        }
+    } else {
+        if ($a->attended == 0) {
+            $str = get_string('mymoodle_registered_short', 'organizer', $a);
+        } else {
+            $str = get_string('mymoodle_attended_short', 'organizer', $a);
+        }
+    }
+
+    return $str;
+}
+
 
 function organizer_get_eventaction_student($organizer) {
     global $DB;
@@ -1337,9 +1369,7 @@ function organizer_remove_waitingqueueentries($organizer) {
  */
 function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
                                                        \core_calendar\action_factory $factory) {
-    global $CFG, $DB;
-
-    require_once($CFG->dirroot . '/mod/organizer/locallib.php');
+    global $DB;
 
     $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
 
@@ -1349,7 +1379,11 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
     if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
         $name = organizer_get_eventaction_student($organizer);
     } else {
-        $name = organizer_get_eventaction_slot_teacher($props->id);
+        if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {
+            $name = organizer_get_eventaction_instance_teacher($organizer);
+        } else {
+            $name = organizer_get_eventaction_slot_teacher($props->id);
+        }
     }
 
     if ($name) {
@@ -1382,8 +1416,6 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
 function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
     global $CFG, $USER, $DB;
 
-    require_once($CFG->dirroot . '/mod/organizer/locallib.php');
-
     $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
 
     $props = $event->properties();
@@ -1409,4 +1441,86 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
     }
 
     return $isvisible;
+}
+
+function organizer_change_event_instance($organizerid, $eventid = false) {
+    global $DB, $USER;
+
+    $organizer = $DB->get_record('organizer', array('id' => $organizerid));
+
+    $eventtitle = $organizer->name;
+    $eventdescription = $organizer->intro;
+
+    $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : 0;
+    $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
+
+    if ($eventid) {
+        return organizer_change_calendarevent($eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
+                $USER->id, $startdate, $duration, 0, $organizerid);
+    } else {
+        return organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
+                $USER->id, $startdate, $duration, 0, $organizerid);
+    }
+}
+
+function organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, $eventtype, $userid,
+        $timestart, $duration, $group, $uuid) {
+    global $CFG;
+
+    require_once($CFG->dirroot.'/calendar/lib.php');
+
+    $event = new stdClass();
+    $event->eventtype = $eventtype;
+    $event->type = CALENDAR_EVENT_TYPE_ACTION;
+    $event->name = $eventtitle;
+    $intro = strip_pluginfile_content($eventdescription);
+    $event->description = array(
+            'text' => $intro,
+            'format' => $organizer->introformat
+    );
+    $event->userid = $userid;
+    $event->courseid = $organizer->course;
+    $event->groupid = $group;
+    $event->modulename = 'organizer';
+    $event->instance = $organizer->id;
+    $event->timestart = $timestart;
+    $event->timesort = $timestart;
+    $event->timeduration = $duration;
+    $event->visible = 1;
+    $event->uuid = $uuid;
+
+    calendar_event::create($event, false);
+    return $event->id;
+}
+
+function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
+        $timestart, $duration, $group, $uuid) {
+    global $CFG;
+
+    require_once($CFG->dirroot.'/calendar/lib.php');
+
+    $event = calendar_event::load($eventid);
+
+    $data = new stdClass();
+    $data->eventtype = $eventtype;
+    $data->type = CALENDAR_EVENT_TYPE_ACTION;
+    $data->name = $eventtitle;
+    $intro = strip_pluginfile_content($eventdescription);
+    $data->description = array(
+            'text' => $intro,
+            'format' => $organizer->introformat
+    );
+    $event->userid = $userid;
+    $event->courseid = $organizer->course;
+    $data->groupid = $group;
+    $data->modulename = 'organizer';
+    $data->instance = $organizer->id;
+    $data->timestart = $timestart;
+    $data->timesort = $timestart;
+    $data->timeduration = $duration;
+    $data->visible = 1;
+    $data->uuid = $uuid;
+
+    $event->update($data, false);
+    return $event->id;
 }

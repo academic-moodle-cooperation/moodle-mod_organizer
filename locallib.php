@@ -345,8 +345,9 @@ function organizer_add_event_slot($cmid, $slot) {
     }
 }
 
+
 function organizer_add_event_appointment($cmid, $appointment) {
-    global $DB, $USER;
+    global $DB;
 
     if (is_number($appointment)) {
         $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $appointment));
@@ -1209,67 +1210,4 @@ function organizer_fetch_groupusers($groupid) {
     }
 
     return $users;
-}
-
-
-function organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, $eventtype, $userid,
-        $timestart, $duration, $group, $uuid) {
-    global $CFG;
-
-    require_once($CFG->dirroot.'/calendar/lib.php');
-
-    $event = new stdClass();
-    $event->eventtype = $eventtype;
-    $event->type = CALENDAR_EVENT_TYPE_ACTION;
-    $event->name = $eventtitle;
-    $intro = strip_pluginfile_content($eventdescription);
-    $event->description = array(
-        'text' => $intro,
-        'format' => $organizer->introformat
-    );
-    $event->userid = $userid;
-    $event->courseid = $organizer->course;
-    $event->groupid = $group;
-    $event->modulename = 'organizer';
-    $event->instance = $organizer->id;
-    $event->timestart = $timestart;
-    $event->timesort = $timestart;
-    $event->timeduration = $duration;
-    $event->visible = 1;
-    $event->uuid = $uuid;
-
-    calendar_event::create($event, false);
-    return $event->id;
-}
-
-function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
-        $timestart, $duration, $group, $uuid) {
-    global $CFG;
-
-    require_once($CFG->dirroot.'/calendar/lib.php');
-
-    $event = calendar_event::load($eventid);
-
-    $data = new stdClass();
-    $data->eventtype = $eventtype;
-    $data->type = CALENDAR_EVENT_TYPE_ACTION;
-    $data->name = $eventtitle;
-    $intro = strip_pluginfile_content($eventdescription);
-    $data->description = array(
-        'text' => $intro,
-        'format' => $organizer->introformat
-    );
-    $event->userid = $userid;
-    $event->courseid = $organizer->course;
-    $data->groupid = $group;
-    $data->modulename = 'organizer';
-    $data->instance = $organizer->id;
-    $data->timestart = $timestart;
-    $data->timesort = $timestart;
-    $data->timeduration = $duration;
-    $data->visible = 1;
-    $data->uuid = $uuid;
-
-    $event->update($data, false);
-    return $event->id;
 }
