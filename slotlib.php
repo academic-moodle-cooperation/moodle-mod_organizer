@@ -139,20 +139,16 @@ function organizer_get_next_user_appointment($organizer, $userid = null) {
     }
 
     $todaymidnight = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
-    $paramssql = array('organizerid' => $organizer->id, 'userid' => $userid, 'todaymidnight' => $todaymidnight);
 
     if ($organizer->isgrouporganizer) {
-        $groupapps = $DB->get_records_sql('SELECT a.* FROM {organizer_slot_appointments} a
-            INNER JOIN {organizer_slots} s ON a.slotid = s.id
-            WHERE a.groupid = :groupid AND s.organizerid = :organizerid
-            ORDER BY a.id DESC', $params);
-
+        $groupid = organizer_fetch_user_group($userid);
+        $paramssql = array('organizerid' => $organizer->id, 'groupid' => $groupid, 'todaymidnight' => $todaymidnight);
         $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
                   INNER JOIN {organizer_slots} s ON a.slotid = s.id
-                  WHERE s.organizerid = :organizerid AND a.userid = :userid AND s.starttime > :todaymidnight
+                  WHERE s.organizerid = :organizerid AND a.groupid = :groupid AND s.starttime > :todaymidnight
                   ORDER BY s.starttime ASC";
-
     } else {
+        $paramssql = array('organizerid' => $organizer->id, 'userid' => $userid, 'todaymidnight' => $todaymidnight);
         $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
                   INNER JOIN {organizer_slots} s ON a.slotid = s.id
                   WHERE s.organizerid = :organizerid AND a.userid = :userid AND s.starttime > :todaymidnight

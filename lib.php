@@ -621,6 +621,27 @@ function organizer_get_eventaction_instance_teacher($organizer) {
 }
 
 
+function organizer_get_eventaction_instance_student($organizer) {
+
+    $app = organizer_get_next_user_appointment($organizer);
+
+    if ($app) {
+        if ($organizer->isgrouporganizer) {
+            $str = get_string('mymoodle_reg_slot_group', 'organizer');
+        } else {
+            $str = get_string('mymoodle_reg_slot', 'organizer');
+        }
+    } else {
+        if ($organizer->isgrouporganizer) {
+            $str = get_string('mymoodle_no_reg_slot_group', 'organizer');
+        } else {
+            $str = get_string('mymoodle_no_reg_slot', 'organizer');
+        }
+    }
+
+    return $str;
+}
+
 function organizer_get_eventaction_student($organizer) {
     global $DB;
 
@@ -1376,7 +1397,12 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
         $name = organizer_get_eventaction_student($organizer);
     } else {
         if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {
-            $name = organizer_get_eventaction_instance_teacher($organizer);
+            $context = context_module::instance($cm->id, MUST_EXIST);
+            if (has_capability('mod/organizer:viewallslots', $context)) {
+                $name = organizer_get_eventaction_instance_teacher($organizer);
+            } else {
+                $name = organizer_get_eventaction_instance_student($organizer);
+            }
         } else {
             $name = organizer_get_eventaction_slot_teacher($props->id);
         }
@@ -1447,7 +1473,7 @@ function organizer_change_event_instance($organizerid, $eventid = false) {
     $eventtitle = $organizer->name;
     $eventdescription = $organizer->intro;
 
-    $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : 0;
+    $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : time();
     $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
 
     if ($eventid) {

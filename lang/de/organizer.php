@@ -277,6 +277,8 @@ $string['mymoodle_pending_app_group'] = 'Ausstehende Bewertung des Termins Ihrer
 $string['mymoodle_upcoming_app'] = 'Ihr Termin findet am {$a->date} um {$a->time} im/in {$a->location} statt';
 $string['mymoodle_upcoming_app_group'] = 'Der Termin Ihrer Gruppe, {$a->groupname}, findet am {$a->date} um {$a->time} im/in {$a->location} statt';
 $string['mymoodle_organizer_expired'] = 'Dieser Terminplaner lief am {$a->date} um {$a->time} ab. Sie können ihn nicht mehr benutzen';
+$string['mymoodle_reg_slot'] = 'Sie haben sich bereits für einen Zeitslot angemeldet';
+$string['mymoodle_reg_slot_group'] = 'Ihre Gruppe {$a->groupname} hat sich bereits für einen Zeitslot angemeldet';
 $string['mymoodle_no_reg_slot'] = 'Sie haben sich noch nicht für einen Zeitslot angemeldet';
 $string['mymoodle_no_reg_slot_group'] = 'Ihre Gruppe {$a->groupname} hat sich noch nicht für einen Zeitslot angemeldet';
 

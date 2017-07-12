@@ -295,6 +295,8 @@ $string['mymoodle_pending_app_group'] = 'Your group {$a->groupname} appointment 
 $string['mymoodle_upcoming_app'] = 'Your appointment will take place on {$a->date} at {$a->time} at {$a->location}';
 $string['mymoodle_upcoming_app_group'] = 'Appointment of your group, {$a->groupname}, will take place on {$a->date} at {$a->time} at {$a->location}';
 $string['mymoodle_organizer_expired'] = 'This organizer expired on {$a->date} at {$a->time}. You can no longer use it';
+$string['mymoodle_reg_slot'] = 'You have already registered to a time slot';
+$string['mymoodle_reg_slot_group'] = 'Your group {$a->groupname} has already registered to a time slot';
 $string['mymoodle_no_reg_slot'] = 'You have not registered to a time slot yet';
 $string['mymoodle_no_reg_slot_group'] = 'Your group {$a->groupname} has not registered to a time slot yet';
 
