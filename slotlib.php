@@ -97,7 +97,7 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
     $app = reset($apps);
     if ($organizer->isgrouporganizer && $mergegroupapps && $app !== false) {
         $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
-        $query = "SELECT a.* FROM {organizer_slot_appointments} a
+        $query = "SELECT a.*, s. FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid AND s.id = :slotid
         ORDER BY a.id DESC";
@@ -126,6 +126,45 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
 
     return $apps;
 }
+
+function organizer_get_next_user_appointment($organizer, $userid = null) {
+    global $DB, $USER;
+
+    if ($userid == null) {
+        $userid = $USER->id;
+    }
+
+    if (is_number($organizer) && $organizer == intval($organizer)) {
+        $organizer = $DB->get_record('organizer', array('id' => $organizer));
+    }
+
+    $todaymidnight = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
+    $paramssql = array('organizerid' => $organizer->id, 'userid' => $userid, 'todaymidnight' => $todaymidnight);
+
+    if ($organizer->isgrouporganizer) {
+        $groupapps = $DB->get_records_sql('SELECT a.* FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE a.groupid = :groupid AND s.organizerid = :organizerid
+            ORDER BY a.id DESC', $params);
+
+        $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
+                  INNER JOIN {organizer_slots} s ON a.slotid = s.id
+                  WHERE s.organizerid = :organizerid AND a.userid = :userid AND s.starttime > :todaymidnight
+                  ORDER BY s.starttime ASC";
+
+    } else {
+        $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
+                  INNER JOIN {organizer_slots} s ON a.slotid = s.id
+                  WHERE s.organizerid = :organizerid AND a.userid = :userid AND s.starttime > :todaymidnight
+                  ORDER BY s.starttime ASC";
+    }
+    $apps = $DB->get_records_sql($query, $paramssql);
+
+    $app = reset($apps);
+
+    return $app;
+}
+
 
 class organizer_slot {
 
@@ -287,10 +326,11 @@ class organizer_slot {
     }
 
     /** Waiting list
-     * Returns the position of a given group in this slot's queue starting at 1.
-     * Returns 0 if the group is not in the queue.
+     *  Returns the position of a given group in this slot's queue starting at 1.
+     *  Returns 0 if the group is not in the queue.
      *
-     * @param int $userid The ID of the user.
+     * @param Int $groupid The ID of the group.
+     * @return Int the group's position in queue
      */
     public function is_group_in_queue($groupid = 0) {
         $result = 0;
@@ -320,8 +360,8 @@ class organizer_slot {
     }
 
     /** Waiting list
-     * Returns the next entry of the waiting queue for this slot if the queue is not empty,
-     * null otherwise.
+     *  Returns the next entry of the waiting queue for this slot if the queue is not empty,
+     *  null otherwise.
      *
      * @return Ambigous <NULL, mixed>
      */

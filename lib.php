@@ -624,11 +624,7 @@ function organizer_get_eventaction_instance_teacher($organizer) {
 function organizer_get_eventaction_student($organizer) {
     global $DB;
 
-    $appid = $DB->get_field("event", "uuid", array("id" => $organizer->eventid));
-    $query = "SELECT a.* FROM {organizer_slot_appointments} a
-            WHERE a.id = :appid ORDER BY a.id DESC";
-    $apps = $DB->get_records_sql($query, array("appid" => $appid));
-    $app = reset($apps);
+    $app = organizer_get_next_user_appointment($organizer);
 
     $eventstr = "";
 
