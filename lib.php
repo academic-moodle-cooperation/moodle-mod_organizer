@@ -1442,8 +1442,10 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
 
     $props = $event->properties();
 
-    if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) { // Userid is of the participant
-        if($organizer = $DB->get_record('organizer', array('id' => $props->instance), '*', MUST_EXIST)) {
+    $organizer = $DB->get_record('organizer', array('id' => $props->instance), '*', MUST_EXIST);
+
+    if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) { // uuid is Userid of participant
+        if ($organizer) {
             if(!instance_is_visible('organizer', $organizer)) {
                 return false;
             }
@@ -1452,13 +1454,24 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
         }
         $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
         $isvisible = $userid == $USER->id ? true : false;
-    } else {  // Eventtype slot: userid of teacher
+    } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT) {  // Eventtype slot: uuid is userid of teacher
         $context = context_module::instance($cm->id, MUST_EXIST);
         if (has_capability('mod/organizer:viewallslots', $context)) {
             $isvisible = true;
         } else {
             $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
             $isvisible = $userid == $USER->id ? true : false;
+        }
+    } else {  // if eventtype instance
+        $a = organizer_get_counters($organizer);
+        if ($a->total == 0) {
+            $isvisible = true;
+        } else if ( $organizer->grade != 0 &&  $a->attended < $a->total) { // if grading is active
+            $isvisible = true;
+        } else if ($a->registered < $a->total) {
+            $isvisible = true;
+        } else {
+            $isvisible = false;
         }
     }
 
