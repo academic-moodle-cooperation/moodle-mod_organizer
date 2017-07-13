@@ -1436,20 +1436,19 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
  * @return bool Returns true if the event is visible to the current user, false otherwise.
  */
 function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
-    global $CFG, $USER, $DB;
+    global $USER, $DB;
 
     $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
 
     $props = $event->properties();
 
-    $organizer = $DB->get_record('organizer', array('id' => $props->instance), '*', MUST_EXIST);
+    $organizer = $DB->get_record('organizer', array('id' => $props->instance), '*', IGNORE_MISSING);
 
+    if ($organizer == false) {
+        return false;
+    }
     if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) { // uuid is Userid of participant
-        if ($organizer) {
-            if(!instance_is_visible('organizer', $organizer)) {
-                return false;
-            }
-        } else {
+        if(!instance_is_visible('organizer', $organizer)) {
             return false;
         }
         $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
@@ -1459,19 +1458,29 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
         if (has_capability('mod/organizer:viewallslots', $context)) {
             $isvisible = true;
         } else {
-            $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
-            $isvisible = $userid == $USER->id ? true : false;
-        }
-    } else {  // if eventtype instance
-        $a = organizer_get_counters($organizer);
-        if ($a->total == 0) {
-            $isvisible = true;
-        } else if ( $organizer->grade != 0 &&  $a->attended < $a->total) { // if grading is active
-            $isvisible = true;
-        } else if ($a->registered < $a->total) {
-            $isvisible = true;
-        } else {
             $isvisible = false;
+        }
+    } else {  // if eventtype instance: ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE
+        $context = context_module::instance($cm->id, MUST_EXIST);
+        if (!is_enrolled($context)) {
+            return false;
+        }
+        if (has_capability('mod/organizer:viewallslots', $context)) {
+            $a = organizer_get_counters($organizer);
+            if ($a->total == 0) {
+                $isvisible = true;
+            } else if ($organizer->grade != 0 && $a->attended < $a->total) { // if grading is active
+                $isvisible = true;
+            } else if ($a->registered < $a->total) {
+                $isvisible = true;
+            } else {
+                $isvisible = false;
+            }
+        } else if (has_capability('mod/organizer:viewstudentview', $context)) {
+            if (!instance_is_visible('organizer', $organizer)) {
+                return false;
+            }
+            $isvisible = true;
         }
     }
 
