@@ -120,13 +120,13 @@ function organizer_add_appointment_slots($data) {
     $startdate = $data->startdate;
     $enddate = $data->enddate;
 
-    for ($mondaydate = strtotime('monday this week', $startdate); $mondaydate <= $enddate; $mondaydate += 604800) {
+    for ($daydate = $startdate; $daydate <= $enddate; $daydate += 604800) {
 
         foreach ($data->newslots as $slot) {
             if ($slot['day'] == -1) {
                 continue;
             }
-            $slot['date'] = organizer_get_day_date($slot['day'], $mondaydate);
+            $slot['date'] = organizer_get_day_date($slot['day'], $daydate);
             if ($slot['date'] < $startdate || $slot['date'] > $enddate) {
                 continue;
             }
@@ -206,57 +206,56 @@ function organizer_get_slotstarttime($slotdate, $time) {
     return $starttime;
 }
 
-function organizer_get_day_date($day, $startdate) {
-    $date = null;
+function organizer_get_day_date($dayindex, $dateday) {
 
-    switch($day) {
-        case 0:
-            if(date('w', $startdate) == 1) {
-                $date = $startdate;
+    switch($dayindex) {
+        case 0:  // Monday
+            if(date('l', $dateday) == 'Monday') {
+                $date = $dateday;
             } else {
-                $date = strtotime("next Monday", $startdate);
+                $date = strtotime("next Monday", $dateday);
             }
             break;
-        case 1:
-            if(date('w', $startdate) == 2) {
-                $date = $startdate;
+        case 1:  // Tuesday
+            if(date('l', $dateday) == 'Tuesday') {
+                $date = $dateday;
             } else {
-                $date = strtotime("next Tuesday", $startdate);
+                $date = strtotime("next Tuesday", $dateday);
             }
             break;
-        case 2:
-            if(date('w', $startdate) == 3) {
-                $date = $startdate;
+        case 2:  // Wednesday
+            if(date('l', $dateday) == 'Wednesday') {
+                $date = $dateday;
             } else {
-                $date = strtotime("next Wednesday", $startdate);
+                $date = strtotime("next Wednesday", $dateday);
             }
             break;
-        case 3:
-            if(date('w', $startdate) == 4) {
-                $date = $startdate;
+        case 3:  // Thursday
+            if(date('l', $dateday) == 'Thursday') {
+                $date = $dateday;
             } else {
-                $date = strtotime("next Thursday", $startdate);
+                $date = strtotime("next Thursday", $dateday);
             }
             break;
-        case 4:
-            if(date('w', $startdate) == 5) {
-                $date = $startdate;
+        case 4:  // Friday
+            if(date('l', $dateday) == 'Friday') {
+                $date = $dateday;
             } else {
-                $date = strtotime("next Friday", $startdate);
+                $date = strtotime("next Friday", $dateday);
             }
             break;
-        case 5:
-            if(date('w', $startdate) == 6) {
-                $date = $startdate;
+        case 5:  // Saturday
+            if(date('l', $dateday) == 'Saturday') {
+                $date = $dateday;
             } else {
-                $date = strtotime("next Saturday", $startdate);
+                $date = strtotime("next Saturday", $dateday);
             }
             break;
-        case 6:
-            if(date('w', $startdate) == 7) {
-                $date = $startdate;
+        case 6:  // Sunday
+            if(date('l', $dateday) == 'Sunday') {
+                $date = $dateday;
             } else {
-                $date = strtotime("next Sunday", $startdate);
+                $date = strtotime("next Sunday", $dateday);
             }
             break;
         default:
@@ -653,7 +652,6 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
     return $ok;
 }
 
-// Waiting list: changed function
 function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sendmessage = false, $teacherapplicantid = null) {
     global $DB, $USER, $CFG;
 
@@ -737,7 +735,6 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     return $appointment->id;
 }
 
-// Waiting list new function
 function organizer_queue_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0) {
     global $DB;
 

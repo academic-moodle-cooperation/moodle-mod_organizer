@@ -100,7 +100,6 @@ function organizer_update_instance($organizer) {
         $organizer->duedate = null;
     }
 
-    // waiting list
     if (isset($organizer->queue) && $organizer->queue == 0) {
         organizer_remove_waitingqueueentries($organizer);
     }
@@ -1345,7 +1344,7 @@ function organizer_supports($feature) {
  *                        will know about (most noticeably, an icon).
  */
 function organizer_get_coursemodule_info($coursemodule) {
-    global $CFG, $DB;
+    global $DB;
 
     $dbparams = array('id' => $coursemodule->instance);
     $fields = 'id, name, alwaysshowdescription, allowregistrationsfromdate, intro, introformat';
@@ -1364,7 +1363,6 @@ function organizer_get_coursemodule_info($coursemodule) {
     return $result;
 }
 
-// waiting list
 function organizer_remove_waitingqueueentries($organizer) {
     global $DB;
 
@@ -1403,8 +1401,10 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
             } else {
                 $name = organizer_get_eventaction_instance_student($organizer);
             }
-        } else {
+        } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT){
             $name = organizer_get_eventaction_slot_teacher($props->id);
+        } else {
+            return false;
         }
     }
 
@@ -1448,7 +1448,8 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
         return false;
     }
     if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) { // uuid is Userid of participant
-        if(!instance_is_visible('organizer', $organizer)) {
+        $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid), IGNORE_MISSING);
+        if(!(instance_is_visible('organizer', $organizer) && $courseisvisible)) {
             return false;
         }
         $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
@@ -1460,7 +1461,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
         } else {
             $isvisible = false;
         }
-    } else {  // if eventtype instance: ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE
+    } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {  // eventtype instance: uuid is instance-id
         $context = context_module::instance($cm->id, MUST_EXIST);
         if (!is_enrolled($context)) {
             return false;
@@ -1477,11 +1478,18 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
                 $isvisible = false;
             }
         } else if (has_capability('mod/organizer:viewstudentview', $context)) {
-            if (!instance_is_visible('organizer', $organizer)) {
+            $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid), IGNORE_MISSING);
+            if(!(instance_is_visible('organizer', $organizer) && $courseisvisible)) {
                 return false;
             }
-            $isvisible = true;
+            if (organizer_get_last_user_appointment($organizer)) {
+                $isvisible = false;
+            } else {
+                $isvisible = true;
+            }
         }
+    } else {
+        $isvisible = false;
     }
 
     return $isvisible;
@@ -1495,13 +1503,15 @@ function organizer_change_event_instance($organizerid, $eventid = false) {
     $eventtitle = $organizer->name;
     $eventdescription = $organizer->intro;
 
-    $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : time();
-    $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
 
     if ($eventid) {
+        $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : time();
+        $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
         return organizer_change_calendarevent($eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
                 $USER->id, $startdate, $duration, 0, $organizerid);
     } else {
+        $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : 0;
+        $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
         return organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
                 $USER->id, $startdate, $duration, 0, $organizerid);
     }

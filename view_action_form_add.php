@@ -235,7 +235,9 @@ class organizer_add_slots_form extends moodleform {
         if ($data['startdate'] != 0 && $data['enddate'] != 0) {
             $today = mktime(0, 0, 0, date("m", time()), date("d", time()), date("Y", time()));
             if ($data['startdate'] < $today) {
-                $errors['startdate'] = get_string('err_startdate', 'organizer') . ' ('
+                $a = new stdClass();
+                $a->now = userdate($data['startdate'], get_string('datetemplate', 'organizer'));
+                $errors['startdate'] = get_string('err_startdate', 'organizer', $a) . ' (' . get_string("today") . ": "
                         . userdate($today, get_string('datetemplate', 'organizer')) . ')';
             }
             if ($data['startdate'] > $data['enddate']) {

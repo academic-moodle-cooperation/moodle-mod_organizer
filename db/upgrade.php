@@ -348,11 +348,10 @@ function xmldb_organizer_upgrade($oldversion) {
 
     if ($oldversion < 2017062300) {
 
-        // Changing forthcoming events created with organizer version 3.2 and before to work with calender action events
+        // Changing events created with organizer version 3.2 and before to work with calender action events
 
         require_once(dirname(__FILE__) . '/../locallib.php');
 
-        $now = time();
         $query = 'SELECT {organizer_slot_appointments}.id appid, {organizer_slots}.eventid, {organizer_slots}.id slotid,
                   {organizer_slots}.teacherid slotuser,
                   {organizer_slot_appointments}.userid appuser,
@@ -385,6 +384,13 @@ function xmldb_organizer_upgrade($oldversion) {
                 }
             }
             $update = $DB->update_record('event', $event);
+            // Insert event-ds for the organizer instance, if there is none yet
+            if (!$DB->get_field('event', 'id',
+                    array ('modulename' => 'organizer',
+                            'instance' => $record->organizerid,
+                            'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE))) {
+                organizer_change_event_instance($record->organizerid);
+            };
         }
 
         upgrade_mod_savepoint(true, 2017062300, 'organizer');
