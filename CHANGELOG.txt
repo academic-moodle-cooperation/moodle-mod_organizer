@@ -1,9 +1,10 @@
 CHANGELOG
 =========
-3.3.0 (2017-06-21)
+3.3.0 (2017-07-16)
 ------------------
 
 * Moodle 3.3 compatible version
+* [FEATURE] #4500 Replace modulename_print_overview()-notifications by calendar entries with action events
 * [FEATURE] #3112 Better recognizable icons (svg)
 * [FIXED] #4481 Error message when selecting no action option on slot overview page
 * [FEATURE] #3780 Participantslist in slot overview table newly formatted
