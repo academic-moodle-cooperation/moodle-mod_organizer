@@ -17,13 +17,13 @@
 /**
  * view_action_form_comment.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -33,7 +33,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/slotlib.php');
 
-class organizer_comment_slot_form extends moodleform {
+class organizer_comment_slot_form extends moodleform
+{
     protected function definition() {
         global $DB, $USER;
 
@@ -47,12 +48,16 @@ class organizer_comment_slot_form extends moodleform {
         $mform->setType('slot', PARAM_INT);
         $mform->setType('comment', PARAM_INT);
 
-        $mform->addElement('textarea', 'comments', get_string('appointmentcomments', 'organizer'),
-                array('wrap' => 'virtual', 'rows' => '10', 'cols' => '80'));
+        $mform->addElement(
+            'textarea', 'comments', get_string('appointmentcomments', 'organizer'),
+            array('wrap' => 'virtual', 'rows' => '10', 'cols' => '80')
+        );
         $mform->setType('comments', PARAM_RAW);
 
-        $comments = $DB->get_field('organizer_slot_appointments', 'comments',
-                array('slotid' => $data['slot'], 'userid' => $USER->id));
+        $comments = $DB->get_field(
+            'organizer_slot_appointments', 'comments',
+            array('slotid' => $data['slot'], 'userid' => $USER->id)
+        );
 
         $mform->setDefault('comments', $comments);
 

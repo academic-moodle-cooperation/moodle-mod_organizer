@@ -25,62 +25,66 @@
  */
 
 
-define(['jquery', 'core/log'], function($, log) {
+define(
+    ['jquery', 'core/log'], function($, log) {
 
-    /**
+        /**
      * @constructor
      * @alias module:mod_datalynx/adddayslot
      */
-    var Adddayslot = function() {
+        var Adddayslot = function() {
 
-        this.totalslots = 0;
-        this.displayallslots = 0;
+            this.totalslots = 0;
+            this.displayallslots = 0;
 
-    };
+        };
 
-    var instance = new Adddayslot();
+        var instance = new Adddayslot();
 
-    instance.init = function(param) { // Parameter 'param' contains the parameter values!
+        instance.init = function(param) { // Parameter 'param' contains the parameter values!
 
-        instance.totalslots = param.totalslots;
-        instance.displayallslots = param.displayallslots;
+            instance.totalslots = param.totalslots;
+            instance.displayallslots = param.displayallslots;
 
-        log.info(instance.totalslots, "totalslots");
-        log.info(instance.displayallslots, "displayallslots");
+            log.info(instance.totalslots, "totalslots");
+            log.info(instance.displayallslots, "displayallslots");
 
-        if(instance.displayallslots == 0) {
+            if (instance.displayallslots == 0) {
 
-            for(var i = instance.totalslots - 1; i > 0; i--) {
-                if($('#id_newslots_' + String(i) + '_day').val() == -1) {
-                    $( "#id_newslots_" + String(i) + "_day" ).closest( ".form-group.row.fitem" ).hide(); // boost
-                    $( "#fgroup_id_slotgroup" + String(i)).hide(); // clean
-                } else {
-                    break;
+                for(var i = instance.totalslots - 1; i > 0; i--) {
+                    if ($('#id_newslots_' + String(i) + '_day').val() == -1) {
+                        $("#id_newslots_" + String(i) + "_day").closest(".form-group.row.fitem").hide(); // Boost-theme.
+                        $("#fgroup_id_slotgroup" + String(i)).hide(); // Clean-theme.
+                    } else {
+                        break;
+                    }
                 }
-            }
-            if(i < instance.totalslots - 1) {
-                $('#id_addday').hide();
-            }
-
-            $('[id^=id_newslots_]').change(function () {
-                var id = $(this).attr("id");
-                var nextindex = parseInt(id.split("_")[2]) + 1;
-                $( "#id_newslots_" + String(nextindex) + "_day" ).closest( ".form-group.row.fitem" ).show(); // boost
-                $( "#fgroup_id_slotgroup" + String(nextindex)).show(); // clean
-                if(nextindex == instance.totalslots) {
-                    $('#id_addday').show();
+                if (i < instance.totalslots - 1) {
+                    $('#id_addday').hide();
                 }
-            });
 
-        }
+                $('[id^=id_newslots_]').change(
+                    function () {
+                        var id = $(this).attr("id");
+                        var nextindex = parseInt(id.split("_")[2]) + 1;
+                        $("#id_newslots_" + String(nextindex) + "_day").closest(".form-group.row.fitem").show(); // Boost-theme.
+                        $("#fgroup_id_slotgroup" + String(nextindex)).show(); // Clean-theme.
+                        if (nextindex == instance.totalslots) {
+                            $('#id_addday').show();
+                        }
+                    }
+                );
 
-        if( $( "#id_now" ).prop( "checked") == true) {
-            $('[name^=availablefrom]').prop("disabled", true);
-            $('#id_availablefrom_timeunit').prop("disabled", true);
-        }
+            }
 
-    };
+            if ($("#id_now").prop("checked") == true) {
+                $('[name^=availablefrom]').prop("disabled", true);
+                $('#id_availablefrom_timeunit').prop("disabled", true);
+            }
 
-    return instance;
+        };
 
-});
+        return instance;
+
+    }
+);

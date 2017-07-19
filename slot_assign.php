@@ -17,12 +17,12 @@
 /**
  * slot_assign.php
  *
- * @package       mod_organizer
- * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -69,7 +69,7 @@ if (organizer_is_group_mode()) {
     $participantid = $assignid;
 }
 
-$appointment_id = organizer_register_appointment($slotid, $groupid, $participantid, false, $USER->id);
+$appointmentid = organizer_register_appointment($slotid, $groupid, $participantid, false, $USER->id);
 
 $data = new stdClass();
 $data->selectedslot = $slotid;
@@ -86,10 +86,12 @@ organizer_prepare_and_send_message($data, 'assign_notify_teacher'); // Message.
 
 $newurl = $redirecturl->out();
 
-$event = \mod_organizer\event\appointment_assigned::create(array(
+$event = \mod_organizer\event\appointment_assigned::create(
+    array(
         'objectid' => $PAGE->cm->id,
         'context' => $PAGE->context
-));
+    )
+);
 $event->trigger();
 
 redirect($newurl, get_string('assignsuccess', 'organizer'), 5);

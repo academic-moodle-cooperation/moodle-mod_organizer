@@ -17,14 +17,16 @@
 /**
  * backup/moodle2/backup_organizer_stepslib.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Define all the backup steps that will be used by the backup_organizer_activity_task
@@ -33,28 +35,37 @@
 /**
  * Define the complete organizer structure for backup, with file and id annotations
  */
-class backup_organizer_activity_structure_step extends backup_activity_structure_step {
+class backup_organizer_activity_structure_step extends backup_activity_structure_step
+{
 
     protected function define_structure() {
         // Define each element separated.
-        $organizer = new backup_nested_element('organizer', array('id'),
-                array('course', 'name', 'intro', 'introformat', 'timemodified', 'isgrouporganizer', 'emailteachers',
-                        'allowregistrationsfromdate', 'duedate', 'relativedeadline', 'grade', 'visibility', 'queue'));
+        $organizer = new backup_nested_element(
+            'organizer', array('id'),
+            array('course', 'name', 'intro', 'introformat', 'timemodified', 'isgrouporganizer', 'emailteachers',
+            'allowregistrationsfromdate', 'duedate', 'relativedeadline', 'grade', 'visibility', 'queue')
+        );
 
         $slots = new backup_nested_element('slots');
-        $slot = new backup_nested_element('slot', array('id'),
-                array('organizerid', 'starttime', 'duration', 'location', 'locationlink', 'maxparticipants',
+        $slot = new backup_nested_element(
+            'slot', array('id'),
+            array('organizerid', 'starttime', 'duration', 'location', 'locationlink', 'maxparticipants',
                         'teacherid', 'visibility', 'availablefrom', 'timemodified', 'notificationtime', 'comments',
-                        'teachervisible', 'eventid', 'notified'));
+            'teachervisible', 'eventid', 'notified')
+        );
 
         $appointments = new backup_nested_element('appointments');
-        $appointment = new backup_nested_element('appointment', array('id'),
-                array('slotid', 'userid', 'groupid', 'applicantid', 'registrationtime', 'attended', 'grade',
-                        'feedback', 'comments', 'eventid', 'notified', 'allownewappointments'));
+        $appointment = new backup_nested_element(
+            'appointment', array('id'),
+            array('slotid', 'userid', 'groupid', 'applicantid', 'registrationtime', 'attended', 'grade',
+            'feedback', 'comments', 'eventid', 'notified', 'allownewappointments')
+        );
 
         $queues = new backup_nested_element('queues');
-        $queue = new backup_nested_element('queue', array('id'),
-                array('slotid', 'userid', 'groupid', 'applicantid', 'eventid', 'notified'));
+        $queue = new backup_nested_element(
+            'queue', array('id'),
+            array('slotid', 'userid', 'groupid', 'applicantid', 'eventid', 'notified')
+        );
 
         // Build the tree.
         $organizer->add_child($slots);

@@ -17,14 +17,14 @@
 /**
  * lib.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -52,7 +52,7 @@ require_once(dirname(__FILE__) . '/slotlib.php');
  * will create a new instance and return the id number
  * of the new instance.
  *
- * @param object $organizer An object from the form in mod_form.php
+ * @param  object $organizer An object from the form in mod_form.php
  * @return int The id of the newly inserted organizer record
  */
 function organizer_add_instance($organizer) {
@@ -83,7 +83,7 @@ function organizer_add_instance($organizer) {
  * (defined by the form in mod_form.php) this function
  * will update an existing instance with new data.
  *
- * @param object $organizer An object from the form in mod_form.php
+ * @param  object $organizer An object from the form in mod_form.php
  * @return boolean Success/Fail
  */
 function organizer_update_instance($organizer) {
@@ -106,8 +106,10 @@ function organizer_update_instance($organizer) {
 
     organizer_grade_item_update($organizer);
 
-    $eventid = $DB->get_field('event', 'id',
-            array('instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE));
+    $eventid = $DB->get_field(
+        'event', 'id',
+        array('instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE)
+    );
 
     organizer_change_event_instance($organizer->id, $eventid);
 
@@ -119,7 +121,7 @@ function organizer_update_instance($organizer) {
  * this function will permanently delete the instance
  * and any data that depends on it.
  *
- * @param int $id Id of the module instance
+ * @param  int $id Id of the module instance
  * @return boolean Success/Failure
  */
 function organizer_delete_instance($id) {
@@ -162,7 +164,7 @@ function organizer_delete_instance($id) {
  * $return->info = a short text description
  *
  * @return null
- * @todo Finish documenting this function
+ * @todo   Finish documenting this function
  */
 function organizer_user_outline($course, $user, $mod, $organizer) {
     // Tscpr: do we need this function if it's returning just nothing?
@@ -177,7 +179,7 @@ function organizer_user_outline($course, $user, $mod, $organizer) {
  * a given particular instance of this module, for user activity reports.
  *
  * @return boolean
- * @todo Finish documenting this function
+ * @todo   Finish documenting this function
  */
 function organizer_user_complete($course, $user, $mod, $organizer) {
     // Tscpr: do we need this function if we don't support completions?
@@ -190,7 +192,7 @@ function organizer_user_complete($course, $user, $mod, $organizer) {
  * Return true if there was output, or false is there was none.
  *
  * @return boolean
- * @todo Finish documenting this function
+ * @todo   Finish documenting this function
  */
 function organizer_print_recent_activity($course, $viewfullnames, $timestart) {
     return false; // True if anything was printed, otherwise false.
@@ -267,8 +269,10 @@ function organizer_reset_userdata($data) {
     }
 
     if ($data->timeshift) {
-        $ok = shift_course_mod_dates('organizer',
-                array('allowregistrationsfromdate', 'duedate'), $data->timeshift, $data->courseid);
+        $ok = shift_course_mod_dates(
+            'organizer',
+            array('allowregistrationsfromdate', 'duedate'), $data->timeshift, $data->courseid
+        );
         $status[] = array('component' => $componentstr, 'item' => get_string('timeshift', 'organizer'),
                 'error' => !$ok);
     }
@@ -334,7 +338,7 @@ function organizer_get_user_grade($organizer, $userid = 0) {
 
 function organizer_update_grades($organizer, $userid = 0) {
     global $CFG;
-    require_once($CFG->libdir . '/gradelib.php');
+    include_once($CFG->libdir . '/gradelib.php');
 
     if ($organizer->grade == 0) {
         return organizer_grade_item_update($organizer);
@@ -352,7 +356,7 @@ function organizer_update_grades($organizer, $userid = 0) {
 
 function organizer_grade_item_update($organizer, $grades = null) {
     global $CFG;
-    require_once($CFG->libdir . '/gradelib.php');
+    include_once($CFG->libdir . '/gradelib.php');
 
     if (!isset($organizer->courseid)) {
         $organizer->courseid = $organizer->course;
@@ -390,14 +394,14 @@ function organizer_display_grade($organizer, $grade, $userid) {
 
     if ($organizer->grade >= 0) {    // Normal number.
         if ($grade == -1 || $grade == null) {
-            if($finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid)) {
+            if ($finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid)) {
                       return organizer_display_finalgrade($finalgrade);
             } else {
                       return $nograde;
             }
         } else {
             $returnstr = organizer_clean_num($grade) . '/' . organizer_clean_num($organizer->grade);
-            if($finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid)) {
+            if ($finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid)) {
                       $returnstr .= organizer_display_finalgrade($finalgrade);
             }
             return $returnstr;
@@ -424,7 +428,7 @@ function organizer_display_grade($organizer, $grade, $userid) {
 function organizer_display_finalgrade($finalgrade) {
     $nograde = get_string('nograde');
 
-    if($finalgrade) {
+    if ($finalgrade) {
         return html_writer::span('(' . $finalgrade . ')', 'finalgrade', array('title' => get_string('finalgrade', 'organizer')));
     } else {
         return $nograde;
@@ -435,16 +439,18 @@ function organizer_get_finalgrade_overwritten($organizerid, $userid) {
     global $DB;
 
     $params = array('organizerid' => $organizerid, 'userid' => $userid);
-    $query = "SELECT gg.rawgrade, gg.finalgrade FROM {grade_items} gi 
-			inner join {grade_grades} gg on gg.itemid = gi.id 
-			where gi.itemtype = 'mod' and gi.itemmodule = 'organizer' 
+    $query = "SELECT gg.rawgrade, gg.finalgrade FROM {grade_items} gi
+			inner join {grade_grades} gg on gg.itemid = gi.id
+			where gi.itemtype = 'mod' and gi.itemmodule = 'organizer'
 			and gi.iteminstance = :organizerid and gg.userid = :userid";
-    if($grades = $DB->get_record_sql($query, $params)) {
-        if(is_null($grades->rawgrade)) { $grades->rawgrade = 0;
+    if ($grades = $DB->get_record_sql($query, $params)) {
+        if (is_null($grades->rawgrade)) {
+            $grades->rawgrade = 0;
         }
-        if(is_null($grades->finalgrade)) { $grades->finalgrade = 0;
+        if (is_null($grades->finalgrade)) {
+            $grades->finalgrade = 0;
         }
-        if($grades->rawgrade != $grades->finalgrade) {
+        if ($grades->rawgrade != $grades->finalgrade) {
             return organizer_clean_num($grades->finalgrade);
         } else {
             return false;
@@ -487,10 +493,12 @@ function organizer_clean_num($num) {
 function organizer_get_last_group_appointment($organizer, $groupid) {
     global $DB;
     $params = array('groupid' => $groupid, 'organizerid' => $organizer->id);
-    $groupapps = $DB->get_records_sql('SELECT a.* FROM {organizer_slot_appointments} a
+    $groupapps = $DB->get_records_sql(
+        'SELECT a.* FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE a.groupid = :groupid AND s.organizerid = :organizerid
-            ORDER BY a.id DESC', $params);
+            ORDER BY a.id DESC', $params
+    );
 
     $app = null;
 
@@ -577,11 +585,13 @@ function organizer_get_eventaction_slot_teacher($eventid) {
     $now = time();
     $displayeventto = $now + EIGHTDAYS;
 
-    $slot = $DB->get_records_sql('SELECT * FROM {organizer_slots} INNER JOIN {organizer_slot_appointments} ON 
-        {organizer_slots}.id = {organizer_slot_appointments}.slotid 
-        WHERE {organizer_slot_appointments}.slotid = :slotid AND 
+    $slot = $DB->get_records_sql(
+        'SELECT * FROM {organizer_slots} INNER JOIN {organizer_slot_appointments} ON
+        {organizer_slots}.id = {organizer_slot_appointments}.slotid
+        WHERE {organizer_slot_appointments}.slotid = :slotid AND
         {organizer_slots}.starttime > :now AND {organizer_slots}.starttime < :displayeventto',
-            array('slotid' => $slotid, 'now' => $now, 'displayeventto' => $displayeventto));
+        array('slotid' => $slotid, 'now' => $now, 'displayeventto' => $displayeventto)
+    );
 
     $appslot = reset($slot);
 
@@ -871,8 +881,9 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
             $a->groupname = $group->name;
-            $completedapp = get_string('mymoodle_completed_app_group', 'organizer', $a) . ($forindex ? '' :
-                    "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+            $completedapp = get_string('mymoodle_completed_app_group', 'organizer', $a) .
+                    ($forindex ? '' : "<br />(" . get_string('grade') . ": " .
+                            organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $completedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -886,8 +897,9 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
             $a->groupname = $group->name;
 
-            $missedapp = get_string('mymoodle_missed_app_group', 'organizer', $a) . ($forindex ? '' :
-                    "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+            $missedapp = get_string('mymoodle_missed_app_group', 'organizer', $a) .
+                    ($forindex ? '' : "<br />(" . get_string('grade') . ": " .
+                            organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $missedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -949,8 +961,9 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a = new stdClass();
             $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-            $completedapp = get_string('mymoodle_completed_app', 'organizer', $a) . ($forindex ? '' :
-                    "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+            $completedapp = get_string('mymoodle_completed_app', 'organizer', $a) .
+                    ($forindex ? '' : "<br />(" . get_string('grade') . ": " .
+                            organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $completedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -961,8 +974,9 @@ function organizer_get_overview_student($organizer, $forindex = false) {
             $a = new stdClass();
             $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
             $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-            $missedapp = get_string('mymoodle_missed_app', 'organizer', $a) . ($forindex ? '' :
-                    "<br />(" . get_string('grade') . ": " . organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+            $missedapp = get_string('mymoodle_missed_app', 'organizer', $a) .
+                    ($forindex ? '' : "<br />(" . get_string('grade') . ": " .
+                            organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
             if ($app->allownewappointments) {
                 $missedapp .= "<br />" . get_string('can_reregister', 'organizer');
             }
@@ -1046,11 +1060,13 @@ function organizer_get_overview_teacher($organizer) {
 
     $now = time();
 
-    $slot = $DB->get_records_sql('SELECT * FROM {organizer_slots} WHERE
+    $slot = $DB->get_records_sql(
+        'SELECT * FROM {organizer_slots} WHERE
             {organizer_slots}.teacherid = :uid AND
             {organizer_slots}.organizerid = :oid AND
             {organizer_slots}.starttime > :now
-            ORDER BY {organizer_slots}.starttime ASC', array('uid' => $USER->id, 'oid' => $organizer->id, 'now' => $now));
+            ORDER BY {organizer_slots}.starttime ASC', array('uid' => $USER->id, 'oid' => $organizer->id, 'now' => $now)
+    );
 
     $nextslot = reset($slot);
 
@@ -1100,12 +1116,14 @@ function organizer_print_overview($courses, &$htmlarray) {
 function organizer_is_student_in_course($courseid, $userid) {
     global $DB;
 
-    $stud = $DB->get_records_sql('SELECT * FROM {role_assignments}
+    $stud = $DB->get_records_sql(
+        'SELECT * FROM {role_assignments}
             INNER JOIN {context} ON {role_assignments}.contextid = {context}.id
             WHERE {role_assignments}.roleid = 5
                 AND {context}.instanceid = :courseid
                 AND {role_assignments}.userid = :userid', array('courseid' => $courseid,
-        'userid'   => $userid));
+        'userid'   => $userid)
+    );
     return count($stud) > 0;
 }
 
@@ -1116,10 +1134,10 @@ function organizer_is_student_in_course($courseid, $userid) {
  * as sending out mail, toggling flags etc ...
  *
  * @return boolean
- * @todo Finish documenting this function
+ * @todo   Finish documenting this function
  **/
 function organizer_cron() {
-    require_once(dirname(__FILE__) . '/messaging.php');
+    include_once(dirname(__FILE__) . '/messaging.php');
     global $DB;
     $now = time();
 
@@ -1133,8 +1151,10 @@ function organizer_cron() {
 
     $apps = $DB->get_records_sql($appsquery, $params);
     foreach ($apps as $app) {
-        $success &= organizer_send_message(intval($app->teacherid), intval($app->userid), $app,
-                'appointment_reminder_student');
+        $success &= organizer_send_message(
+            intval($app->teacherid), intval($app->userid), $app,
+            'appointment_reminder_student'
+        );
     }
 
     if (empty($apps)) {
@@ -1197,14 +1217,18 @@ function organizer_cron() {
             }
 
             if ($found) {
-                $success &= $thissuccess = organizer_send_message(intval($teacherid), intval($teacherid), reset($slots),
-                        'appointment_reminder_teacher', $digest);
+                $success &= $thissuccess = organizer_send_message(
+                    intval($teacherid), intval($teacherid), reset($slots),
+                    'appointment_reminder_teacher', $digest
+                );
 
                 if ($thissuccess) {
                     list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
                     $inparams['teacherid'] = $teacherid;
-                    $DB->execute("UPDATE {organizer_slots} SET notified = 1 WHERE teacherid = :teacherid AND id $insql",
-                                $inparams);
+                    $DB->execute(
+                        "UPDATE {organizer_slots} SET notified = 1 WHERE teacherid = :teacherid AND id $insql",
+                        $inparams
+                    );
                 }
             }
 
@@ -1215,7 +1239,7 @@ function organizer_cron() {
 }
 
 function organizer_create_digest($teacherid) {
-    require_once(dirname(__FILE__) . '/messaging.php');
+    include_once(dirname(__FILE__) . '/messaging.php');
     global $DB;
     $now = time();
 
@@ -1240,8 +1264,10 @@ function organizer_create_digest($teacherid) {
         $DB->update_record('organizer_slots', $slot);
     }
 
-    $success = organizer_send_message(intval($slot->teacherid), intval($slot->teacherid), $slot,
-            'appointment_reminder_teacher:digest', $digest);
+    $success = organizer_send_message(
+        intval($slot->teacherid), intval($slot->teacherid), $slot,
+        'appointment_reminder_teacher:digest', $digest
+    );
 
     return $success;
 }
@@ -1253,7 +1279,7 @@ function organizer_create_digest($teacherid) {
  * objects must contain at least id property.
  * See other modules as example.
  *
- * @param int $organizerid ID of an instance of this module
+ * @param  int $organizerid ID of an instance of this module
  * @return boolean|array false if no participants, array of objects otherwise
  */
 function organizer_get_participants($organizerid) {
@@ -1266,7 +1292,7 @@ function organizer_get_participants($organizerid) {
  * modified if necessary. See forum, glossary or journal modules
  * as reference.
  *
- * @param int $organizerid ID of an instance of this module
+ * @param  int $organizerid ID of an instance of this module
  * @return mixed
  */
 function organizer_scale_used($organizerid, $scaleid) {
@@ -1284,7 +1310,8 @@ function organizer_scale_used($organizerid, $scaleid) {
  * This function was added in 1.9
  *
  * This is used to find out if scale used anywhere
- * @param $scaleid int
+ *
+ * @param  $scaleid int
  * @return boolean True if the scale is used by any organizer
  */
 function organizer_scale_used_anywhere($scaleid) {
@@ -1310,25 +1337,25 @@ function organizer_uninstall() {
 function organizer_supports($feature) {
     switch ($feature) {
         case FEATURE_GROUPS:
-            return true;
+        return true;
         case FEATURE_GROUPINGS:
-            return true;
+        return true;
         case FEATURE_GROUPMEMBERSONLY:
-            return true;
+        return true;
         case FEATURE_MOD_INTRO:
-                return true;
+        return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS:
-            return true;
+        return true;
         case FEATURE_GRADE_HAS_GRADE:
-            return true;
+        return true;
         case FEATURE_GRADE_OUTCOMES:
-            return true;
+        return true;
         case FEATURE_BACKUP_MOODLE2:
-            return true;
+        return true;
         case FEATURE_SHOW_DESCRIPTION:
-            return true;
+        return true;
         default:
-            return null;
+        return null;
     }
 }
 
@@ -1339,7 +1366,7 @@ function organizer_supports($feature) {
  * Given a course_module object, this function returns any "extra" information that may be needed
  * when printing this activity in a course listing.  See get_array_of_activities() in course/lib.php.
  *
- * @param stdClass $coursemodule The coursemodule object (record).
+ * @param  stdClass $coursemodule The coursemodule object (record).
  * @return cached_cm_info An object on information that the courses
  *                        will know about (most noticeably, an icon).
  */
@@ -1378,12 +1405,13 @@ function organizer_remove_waitingqueueentries($organizer) {
  * This is used by block_myoverview in order to display the event appropriately. If null is returned then the event
  * is not displayed on the block.
  *
- * @param calendar_event $event
- * @param \core_calendar\action_factory $factory
+ * @param  calendar_event                $event
+ * @param  \core_calendar\action_factory $factory
  * @return \core_calendar\local\event\entities\action_interface|null
  */
 function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
-                                                       \core_calendar\action_factory $factory) {
+    \core_calendar\action_factory $factory
+) {
     global $DB;
 
     $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
@@ -1401,7 +1429,7 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
             } else {
                 $name = organizer_get_eventaction_instance_student($organizer);
             }
-        } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT){
+        } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT) {
             $name = organizer_get_eventaction_slot_teacher($props->id);
         } else {
             return false;
@@ -1409,18 +1437,20 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
     }
 
     if ($name) {
-        $url = new \moodle_url('/mod/organizer/view.php', [
+        $url = new \moodle_url(
+            '/mod/organizer/view.php', [
                 'id' => $cm->id,
                 'action' => 'show'
-        ]);
+            ]
+        );
         $itemcount = 1;
         $actionable = true;
 
         return $factory->create_instance(
-                $name,
-                $url,
-                $itemcount,
-                $actionable
+            $name,
+            $url,
+            $itemcount,
+            $actionable
         );
     } else {
         return false;
@@ -1432,7 +1462,7 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
  *
  * This is used to determine global visibility of an event in all places throughout Moodle.
  *
- * @param calendar_event $event
+ * @param  calendar_event $event
  * @return bool Returns true if the event is visible to the current user, false otherwise.
  */
 function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
@@ -1447,21 +1477,21 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
     if ($organizer == false) {
         return false;
     }
-    if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) { // uuid is Userid of participant
+    if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) { // Uuid is Userid of participant.
         $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid), IGNORE_MISSING);
-        if(!(instance_is_visible('organizer', $organizer) && $courseisvisible)) {
+        if (!(instance_is_visible('organizer', $organizer) && $courseisvisible)) {
             return false;
         }
         $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
         $isvisible = $userid == $USER->id ? true : false;
-    } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT) {  // Eventtype slot: uuid is userid of teacher
+    } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT) {  // Eventtype slot: uuid is userid of teacher.
         $context = context_module::instance($cm->id, MUST_EXIST);
         if (has_capability('mod/organizer:viewallslots', $context)) {
             $isvisible = true;
         } else {
             $isvisible = false;
         }
-    } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {  // eventtype instance: uuid is instance-id
+    } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {  // Eventtype instance: uuid is instance-id.
         $context = context_module::instance($cm->id, MUST_EXIST);
         if (!is_enrolled($context)) {
             return false;
@@ -1470,7 +1500,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
             $a = organizer_get_counters($organizer);
             if ($a->total == 0) {
                 $isvisible = true;
-            } else if ($organizer->grade != 0 && $a->attended < $a->total) { // if grading is active
+            } else if ($organizer->grade != 0 && $a->attended < $a->total) { // If grading is active.
                 $isvisible = true;
             } else if ($a->registered < $a->total) {
                 $isvisible = true;
@@ -1479,7 +1509,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
             }
         } else if (has_capability('mod/organizer:viewstudentview', $context)) {
             $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid), IGNORE_MISSING);
-            if(!(instance_is_visible('organizer', $organizer) && $courseisvisible)) {
+            if (!(instance_is_visible('organizer', $organizer) && $courseisvisible)) {
                 return false;
             }
             if (organizer_get_last_user_appointment($organizer)) {
@@ -1503,25 +1533,29 @@ function organizer_change_event_instance($organizerid, $eventid = false) {
     $eventtitle = $organizer->name;
     $eventdescription = $organizer->intro;
 
-
     if ($eventid) {
         $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : time();
         $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
-        return organizer_change_calendarevent($eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
-                $USER->id, $startdate, $duration, 0, $organizerid);
+        return organizer_change_calendarevent(
+            $eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
+            $USER->id, $startdate, $duration, 0, $organizerid
+        );
     } else {
         $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : 0;
         $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
-        return organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
-                $USER->id, $startdate, $duration, 0, $organizerid);
+        return organizer_create_calendarevent(
+            $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
+            $USER->id, $startdate, $duration, 0, $organizerid
+        );
     }
 }
 
 function organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, $eventtype, $userid,
-        $timestart, $duration, $group, $uuid) {
+    $timestart, $duration, $group, $uuid
+) {
     global $CFG;
 
-    require_once($CFG->dirroot.'/calendar/lib.php');
+    include_once($CFG->dirroot.'/calendar/lib.php');
 
     $event = new stdClass();
     $event->eventtype = $eventtype;
@@ -1548,10 +1582,11 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
 }
 
 function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
-        $timestart, $duration, $group, $uuid) {
+    $timestart, $duration, $group, $uuid
+) {
     global $CFG;
 
-    require_once($CFG->dirroot.'/calendar/lib.php');
+    include_once($CFG->dirroot.'/calendar/lib.php');
 
     $event = calendar_event::load($eventid);
 

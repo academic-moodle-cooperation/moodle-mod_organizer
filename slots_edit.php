@@ -17,12 +17,12 @@
 /**
  * view_action.php
  *
- * @package       mod_organizer
- * @author        Andreas Windbichler
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Windbichler
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -75,8 +75,10 @@ if (!organizer_security_check_slots($slots)) {
     print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
 }
 
-$mform = new organizer_edit_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots),
-        'post', '', array('name' => 'form_edit'));
+$mform = new organizer_edit_slots_form(
+    null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots),
+    'post', '', array('name' => 'form_edit')
+);
 
 if ($data = $mform->get_data()) {
     $slotids = organizer_update_appointment_slot($data);
@@ -89,10 +91,12 @@ if ($data = $mform->get_data()) {
         $newurl .= '&slots[]=' . $slotid;
     }
 
-    $event = \mod_organizer\event\slot_updated::create(array(
+    $event = \mod_organizer\event\slot_updated::create(
+        array(
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context
-    ));
+        )
+    );
     $event->trigger();
 
     redirect($newurl);

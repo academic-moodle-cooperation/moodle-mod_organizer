@@ -17,12 +17,12 @@
 /**
  * view_action.php
  *
- * @package       mod_organizer
- * @author        Andreas Windbichler
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Windbichler
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -90,17 +90,21 @@ if ($data = $mform->get_data()) {
 
         $slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
 
-        $event = \mod_organizer\event\slot_deleted::create(array(
+        $event = \mod_organizer\event\slot_deleted::create(
+            array(
                 'objectid' => $PAGE->cm->id,
                 'context' => $PAGE->context
-        ));
+            )
+        );
         $event->trigger();
 
         // Count_records_sql doesnt work.
-           $appointmentstotal = $DB->get_record_sql('SELECT COUNT(*) as total
+           $appointmentstotal = $DB->get_record_sql(
+               'SELECT COUNT(*) as total
             FROM {organizer_slots} org
             JOIN {organizer_slot_appointments} app ON org.id = app.slotid
-            WHERE org.organizerid=?', array($organizer->id));
+            WHERE org.organizerid=?', array($organizer->id)
+           );
            $appointmentstotal = $appointmentstotal->total;
 
         if ($organizer->isgrouporganizer) {

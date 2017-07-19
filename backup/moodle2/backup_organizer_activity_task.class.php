@@ -17,23 +17,25 @@
 /**
  * backup/moodle2/backup_organizer_activity_task.class.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once($CFG->dirroot
-        . '/mod/organizer/backup/moodle2/backup_organizer_stepslib.php'); // Because it exists (must).
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/mod/organizer/backup/moodle2/backup_organizer_stepslib.php'); // Because it exists (must).
 
 /**
  * organizer backup task that provides all the settings and steps to perform one
  * complete backup of the activity
  */
-class backup_organizer_activity_task extends backup_activity_task {
+class backup_organizer_activity_task extends backup_activity_task
+{
 
     /**
      * Define (add) particular settings this activity can have

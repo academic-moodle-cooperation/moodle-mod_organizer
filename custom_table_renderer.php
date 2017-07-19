@@ -17,14 +17,16 @@
 /**
  * custom_table_renderer.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 function organizer_render_table_with_footer(html_table $table, $printfooter = true, $overrideevenodd = false) {
     // Prepare table data and populate missing properties with reasonable defaults.
@@ -78,13 +80,15 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
 
     // Explicitly assigned properties override those defined via $table->attributes.
     $table->attributes['class'] = trim($table->attributes['class']);
-    $attributes = array_merge($table->attributes, array(
+    $attributes = array_merge(
+        $table->attributes, array(
             'id'            => $table->id,
             'width'         => $table->width,
             'summary'       => $table->summary,
             'cellpadding'   => $table->cellpadding,
             'cellspacing'   => $table->cellspacing,
-        ));
+        )
+    );
     $output = html_writer::start_tag('table', $attributes) . "\n";
 
     $countcols = 0;
@@ -130,11 +134,13 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                     $heading->attributes['class'] .= ' ' . $table->colclasses[$key];
                 }
                 $heading->attributes['class'] = trim($heading->attributes['class']);
-                $attributes = array_merge($heading->attributes, array(
+                $attributes = array_merge(
+                    $heading->attributes, array(
                         'style'     => $table->align[$key] . $table->size[$key] . $heading->style,
                         'scope'     => $heading->scope,
                         'colspan'   => $heading->colspan,
-                ));
+                    )
+                );
 
                 $tagtype = 'td';
                 if ($heading->header === true) {
@@ -163,8 +169,10 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
 
         foreach ($table->data as $key => $row) {
             if (($row === 'hr') && ($countcols)) {
-                $output .= html_writer::tag('td', html_writer::tag('div', '', array('class' => 'tabledivider')),
-                    array('colspan' => $countcols));
+                $output .= html_writer::tag(
+                    'td', html_writer::tag('div', '', array('class' => 'tabledivider')),
+                    array('colspan' => $countcols)
+                );
             } else {
                 // Convert array rows to html_table_rows and cell strings to html_table_cell objects.
                 if (!($row instanceof html_table_row)) {
@@ -195,9 +203,11 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                     $row->attributes['name'] = '';
                 }
 
-                $output .= html_writer::start_tag('tr',
-                        array('class' => trim($row->attributes['class']),
-                        'style' => $row->style, 'id' => $row->id, 'name' => trim($row->attributes['name'])))
+                $output .= html_writer::start_tag(
+                    'tr',
+                    array('class' => trim($row->attributes['class']),
+                    'style' => $row->style, 'id' => $row->id, 'name' => trim($row->attributes['name']))
+                )
                         . "\n";
                 $keys2 = array_keys($row->cells);
                 $lastkey = end($keys2);
@@ -233,14 +243,16 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                     $tdstyle .= isset($table->size[$key]) ? $table->size[$key] : '';
                     $tdstyle .= isset($table->wrap[$key]) ? $table->wrap[$key] : '';
                     $cell->attributes['class'] = trim($cell->attributes['class']);
-                    $tdattributes = array_merge($cell->attributes, array(
+                    $tdattributes = array_merge(
+                        $cell->attributes, array(
                             'style' => $tdstyle . $cell->style,
                             'colspan' => $cell->colspan,
                             'rowspan' => $cell->rowspan,
                             'id' => $cell->id,
                             'abbr' => $cell->abbr,
                             'scope' => $cell->scope,
-                        ));
+                        )
+                    );
                     $tagtype = 'td';
                     if ($cell->header === true) {
                         $tagtype = 'th';

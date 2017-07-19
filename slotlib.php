@@ -17,14 +17,16 @@
 /**
  * slotlib.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 function organizer_get_last_user_appointment($organizer, $userid = null, $mergegroupapps = true, $getevaluated = false) {
     global $DB, $USER;
@@ -162,13 +164,14 @@ function organizer_get_next_user_appointment($organizer, $userid = null) {
 }
 
 
-class organizer_slot {
+class organizer_slot
+{
 
     private $slot;
     private $organizer;
     private $apps;
-    private $queue;  // Waiting list
-    private $queue_group;  // Waiting list
+    private $queue;
+    private $queuegroup;
 
     public function __construct($slot, $lazy = true) {
         global $DB;
@@ -194,7 +197,6 @@ class organizer_slot {
         if (!$lazy) {
             $this->load_organizer();
             $this->load_appointments();
-            // Waiting list
             if ($this->organizer->queue) {
                 $this->load_queue();
                 $this->load_queue_group();
@@ -202,7 +204,6 @@ class organizer_slot {
         }
     }
 
-    // Waiting list
     public function get_organizer() {
         $this->load_organizer();
         return $this->organizer;
@@ -280,11 +281,15 @@ class organizer_slot {
         global $DB;
         if ($this->organizer->isgrouporganizer) {
             $moduleid = $DB->get_field('modules', 'id', array('name' => 'organizer'));
-            $courseid = $DB->get_field('course_modules', 'course',
-                    array('module' => $moduleid, 'instance' => $this->organizer->id));
+            $courseid = $DB->get_field(
+                'course_modules', 'course',
+                array('module' => $moduleid, 'instance' => $this->organizer->id)
+            );
             $groups = groups_get_user_groups($courseid);
-            $groupingid = $DB->get_field('course_modules', 'groupingid',
-                    array('module' => $moduleid, 'instance' => $this->organizer->id));
+            $groupingid = $DB->get_field(
+                'course_modules', 'groupingid',
+                array('module' => $moduleid, 'instance' => $this->organizer->id)
+            );
             if (!isset($groups[$groupingid]) || !count($groups[$groupingid])) {
                 return false;
             }
@@ -293,7 +298,8 @@ class organizer_slot {
     }
 
 
-    /** Waiting list
+    /**
+     * Waiting list
      * Returns the position of a given user in this slot's queue starting at 1.
      * Returns 0 if the user is not in the queue.
      *
@@ -321,11 +327,12 @@ class organizer_slot {
         return $result;
     }
 
-    /** Waiting list
+    /**
+     * Waiting list
      *  Returns the position of a given group in this slot's queue starting at 1.
      *  Returns 0 if the group is not in the queue.
      *
-     * @param Int $groupid The ID of the group.
+     * @param  Int $groupid The ID of the group.
      * @return Int the group's position in queue
      */
     public function is_group_in_queue($groupid = 0) {
@@ -342,8 +349,8 @@ class organizer_slot {
         if ($this->organizer->queue) {
                $this->load_queue_group();
                // The queue might be empty though.
-            if ($this->queue_group) {
-                foreach ($this->queue_group as $entry) {
+            if ($this->queuegroup) {
+                foreach ($this->queuegroup as $entry) {
                     $position++;
                     if ($entry->groupid == $groupid) {
                         $result = $position;
@@ -355,7 +362,8 @@ class organizer_slot {
         return $result;
     }
 
-    /** Waiting list
+    /**
+     * Waiting list
      *  Returns the next entry of the waiting queue for this slot if the queue is not empty,
      *  null otherwise.
      *
@@ -380,8 +388,8 @@ class organizer_slot {
 
         if ($this->organizer->queue) {
             $this->load_queue_group();
-            if ($this->queue_group) {
-                $result = array_shift($this->queue_group);
+            if ($this->queuegroup) {
+                $result = array_shift($this->queuegroup);
             }
         }
         return $result;
@@ -401,7 +409,6 @@ class organizer_slot {
         }
     }
 
-    // Waiting list
     private function load_queue() {
         global $DB;
         if (!$this->queue) {
@@ -409,15 +416,14 @@ class organizer_slot {
         }
     }
 
-    // Waiting list
     private function load_queue_group() {
         global $DB;
-        if (!$this->queue_group) {
+        if (!$this->queuegroup) {
             $sql = "SELECT q.groupid FROM (SELECT groupid, slotid FROM {organizer_slot_queues} ORDER BY id asc) q
                     WHERE q.slotid = :slotid
                     GROUP BY q.groupid";
             $paramssql = array('slotid' => $this->slot->id);
-            $this->queue_group = $DB->get_records_sql($sql, $paramssql);
+            $this->queuegroup = $DB->get_records_sql($sql, $paramssql);
         }
     }
 }
@@ -429,8 +435,10 @@ function organizer_user_has_access($slotid) {
     $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
     $courseid = $DB->get_field('course_modules', 'course', array('module' => $moduleid, 'instance' => $organizer->id));
     $groups = groups_get_user_groups($courseid);
-    $groupingid = $DB->get_field('course_modules', 'groupingid',
-        array('module' => $moduleid, 'instance' => $organizer->id));
+    $groupingid = $DB->get_field(
+        'course_modules', 'groupingid',
+        array('module' => $moduleid, 'instance' => $organizer->id)
+    );
     if (!isset($groups[$groupingid]) || !count($groups[$groupingid])) {
         return false;
     }

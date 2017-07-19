@@ -17,12 +17,12 @@
 /**
  * view_action.php
  *
- * @package       mod_organizer
- * @author        Andreas Windbichler
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Windbichler
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -70,10 +70,12 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     organizer_update_comments($app->id, $data->comments);
 
-    $event = \mod_organizer\event\appointment_commented::create(array(
+    $event = \mod_organizer\event\appointment_commented::create(
+        array(
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context
-    ));
+        )
+    );
     $event->trigger();
 
     redirect($redirecturl);

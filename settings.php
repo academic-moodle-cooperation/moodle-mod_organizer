@@ -17,13 +17,13 @@
 /**
  * settings.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -62,8 +62,11 @@ $organizersettings->add(new admin_setting_heading('organizerintro', '', get_stri
 
 // Maximum grade.
 $organizersettings->add(
-        new admin_setting_configtext('organizer/maximumgrade', get_string('maximumgrade'),
-                get_string('configmaximumgrade', 'organizer'), 10, PARAM_INT));
+    new admin_setting_configtext(
+        'organizer/maximumgrade', get_string('maximumgrade'),
+        get_string('configmaximumgrade', 'organizer'), 10, PARAM_INT
+    )
+);
 
 // E-mail teachers.
 $pickeroptions = array();
@@ -73,8 +76,11 @@ $pickeroptions[ORGANIZER_MESSAGES_ALL] = get_string('messages_all', 'organizer')
 
 // Appointment digest.
 $organizersettings->add(
-        new admin_setting_configselect('organizer/emailteachers', get_string('configemailteachers_label', 'organizer'),
-                get_string('configemailteachers', 'organizer'), 1, $pickeroptions));
+    new admin_setting_configselect(
+        'organizer/emailteachers', get_string('configemailteachers_label', 'organizer'),
+        get_string('configemailteachers', 'organizer'), 1, $pickeroptions
+    )
+);
 
 $pickeroptions = array();
 $pickeroptions['never'] = get_string('configdontsend', 'organizer');
@@ -84,8 +90,11 @@ for ($i = 0; $i < 24; $i++) {
 
 // Appointment digest.
 $organizersettings->add(
-        new admin_setting_configselect('organizer/digest', get_string('configdigest_label', 'organizer'),
-                get_string('configdigest', 'organizer'), 'never', $pickeroptions));
+    new admin_setting_configselect(
+        'organizer/digest', get_string('configdigest_label', 'organizer'),
+        get_string('configdigest', 'organizer'), 'never', $pickeroptions
+    )
+);
 
 $abschoices = array();
 $abschoices['never'] = get_string('confignever', 'organizer');
@@ -101,8 +110,11 @@ $abschoices['+6 month'] = '6 ' . get_string('configmonths', 'organizer');
 $abschoices['+1 year'] = '1 ' . get_string('configyear', 'organizer');
 
 $organizersettings->add(
-        new admin_setting_configselect('organizer/absolutedeadline', get_string('absolutedeadline', 'organizer'),
-                get_string('configabsolutedeadline', 'organizer'), 'never', $abschoices));
+    new admin_setting_configselect(
+        'organizer/absolutedeadline', get_string('absolutedeadline', 'organizer'),
+        get_string('configabsolutedeadline', 'organizer'), 'never', $abschoices
+    )
+);
 
 $relchoices = array();
 $relchoices[60 * 1]     = '1 ' .     get_string('configminute', 'organizer') . ' ' .     get_string('configahead', 'organizer');
@@ -119,24 +131,31 @@ $relchoices[86400 * 1]     = '1 ' .     get_string('configday', 'organizer') . '
 $relchoices[86400 * 2]     = '2 ' .     get_string('configdays', 'organizer') . ' ' .     get_string('configahead', 'organizer');
 
 $organizersettings->add(
-        new admin_setting_configselect('organizer/relativedeadline', get_string('relativedeadline', 'organizer'),
-                get_string('configrelativedeadline', 'organizer'), 86400, $relchoices));
+    new admin_setting_configselect(
+        'organizer/relativedeadline', get_string('relativedeadline', 'organizer'),
+        get_string('configrelativedeadline', 'organizer'), 86400, $relchoices
+    )
+);
 
 // Now, depending on whether any reports have their own settings page, add
 // the organizer setting page to the appropriate place in the tree.
 if (empty($reportsbyname)) {
     $ADMIN->add('modsettings', $organizersettings);
 } else {
-    $ADMIN->add('modsettings',
-            new admin_category('modsettingsquizcat', get_string('modulename', 'quiz'), !$module->visible));
+    $ADMIN->add(
+        'modsettings',
+        new admin_category('modsettingsquizcat', get_string('modulename', 'quiz'), !$module->visible)
+    );
     $ADMIN->add('modsettingsquizcat', $organizersettings);
 
     // Add the report pages for the settings.php files in sub directories of mod/quiz/report.
     foreach ($reportsbyname as $strreportname => $report) {
         $reportname = $report;
 
-        $settings = new admin_settingpage('modsettingsquizcat' . $reportname, $strreportname, 'moodle/site:config',
-                !$module->visible);
+        $settings = new admin_settingpage(
+            'modsettingsquizcat' . $reportname, $strreportname, 'moodle/site:config',
+            !$module->visible
+        );
         if ($ADMIN->fulltree) {
             include($CFG->dirroot . "/mod/quiz/report/$reportname/settings.php");
         }

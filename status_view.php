@@ -17,15 +17,17 @@
 /**
  * status_view.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 function organizer_generate_registration_table_content($columns, $params) {
     global $DB;
@@ -50,46 +52,49 @@ function organizer_generate_registration_table_content($columns, $params) {
                     if ($groupmode) {
                         $members = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$entry->id}");
                         $list = "<em>$entry->name</em><br/ >";
-                        $list .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified);
+                        $list .= organizer_get_teacherapplicant_output(
+                                $entry->teacherapplicantid, $entry->teacherapplicanttimemodified);
                         foreach ($members as $member) {
                             $idnumber = get_user_idnumber($member);
 
                             $list .= get_name_link($member) . " ($idnumber) "
-                                    . (isset($entry->comments) ? get_img('i/feedback', '', $entry->comments) : '');
+                                . (isset($entry->comments) ? get_img('i/feedback', '', $entry->comments) : '');
                             if ($member == $entry->applicantid) {
                                 $list .= ' '
-                                        . organizer_get_icon('applicant', 'applicant') . '<br/>';
+                                    . organizer_get_icon('applicant', 'applicant') . '<br/>';
                             } else {
                                 $list .= ' ' . organizer_get_icon('transparent', '') . '<br/>';
                             }
                         }
                         $row->cells[] = new html_table_cell($list);
                     } else {
-                        $row->cells[] = new html_table_cell(get_name_link($entry->id) . " ({$entry->idnumber})" . organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified));
+                        $row->cells[] = new html_table_cell(get_name_link($entry->id) . " ({$entry->idnumber})" .
+                                organizer_get_teacherapplicant_output($entry->teacherapplicantid,
+                                        $entry->teacherapplicanttimemodified));
                     }
-                    break;
+                break;
                 case 'registered':
                     $row->cells[] = new html_table_cell(get_status_icon_new($entry->status));
-                    break;
+                break;
                 case 'datetime':
                     $row->cells[] = new html_table_cell(date_time($entry));
-                    break;
+                break;
                 case 'appdetails':
                     if ($groupmode) {
                         $row->cells[] = new html_table_cell('PLACEHOLDER');
                     } else {
                         $row->cells[] = new html_table_cell(app_details($params, $entry));
                     }
-                    break;
+                break;
                 case 'location':
                     $row->cells[] = new html_table_cell(location_link($entry));
-                    break;
+                break;
                 case 'teacher':
                     $row->cells[] = new html_table_cell(teacher_data($params, $entry));
-                    break;
+                break;
                 case 'actions':
                     $row->cells[] = new html_table_cell(teacher_action_new($params, $entry));
-                    break;
+                break;
             }
         }
         $rows[] = $row;
@@ -223,7 +228,7 @@ function organizer_get_status_table_entries($params) {
         ELSE -1
         END AS status,
         a2.starttime, a2.duration, a2.attended, a2.location, a2.grade, a2.comments,
-        a2.feedback, a2.teacherid, a2.userid, a2.teachervisible, a2.slotid, 
+        a2.feedback, a2.teacherid, a2.userid, a2.teachervisible, a2.slotid,
         a2.teacherapplicantid, a2.teacherapplicanttimemodified
         FROM {user} u
         LEFT JOIN

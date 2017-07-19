@@ -17,14 +17,16 @@
 /**
  * backup/moodle2/restore_organizer_stepslib.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Define all the restore steps that will be used by the restore_organizer_activity_task
@@ -33,7 +35,8 @@
 /**
  * Structure step to restore one organizer activity
  */
-class restore_organizer_activity_structure_step extends restore_activity_structure_step {
+class restore_organizer_activity_structure_step extends restore_activity_structure_step
+{
 
     protected function define_structure() {
         $paths = array();
@@ -42,8 +45,10 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
         $userinfo = $this->get_setting_value('userinfo');
         if ($userinfo) {
             $paths[] = new restore_path_element('slot', '/activity/organizer/slots/slot');
-            $paths[] = new restore_path_element('appointment',
-                    '/activity/organizer/slots/slot/appointments/appointment');
+            $paths[] = new restore_path_element(
+                'appointment',
+                '/activity/organizer/slots/slot/appointments/appointment'
+            );
         }
 
         return $this->prepare_activity_structure($paths);

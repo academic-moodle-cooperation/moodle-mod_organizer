@@ -17,13 +17,13 @@
 /**
  * view.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define("ORGANIZER_TAB_APPOINTMENTS_VIEW", 1);
@@ -43,8 +43,9 @@ require_login($instance->course, false, $instance->cm);
 
 $params = organizer_load_params($instance);
 
-if(isset($_SESSION["organizer_new_instance"])) {
-    if($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW && ("".$_SESSION["organizer_new_instance"] == "".$instance->organizer->id)) {
+if (isset($_SESSION["organizer_new_instance"])) {
+    if ($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW &&
+            ("".$_SESSION["organizer_new_instance"] == "".$instance->organizer->id)) {
         $_SESSION["organizer_new_instance"] = null;
         $redirecturl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
         redirect($redirecturl);
@@ -73,7 +74,7 @@ $jsmodule = array(
 );
 $PAGE->requires->js_module($jsmodule);
 
-if($instance->organizer->hidecalendar != 1) {
+if ($instance->organizer->hidecalendar != 1) {
     organizer_add_calendar();
 }
 
@@ -85,10 +86,12 @@ echo $OUTPUT->box_start('', 'organizer_main_cointainer');
 switch ($params['mode']) {
     case ORGANIZER_TAB_APPOINTMENTS_VIEW:
         if (has_capability('mod/organizer:viewallslots', $instance->context)) {
-            $event = \mod_organizer\event\slot_viewed::create(array(
-                    'objectid' => $PAGE->cm->id,
-                    'context' => $PAGE->context
-            ));
+            $event = \mod_organizer\event\slot_viewed::create(
+            array(
+                'objectid' => $PAGE->cm->id,
+                'context' => $PAGE->context
+            )
+            );
             $event->trigger();
 
             echo organizer_generate_appointments_view($params, $instance, $popups);
@@ -96,13 +99,15 @@ switch ($params['mode']) {
         } else {
             print_error('You do not have the permission to view this page!');
         }
-        break;
+    break;
     case ORGANIZER_TAB_STUDENT_VIEW:
         if (has_capability('mod/organizer:viewstudentview', $instance->context)) {
-            $event = \mod_organizer\event\course_module_viewed::create(array(
-                    'objectid' => $PAGE->cm->instance,
-                    'context' => $PAGE->context,
-            ));
+            $event = \mod_organizer\event\course_module_viewed::create(
+            array(
+                'objectid' => $PAGE->cm->instance,
+                'context' => $PAGE->context,
+            )
+            );
             $event->add_record_snapshot('course', $PAGE->course);
             $event->trigger();
 
@@ -110,30 +115,32 @@ switch ($params['mode']) {
         } else {
             print_error('You do not have the permission to view this page!');
         }
-        break;
+    break;
     case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
         if (has_capability('mod/organizer:viewregistrations', $instance->context)) {
-            $event = \mod_organizer\event\registrations_viewed::create(array(
-                    'objectid' => $PAGE->cm->id,
-                    'context' => $PAGE->context
-            ));
+            $event = \mod_organizer\event\registrations_viewed::create(
+            array(
+                'objectid' => $PAGE->cm->id,
+                'context' => $PAGE->context
+            )
+            );
             $event->trigger();
 
             echo organizer_generate_registration_status_view($params, $instance, $popups);
         } else {
             print_error('You do not have the permission to view this page!');
         }
-        break;
+    break;
     case ORGANIZER_ASSIGNMENT_VIEW:
         if (has_capability('mod/organizer:assignslots', $instance->context)) {
             echo organizer_generate_assignment_view($params, $instance, $popups);
         } else {
             print_error('You do not have the permission to view this page!');
         }
-        break;
+    break;
     default:
         print_error("Invalid view mode: {$params['mode']}");
-        break;
+    break;
 }
 
 $PAGE->requires->js_init_call('M.mod_organizer.init_popups', array($popups));
@@ -195,14 +202,14 @@ function organizer_load_params($instance) {
         case ORGANIZER_TAB_APPOINTMENTS_VIEW:
         case ORGANIZER_TAB_STUDENT_VIEW:
             $params['sort'] = optional_param('sort', 'datetime', PARAM_ALPHA);
-            break;
+        break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             $params['sort'] = optional_param('sort', 'status', PARAM_ALPHA);
-            break;
+        break;
         case ORGANIZER_ASSIGNMENT_VIEW:
             $params['assignid'] = required_param('assignid', PARAM_INT);
             $params['sort'] = optional_param('sort', 'datetime', PARAM_ALPHA);
-            break;
+        break;
     }
 
     $params['slots'] = optional_param_array('slots', array(), PARAM_INT);

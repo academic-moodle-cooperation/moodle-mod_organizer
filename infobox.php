@@ -26,6 +26,8 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__) . '/lib.php');
 require_once(dirname(__FILE__) . '/legend.php');
 require_once(dirname(__FILE__) . '/locallib.php');
@@ -162,7 +164,8 @@ function organizer_make_myapp_section($params, $organizer, $app, &$popups) {
         $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
         if ($slot->starttime - $organizer->relativedeadline - time() > 0) {
             $a = new stdClass();
-            list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown($slot->starttime - $organizer->relativedeadline - time());
+            list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown(
+                    $slot->starttime - $organizer->relativedeadline - time());
             $class = $a->days > 1 ? "countdown_normal" : ($a->hours > 1 ? "countdown_hurry" : "countdown_critical");
             $output .= "<p><span class=\"$class\">" . get_string('infobox_deadline_countdown', 'organizer', $a) . '</span></p>';
         } else {

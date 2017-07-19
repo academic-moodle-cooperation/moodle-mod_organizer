@@ -17,13 +17,13 @@
 /**
  * mod_form.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -31,7 +31,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
 require_once(dirname(__FILE__) . '/lib.php');
 
-class mod_organizer_mod_form extends moodleform_mod {
+class mod_organizer_mod_form extends moodleform_mod
+{
 
     public function definition_after_data() {
         global $DB, $PAGE;
@@ -77,14 +78,18 @@ class mod_organizer_mod_form extends moodleform_mod {
         // MY ELEMENTS.
         $mform->addElement('header', 'availability', get_string('availability', 'organizer'));
 
-        $mform->addElement('date_time_selector', 'allowregistrationsfromdate', get_string('allowsubmissionsfromdate', 'organizer'),
-                array('optional' => true));
+        $mform->addElement(
+            'date_time_selector', 'allowregistrationsfromdate', get_string('allowsubmissionsfromdate', 'organizer'),
+            array('optional' => true)
+        );
         $mform->setDefault('allowregistrationsfromdate', mktime(0, 0, 0, date('m'), date('d'), date('y')));
         $mform->setType('allowregistrationsfromdate', PARAM_INT);
         $mform->addHelpButton('allowregistrationsfromdate', 'allowsubmissionsfromdate', 'organizer');
 
-        $mform->addElement('date_time_selector', 'duedate', get_string('absolutedeadline', 'organizer'),
-                array('optional' => true));
+        $mform->addElement(
+            'date_time_selector', 'duedate', get_string('absolutedeadline', 'organizer'),
+            array('optional' => true)
+        );
         $mform->setDefault('duedate', mktime(0, 0, 0, date('m'), date('d'), date('y') + 1) - (5 * 60));
         $mform->setType('duedate', PARAM_INT);
         $mform->addHelpButton('duedate', 'absolutedeadline', 'organizer');
@@ -92,7 +97,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addElement('advcheckbox', 'alwaysshowdescription', get_string('alwaysshowdescription', 'organizer'), '');
         $mform->addHelpButton('alwaysshowdescription', 'alwaysshowdescription', 'organizer');
         $mform->setDefault('alwaysshowdescription', 1);
-        $mform->disabledIf('alwaysshowdescription', 'allowregistrationsfromdate[enabled]', 'notchecked');
+        $mform->disabledif ('alwaysshowdescription', 'allowregistrationsfromdate[enabled]', 'notchecked');
 
         $mform->setExpanded('availability');
 
@@ -109,8 +114,10 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addHelpButton('relativedeadline', 'relativedeadline', 'organizer');
 
         $group = array();
-        $group[] = $mform->createElement('advcheckbox', 'isgrouporganizer',
-                get_string('isgrouporganizer', 'organizer'), null, null, array(0, 1));
+        $group[] = $mform->createElement(
+            'advcheckbox', 'isgrouporganizer',
+            get_string('isgrouporganizer', 'organizer'), null, null, array(0, 1)
+        );
         $mform->setType('isgrouporganizer', PARAM_INT);
         $mform->addGroup($group, 'isgrouporganizergroup', get_string('isgrouporganizer', 'organizer'), null, false);
         $mform->addHelpButton('isgrouporganizergroup', 'isgrouporganizer', 'organizer');
@@ -120,10 +127,11 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->setDefault('visibility', ORGANIZER_VISIBILITY_SLOT);
         $mform->addHelpButton('visibility', 'visibility', 'organizer');
 
-        // Waiting list
         $queuegroup = array();
-        $queuegroup[] = $mform->createElement('advcheckbox', 'queue',
-                get_string('queue', 'organizer'), null, null, array(0, 1));
+        $queuegroup[] = $mform->createElement(
+            'advcheckbox', 'queue',
+            get_string('queue', 'organizer'), null, null, array(0, 1)
+        );
         $mform->setType('queue', PARAM_INT);
         $mform->addGroup($queuegroup, 'queuegroup', get_string('queue', 'organizer'), null, false);
         $mform->addHelpButton('queuegroup', 'queue', 'organizer');
@@ -138,8 +146,10 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addHelpButton('emailteachers', 'emailteachers', 'organizer');
 
         $calendargroup = array();
-        $calendargroup[] = $mform->createElement('advcheckbox', 'hidecalendar',
-                get_string('hidecalendar', 'organizer'), null, null, array(0, 1));
+        $calendargroup[] = $mform->createElement(
+            'advcheckbox', 'hidecalendar',
+            get_string('hidecalendar', 'organizer'), null, null, array(0, 1)
+        );
         $mform->setType('calendar', PARAM_INT);
         $mform->setDefault('hidecalendar', 0);
            $mform->addGroup($calendargroup, 'calendargroup', get_string('hidecalendar', 'organizer'), null, false);
@@ -150,20 +160,24 @@ class mod_organizer_mod_form extends moodleform_mod {
             $mform->setDefault('duedate', $absdefault);
         }
         $this->standard_coursemodule_elements();
-        $warning = $mform->createElement('static', '', '',
-                '<span id="groupingid_warning">' . get_string('warning_groupingid', 'organizer') . '</span>');
+        $warning = $mform->createElement(
+            'static', '', '',
+            '<span id="groupingid_warning">' . get_string('warning_groupingid', 'organizer') . '</span>'
+        );
         $mform->insertElementBefore($warning, 'groupingid');
         $this->add_action_buttons();
 
         // Add warning popup/noscript tag, if grades are changed by user.
         $hasgrade = false;
         if (!empty($this->_instance)) {
-            $hasgrade = $DB->record_exists_sql('SELECT *
+            $hasgrade = $DB->record_exists_sql(
+                'SELECT *
                     FROM {organizer_slots} slots
                     JOIN {organizer_slot_appointments} apps
                     ON slots.id = apps.slotid
                     WHERE slots.organizerid=? and NOT grade IS NULL',
-                    array($this->_instance));
+                array($this->_instance)
+            );
         }
 
         if ($mform->elementExists('grade') && $hasgrade) {
@@ -175,11 +189,15 @@ class mod_organizer_mod_form extends moodleform_mod {
             );
             $PAGE->requires->js_init_call('M.mod_organizer.init_grade_change', null, false, $module);
             // Add noscript tag in case.
-            $noscriptwarning = $mform->createElement('static',
-                    'warning',
-                    null,
-                    html_writer::tag('noscript',
-                            get_string('changegradewarning', 'mod_organizer')));
+            $noscriptwarning = $mform->createElement(
+                'static',
+                'warning',
+                null,
+                html_writer::tag(
+                    'noscript',
+                    get_string('changegradewarning', 'mod_organizer')
+                )
+            );
             $mform->insertElementBefore($noscriptwarning, 'grade');
         }
     }
@@ -267,9 +285,9 @@ class mod_organizer_mod_form extends moodleform_mod {
     private function _get_visibilities() {
 
         $visibilities = array();
-        $visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('visibility_all','organizer');
-        $visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('visibility_anonymous','organizer');
-        $visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('visibility_slot','organizer');
+        $visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('visibility_all', 'organizer');
+        $visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('visibility_anonymous', 'organizer');
+        $visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('visibility_slot', 'organizer');
 
         return $visibilities;
     }

@@ -17,14 +17,14 @@
 /**
  * db/update.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * xmldb_organizer_upgrade
  *
- * @param int $oldversion
+ * @param  int $oldversion
  * @return bool
  */
 function xmldb_organizer_upgrade($oldversion) {
@@ -45,8 +45,10 @@ function xmldb_organizer_upgrade($oldversion) {
 
         // Changing precision of field grade on table organizer to (10, 5).
         $table = new xmldb_table('organizer_slot_appointments');
-        $field = new xmldb_field('grade', XMLDB_TYPE_NUMBER, '10, 5', null, null, null, null,
-                'attended');
+        $field = new xmldb_field(
+            'grade', XMLDB_TYPE_NUMBER, '10, 5', null, null, null, null,
+            'attended'
+        );
 
         // Launch change of precision, sign and the default value for field grade.
         $dbman->change_field_precision($table, $field);
@@ -61,8 +63,10 @@ function xmldb_organizer_upgrade($oldversion) {
 
         // Changing precision of field grade on table organizer to (10, 5).
         $table = new xmldb_table('organizer');
-        $field = new xmldb_field('grade', XMLDB_TYPE_NUMBER, '10, 5', null, XMLDB_NOTNULL, null, '0',
-                'relativedeadline');
+        $field = new xmldb_field(
+            'grade', XMLDB_TYPE_NUMBER, '10, 5', null, XMLDB_NOTNULL, null, '0',
+            'relativedeadline'
+        );
 
         // Launch change of precision, sign and the default value for field grade.
         $dbman->change_field_precision($table, $field);
@@ -77,8 +81,10 @@ function xmldb_organizer_upgrade($oldversion) {
 
         // Changing precision of field grade on table organizer to (10, 5).
         $table = new xmldb_table('organizer_slot_appointments');
-        $field = new xmldb_field('grade', XMLDB_TYPE_NUMBER, '10, 5', null, null, null, null,
-                'attended');
+        $field = new xmldb_field(
+            'grade', XMLDB_TYPE_NUMBER, '10, 5', null, null, null, null,
+            'attended'
+        );
 
         // Launch change of precision, sign and the default value for field grade.
         $dbman->change_field_precision($table, $field);
@@ -171,12 +177,16 @@ function xmldb_organizer_upgrade($oldversion) {
     if ($oldversion < 2013112901) {
         $table = new xmldb_table('organizer');
 
-        $field = new xmldb_field('duedate', XMLDB_TYPE_INTEGER, '10',
-                XMLDB_UNSIGNED, false, null, '0', 'allowregistrationsfromdate');
+        $field = new xmldb_field(
+            'duedate', XMLDB_TYPE_INTEGER, '10',
+            XMLDB_UNSIGNED, false, null, '0', 'allowregistrationsfromdate'
+        );
         $dbman->change_field_notnull($table, $field);
 
-        $field = new xmldb_field('allowregistrationsfromdate', XMLDB_TYPE_INTEGER,
-                '10', XMLDB_UNSIGNED, false, null, '0', 'emailteachers');
+        $field = new xmldb_field(
+            'allowregistrationsfromdate', XMLDB_TYPE_INTEGER,
+            '10', XMLDB_UNSIGNED, false, null, '0', 'emailteachers'
+        );
         $dbman->change_field_notnull($table, $field);
 
         // Organizer savepoint reached.
@@ -184,8 +194,10 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2013122300) {
-        $DB->execute('UPDATE mdl_log SET url = RIGHT(url, LOCATE("/", REVERSE(url))-1) ' .
-                'WHERE module="organizer" and url LIKE "http://%"');
+        $DB->execute(
+            'UPDATE mdl_log SET url = RIGHT(url, LOCATE("/", REVERSE(url))-1) ' .
+            'WHERE module="organizer" and url LIKE "http://%"'
+        );
 
         // Organizer savepoint reached.
         upgrade_mod_savepoint(true, 2013122300, 'organizer');
@@ -195,12 +207,16 @@ function xmldb_organizer_upgrade($oldversion) {
 
         $table = new xmldb_table('organizer');
 
-        $field = new xmldb_field('duedate', XMLDB_TYPE_INTEGER,
-                '10', XMLDB_UNSIGNED, false, null, '0', 'allowregistrationsfromdate');
+        $field = new xmldb_field(
+            'duedate', XMLDB_TYPE_INTEGER,
+            '10', XMLDB_UNSIGNED, false, null, '0', 'allowregistrationsfromdate'
+        );
         $dbman->change_field_notnull($table, $field);
 
-        $field = new xmldb_field('allowregistrationsfromdate', XMLDB_TYPE_INTEGER,
-                '10', XMLDB_UNSIGNED, false, null, '0', 'emailteachers');
+        $field = new xmldb_field(
+            'allowregistrationsfromdate', XMLDB_TYPE_INTEGER,
+            '10', XMLDB_UNSIGNED, false, null, '0', 'emailteachers'
+        );
         $dbman->change_field_notnull($table, $field);
 
         // Organizer savepoint reached.
@@ -322,7 +338,8 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        $field = new xmldb_field('teacherapplicanttimemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'teacherapplicantid');
+        $field = new xmldb_field('teacherapplicanttimemodified',
+                XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'teacherapplicantid');
 
         // Conditionally launch add field teacherapplicanttimemodified.
         if (!$dbman->field_exists($table, $field)) {
@@ -335,7 +352,7 @@ function xmldb_organizer_upgrade($oldversion) {
 
     if ($oldversion < 2016062800) {
 
-         // Changing precision of field duration on table organizer_slots to INT(10)
+         // Changing precision of field duration on table organizer_slots to INT(10).
         $table = new xmldb_table('organizer_slots');
         $field = new xmldb_field('duration', XMLDB_TYPE_INTEGER, '10');
 
@@ -348,9 +365,9 @@ function xmldb_organizer_upgrade($oldversion) {
 
     if ($oldversion < 2017062300) {
 
-        // Changing events created with organizer version 3.2 and before to work with calender action events
+        // Changing events created with organizer version 3.2 and before to work with calender action events.
 
-        require_once(dirname(__FILE__) . '/../locallib.php');
+        include_once(dirname(__FILE__) . '/../locallib.php');
 
         $query = 'SELECT {organizer_slot_appointments}.id appid, {organizer_slots}.eventid, {organizer_slots}.id slotid,
                   {organizer_slots}.teacherid slotuser,
@@ -384,11 +401,13 @@ function xmldb_organizer_upgrade($oldversion) {
                 }
             }
             $update = $DB->update_record('event', $event);
-            // Insert event-ds for the organizer instance, if there is none yet
-            if (!$DB->get_field('event', 'id',
-                    array ('modulename' => 'organizer',
+            // Insert event-ds for the organizer instance, if there is none yet.
+            if (!$DB->get_field(
+                'event', 'id',
+                array ('modulename' => 'organizer',
                             'instance' => $record->organizerid,
-                            'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE))) {
+                'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE)
+            )) {
                 organizer_change_event_instance($record->organizerid);
             };
         }

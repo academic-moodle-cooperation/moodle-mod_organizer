@@ -17,13 +17,13 @@
 /**
  * view_action.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -87,8 +87,9 @@ if ($recipient != null) {
 
     // Filter all not registered and not attended.
     foreach ($entries as $entry) {
-        if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED ||
-            $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP) {
+        if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED
+            || $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP
+        ) {
             $counter++;
             $recipients[] = $entry;
         }
@@ -98,8 +99,10 @@ if ($recipient != null) {
 
 
 
-$mform = new organizer_remind_all_form(null, array('id' => $cm->id, 'mode' => $mode,
-        'slots' => $slots, 'recipients' => $recipients, 'recipient' => $recipient));
+$mform = new organizer_remind_all_form(
+    null, array('id' => $cm->id, 'mode' => $mode,
+    'slots' => $slots, 'recipients' => $recipients, 'recipient' => $recipient)
+);
 
 if ($data = $mform->get_data()) {
 
@@ -114,10 +117,12 @@ if ($data = $mform->get_data()) {
         $redirecturl->param('messages[]', 'message_info_reminders_sent_pl');
     }
 
-    $event = \mod_organizer\event\appointment_reminder_sent::create(array(
+    $event = \mod_organizer\event\appointment_reminder_sent::create(
+        array(
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context
-    ));
+        )
+    );
     $event->trigger();
 
     $redirecturl = $redirecturl->out();
@@ -165,8 +170,10 @@ function organizer_remind_all($recipient = null, $custommessage = "") {
     $count = 0;
     foreach ($entries as $entry) {
         if (!in_array($entry->id, $nonrecepients)) {
-            organizer_prepare_and_send_message(array('user' => $entry->id, 'organizer' => $organizer,
-                'custommessage' => $custommessage), 'register_reminder_student');
+            organizer_prepare_and_send_message(
+                array('user' => $entry->id, 'organizer' => $organizer,
+                'custommessage' => $custommessage), 'register_reminder_student'
+            );
             $count++;
         }
     }

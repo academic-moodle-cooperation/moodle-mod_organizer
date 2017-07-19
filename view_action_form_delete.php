@@ -17,13 +17,13 @@
 /**
  * view_action_form_delete.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -33,7 +33,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/slotlib.php');
 
-class organizer_delete_slots_form extends moodleform {
+class organizer_delete_slots_form extends moodleform
+{
 
     protected function definition() {
         global $DB;
@@ -66,10 +67,12 @@ class organizer_delete_slots_form extends moodleform {
                     $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
                     $stime = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
                     $etime = userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
-                    $mform->addElement('static', '', '',
-                            "$date " . get_string('slotfrom', 'organizer') . " $stime "
+                    $mform->addElement(
+                        'static', '', '',
+                        "$date " . get_string('slotfrom', 'organizer') . " $stime "
                                     . get_string('slotto', 'organizer') . " $etime "
-                                    . get_string('atlocation', 'organizer') . " $slot->location");
+                        . get_string('atlocation', 'organizer') . " $slot->location"
+                    );
                 }
             }
             if (!$deletableslots) {
@@ -93,10 +96,12 @@ class organizer_delete_slots_form extends moodleform {
                         $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
                         $stime = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
                         $etime = userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
-                        $mform->addElement('static', '', '',
-                                "$date " . get_string('slotfrom', 'organizer') . " $stime "
+                        $mform->addElement(
+                            'static', '', '',
+                            "$date " . get_string('slotfrom', 'organizer') . " $stime "
                                         . get_string('slotto', 'organizer') . " $etime "
-                                        . get_string('atlocation', 'organizer') . " $slot->location");
+                            . get_string('atlocation', 'organizer') . " $slot->location"
+                        );
                     }
                 }
             }

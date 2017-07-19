@@ -17,13 +17,13 @@
 /**
  * index.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Replace organizer with the name of your module and remove this line.
@@ -41,9 +41,11 @@ if (! $course = $DB->get_record('course', array('id' => $id))) {
 require_course_login($course);
 $PAGE->set_pagelayout('incourse');
 
-$event = \mod_organizer\event\course_module_instance_list_viewed::create(array(
+$event = \mod_organizer\event\course_module_instance_list_viewed::create(
+    array(
         'context' => context_course::instance($course->id)
-));
+    )
+);
 $event->trigger();
 
 // Print the header.

@@ -17,13 +17,13 @@
 /**
  * messaging.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -40,12 +40,12 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $sender = is_int($sender) ? $DB->get_record('user', array('id' => $sender)) : $sender;
     $receiver = is_int($receiver) ? $DB->get_record('user', array('id' => $receiver)) : $receiver;
 
-    // $context = context_course::instance($cm->course);
     $roles = get_user_roles($context, $receiver->id);
 
     $now = time();
-    if (!$cm->visible || (isset($cm->availablefrom) && $cm->availablefrom && $cm->availablefrom > $now) ||
-            (isset($cm->availableuntil) && $cm->availableuntil && $cm->availableuntil < $now) || count($roles) == 0) {
+    if (!$cm->visible || (isset($cm->availablefrom) && $cm->availablefrom && $cm->availablefrom > $now)
+        || (isset($cm->availableuntil) && $cm->availableuntil && $cm->availableuntil < $now) || count($roles) == 0
+    ) {
         return false;
     }
 
@@ -136,8 +136,10 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
 
     $message->subject = get_string("$type:subject", 'organizer', $strings);
     $message->fullmessage = get_string("$type:fullmessage", 'organizer', $strings);
-    $message->fullmessagehtml = organizer_make_html(get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm,
-            $course);
+    $message->fullmessagehtml = organizer_make_html(
+        get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm,
+        $course
+    );
 
     if (isset($customdata['custommessage'])) {
         $message->fullmessage = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessage);
@@ -177,7 +179,7 @@ function organizer_make_html($content, $organizer, $cm, $course) {
 function organizer_prepare_and_send_message($data, $type) {
     global $DB, $USER;
 
-    require_once('lib.php');
+    include_once('lib.php');
 
     switch ($type) {
         case 'edit_notify_student':
@@ -191,7 +193,7 @@ function organizer_prepare_and_send_message($data, $type) {
                     organizer_send_message(intval($slot->teacherid), intval($app->userid), $slot, $type);
                 }
             }
-            break;
+        break;
         case 'edit_notify_teacher':
             foreach ($data->slots as $slotid) {
                 $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
@@ -199,7 +201,7 @@ function organizer_prepare_and_send_message($data, $type) {
                     organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
                 }
             }
-            break;
+        break;
         case 'eval_notify_student':
             if (isset($data->apps) && count($data->apps) > 0) {
                 foreach ($data->apps as $appid => $app) {
@@ -216,38 +218,40 @@ function organizer_prepare_and_send_message($data, $type) {
                     organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
                 }
             }
-            break;
+        break;
         case 'register_notify_teacher:register': // TODO: check how it was actually originally defined.
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
             if ($organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
                 organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
             }
-            break;
+        break;
         case 'register_notify_teacher:queue':
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
             if ($organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
                 organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
             }
-            break;
+        break;
         case 'register_notify_teacher:reregister':
         case 'register_notify_teacher:unregister':
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
-            if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG ||
-                $organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
-                organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
+            if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG
+            || $organizer->emailteachers == ORGANIZER_MESSAGES_ALL
+                ) {
+                    organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
             }
-            break;
+        break;
         case 'register_notify_teacher:unqueue':
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
-            if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG ||
-                $organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
-                organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
+            if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG
+            || $organizer->emailteachers == ORGANIZER_MESSAGES_ALL
+                ) {
+                    organizer_send_message(intval($USER->id), intval($slot->teacherid), $slot, $type);
             }
-            break;
+        break;
         case 'group_registration_notify:student:register':
         case 'group_registration_notify:student:queue':
         case 'group_registration_notify:student:reregister':
@@ -262,7 +266,7 @@ function organizer_prepare_and_send_message($data, $type) {
                     organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
                 }
             }
-            break;
+        break;
         case 'group_registration_notify:student:unqueue':
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
             $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
@@ -274,49 +278,61 @@ function organizer_prepare_and_send_message($data, $type) {
                     organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
                 }
             }
-            break;
+        break;
         case 'register_reminder_student':
-            return organizer_send_message(intval($USER->id), intval($data['user']),
-                $data['organizer'], $type, null, array('custommessage' => $data['custommessage']));
+        return organizer_send_message(
+            intval($USER->id), intval($data['user']),
+            $data['organizer'], $type, null, array('custommessage' => $data['custommessage'])
+        );
         break;
         case 'assign_notify_student':
             $slot = $DB->get_record('organizer_slots', array('id' => $data->selectedslot));
-            if($data->participant) {
-                      $apps = $DB->get_records('organizer_slot_appointments',
-                    array('slotid' => $data->selectedslot, 'userid' => $data->participant));
+            if ($data->participant) {
+                  $apps = $DB->get_records(
+                      'organizer_slot_appointments',
+                      array('slotid' => $data->selectedslot, 'userid' => $data->participant)
+                      );
             } else {
-                      $apps = $DB->get_records('organizer_slot_appointments',
-                    array('slotid' => $data->selectedslot, 'groupid' => $data->group));
+                $apps = $DB->get_records(
+                'organizer_slot_appointments',
+                array('slotid' => $data->selectedslot, 'groupid' => $data->group)
+                );
             }
             foreach ($apps as $app) {
                 if ($app->groupid && !groups_is_member($app->groupid, $app->userid)) {
                     continue;
                 }
-                      organizer_send_message(intval($app->teacherapplicantid), intval($app->userid), $slot, $type);
+                  organizer_send_message(intval($app->teacherapplicantid), intval($app->userid), $slot, $type);
             }
-            break;
+        break;
         case 'assign_notify_teacher':
             $slot = $DB->get_record('organizer_slots', array('id' => $data->selectedslot));
-            if($data->participant) {
-                      $apps = $DB->get_records('organizer_slot_appointments',
-                    array('slotid' => $data->selectedslot, 'userid' => $data->participant));
+            if ($data->participant) {
+                  $apps = $DB->get_records(
+                      'organizer_slot_appointments',
+                      array('slotid' => $data->selectedslot, 'userid' => $data->participant)
+                      );
             } else {
-                      $apps = $DB->get_records('organizer_slot_appointments',
-                    array('slotid' => $data->selectedslot, 'groupid' => $data->group));
+                $apps = $DB->get_records(
+                'organizer_slot_appointments',
+                array('slotid' => $data->selectedslot, 'groupid' => $data->group)
+                );
             }
-            $app = reset($apps);
+                $app = reset($apps);
             if ($app->teacherapplicantid != $slot->teacherid) {
-                      $customdata = array();
-                if($data->participant) {
+                  $customdata = array();
+                if ($data->participant) {
                     $participant = $DB->get_record('user', array('id' => $data->participant));
                     $customdata['participantname'] = fullname($participant, true);
                 } else {
                     $customdata['groupname'] = organizer_fetch_groupname($data->group);
                 }
-                      organizer_send_message(intval($app->teacherapplicantid), intval($slot->teacherid),
-                             $slot, $type, null, $customdata);
+                  organizer_send_message(
+                  intval($app->teacherapplicantid), intval($slot->teacherid),
+                  $slot, $type, null, $customdata
+                      );
             }
-            break;
+        break;
         default:
             print_error('Not debugged yet!');
     }

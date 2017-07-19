@@ -17,23 +17,27 @@
 /**
  * A scheduled task for organizer cron.
  *
- * @package    mod_organizer
- * @copyright  2016 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @copyright 2016 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 
 namespace mod_organizer\task;
 
-class cron_task extends \core\task\scheduled_task {
+defined('MOODLE_INTERNAL') || die();
+
+class cron_task extends \core\task\scheduled_task
+{
 
     public function get_name() {
-        // Shown in admin screens
+        // Shown in admin screens.
         return get_string('crontaskname', 'mod_organizer');
     }
 
     public function execute() {
         global $CFG;
-        require_once($CFG->dirroot . '/mod/organizer/lib.php');
+        include_once($CFG->dirroot . '/mod/organizer/lib.php');
         organizer_cron();
     }
 

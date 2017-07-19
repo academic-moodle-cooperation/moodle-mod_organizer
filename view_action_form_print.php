@@ -17,13 +17,13 @@
 /**
  * view_action_form_print.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -31,7 +31,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
-class organizer_print_slots_form extends moodleform {
+class organizer_print_slots_form extends moodleform
+{
 
     private $_selcols;
 
@@ -71,10 +72,11 @@ class organizer_print_slots_form extends moodleform {
 
         $params = array('slotid' => reset($data['slots']));
         $isgrouporganizer = $DB->get_field_sql(
-                "SELECT o.isgrouporganizer
+            "SELECT o.isgrouporganizer
                 FROM {organizer} o
                 INNER JOIN {organizer_slots} s ON o.id = s.organizerid
-                WHERE s.id = :slotid", $params);
+                WHERE s.id = :slotid", $params
+        );
 
         $identityfields = explode(',', $CFG->showuseridentity);
         $selcols = array('datetime', 'location', 'teacher', 'participant');
@@ -116,8 +118,10 @@ class organizer_print_slots_form extends moodleform {
         // Submissions per page.
         $pppgroup = array();
         $pppgroup[] = &$mform->createElement('text', 'entriesperpage', get_string('numentries', 'organizer'), array('size' => '2'));
-        $pppgroup[] = &$mform->createElement('advcheckbox', 'printperpage_optimal',
-                '', get_string('stroptimal', 'organizer'), array("group" => 1));
+        $pppgroup[] = &$mform->createElement(
+            'advcheckbox', 'printperpage_optimal',
+            '', get_string('stroptimal', 'organizer'), array("group" => 1)
+        );
 
         $mform->addGroup($pppgroup, 'printperpagegrp', get_string('numentries', 'organizer'), array(' '), false);
         $mform->setType('entriesperpage', PARAM_INT);
@@ -127,29 +131,35 @@ class organizer_print_slots_form extends moodleform {
 
         $mform->addHelpButton('printperpagegrp', 'numentries', 'organizer');
 
-        $mform->disabledIf('entriesperpage', 'printperpage_optimal', 'checked');
-        $mform->disabledIf('printperpagegrp', 'format', 'neq', 'pdf');
+        $mform->disabledif ('entriesperpage', 'printperpage_optimal', 'checked');
+        $mform->disabledif ('printperpagegrp', 'format', 'neq', 'pdf');
 
-        $mform->addElement('select', 'textsize', get_string('textsize', 'organizer'),
-                array('8' => get_string('font_small', 'organizer'), '10' => get_string('font_medium', 'organizer'),
-                        '12' => get_string('font_large', 'organizer')));
+        $mform->addElement(
+            'select', 'textsize', get_string('textsize', 'organizer'),
+            array('8' => get_string('font_small', 'organizer'), '10' => get_string('font_medium', 'organizer'),
+            '12' => get_string('font_large', 'organizer'))
+        );
 
         $mform->setDefault('textsize', $textsize);
-        $mform->disabledIf('textsize', 'format', 'neq', 'pdf');
+        $mform->disabledif ('textsize', 'format', 'neq', 'pdf');
 
-        $mform->addElement('select', 'pageorientation', get_string('pageorientation', 'organizer'),
-                array('P' => get_string('orientationportrait', 'organizer'),
-                        'L' => get_string('orientationlandscape', 'organizer')));
+        $mform->addElement(
+            'select', 'pageorientation', get_string('pageorientation', 'organizer'),
+            array('P' => get_string('orientationportrait', 'organizer'),
+            'L' => get_string('orientationlandscape', 'organizer'))
+        );
 
         $mform->setDefault('pageorientation', $pageorientation);
-        $mform->disabledIf('pageorientation', 'format', 'neq', 'pdf');
+        $mform->disabledif ('pageorientation', 'format', 'neq', 'pdf');
 
-        $mform->addElement('advcheckbox', 'headerfooter', get_string('headerfooter', 'organizer'), null, null,
-                array(0, 1));
+        $mform->addElement(
+            'advcheckbox', 'headerfooter', get_string('headerfooter', 'organizer'), null, null,
+            array(0, 1)
+        );
         $mform->setType('headerfooter', PARAM_BOOL);
         $mform->setDefault('headerfooter', $headerfooter);
         $mform->addHelpButton('headerfooter', 'headerfooter', 'organizer');
-        $mform->disabledIf('headerfooter', 'format', 'neq', 'pdf');
+        $mform->disabledif ('headerfooter', 'format', 'neq', 'pdf');
 
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'downloadfile', get_string('downloadfile', 'organizer'));
@@ -175,9 +185,11 @@ class organizer_print_slots_form extends moodleform {
         $output = $this->_form->toHtml();
 
         $helpicon = new help_icon('datapreviewtitle', 'organizer');
-        $output .= html_writer::tag('div',
-                get_string('datapreviewtitle', 'organizer') . $OUTPUT->render($helpicon),
-                array('class' => 'datapreviewtitle'));
+        $output .= html_writer::tag(
+            'div',
+            get_string('datapreviewtitle', 'organizer') . $OUTPUT->render($helpicon),
+            array('class' => 'datapreviewtitle')
+        );
 
         $output .= '<div class="forced_scroll">';
 
@@ -236,10 +248,12 @@ class organizer_print_slots_form extends moodleform {
             $content .= '" name="' . $column . '_cell">' . get_string("th_{$column}", 'organizer') . $icon;
             $content .= '</a>';
 
-            $content .= ' ' . $OUTPUT->image_icon('t/switch_minus', get_string('hide'), 'moodle',
+            $content .= ' ' . $OUTPUT->image_icon(
+                't/switch_minus', get_string('hide'), 'moodle',
                 array("id" => "toggle_{$column}", "style" => 'cursor: pointer',
                     'title' => get_string("th_{$column}", 'organizer')
-            ));
+                )
+            );
 
             $cell = new html_table_cell($content);
             $cell->header = true;
@@ -250,33 +264,33 @@ class organizer_print_slots_form extends moodleform {
         switch($tsort) {
             case "datetime":
                 $sort = "starttime";
-                break;
+            break;
             case "location":
                 $sort = "s.location";
-                break;
+            break;
             case "teacher":
                 $sort = "teacherfirstname";
             case "groupname":
                 $sort = "groupname";
-                break;
+            break;
             case "participant":
                 $sort = "u.lastname";
-                break;
+            break;
             case "email":
                 $sort = "u.email";
-                break;
+            break;
             case "idnumber":
                 $sort = "u.idnumber";
-                break;
+            break;
             case "attended":
                 $sort = "a.attended";
-                break;
+            break;
             case "grade":
                 $sort = "a.grade";
-                break;
+            break;
             case "feedback":
                 $sort = "a.feedback";
-                break;
+            break;
             default:
                 $sort = null;
         }
@@ -304,15 +318,17 @@ class organizer_print_slots_form extends moodleform {
                     switch ($column) {
                         case 'datetime':
                             $datetime = userdate($entry->starttime, get_string('fulldatetimetemplate', 'organizer'))
-                                    . ' - '
-                                    . userdate($entry->starttime + $entry->duration,
-                                            get_string('timetemplate', 'organizer'));
-                            $content = "<span name='{$column}_cell'>" . $datetime . '</span>';
-                            $cell = new html_table_cell($content);
-                            $cell->rowspan = $entry->rowspan;
-                            $cell->style = 'vertical-align: middle;';
-                            $row->cells[] = $cell;
-                            break;
+                            . ' - '
+                            . userdate(
+                                $entry->starttime + $entry->duration,
+                                get_string('timetemplate', 'organizer')
+                                );
+                                $content = "<span name='{$column}_cell'>" . $datetime . '</span>';
+                                $cell = new html_table_cell($content);
+                                $cell->rowspan = $entry->rowspan;
+                                $cell->style = 'vertical-align: middle;';
+                                $row->cells[] = $cell;
+                        break;
                         case 'location':
                             $location = $entry->location;
                             $content = "<span name='{$column}_cell'>" . $location . '</span>';
@@ -320,7 +336,7 @@ class organizer_print_slots_form extends moodleform {
                             $cell->rowspan = $entry->rowspan;
                             $cell->style = 'vertical-align: middle;';
                             $row->cells[] = $cell;
-                            break;
+                        break;
                         case 'teacher':
                             $a = new stdClass();
                             $a->firstname = $entry->teacherfirstname;
@@ -331,19 +347,20 @@ class organizer_print_slots_form extends moodleform {
                             $cell->rowspan = $entry->rowspan;
                             $cell->style = 'vertical-align: middle;';
                             $row->cells[] = $cell;
-                            break;
+                        break;
                         case 'groupname':
                             $groupname = $entry->groupname;
                             $content = "<span name='{$column}_cell'>" . $groupname . '</span>';
-                            if ($isgrouporganizer) { $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
+                            if ($isgrouporganizer) {
+                                $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
                             }
                             $cell = new html_table_cell($content);
                             $cell->rowspan = $entry->rowspan;
                             $cell->style = 'vertical-align: middle;';
                             $row->cells[] = $cell;
-                            break;
+                        break;
                         default:
-                            break;
+                        break;
                     }
                 }
 
@@ -354,51 +371,52 @@ class organizer_print_slots_form extends moodleform {
                         $a->lastname = $entry->lastname;
                         $name = get_string('fullname_template', 'organizer', $a);
                         $content = "<span name='{$column}_cell'>" . $name . '</span>';
-                        if (!$isgrouporganizer) { $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
+                        if (!$isgrouporganizer) {
+                            $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
                         }
                         $cell = new html_table_cell($content);
                         $cell->style = 'vertical-align: middle;';
                         $row->cells[] = $cell;
-                        break;
+                    break;
                     case 'email':
                         $content = "<span name='{$column}_cell'>" . $entry->email . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->style = 'vertical-align: middle;';
                         $row->cells[] = $cell;
-                        break;
+                    break;
                     case 'idnumber':
                         $idnumber = (isset($entry->idnumber) && $entry->idnumber !== '') ? $entry->idnumber : '';
                         $content = "<span name='{$column}_cell'>" . $idnumber . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->style = 'vertical-align: middle;';
                         $row->cells[] = $cell;
-                        break;
+                    break;
                     case 'attended':
                         $attended = isset($entry->attended) ? ($entry->attended == 1 ? 'Yes' : 'No') : '';
                         $content = "<span name='{$column}_cell'>" . $attended . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->style = 'vertical-align: middle;';
                         $row->cells[] = $cell;
-                        break;
+                    break;
                     case 'grade':
                         $grade = isset($entry->grade) ? sprintf("%01.2f", $entry->grade) : '';
                         $content = "<span name='{$column}_cell'>" . $grade . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->style = 'vertical-align: middle;';
                         $row->cells[] = $cell;
-                        break;
+                    break;
                     case 'feedback':
                         $feedback = isset($entry->feedback) && $entry->feedback !== '' ? $entry->feedback : '';
                         $content = "<span name='{$column}_cell'>" . $feedback . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->style = 'vertical-align: middle;';
                         $row->cells[] = $cell;
-                        break;
+                    break;
                     case 'datetime':
                     case 'location':
                     case 'teacher':
                     case 'groupname':
-                        break;
+                    break;
                     default:
                         print_error("Unsupported column type: $column");
                 }

@@ -17,12 +17,12 @@
 /**
  * addslot.php
  *
- * @package       mod_organizer
- * @author        Andreas Windbichler
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Windbichler
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -67,19 +67,21 @@ require_capability('mod/organizer:addslots', $context);
 
 $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
 
-if ($data = $mform->get_data()) {  // when page is called the first time (=empty form) or form data has errors: no data
-    if (isset($data->addday)) {  // additional slot fields are to be displayed
+if ($data = $mform->get_data()) {  // When page is called the first time (=empty form) or form data has errors: no data.
+    if (isset($data->addday)) {  // Additional slot fields are to be displayed.
         organizer_display_form($mform, get_string('title_add', 'organizer'));
-    } else {  // submit button was pressed and submitted form data has no errors
+    } else {  // Submit button was pressed and submitted form data has no errors.
         list($slotids, $messages) = organizer_add_appointment_slots($data);
         $count = count($slotids);
         if ($count == 0) {
             $redirecturl->param('messages[]', 'message_warning_no_slots_added');
         } else {
-            $event = \mod_organizer\event\slot_created::create(array(
+            $event = \mod_organizer\event\slot_created::create(
+                array(
                 'objectid' => $PAGE->cm->id,
                 'context' => $PAGE->context
-            ));
+                )
+            );
             $event->trigger();
 
             $redirecturl->param('data[count]', $count);
@@ -100,9 +102,9 @@ if ($data = $mform->get_data()) {  // when page is called the first time (=empty
             redirect($redirecturl);
         }
     }
-} else if ($mform->is_cancelled()) {  // cancel button of form was pressed
+} else if ($mform->is_cancelled()) {  // Cancel button of form was pressed.
     redirect($redirecturl);
-} else { // display empty form initially or submitted form has errors
+} else { // Display empty form initially or submitted form has errors.
     organizer_display_form($mform, get_string('title_add', 'organizer'));
 }
 print_error('If you see this, something went wrong with add action!');

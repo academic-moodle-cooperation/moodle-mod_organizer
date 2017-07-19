@@ -17,13 +17,13 @@
 /**
  * db/migrate.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define('ORGANIZER_CHECK_USERS', 1);
@@ -95,7 +95,8 @@ foreach ($courses as $course) {
             $organizer->emailteachers = $scheduler->emailteachers;
             $organizer->allowregistrationsfromdate = null;
             $organizer->duedate = $scheduler->changeuntil > 0 ? $scheduler->changeuntil : null;
-            $organizer->relativedeadline = $scheduler->changebefore > 0 ? $scheduler->changebefore : ORGANIZER_DEFAULT_ORGANIZER_RELATIVEDEADLINE;
+            $deadline = ORGANIZER_DEFAULT_ORGANIZER_RELATIVEDEADLINE;
+            $organizer->relativedeadline = $scheduler->changebefore > 0 ? $scheduler->changebefore : $deadline;
             $organizer->grade = ORGANIZER_DEFAULT_ORGANIZER_GRADE;
 
             echo "done.\n";
@@ -107,10 +108,11 @@ foreach ($courses as $course) {
             echo "done. New organizer id = {$organizer->id}\n";
 
             $section = $DB->get_record_sql(
-                            "SELECT *
+                "SELECT *
             FROM {course_sections} cs
             WHERE cs.sequence LIKE CONCAT('%', :cmid, '%') AND cs.course = :courseid",
-                            array('cmid' => $cmold->id, 'courseid' => $cm->course));
+                array('cmid' => $cmold->id, 'courseid' => $cm->course)
+            );
 
             if (!$section) {
                 echo "WARNING! This organizer has already been migrated! Reverting and skipping...\n";
@@ -200,9 +202,11 @@ function migrate_slots($cm, $scheduler, $organizer) {
             WHERE s.scheduler = :schedulerid AND s.starttime = :starttime AND
             s.teacher = :teacherid AND student IS NOT NULL AND student > 0";
 
-        $oldapps = $DB->get_records_sql($query,
-                        array('schedulerid' => $oldslot->scheduler, 'starttime' => $oldslot->starttime,
-                                'teacherid' => $oldslot->teacher));
+        $oldapps = $DB->get_records_sql(
+            $query,
+            array('schedulerid' => $oldslot->scheduler, 'starttime' => $oldslot->starttime,
+            'teacherid' => $oldslot->teacher)
+        );
 
         $appcount = 0;
         foreach ($oldapps as $oldapp) {

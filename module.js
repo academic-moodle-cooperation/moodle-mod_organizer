@@ -16,13 +16,13 @@
 /**
  * module.js
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 M.mod_organizer = {};
@@ -73,37 +73,41 @@ M.mod_organizer.init_add_form = function (Y) {
 
     var form1 = Y.one('#mform1');
 
-    // for safari workaround
-    form1.all("input[type=submit]").on(['click','keypress'], function(e){
-        var sender = Y.one(e.target);
-        var that = form1 = Y.one('#mform1');
-        that.setData("callerid",sender.get('name'));
-    });
-
-    if(form1){
-        form1.on('submit', function (e) {
+    // For safari workaround.
+    form1.all("input[type=submit]").on(
+        ['click','keypress'], function(e){
             var sender = Y.one(e.target);
+            var that = form1 = Y.one('#mform1');
+            that.setData("callerid",sender.get('name'));
+        }
+    );
 
-            sendername = sender.get('name');
+    if (form1) {
+        form1.on(
+            'submit', function (e) {
+                var sender = Y.one(e.target);
 
-            if(!sendername){
-                // safari workaround
-                sendername = sender.getData('callerid');
-            }
+                sendername = sender.get('name');
 
-            if (sendername == "createslots"){
+                if (!sendername) {
+                    // Safari workaround.
+                    sendername = sender.getData('callerid');
+                }
 
-                conflicts = Y.one("input[type=hidden][name=conflicts]").get('value');
+                if (sendername == "createslots") {
 
-                if (conflicts > 0){
-                    val = confirm(M.util.get_string('confirm_conflicts', 'organizer'));
+                    conflicts = Y.one("input[type=hidden][name=conflicts]").get('value');
 
-                    if(!val){
-                        e.preventDefault();
+                    if (conflicts > 0) {
+                        val = confirm(M.util.get_string('confirm_conflicts', 'organizer'));
+
+                        if (!val) {
+                            e.preventDefault();
+                        }
                     }
                 }
             }
-        });
+        );
     }
 
     function toggle_available_from() {
@@ -145,7 +149,7 @@ M.mod_organizer.init_edit_form = function (Y, imagepaths) {
             initialstate = e.target.get('checked');
         }
         Y.all('#mform1 [name^=availablefrom]:not([name*=now])').set('disabled', e.target.get('checked'));
-        if(e.target.get('checked')) {
+        if (e.target.get('checked')) {
             Y.Node.create('<input />')
                 .set('type', 'hidden')
                 .set('name', 'availablefrom')
@@ -178,14 +182,18 @@ M.mod_organizer.init_eval_form = function (Y) {
         var checked = e.target.get('checked');
         var sender_class = e.target.getAttribute('class').match(/allow\d+/g)[0];
 
-        Y.all('input.' + sender_class).each(function (node) {
-            node.set('value', checked ? 1 : 0);
-        });
+        Y.all('input.' + sender_class).each(
+            function (node) {
+                node.set('value', checked ? 1 : 0);
+            }
+        );
     }
 
-    Y.all('[name*=allownewappointments]').each(function (node) {
-        node.on('click', toggle_all);
-    });
+    Y.all('[name*=allownewappointments]').each(
+        function (node) {
+            node.on('click', toggle_all);
+        }
+    );
 }
 
 M.mod_organizer.init_checkboxes = function (Y) {
@@ -196,13 +204,15 @@ M.mod_organizer.init_checkboxes = function (Y) {
         var hidden = [];
         var visible = [];
 
-        table.one('tbody').all('tr').each(function(node) {
-            if ((node.get('offsetWidth') === 0 && node.get('offsetHeight') === 0) || node.get('display') === 'none') {
-                node.all('input[type=checkbox]').set('checked', false);
-            } else {
-                node.all('input[type=checkbox]').set('checked', checked);
+        table.one('tbody').all('tr').each(
+            function(node) {
+                if ((node.get('offsetWidth') === 0 && node.get('offsetHeight') === 0) || node.get('display') === 'none') {
+                    node.all('input[type=checkbox]').set('checked', false);
+                } else {
+                    node.all('input[type=checkbox]').set('checked', checked);
+                }
             }
-        });
+        );
 
         table.one('thead').all('input[type=checkbox]').set('checked', checked);
         table.one('tfoot').all('input[type=checkbox]').set('checked', checked);
@@ -219,15 +229,15 @@ M.mod_organizer.init_infobox = function (Y) {
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
         var showfreeslotsonly = Y.one('#show_free_slots_only').get('checked');
 
-        if(showpastslots) {
-            if(showmyslotsonly) {
-                if(showfreeslotsonly) {
+        if (showpastslots) {
+            if (showmyslotsonly) {
+                if (showfreeslotsonly) {
                     tablebody.all('tr.past_due.my_slot.free_slot').show();
                 } else {
                     tablebody.all('tr.past_due.my_slot').show();
                 }
             } else {
-                if(showfreeslotsonly) {
+                if (showfreeslotsonly) {
                     tablebody.all('tr.past_due.free_slot').show();
                 } else {
                     tablebody.all('tr.past_due').show();
@@ -279,8 +289,8 @@ M.mod_organizer.init_infobox = function (Y) {
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
         var showfreeslotsonly = Y.one('#show_free_slots_only').get('checked');
 
-        if(!showmyslotsonly) {
-            if(showpastslots) {
+        if (!showmyslotsonly) {
+            if (showpastslots) {
                 if (showfreeslotsonly) {
                     tablebody.all('tr:not(.info).free_slot').show();
                 } else {
@@ -308,26 +318,29 @@ M.mod_organizer.init_infobox = function (Y) {
         var noneexist = noninforows.size() == 0;
         var anyvisible = false;
 
-        noninforows.each(function (node) {
-            if (!((node.get('offsetWidth') === 0 &&
-                    node.get('offsetHeight') === 0) ||
-                    node.get('display') === 'none')) {
-                anyvisible = true;
+        noninforows.each(
+            function (node) {
+                if (!((node.get('offsetWidth') === 0
+                    && node.get('offsetHeight') === 0)
+                    || node.get('display') === 'none')
+                ) {
+                    anyvisible = true;
+                }
             }
-        });
+        );
 
         var showpastslots = Y.one('#show_past_slots').get('checked');
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
 
         tablebody.all('tr.info').hide();
-        if(!anyvisible) {
-            if(noneexist) {
+        if (!anyvisible) {
+            if (noneexist) {
                 tablebody.one('tr.no_slots_defined').show();
-            } else if(showpastslots && !showmyslotsonly) {
+            } else if (showpastslots && !showmyslotsonly) {
                 tablebody.one('tr.no_slots').show();
-            } else if(showpastslots && showmyslotsonly) {
+            } else if (showpastslots && showmyslotsonly) {
                 tablebody.one('tr.no_my_slots').show();
-            } else if(!showpastslots && showmyslotsonly) {
+            } else if (!showpastslots && showmyslotsonly) {
                 tablebody.one('tr.no_due_my_slots').show();
             } else {
                 tablebody.one('tr.no_due_slots').show();
@@ -348,7 +361,7 @@ M.mod_organizer.init_infobox = function (Y) {
     }
 
     Y.one('#show_past_slots').on('click', toggle_past_slots);
-    Y.one('#show_my_slots_only').on('click', toggle_other_slots); // toggle_free_slots
+    Y.one('#show_my_slots_only').on('click', toggle_other_slots); // Toggle_free_slots.
     Y.one('#show_free_slots_only').on('click', toggle_free_slots);
     Y.one('#toggle_legend').on('click', toggle_legend);
 }
@@ -368,16 +381,18 @@ M.mod_organizer.init_popups = function (Y, popups) {
     Y.one('#slot_overview').delegate('mouseover', show_popup, '*[id*=organizer_popup_icon]');
     Y.one('#slot_overview').delegate('mouseout', hide_popup, '*[id*=organizer_popup_icon]');
 
-    var popuppanel = new Y.Panel({
-        contentBox         : Y.Node.create('<div id="organizer_popup_panel" class="block_course_overview block"/>'),
-        headerContent    : '<div id="organizer_popup_header" class="header" />',
-        bodyContent        : '<div id="organizer_popup_body" class="content" />',
-        width              : 300,
-        zIndex             : 100,
-        centered           : false,
-        modal              : false,
-        visible            : false
-    });
+    var popuppanel = new Y.Panel(
+        {
+            contentBox         : Y.Node.create('<div id="organizer_popup_panel" class="block_course_overview block"/>'),
+            headerContent    : '<div id="organizer_popup_header" class="header" />',
+            bodyContent        : '<div id="organizer_popup_body" class="content" />',
+            width              : 300,
+            zIndex             : 100,
+            centered           : false,
+            modal              : false,
+            visible            : false
+        }
+    );
 
     popuppanel.render();
     Y.one('#organizer_popup_panel .yui3-widget-buttons').remove();
@@ -431,13 +446,15 @@ M.mod_organizer.init_organizer_print_slots_form = function (Y) {
         }
         this.set('src', imgurl);
 
-        Y.all("[name=" + column + "_cell]").each(function(node) {
-            if (!unchecked) {
-                node.show();
-            } else {
-                node.hide();
+        Y.all("[name=" + column + "_cell]").each(
+            function(node) {
+                if (!unchecked) {
+                    node.show();
+                } else {
+                    node.hide();
+                }
             }
-        });
+        );
     }
 
     Y.one('.forced_scroll').delegate('click', toggle_column, 'table th img');
@@ -450,13 +467,15 @@ M.mod_organizer.init_organizer_print_slots_form_old = function (Y) {
 
         Y.one("#col_" + column).set('checked', checked);
 
-        Y.all("[name=" + column + "_cell]").each(function(node) {
-            if(checked) {
-                node.show();
-            } else {
-                node.hide();
+        Y.all("[name=" + column + "_cell]").each(
+            function(node) {
+                if (checked) {
+                    node.show();
+                } else {
+                    node.hide();
+                }
             }
-        });
+        );
     }
 
     Y.one('#mform1').delegate('change', toggle_column, 'table th input[type=checkbox]');
@@ -473,10 +492,12 @@ M.mod_organizer.init_grade_change = function(Y) {
     var gradenode = Y.one('#id_grade');
     if (gradenode) {
         var originalvalue = gradenode.get('value');
-        gradenode.on('change', function() {
-            if (gradenode.get('value') != originalvalue) {
-                alert(M.str.mod_organizer.changegradewarning);
+        gradenode.on(
+            'change', function() {
+                if (gradenode.get('value') != originalvalue) {
+                    alert(M.str.mod_organizer.changegradewarning);
+                }
             }
-        });
+        );
     }
 };

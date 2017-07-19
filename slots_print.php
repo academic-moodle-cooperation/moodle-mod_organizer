@@ -17,13 +17,13 @@
 /**
  * view_action.php
  *
- * @package       mod_organizer
- * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
- * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author        Andreas Windbichler
- * @author        Ivan Šakić
- * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
- * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_organizer
+ * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
+ * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -31,7 +31,6 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_action_form_print.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
-require_once(dirname(__FILE__) . '/mtablepdf.php');
 
 list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
@@ -110,15 +109,19 @@ if ($data = $mform->get_data()) {
 
     require_capability('mod/organizer:printslots', $context);
 
-    $event = \mod_organizer\event\appointment_list_printed::create(array(
+    $event = \mod_organizer\event\appointment_list_printed::create(
+        array(
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context
-    ));
+        )
+    );
     $event->trigger();
 
-    organizer_display_printable_table($organizer->allowregistrationsfromdate,
+    organizer_display_printable_table(
+        $organizer->allowregistrationsfromdate,
         $organizer->duedate, $data->cols, $data->slots, $ppp, $data->textsize,
-    $data->pageorientation, $data->headerfooter, $course->shortname . '-' . $organizer->name);
+        $data->pageorientation, $data->headerfooter, $course->shortname . '-' . $organizer->name
+    );
     redirect($redirecturl);
 
 } else if ($mform->is_cancelled()) {
@@ -194,9 +197,10 @@ function organizer_organizer_student_action_allowed($action, $slot) {
     return !$disabled && ($action == $allowedaction);
 }
 
-function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, $columns,
-        $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
-        $headerfooter = true, $filename = '') {
+function organizer_display_printable_table($registrationsfromdate, $timedue, $columns,
+    $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
+    $headerfooter = true, $filename = ''
+) {
     global $USER;
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
@@ -231,43 +235,43 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
                 case 'datetime':
                     $columnwitdh[] = array('value' => 64, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
-                    break;
+                break;
                 case 'location':
                     $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
-                    break;
+                break;
                 case 'teacher':
                     $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
-                    break;
+                break;
                 case 'groupname':
                     $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
-                    break;
+                break;
                 case 'participant':
                     $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
-                    break;
+                break;
                 case 'email':
                     $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
-                    break;
+                break;
                 case 'idnumber':
                     $columnwitdh[] = array('value' => 24, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
-                    break;
+                break;
                 case 'attended':
                     $columnwitdh[] = array('value' => 12, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
-                    break;
+                break;
                 case 'grade':
                     $columnwitdh[] = array('value' => 18, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
-                    break;
+                break;
                 case 'feedback':
                     $columnwitdh[] = array('value' => 64, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 1, 'align' => 'L');
-                    break;
+                break;
             }
         }
     }
@@ -275,34 +279,34 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
     switch($tsort) {
         case "datetime";
             $sort = "starttime";
-            break;
+        break;
         case "location":
             $sort = "s.location";
-            break;
+        break;
         case "teacher":
             $sort = "teacherfirstname";
-            break;
+        break;
         case "groupname":
             $sort = "groupname";
-            break;
+        break;
         case "participant":
             $sort = "u.lastname";
-            break;
+        break;
         case "email":
             $sort = "u.email";
-            break;
+        break;
         case "idnumber":
             $sort = "u.idnumber";
-            break;
+        break;
         case "attended":
             $sort = "a.attended";
-            break;
+        break;
         case "grade":
             $sort = "a.grade";
-            break;
+        break;
         case "feedback":
             $sort = "a.feedback";
-            break;
+        break;
         default:
             $sort = null;
     }
@@ -319,18 +323,22 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
         $dosort = "";
     }
 
-    $allowsubmissionsfromdate = $allowsubmissionsfromdate ? userdate($allowsubmissionsfromdate) : get_string('pdf_notactive', 'organizer');
+    $registrationsfromdate = $registrationsfromdate ? userdate($registrationsfromdate) : get_string('pdf_notactive', 'organizer');
     $timedue = $timedue ? userdate($timedue) : get_string('pdf_notactive', 'organizer');
 
-    $mpdftable = new MTablePDF($orientation, $columnwitdh);
-    $mpdftable->SetTitle(get_string('modulename', 'organizer') . " " .
-        $organizer->name . " - " . get_string('printout', 'organizer'));
+    $mpdftable = new \mod_organizer\MTablePDF($orientation, $columnwitdh);
+    $mpdftable->SetTitle(
+        get_string('modulename', 'organizer') . " " .
+        $organizer->name . " - " . get_string('printout', 'organizer')
+    );
     $mpdftable->setRowsperPage($entriesperpage);
     $mpdftable->ShowHeaderFooter($headerfooter);
     $mpdftable->SetFontSize($textsize);
-    $mpdftable->setHeaderText(get_string('course') . ':', "{$course->idnumber} {$course->fullname}",
-        get_string('availablefrom', 'organizer').':', $allowsubmissionsfromdate, get_string('date') . ':', userdate(time()),
-        get_string('modulename', 'organizer') . ':', $organizer->name, get_string('duedate', 'organizer').':', $timedue, '', '');
+    $mpdftable->setHeaderText(
+        get_string('course') . ':', "{$course->idnumber} {$course->fullname}",
+        get_string('availablefrom', 'organizer').':', $registrationsfromdate, get_string('date') . ':', userdate(time()),
+        get_string('modulename', 'organizer') . ':', $organizer->name, get_string('duedate', 'organizer').':', $timedue, '', ''
+    );
     $mpdftable->setTitles($titles);
     $mpdftable->setColumnFormat($columnformats);
     $entries = organizer_fetch_table_entries($slots, $dosort);
@@ -349,17 +357,17 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
                         $row[] = null;
                     } else {
                         $datetime = userdate($entry->starttime, get_string('fulldatetimetemplate', 'organizer')) . ' - '
-                                . userdate($entry->starttime + $entry->duration, get_string('timetemplate', 'organizer'));
+                        . userdate($entry->starttime + $entry->duration, get_string('timetemplate', 'organizer'));
                         $row[] = array('data' => $datetime, 'rowspan' => $rowspan - 1);
                     }
-                    break;
+                break;
                 case 'location':
                     if ($rowspan != $entry->rowspan) {
                         $row[] = null;
                     } else {
                         $row[] = array('data' => $entry->location, 'rowspan' => $rowspan - 1);
                     }
-                    break;
+                break;
                 case 'teacher':
                     if ($rowspan != $entry->rowspan) {
                         $row[] = null;
@@ -370,46 +378,48 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
                         $name = get_string('fullname_template', 'organizer', $a);
                         $row[] = array('data' => $name, 'rowspan' => $rowspan - 1);
                     }
-                    break;
+                break;
                 case 'groupname':
                     if ($rowspan != $entry->rowspan) {
                         $row[] = null;
                     } else {
                         $groupname = isset($entry->groupname) ? $entry->groupname : '';
-                        if ($organizer->isgrouporganizer) { $groupname .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
+                        if ($organizer->isgrouporganizer) {
+                            $groupname .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                         }
                         $row[] = array('data' => $groupname, 'rowspan' => $rowspan - 1);
                     }
-                    break;
+                break;
                     // These columns cannot have rowspan.
                 case 'participant':
                     $a = new stdClass();
                     $a->firstname = $entry->firstname;
                     $a->lastname = $entry->lastname;
                     $name = get_string('fullname_template', 'organizer', $a);
-                    if (!$organizer->isgrouporganizer) { $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
+                    if (!$organizer->isgrouporganizer) {
+                        $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                     }
                     $row[] = array('data' => $name, 'rowspan' => 0);
-                    break;
+                break;
                 case 'email':
                     $row[] = array('data' => $entry->email, 'rowspan' => 0);
-                    break;
+                break;
                 case 'idnumber':
                     $idnumber = (isset($entry->idnumber) && $entry->idnumber !== '') ? $entry->idnumber : '';
                     $row[] = array('data' => $idnumber, 'rowspan' => 0);
-                    break;
+                break;
                 case 'attended':
                     $attended = isset($entry->attended) ? ($entry->attended == 1 ? get_string('yes') : get_string('no')) : '';
                     $row[] = array('data' => $attended, 'rowspan' => 0);
-                    break;
+                break;
                 case 'grade':
                     $grade = isset($entry->grade) ? sprintf("%01.2f", $entry->grade) : '';
                     $row[] = array('data' => $grade, 'rowspan' => 0);
-                    break;
+                break;
                 case 'feedback':
                     $feedback = isset($entry->feedback) && $entry->feedback !== '' ? $entry->feedback : '';
                     $row[] = array('data' => $feedback, 'rowspan' => 0);
-                    break;
+                break;
             }
         }
 
@@ -421,23 +431,23 @@ function organizer_display_printable_table($allowsubmissionsfromdate, $timedue, 
 
     switch($format) {
         case 'xlsx':
-            $mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_XLSX);
-            break;
+            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_XLSX);
+        break;
         case 'xls':
-            $mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_XLS);
-            break;
+            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_XLS);
+        break;
         case 'ods':
-            $mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_ODS);
-            break;
+            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_ODS);
+        break;
         case 'csv_comma':
-            $mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_CSV_COMMA);
-            break;
+            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_CSV_COMMA);
+        break;
         case 'csv_tab':
-            $mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_CSV_TAB);
-            break;
+            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_CSV_TAB);
+        break;
         default:
-            $mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_PDF);
-            break;
+            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_PDF);
+        break;
     }
 
     $mpdftable->generate($filename);
