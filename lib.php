@@ -525,6 +525,9 @@ function organizer_get_last_group_appointment($organizer, $groupid) {
 
 function organizer_get_counters($organizer) {
     global $DB;
+
+    // To be assure to have a complete organizer dataset here. TODO: Remove this.
+    $organizer = $DB->get_record('organizer', array('id' => $organizer->id));
     if ($organizer->isgrouporganizer) {
         $params = array('groupingid' => $organizer->groupingid);
         $query = 'SELECT {groups}.* FROM {groups}
