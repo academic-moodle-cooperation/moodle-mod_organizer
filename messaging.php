@@ -35,7 +35,14 @@ require_once(dirname(__FILE__) . '/locallib.php');
 function organizer_send_message($sender, $receiver, $slot, $type, $digest = null, $customdata = array()) {
     global $DB;
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $slot->organizerid);
+    // TODO: Remove this ugly, ugly hack. Slot contains an organizer instance when sending registration reminder.
+    if ($type == 'register_reminder_student') {
+        $organizerid = $slot->id;
+    } else {
+        $organizerid = $slot->organizerid;
+    }
+
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
 
     $sender = is_int($sender) ? $DB->get_record('user', array('id' => $sender)) : $sender;
     $receiver = is_int($receiver) ? $DB->get_record('user', array('id' => $receiver)) : $receiver;
