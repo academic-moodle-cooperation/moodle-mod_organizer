@@ -143,9 +143,9 @@ function organizer_get_next_user_appointment($organizer, $userid = null) {
     $todaymidnight = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
 
     if ($organizer->isgrouporganizer) {
-        $groupid = organizer_fetch_user_group($userid);
-        var_dump($groupid);
-        $paramssql = array('organizerid' => $organizer->id, 'groupid' => $groupid, 'todaymidnight' => $todaymidnight);
+        $group = organizer_fetch_user_group($userid);
+        var_dump($group->id);
+        $paramssql = array('organizerid' => $organizer->id, 'groupid' => $group->id, 'todaymidnight' => $todaymidnight);
         $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
                   INNER JOIN {organizer_slots} s ON a.slotid = s.id
                   WHERE s.organizerid = :organizerid AND a.groupid = :groupid AND s.starttime > :todaymidnight
@@ -157,9 +157,6 @@ function organizer_get_next_user_appointment($organizer, $userid = null) {
                   WHERE s.organizerid = :organizerid AND a.userid = :userid AND s.starttime > :todaymidnight
                   ORDER BY s.starttime ASC";
     }
-    var_dump($query);
-    var_dump($paramssql);
-    die("=====");
     $apps = $DB->get_records_sql($query, $paramssql);
 
     $app = reset($apps);
