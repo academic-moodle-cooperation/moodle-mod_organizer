@@ -156,6 +156,9 @@ function organizer_get_next_user_appointment($organizer, $userid = null) {
                   WHERE s.organizerid = :organizerid AND a.userid = :userid AND s.starttime > :todaymidnight
                   ORDER BY s.starttime ASC";
     }
+    var_dump($query);
+    var_dump($paramssql);
+    die("=====");
     $apps = $DB->get_records_sql($query, $paramssql);
 
     $app = reset($apps);
