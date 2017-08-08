@@ -99,7 +99,7 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
     $app = reset($apps);
     if ($organizer->isgrouporganizer && $mergegroupapps && $app !== false) {
         $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
-        $query = "SELECT a.*, s. FROM {organizer_slot_appointments} a
+        $query = "SELECT a.* FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid AND s.id = :slotid
         ORDER BY a.id DESC";
