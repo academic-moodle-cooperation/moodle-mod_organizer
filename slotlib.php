@@ -144,6 +144,7 @@ function organizer_get_next_user_appointment($organizer, $userid = null) {
 
     if ($organizer->isgrouporganizer) {
         $groupid = organizer_fetch_user_group($userid);
+        var_dump($groupid);
         $paramssql = array('organizerid' => $organizer->id, 'groupid' => $groupid, 'todaymidnight' => $todaymidnight);
         $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
                   INNER JOIN {organizer_slots} s ON a.slotid = s.id
