@@ -1085,8 +1085,7 @@ function organizer_fetch_user_group($userid, $cmid = null) {
                 INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
                 INNER JOIN {groups_members} ON {groups}.id = {groups_members}.groupid
                 WHERE {groupings_groups}.groupingid = :groupingid
-                AND {groups_members}.userid = :userid
-                ORDER BY {groups}.name ASC";
+                AND {groups_members}.userid = :userid";
     $group = $DB->get_record_sql($query, $params);
     return $group;
 }
