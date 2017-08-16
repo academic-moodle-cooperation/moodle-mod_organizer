@@ -837,7 +837,7 @@ Sie haben morgen folgende Termine:
 {$a->digest}
 
 Moodle Messaging System';
-$string['appointment_reminder_teacher:digest:smallmessage'] = 'Sie haben eine zusammenfassende Nachricht bezüglich Ihre morgigen Termine erhalten.';
+$string['appointment_reminder_teacher:digest:smallmessage'] = 'Sie haben eine zusammenfassende Nachricht bezüglich Ihrer morgigen Termine erhalten.';
 
 // Appointment reminder teacher group digest.
 
@@ -849,7 +849,7 @@ Sie haben morgen folgende Termine:
 {$a->digest}
 
 Moodle Messaging System';
-$string['appointment_reminder_teacher:group:digest:smallmessage'] = 'Sie haben eine zusammenfassende Nachricht bezüglich Ihre morgigen Termine erhalten.';
+$string['appointment_reminder_teacher:group:digest:smallmessage'] = 'Sie haben eine zusammenfassende Nachricht bezüglich Ihrer morgigen Termine erhalten.';
 
 // Appointment reminder student.
 
