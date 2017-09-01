@@ -1317,7 +1317,7 @@ function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupmode)
 
     $list = "";
     if ($groupmode) {
-        $group = organizer_fetch_user_group($userid);
+        $group = organizer_fetch_user_group($userid, $organizerid);
         $query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.teacherid, s.location, t.firstname, t.lastname
                 FROM {organizer_slot_queues} q
 				INNER JOIN {organizer_slots} s ON s.id = q.slotid

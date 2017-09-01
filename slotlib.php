@@ -143,8 +143,8 @@ function organizer_get_next_user_appointment($organizer, $userid = null) {
     $todaymidnight = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
 
     if ($organizer->isgrouporganizer) {
-        $group = organizer_fetch_user_group($userid);
-        var_dump($group->id);
+        require_once('locallib.php');
+        $group = organizer_fetch_user_group($userid, $organizer->id);
         $paramssql = array('organizerid' => $organizer->id, 'groupid' => $group->id, 'todaymidnight' => $todaymidnight);
         $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
                   INNER JOIN {organizer_slots} s ON a.slotid = s.id
