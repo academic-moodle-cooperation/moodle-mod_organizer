@@ -636,15 +636,22 @@ function organizer_get_eventaction_instance_student($organizer) {
 
     $app = organizer_get_next_user_appointment($organizer);
 
+
     if ($app) {
         if ($organizer->isgrouporganizer) {
-            $str = get_string('mymoodle_reg_slot_group', 'organizer');
+            $group = organizer_fetch_group($organizer);
+            $a = new stdClass();
+            $a->groupname = $group->name;
+            $str = get_string('mymoodle_reg_slot_group', 'organizer', $a);
         } else {
             $str = get_string('mymoodle_reg_slot', 'organizer');
         }
     } else {
         if ($organizer->isgrouporganizer) {
-            $str = get_string('mymoodle_no_reg_slot_group', 'organizer');
+            $group = organizer_fetch_group($organizer);
+            $a = new stdClass();
+            $a->groupname = $group->name;
+            $str = get_string('mymoodle_no_reg_slot_group', 'organizer', $a);
         } else {
             $str = get_string('mymoodle_no_reg_slot', 'organizer');
         }
