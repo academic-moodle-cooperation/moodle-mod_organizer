@@ -5,6 +5,7 @@ CHANGELOG
 ------------------
 
 * [FIXED] #4684 Bug when user wants to save time slots in Moodle version 3.2 with theme Boost
+* [FIXED] #4681 Instance title missing
 
 3.2.1 (2017-03-28)
 ------------------

@@ -141,7 +141,7 @@ function organizer_make_description_section($organizer) {
         $output .= '<hr />';
         $output .= '<p>' . get_string('infobox_organizer_never_expires', 'organizer') . '</p>';
     }
-    return organizer_make_section('infobox_description', $output);
+    return organizer_make_section('', $output);
 }
 function organizer_make_myapp_section($params, $organizer, $app, &$popups) {
     global $DB;

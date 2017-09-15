@@ -78,6 +78,7 @@ if($instance->organizer->hidecalendar!=1) {
 }
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($instance->organizer->name), 2, null);
 
 $popups = array();
 
