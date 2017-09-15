@@ -338,6 +338,8 @@ class organizer_add_slots_form extends moodleform {
 
         foreach ($fields as $field) {
             $mform->getElement($field)->freeze();
+            // Otherwise too much disabling with boost theme and moodle 3.2:
+            $mform->getElement($field)->setPersistantFreeze(true);
         }
     }
 
