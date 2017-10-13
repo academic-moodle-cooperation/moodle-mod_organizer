@@ -45,8 +45,7 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
         $userinfo = $this->get_setting_value('userinfo');
         if ($userinfo) {
             $paths[] = new restore_path_element('slot', '/activity/organizer/slots/slot');
-            $paths[] = new restore_path_element(
-                'appointment',
+            $paths[] = new restore_path_element('appointment',
                 '/activity/organizer/slots/slot/appointments/appointment'
             );
         }

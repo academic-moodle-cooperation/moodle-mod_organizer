@@ -43,13 +43,14 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
         $organizer = new backup_nested_element(
             'organizer', array('id'),
             array('course', 'name', 'intro', 'introformat', 'timemodified', 'isgrouporganizer', 'emailteachers',
-            'allowregistrationsfromdate', 'duedate', 'relativedeadline', 'grade', 'visibility', 'queue')
+            'allowregistrationsfromdate', 'duedate', 'alwaysshowdescription', 'relativedeadline', 'grade', 'visibility', 'queue',
+                    'hidecalendar')
         );
 
         $slots = new backup_nested_element('slots');
         $slot = new backup_nested_element(
             'slot', array('id'),
-            array('organizerid', 'starttime', 'duration', 'location', 'locationlink', 'maxparticipants',
+            array('organizerid', 'starttime', 'gap', 'duration', 'location', 'locationlink', 'maxparticipants',
                         'teacherid', 'visibility', 'availablefrom', 'timemodified', 'notificationtime', 'comments',
             'teachervisible', 'eventid', 'notified')
         );
@@ -57,8 +58,9 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
         $appointments = new backup_nested_element('appointments');
         $appointment = new backup_nested_element(
             'appointment', array('id'),
-            array('slotid', 'userid', 'groupid', 'applicantid', 'registrationtime', 'attended', 'grade',
-            'feedback', 'comments', 'eventid', 'notified', 'allownewappointments')
+            array('slotid', 'userid', 'groupid', 'applicantid', 'attended', 'grade',
+            'feedback', 'comments', 'eventid', 'notified', 'allownewappointments', 'teacherapplicantid',
+                    'teacherapplicanttimemodified')
         );
 
         $queues = new backup_nested_element('queues');
@@ -85,7 +87,7 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
         if ($userinfo) {
             $slot->set_source_table('organizer_slots', array('organizerid' => backup::VAR_PARENTID));
             $appointment->set_source_table('organizer_slot_appointments', array('slotid' => backup::VAR_PARENTID));
-            $appointment->set_source_table('organizer_slot_queues', array('slotid' => backup::VAR_PARENTID));
+            $queue->set_source_table('organizer_slot_queues', array('slotid' => backup::VAR_PARENTID));
         }
 
         // Annotate the user id's where required.
