@@ -118,4 +118,21 @@ class restore_organizer_activity_task extends restore_activity_task
 
         return $rules;
     }
+
+    /**
+     * If there is no instance's groupingid - which can only be the case
+     * if either the backup instance was not in groupmode or the backup option "no groups and groupings"
+     * was selected - the groupmode is set to none.
+     */
+    public function after_restore() {
+        global $DB;
+
+        $organizerid = $this->get_activityid();
+        $courseid = $this->get_courseid();
+        $cm = get_coursemodule_from_instance('organizer', $organizerid, $courseid, false, MUST_EXIST);
+        if (!$cm->groupingid) {
+            $DB->set_field('course_modules', 'groupmode', '0');
+            $DB->set_field('organizer', 'isgrouporganizer', '0');
+        }
+    }
 }
