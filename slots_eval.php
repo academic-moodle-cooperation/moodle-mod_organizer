@@ -77,6 +77,13 @@ if (!$slots) {
     redirect($redirecturl);
 }
 
+$slots = organizer_sortout_hiddenslots($slots);
+
+if (count($slots) == 0) {
+    $redirecturl->param('messages[]', 'message_warning_no_visible_slots_selected');
+    redirect($redirecturl);
+}
+
 if (!organizer_security_check_slots($slots)) {
     print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
 }

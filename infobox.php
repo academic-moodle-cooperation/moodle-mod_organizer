@@ -38,6 +38,7 @@ function organizer_make_infobox($params, $organizer, $context, &$popups) {
     user_preference_allow_ajax_update('mod_organizer_showpasttimeslots', PARAM_BOOL);
     user_preference_allow_ajax_update('mod_organizer_showmyslotsonly', PARAM_BOOL);
     user_preference_allow_ajax_update('mod_organizer_showfreeslotsonly', PARAM_BOOL);
+    user_preference_allow_ajax_update('mod_organizer_showhiddenslots', PARAM_BOOL);
     $PAGE->requires->js_init_call('M.mod_organizer.init_infobox');
 
     $output = '';
@@ -188,7 +189,7 @@ function organizer_make_slotoptions_section($params) {
     $output = '<div style="float:left;">';
 
     $displaymyslotsonly = $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW;
-    $displayfreeslots = $displaypastslots = $params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW;
+    $displayfreeslots = $displaypastslots = $displayhiddenslots = $params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW;
 
     $pref = get_user_preferences('mod_organizer_showmyslotsonly', false);
     $output .= '<p' . ($displaymyslotsonly ? '' : ' style="display: none;" ') . '>' .
@@ -201,6 +202,12 @@ function organizer_make_slotoptions_section($params) {
             '<input type="checkbox" id="show_free_slots_only" ' .
             ($pref ? 'checked="true" ' : '') . ' /> ' .
             get_string('infobox_showfreeslots', 'organizer') . '</p>';
+
+    $pref = get_user_preferences('mod_organizer_showhiddenslots', false);
+    $output .= '<p' . ($displayhiddenslots ? '' : ' style="display: none;" ') . '>' .
+        '<input type="checkbox" id="show_hidden_slots" ' .
+        ($pref ? 'checked="true" ' : '') . ' /> ' .
+        get_string('infobox_showhiddenslots', 'organizer') . '</p>';
 
     $pref = get_user_preferences('mod_organizer_showpasttimeslots', true);
     $output .= '<p' . ($displaypastslots ? '' : ' style="display: none;" ') . '>' .

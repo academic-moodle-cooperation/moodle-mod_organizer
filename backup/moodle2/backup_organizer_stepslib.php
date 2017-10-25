@@ -52,7 +52,7 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
             'slot', array('id'),
             array('organizerid', 'starttime', 'gap', 'duration', 'location', 'locationlink', 'maxparticipants',
                         'teacherid', 'visibility', 'availablefrom', 'timemodified', 'notificationtime', 'comments',
-            'teachervisible', 'eventid', 'notified')
+            'teachervisible', 'eventid', 'notified', 'visible')
         );
 
         $appointments = new backup_nested_element('appointments');

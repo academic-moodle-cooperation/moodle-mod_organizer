@@ -228,6 +228,7 @@ M.mod_organizer.init_infobox = function (Y) {
         var showpastslots = Y.one('#show_past_slots').get('checked');
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
         var showfreeslotsonly = Y.one('#show_free_slots_only').get('checked');
+        var showhiddenslots = Y.one('#show_hidden_slots').get('checked');
 
         if (showpastslots) {
             if (showmyslotsonly) {
@@ -247,6 +248,10 @@ M.mod_organizer.init_infobox = function (Y) {
             tablebody.all('tr.past_due').hide();
         }
 
+        if (!showhiddenslots) {
+            tablebody.all('tr.unavailable').hide();
+        }
+
         toggle_info();
 
         M.util.set_user_preference('mod_organizer_showpasttimeslots', (showpastslots));
@@ -258,6 +263,7 @@ M.mod_organizer.init_infobox = function (Y) {
         var showpastslots = Y.one('#show_past_slots').get('checked');
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
         var showfreeslotsonly = Y.one('#show_free_slots_only').get('checked');
+        var showhiddenslots = Y.one('#show_hidden_slots').get('checked');
 
         if (!showfreeslotsonly) {
             if (!showmyslotsonly) {
@@ -277,9 +283,34 @@ M.mod_organizer.init_infobox = function (Y) {
             tablebody.all('tr:not(.info):not(.free_slot)').hide();
         }
 
+        if (!showhiddenslots) {
+            tablebody.all('tr.unavailable').hide();
+        }
+
         toggle_info();
 
         M.util.set_user_preference('mod_organizer_showfreeslotsonly', (showfreeslotsonly));
+
+    }
+
+    function toggle_hidden_slots(e) {
+        var tablebody = Y.one('#slot_overview tbody');
+        var showpastslots = Y.one('#show_past_slots').get('checked');
+        var showhiddenslots = Y.one('#show_hidden_slots').get('checked');
+
+        if (showhiddenslots) {
+            if (showpastslots) {
+                tablebody.all('tr.unavailable').show();
+            } else {
+                tablebody.all('tr:not(.past_due).unavailable').show();
+            }
+        } else {
+            tablebody.all('tr.unavailable').hide();
+        }
+
+        toggle_info();
+
+        M.util.set_user_preference('mod_organizer_showhiddenslots', (showhiddenslots));
 
     }
 
@@ -288,6 +319,7 @@ M.mod_organizer.init_infobox = function (Y) {
         var showpastslots = Y.one('#show_past_slots').get('checked');
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
         var showfreeslotsonly = Y.one('#show_free_slots_only').get('checked');
+        var showhiddenslots = Y.one('#show_hidden_slots').get('checked');
 
         if (!showmyslotsonly) {
             if (showpastslots) {
@@ -305,6 +337,10 @@ M.mod_organizer.init_infobox = function (Y) {
             }
         } else {
             tablebody.all('tr:not(.info):not(.my_slot)').hide();
+        }
+
+        if (!showhiddenslots) {
+            tablebody.all('tr.unavailable').hide();
         }
 
         toggle_info();
@@ -363,6 +399,7 @@ M.mod_organizer.init_infobox = function (Y) {
     Y.one('#show_past_slots').on('click', toggle_past_slots);
     Y.one('#show_my_slots_only').on('click', toggle_other_slots); // Toggle_free_slots.
     Y.one('#show_free_slots_only').on('click', toggle_free_slots);
+    Y.one('#show_hidden_slots').on('click', toggle_hidden_slots);
     Y.one('#toggle_legend').on('click', toggle_legend);
 }
 
