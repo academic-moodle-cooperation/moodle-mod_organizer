@@ -76,8 +76,7 @@ if (!organizer_security_check_slots($slots)) {
 }
 
 $mform = new organizer_edit_slots_form(
-    null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots),
-    'post', '', array('name' => 'form_edit')
+    null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots), 'post', '', array('name' => 'form_edit')
 );
 
 if ($data = $mform->get_data()) {

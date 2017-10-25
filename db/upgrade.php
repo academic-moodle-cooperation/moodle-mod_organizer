@@ -414,5 +414,20 @@ function xmldb_organizer_upgrade($oldversion) {
 
         upgrade_mod_savepoint(true, 2017062300, 'organizer');
     }
+
+    if ($oldversion < 2017102300) {
+
+        // Define field visible to be added to organizer_slots.
+        $table = new xmldb_table('organizer_slots');
+        $field = new xmldb_field('visible', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '1', 'notified');
+
+        // Conditionally launch add field visibility.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2017102300, 'organizer');
+    }
+
     return true;
 }

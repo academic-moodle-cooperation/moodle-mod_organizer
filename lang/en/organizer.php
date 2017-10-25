@@ -1067,3 +1067,4 @@ $string['norightpage'] = 'You are not allowed to call up this page.';
 $string['Warning'] = 'Warning';
 $string['Info'] = 'Info';
 $string['Error'] = 'Error';
+$string['visible'] = ' Slot visible';

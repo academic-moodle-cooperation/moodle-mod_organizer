@@ -553,6 +553,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
 
             $slotpastdue = $slotx->is_past_due();
             $myslot = $slot->teacherid == $USER->id;
+            $slotvisible = $slot->visible;
 
             $hidden = false;
 
@@ -580,6 +581,13 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                     $row->style = 'display: none;';
                     $hidden = true;
                 }
+            }
+
+            if (!$slotvisible && $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
+                $row->attributes['class'] .= ' unavailable';
+            } elseif (!$slotvisible && $params['mode'] == ORGANIZER_TAB_STUDENT_VIEW) {
+                $row->style = 'display: none;';
+                $hidden = true;
             }
 
             if (!$hidden) {

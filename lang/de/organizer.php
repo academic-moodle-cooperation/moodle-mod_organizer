@@ -1069,3 +1069,5 @@ $string['norightpage'] = 'Sie haben nicht das Recht, diese Seite aufzurufen.';
 $string['Warning'] = 'Warnung!';
 $string['Info'] = 'Info';
 $string['Error'] = 'Fehler!';
+
+$string['visible'] = 'Termin sichtbar';

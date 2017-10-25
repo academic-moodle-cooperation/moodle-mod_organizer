@@ -434,6 +434,10 @@ class organizer_add_slots_form extends moodleform
         $slotgroup[] = $mform->createElement('select', "{$name}[to]", '', $this->pickeroptions);
         $mform->setType("{$name}[to]", PARAM_INT);
         $mform->setDefault("{$name}[to]", 8 * 3600);
+        $slotgroup[] = $mform->createElement('advcheckbox', "{$name}[visible]", '', get_string('visible', 'organizer'),
+                null, array(0, 1));
+        $mform->setType("{$name}[visible]", PARAM_INT);
+        $mform->setDefault("{$name}[visible]", 1);
 
         return $slotgroup;
     }

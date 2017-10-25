@@ -153,6 +153,7 @@ function organizer_add_appointment_slots($data) {
             $newslot->duration = $data->duration;
             $newslot->comments = (isset($data->comments)) ? $data->comments : '';
             $newslot->organizerid = $organizer->id;
+            $newslot->visible = $slot['visible'];
 
             if (!isset($data->duration) || $data->duration < 1) {
                 print_error('Duration is invalid (not set or < 1). No slots will be added. Contact support!');
@@ -450,11 +451,14 @@ function organizer_update_appointment_slot($data) {
     global $DB;
 
     $slot = new stdClass();
-    $event = new stdClass();
 
     $modified = false;
+    if ($data->mod_visible == 1) {
+        $allslotsvisible = $data->visible;
+        $modified = true;
+    }
     if ($data->mod_teacherid == 1) {
-        $event->userid = $slot->teacherid = $data->teacherid;
+        $slot->teacherid = $data->teacherid;
         $modified = true;
     }
     if ($data->mod_visibility == 1) {
@@ -490,17 +494,26 @@ function organizer_update_appointment_slot($data) {
         $modified = true;
     }
     if ($data->mod_comments == 1) {
-        $event->description = $slot->comments = $data->comments;
+        $slot->comments = $data->comments;
         $modified = true;
     }
 
     if ($modified) {
         foreach ($data->slots as $slotid) {
             $slot->id = $slotid;
-            $appcount = count($DB->get_records('organizer_slot_appointments', array('slotid' => $slotid)));
+            $appcount = organizer_count_slotappointments(array($slotid));
             $maxparticipants = $DB->get_field('organizer_slots', 'maxparticipants', array('id' => $slotid));
             if ($data->mod_maxparticipants == 1 && $appcount > $data->maxparticipants) {
                 $slot->maxparticipants = $maxparticipants;
+            }
+            if ($appcount) {
+                $slot->visible = 1;
+            } else {
+                if (isset($allslotsvisible)) {
+                    $slot->visible = $allslotsvisible;
+                } else {
+                    unset($slot->visible);
+                }
             }
 
             $DB->update_record('organizer_slots', $slot);
@@ -1229,4 +1242,18 @@ function organizer_fetch_groupusers($groupid) {
     }
 
     return $users;
+}
+
+/*
+ * Are there appointments for this slot?.
+ */
+function organizer_count_slotappointments($slots) {
+    global $DB;
+
+    $apps = 0;
+    foreach ($slots as $slot) {
+        $apps += $DB->count_records('organizer_slot_appointments', array('slotid' => $slot));
+    }
+
+    return $apps;
 }

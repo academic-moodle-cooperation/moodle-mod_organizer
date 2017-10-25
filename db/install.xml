@@ -45,7 +45,8 @@
         <FIELD NAME="comments" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="notificationtime" NEXT="teachervisible"/>
         <FIELD NAME="teachervisible" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="comments" NEXT="eventid"/>
         <FIELD NAME="eventid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="teachervisible" NEXT="notified"/>
-        <FIELD NAME="notified" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="eventid"/>
+        <FIELD NAME="notified" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="eventid" NEXT="visible"/>
+        <FIELD NAME="visible" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="notified"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="organizer"/>
