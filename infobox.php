@@ -188,8 +188,8 @@ function organizer_make_myapp_section($params, $organizer, $app, &$popups) {
 function organizer_make_slotoptions_section($params) {
     $output = '<div style="float:left;">';
 
-    $displaymyslotsonly = $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW;
-    $displayfreeslots = $displaypastslots = $displayhiddenslots = $params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW;
+    $displaymyslotsonly = $displayhiddenslots = $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW;
+    $displayfreeslots = $displaypastslots = $params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW;
 
     $pref = get_user_preferences('mod_organizer_showmyslotsonly', false);
     $output .= '<p' . ($displaymyslotsonly ? '' : ' style="display: none;" ') . '>' .

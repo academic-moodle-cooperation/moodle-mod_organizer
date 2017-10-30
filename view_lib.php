@@ -543,8 +543,8 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                 }
             } else {
                 if ($organizer->queue && $alreadyinqueue) {
-                             $row = $rows[] = new html_table_row();
-                          $row->attributes['class'] = 'queueing';
+                    $row = $rows[] = new html_table_row();
+                    $row->attributes['class'] = 'queueing';
                 } else {
                     $row = $rows[] = new html_table_row();
                     $row->attributes['class'] = '';
@@ -607,8 +607,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                 switch ($column) {
                     case 'select':
                         $cell = $row->cells[] = new html_table_cell(
-                        html_writer::checkbox(
-                            'slots[]', $slot->id, false, '',
+                        html_writer::checkbox('slots[]', $slot->id, false, '',
                             array('class' => 'checkbox_slot')
                         )
                             );
@@ -660,11 +659,9 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
 
             $defaultrow->cells[] = organizer_get_span_cell(get_string($inforowname, 'organizer'), count($columns));
 
-            $oneshown = false;
-
             $defaultrow->style = '';
 
-            if ($numshown == 0 && !$oneshown) {
+            if ($numshown == 0) {
                 switch ($inforowname) {
                     case 'no_slots':
                         $defaultrow->style = ($showpastslots && !$showmyslotsonly) ? '' : 'display: none;';
@@ -683,10 +680,6 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                 }
             } else {
                 $defaultrow->style = 'display: none;';
-            }
-
-            if ($defaultrow->style == '') {
-                $oneshown = true;
             }
         }
     } else {
