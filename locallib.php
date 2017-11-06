@@ -1072,13 +1072,10 @@ function organizer_fetch_my_group() {
     }
 }
 
-function organizer_fetch_user_group($userid, $cmid = null) {
+function organizer_fetch_user_group($userid, $id = null) {
     global $DB;
 
-    if ($cmid == null) {
-        $cmid = optional_param('id', 0, PARAM_INT);
-    }
-    $cm = get_coursemodule_from_id('organizer', $cmid, 0, false, MUST_EXIST);
+    $cm = get_coursemodule_from_instance('organizer', $id, 0, false, MUST_EXIST);
 
     $params = array('groupingid' => $cm->groupingid, 'userid' => $userid);
     $query = "SELECT {groups}.id FROM {groups}
