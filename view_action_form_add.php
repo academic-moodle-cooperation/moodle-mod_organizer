@@ -139,14 +139,12 @@ class organizer_add_slots_form extends moodleform
 
         $group = array();
         $group[] = $mform->createElement(
-            'duration', 'availablefrom', get_string('availablefrom', 'organizer'),
-            array('optional' => false, 'defaultunit' => 86400)
+            'duration', 'availablefrom', null, array('optional' => false, 'defaultunit' => 86400)
         );
         $group[] = $mform->createElement(
-            'static', '', '', get_string('relative_deadline_before', 'organizer')
-            . '&nbsp;&nbsp;&nbsp;' . get_string('relative_deadline_now', 'organizer')
+            'static', '', '', get_string('relative_deadline_before', 'organizer') . '&nbsp;&nbsp;&nbsp;'
         );
-        $group[] = $mform->createElement('checkbox', 'now', '', null);
+        $group[] = $mform->createElement('checkbox', 'now', '', get_string('relative_deadline_now', 'organizer'));
 
         $mform->setDefault('availablefrom', 86400 * 7);
         $mform->setDefault('now', 1);

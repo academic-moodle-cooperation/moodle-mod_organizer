@@ -305,18 +305,16 @@ class organizer_edit_slots_form extends moodleform
         $group = array();
         if ($defaults['now']) {
             $group[] = $mform->createElement(
-                'duration', 'availablefrom', get_string('availablefrom', 'organizer'),
+                'duration', 'availablefrom', null,
                 null, array('group' => null, 'disabled' => true)
             );
         } else {
-            $group[] = $mform->createElement('duration', 'availablefrom', get_string('availablefrom', 'organizer'));
+            $group[] = $mform->createElement('duration', 'availablefrom', null);
         }
         $group[] = $mform->createElement(
-            'static', '', '',
-            get_string('relative_deadline_before', 'organizer') . '&nbsp;&nbsp;&nbsp;'
-            . get_string('relative_deadline_now', 'organizer')
+            'static', '', '', get_string('relative_deadline_before', 'organizer') . '&nbsp;&nbsp;&nbsp;'
         );
-        $group[] = $mform->createElement('checkbox', 'availablefrom[now]', get_string('relative_deadline_now', 'organizer'));
+        $group[] = $mform->createElement('checkbox', 'availablefrom[now]', null, get_string('relative_deadline_now', 'organizer'));
         $group[] = $mform->createElement(
             'static', '', '',
             $this->_warning_icon('availablefrom', isset($defaults['availablefrom']))
