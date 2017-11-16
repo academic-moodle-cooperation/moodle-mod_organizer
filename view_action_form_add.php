@@ -476,16 +476,15 @@ class organizer_add_slots_form extends moodleform
                 $this->pickeroptions[($i * 3600) + ($j * 60)] = gmdate('H:i', ($i * 3600) + ($j * 60));
             }
         }
-        $date = time();
         $this->weekdays = array();
         $this->weekdays[-1] = get_string("choose");
-        $this->weekdays[0] = date('l', strtotime("next Monday", $date));
-        $this->weekdays[1] = date('l', strtotime("next Tuesday", $date));
-        $this->weekdays[2] = date('l', strtotime("next Wednesday", $date));
-        $this->weekdays[3] = date('l', strtotime("next Thursday", $date));
-        $this->weekdays[4] = date('l', strtotime("next Friday", $date));
-        $this->weekdays[5] = date('l', strtotime("next Saturday", $date));
-        $this->weekdays[6] = date('l', strtotime("next Sunday", $date));
+        $this->weekdays[0] = get_string('day_0', 'organizer');
+        $this->weekdays[1] = get_string('day_1', 'organizer');
+        $this->weekdays[2] = get_string('day_2', 'organizer');
+        $this->weekdays[3] = get_string('day_3', 'organizer');
+        $this->weekdays[4] = get_string('day_4', 'organizer');
+        $this->weekdays[5] = get_string('day_5', 'organizer');
+        $this->weekdays[6] = get_string('day_6', 'organizer');
     }
 
     /**
