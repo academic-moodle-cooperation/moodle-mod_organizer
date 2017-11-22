@@ -1,11 +1,12 @@
 CHANGELOG
 =========
 
-3.4.0 (2017-10-30)
+3.4.0 (2017-11-22)
 ------------------
 
 * Moodle 3.4 compatible version
 * [FIXED] #4674: Dashboard error in group mode
+* [FEATURE] #3883 Hide slots from students
 
 3.3.1 (2017-08-09)
 ------------------
