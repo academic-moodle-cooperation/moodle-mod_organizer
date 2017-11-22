@@ -223,28 +223,56 @@ M.mod_organizer.init_checkboxes = function (Y) {
 }
 
 M.mod_organizer.init_infobox = function (Y) {
+
+    /**
+     * What happens when checkbox "show past slots" is clicked
+     *
+     * @method toggle_past_slots
+     * @private
+     */
     function toggle_past_slots(e) {
         var tablebody = Y.one('#slot_overview tbody');
         var showpastslots = Y.one('#show_past_slots').get('checked');
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
         var showfreeslotsonly = Y.one('#show_free_slots_only').get('checked');
+        var showhiddenslots = Y.one('#show_hidden_slots').get('checked');
 
         if (showpastslots) {
             if (showmyslotsonly) {
                 if (showfreeslotsonly) {
-                    tablebody.all('tr.past_due.my_slot.free_slot').show();
+                    if (showhiddenslots) {
+                        tablebody.all('tr.past_due.my_slot.free_slot').show();
+                    } else {
+                        tablebody.all('tr.past_due.my_slot.free_slot:not(.unavailable)').show();
+                    }
                 } else {
-                    tablebody.all('tr.past_due.my_slot').show();
+                    if (showhiddenslots) {
+                        tablebody.all('tr.past_due.my_slot').show();
+                    } else {
+                        tablebody.all('tr.past_due.my_slot:not(.unavailable)').show();
+                    }
                 }
             } else {
                 if (showfreeslotsonly) {
-                    tablebody.all('tr.past_due.free_slot').show();
+                    if (showhiddenslots) {
+                        tablebody.all('tr.past_due.free_slot').show();
+                    } else {
+                        tablebody.all('tr.past_due.free_slot:not(.unavailable)').show();
+                    }
                 } else {
-                    tablebody.all('tr.past_due').show();
+                    if (showhiddenslots) {
+                        tablebody.all('tr.past_due').show();
+                    } else {
+                        tablebody.all('tr.past_due:not(.unavailable)').show();
+                    }
                 }
             }
         } else {
-            tablebody.all('tr.past_due').hide();
+            if (showhiddenslots) {
+                tablebody.all('tr.past_due').hide();
+            } else {
+                tablebody.all('tr.past_due.unavailable').hide();
+            }
         }
 
         toggle_info();
@@ -253,28 +281,55 @@ M.mod_organizer.init_infobox = function (Y) {
 
     }
 
+    /**
+     * What happens when checkbox "only free slots" is clicked
+     *
+     * @method toggle_free_slots
+     * @private
+     */
     function toggle_free_slots(e) {
         var tablebody = Y.one('#slot_overview tbody');
         var showpastslots = Y.one('#show_past_slots').get('checked');
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
         var showfreeslotsonly = Y.one('#show_free_slots_only').get('checked');
+        var showhiddenslots = Y.one('#show_hidden_slots').get('checked');
 
         if (!showfreeslotsonly) {
             if (!showmyslotsonly) {
                 if (showpastslots) {
-                    tablebody.all('tr:not(.info)').show();
+                    if (showhiddenslots) {
+                        tablebody.all('tr:not(.info)').show();
+                    } else {
+                        tablebody.all('tr:not(.info):not(.unavailable)').show();
+                    }
                 } else {
-                    tablebody.all('tr:not(.info):not(.past_due)').show();
+                    if (showhiddenslots) {
+                        tablebody.all('tr:not(.info):not(.past_due)').show();
+                    } else {
+                        tablebody.all('tr:not(.info):not(.past_due):not(.unavailable)').show();
+                    }
                 }
             } else {
                 if (showpastslots) {
-                    tablebody.all('tr.past_due.my_slot').show();
+                    if (showhiddenslots) {
+                        tablebody.all('tr.past_due.my_slot').show();
+                    } else {
+                        tablebody.all('tr.past_due.my_slot:not(.unavailable)').show();
+                    }
                 } else {
-                    tablebody.all('tr:not(.past_due).my_slot').show();
+                    if (showhiddenslots) {
+                        tablebody.all('tr:not(.past_due).my_slot').show();
+                    } else {
+                        tablebody.all('tr:not(.past_due):not(.unavailable).my_slot').show();
+                    }
                 }
             }
         } else {
-            tablebody.all('tr:not(.info):not(.free_slot)').hide();
+            if (showhiddenslots) {
+                tablebody.all('tr:not(.info):not(.free_slot)').hide();
+            } else {
+                tablebody.all('tr:not(.info):not(.free_slot).unavailable').hide();
+            }
         }
 
         toggle_info();
@@ -283,28 +338,108 @@ M.mod_organizer.init_infobox = function (Y) {
 
     }
 
+    /**
+     * What happens when checkbox "show hidden slots" is clicked
+     *
+     * @method toggle_hidden_slots
+     * @private
+     */
+    function toggle_hidden_slots(e) {
+        var tablebody = Y.one('#slot_overview tbody');
+        var showpastslots = Y.one('#show_past_slots').get('checked');
+        var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
+        var showfreeslotsonly = Y.one('#show_free_slots_only').get('checked');
+        var showhiddenslots = Y.one('#show_hidden_slots').get('checked');
+
+        if (showhiddenslots) {
+            if (showmyslotsonly) {
+                if (showfreeslotsonly) {
+                    if (showpastslots) {
+                        tablebody.all('tr.past_due.my_slot.free_slot.unavailable').show();
+                    } else {
+                        tablebody.all('tr.unavailable.my_slot.free_slot:not(.past_due)').show();
+                    }
+                } else {
+                    if (showpastslots) {
+                        tablebody.all('tr.past_due.my_slot.unavailable').show();
+                    } else {
+                        tablebody.all('tr.unavailable.my_slot:not(.past_due)').show();
+                    }
+                }
+            } else {
+                if (showfreeslotsonly) {
+                    if (showpastslots) {
+                        tablebody.all('tr.past_due.free_slot.unavailable').show();
+                    } else {
+                        tablebody.all('tr.unavailable.free_slot:not(.past_due)').show();
+                    }
+                } else {
+                    if (showpastslots) {
+                        tablebody.all('tr.past_due.unavailable').show();
+                    } else {
+                        tablebody.all('tr.unavailable:not(.past_due)').show();
+                    }
+                }
+            }
+        } else {
+            tablebody.all('tr:not(.info).unavailable').hide();
+        }
+
+        toggle_info();
+
+        M.util.set_user_preference('mod_organizer_showhiddenslots', (showhiddenslots));
+
+    }
+
+    /**
+     * What happens when checkbox "only my slots" is clicked
+     *
+     * @method toggle_other_slots
+     * @private
+     */
     function toggle_other_slots(e) {
         var tablebody = Y.one('#slot_overview tbody');
         var showpastslots = Y.one('#show_past_slots').get('checked');
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
         var showfreeslotsonly = Y.one('#show_free_slots_only').get('checked');
+        var showhiddenslots = Y.one('#show_hidden_slots').get('checked');
 
         if (!showmyslotsonly) {
             if (showpastslots) {
                 if (showfreeslotsonly) {
-                    tablebody.all('tr:not(.info).free_slot').show();
+                    if (showhiddenslots) {
+                        tablebody.all('tr:not(.info).free_slot').show();
+                    } else {
+                        tablebody.all('tr:not(.info):not(.unavailable).free_slot').show();
+                    }
                 } else {
-                    tablebody.all('tr:not(.info)').show();
+                    if (showhiddenslots) {
+                        tablebody.all('tr:not(.info)').show();
+                    } else {
+                        tablebody.all('tr:not(.info):not(.unavailable)').show();
+                    }
                 }
             } else {
                 if (showfreeslotsonly) {
-                    tablebody.all('tr:not(.info):not(.past_due).free_slot').show();
+                    if (showhiddenslots) {
+                        tablebody.all('tr:not(.info):not(.past_due).free_slot').show();
+                    } else {
+                        tablebody.all('tr:not(.info):not(.past_due):not(.unavailable).free_slot').show();
+                    }
                 } else {
-                    tablebody.all('tr:not(.info):not(.past_due)').show();
+                    if (showhiddenslots) {
+                        tablebody.all('tr:not(.info):not(.past_due)').show();
+                    } else {
+                        tablebody.all('tr:not(.info):not(.past_due):not(.unavailable)').show();
+                    }
                 }
             }
         } else {
-            tablebody.all('tr:not(.info):not(.my_slot)').hide();
+            if (showhiddenslots) {
+                tablebody.all('tr:not(.info):not(.my_slot)').hide();
+            } else {
+                tablebody.all('tr:not(.info):not(.my_slot).unavailable').hide();
+            }
         }
 
         toggle_info();
@@ -312,6 +447,12 @@ M.mod_organizer.init_infobox = function (Y) {
         M.util.set_user_preference('mod_organizer_showmyslotsonly', (showmyslotsonly));
     }
 
+    /**
+     * Display why there are no slots to display, as an entry in the (empty) slot list
+     *
+     * @method toggle_info
+     * @private
+     */
     function toggle_info() {
         var tablebody = Y.one('#slot_overview tbody');
         var noninforows = tablebody.all('tr:not(.info)');
@@ -361,8 +502,9 @@ M.mod_organizer.init_infobox = function (Y) {
     }
 
     Y.one('#show_past_slots').on('click', toggle_past_slots);
-    Y.one('#show_my_slots_only').on('click', toggle_other_slots); // Toggle_free_slots.
+    Y.one('#show_my_slots_only').on('click', toggle_other_slots);
     Y.one('#show_free_slots_only').on('click', toggle_free_slots);
+    Y.one('#show_hidden_slots').on('click', toggle_hidden_slots);
     Y.one('#toggle_legend').on('click', toggle_legend);
 }
 

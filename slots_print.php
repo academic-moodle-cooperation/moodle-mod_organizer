@@ -68,6 +68,13 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 
 $slots = optional_param_array('slots', null, PARAM_INT);
 
+$slots = organizer_sortout_hiddenslots($slots);
+
+if (count($slots) == 0) {
+    $redirecturl->param('messages[]', 'message_warning_no_visible_slots_selected');
+    redirect($redirecturl);
+}
+
 if ($tsort != null) {
     $_SESSION['organizer_tsort'] = $tsort;
     $slots = $_SESSION['organizer_slots'];

@@ -522,6 +522,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
     $showpasttimeslots = get_user_preferences('mod_organizer_showpasttimeslots', true);
     $showonlymyslots = get_user_preferences('mod_organizer_showmyslotsonly', false);
     $showonlyfreeslots = get_user_preferences('mod_organizer_showfreeslotsonly', false);
+    $showhiddenslots = get_user_preferences('mod_organizer_showhiddenslots', false);
 
     $rows = array();
     if (count($slots) != 0) {
@@ -542,8 +543,8 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                 }
             } else {
                 if ($organizer->queue && $alreadyinqueue) {
-                             $row = $rows[] = new html_table_row();
-                          $row->attributes['class'] = 'queueing';
+                    $row = $rows[] = new html_table_row();
+                    $row->attributes['class'] = 'queueing';
                 } else {
                     $row = $rows[] = new html_table_row();
                     $row->attributes['class'] = '';
@@ -553,6 +554,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
 
             $slotpastdue = $slotx->is_past_due();
             $myslot = $slot->teacherid == $USER->id;
+            $slotvisible = $slot->visible;
 
             $hidden = false;
 
@@ -582,6 +584,13 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                 }
             }
 
+            if (!$slotvisible && $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
+                $row->attributes['class'] .= ' unavailable';
+            } elseif (!$slotvisible && $params['mode'] == ORGANIZER_TAB_STUDENT_VIEW) {
+                $row->style = 'display: none;';
+                $hidden = true;
+            }
+
             if (!$hidden) {
                 $numshown++;
             }
@@ -598,8 +607,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                 switch ($column) {
                     case 'select':
                         $cell = $row->cells[] = new html_table_cell(
-                        html_writer::checkbox(
-                            'slots[]', $slot->id, false, '',
+                        html_writer::checkbox('slots[]', $slot->id, false, '',
                             array('class' => 'checkbox_slot')
                         )
                             );
@@ -651,11 +659,9 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
 
             $defaultrow->cells[] = organizer_get_span_cell(get_string($inforowname, 'organizer'), count($columns));
 
-            $oneshown = false;
-
             $defaultrow->style = '';
 
-            if ($numshown == 0 && !$oneshown) {
+            if ($numshown == 0) {
                 switch ($inforowname) {
                     case 'no_slots':
                         $defaultrow->style = ($showpastslots && !$showmyslotsonly) ? '' : 'display: none;';
@@ -674,10 +680,6 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                 }
             } else {
                 $defaultrow->style = 'display: none;';
-            }
-
-            if ($defaultrow->style == '') {
-                $oneshown = true;
             }
         }
     } else {
@@ -996,7 +998,8 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                     break;
                     case 'teacher':
                         if ($groupentries) {
-                            $cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $entry, $popups));
+                            $cell = $row->cells[] = new html_table_cell(
+                                organizer_teacher_data($params, $entry, $popups));
                             $cell->style .= " text-align: left;";
                         } else {
                             $cell = $row->cells[] = new html_table_cell('-');
@@ -1075,7 +1078,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
     return $rows;
 }
 
-function organizer_generate_assignment_table_content($columns, $params, $organizer, $popups) {
+function organizer_generate_assignment_table_content($columns, $params, $organizer, $popups, $redirecturl = null) {
     global $DB;
 
     $translate = array('datetime' => "starttime {$params['dir']}", 'location' => "location {$params['dir']}",
@@ -1086,7 +1089,7 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
 
     $sqlparams = array('organizerid' => $organizer->id);
     $query = "SELECT s.*, u.firstname, u.lastname FROM {organizer_slots} s
-	INNER JOIN {user} u ON s.teacherid = u.id WHERE s.organizerid = :organizerid ORDER BY $order";
+	INNER JOIN {user} u ON s.teacherid = u.id WHERE s.organizerid = :organizerid AND s.visible = 1 ORDER BY $order";
     $slots = $DB->get_records_sql($query, $sqlparams);
 
     $rows = array();
