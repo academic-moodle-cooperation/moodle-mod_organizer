@@ -415,7 +415,7 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017062300, 'organizer');
     }
 
-    if ($oldversion < 2017102300) {
+    if ($oldversion < 2017112201) {
 
         // Define field visible to be added to organizer_slots.
         $table = new xmldb_table('organizer_slots');
@@ -426,7 +426,7 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2017102300, 'organizer');
+        upgrade_mod_savepoint(true, 2017112201, 'organizer');
     }
 
     return true;
