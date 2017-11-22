@@ -35,11 +35,6 @@ require_once(dirname(__FILE__) . '/slotlib.php');
 
 function organizer_make_infobox($params, $organizer, $context, &$popups) {
     global $PAGE;
-    user_preference_allow_ajax_update('mod_organizer_showpasttimeslots', PARAM_BOOL);
-    user_preference_allow_ajax_update('mod_organizer_showmyslotsonly', PARAM_BOOL);
-    user_preference_allow_ajax_update('mod_organizer_showfreeslotsonly', PARAM_BOOL);
-    user_preference_allow_ajax_update('mod_organizer_showhiddenslots', PARAM_BOOL);
-    $PAGE->requires->js_init_call('M.mod_organizer.init_infobox');
 
     $output = '';
     if ($organizer->alwaysshowdescription ||  time() > $organizer->allowregistrationsfromdate) {
@@ -62,6 +57,12 @@ function organizer_make_infobox($params, $organizer, $context, &$popups) {
     }
     $output .= organizer_make_slotoptions_section($params);
     $output .= organizer_make_messages_section($params);
+
+    user_preference_allow_ajax_update('mod_organizer_showpasttimeslots', PARAM_BOOL);
+    user_preference_allow_ajax_update('mod_organizer_showmyslotsonly', PARAM_BOOL);
+    user_preference_allow_ajax_update('mod_organizer_showfreeslotsonly', PARAM_BOOL);
+    user_preference_allow_ajax_update('mod_organizer_showhiddenslots', PARAM_BOOL);
+    $PAGE->requires->js_init_call('M.mod_organizer.init_infobox');
     return $output;
 }
 function organizer_make_section($name, $content, $hidden = false) {
@@ -203,7 +204,11 @@ function organizer_make_slotoptions_section($params) {
             ($pref ? 'checked="true" ' : '') . ' /> ' .
             get_string('infobox_showfreeslots', 'organizer') . '</p>';
 
-    $pref = get_user_preferences('mod_organizer_showhiddenslots', false);
+    if ($params['slots']) { // When added slots are shown show hidden slots anyway
+        $pref = true;
+    } else {
+        $pref = get_user_preferences('mod_organizer_showhiddenslots', true);
+    }
     $output .= '<p' . ($displayhiddenslots ? '' : ' style="display: none;" ') . '>' .
         '<input type="checkbox" id="show_hidden_slots" ' .
         ($pref ? 'checked="true" ' : '') . ' /> ' .

@@ -230,7 +230,7 @@ M.mod_organizer.init_infobox = function (Y) {
      * @method toggle_past_slots
      * @private
      */
-    function toggle_past_slots(e) {
+    function toggle_past_slots() {
         var tablebody = Y.one('#slot_overview tbody');
         var showpastslots = Y.one('#show_past_slots').get('checked');
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
@@ -287,7 +287,7 @@ M.mod_organizer.init_infobox = function (Y) {
      * @method toggle_free_slots
      * @private
      */
-    function toggle_free_slots(e) {
+    function toggle_free_slots() {
         var tablebody = Y.one('#slot_overview tbody');
         var showpastslots = Y.one('#show_past_slots').get('checked');
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
@@ -344,7 +344,7 @@ M.mod_organizer.init_infobox = function (Y) {
      * @method toggle_hidden_slots
      * @private
      */
-    function toggle_hidden_slots(e) {
+    function toggle_hidden_slots() {
         var tablebody = Y.one('#slot_overview tbody');
         var showpastslots = Y.one('#show_past_slots').get('checked');
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
@@ -397,7 +397,7 @@ M.mod_organizer.init_infobox = function (Y) {
      * @method toggle_other_slots
      * @private
      */
-    function toggle_other_slots(e) {
+    function toggle_other_slots() {
         var tablebody = Y.one('#slot_overview tbody');
         var showpastslots = Y.one('#show_past_slots').get('checked');
         var showmyslotsonly = Y.one('#show_my_slots_only').get('checked');
@@ -506,6 +506,8 @@ M.mod_organizer.init_infobox = function (Y) {
     Y.one('#show_free_slots_only').on('click', toggle_free_slots);
     Y.one('#show_hidden_slots').on('click', toggle_hidden_slots);
     Y.one('#toggle_legend').on('click', toggle_legend);
+
+    toggle_hidden_slots();
 }
 
 M.mod_organizer.init_popups = function (Y, popups) {
