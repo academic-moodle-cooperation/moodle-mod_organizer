@@ -107,7 +107,7 @@ function organizer_generate_appointments_view($params, $instance, &$popups) {
     $table->id = 'slot_overview';
     $table->attributes['class'] = 'generaltable boxaligncenter overview';
     $table->head = organizer_generate_table_header($columns, $sortable, $params, true);
-    $table->data = organizer_generate_table_content($columns, $params, $instance->organizer, $popups, false);
+    $table->data = organizer_generate_table_content($columns, $params, $instance->organizer, $popups);
     $table->align = $align;
 
     $output .= organizer_render_table_with_footer($table);
@@ -130,7 +130,7 @@ function organizer_generate_student_view($params, $instance, &$popups) {
         $table->id = 'slot_overview';
         $table->attributes['class'] = 'generaltable boxaligncenter overview';
         $table->head = organizer_generate_table_header($columns, $sortable, $params);
-        $table->data = organizer_generate_table_content($columns, $params, $instance->organizer, $popups, false);
+        $table->data = organizer_generate_table_content($columns, $params, $instance->organizer, $popups);
         $table->align = $align;
 
         $output .= organizer_render_table_with_footer($table);
@@ -490,7 +490,7 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
     return $header;
 }
 
-function organizer_generate_table_content($columns, $params, $organizer, &$popups, $showonlyregslot = false) {
+function organizer_generate_table_content($columns, $params, $organizer, &$popups) {
     global $DB, $USER;
 
     $translate = array('datetime' => "starttime {$params['dir']}", 'location' => "location {$params['dir']}",
@@ -500,29 +500,14 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
 
     $app = organizer_get_last_user_appointment($organizer);
 
-    if ($showonlyregslot) {
-        if ($app) {
-            $evaldapp = organizer_get_last_user_appointment($organizer, 0, false, true);
-            if (!$evaldapp || $app->id == $evaldapp->id) {
-                $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)));
-            } else {
-                $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)),
-                        $DB->get_record('organizer_slots', array('id' => $evaldapp->slotid)));
-            }
-        } else {
-            $slots = array();
-        }
-    } else {
-        $sqlparams = array('organizerid' => $organizer->id);
-        $query = "SELECT s.*, u.firstname, u.lastname FROM {organizer_slots} s
-        INNER JOIN {user} u ON s.teacherid = u.id WHERE s.organizerid = :organizerid ORDER BY $order";
-        $slots = $DB->get_records_sql($query, $sqlparams);
-    }
+    $sqlparams = array('organizerid' => $organizer->id);
+    $query = "SELECT s.*, u.firstname, u.lastname FROM {organizer_slots} s
+    INNER JOIN {user} u ON s.teacherid = u.id WHERE s.organizerid = :organizerid ORDER BY $order";
+    $slots = $DB->get_records_sql($query, $sqlparams);
 
     $showpasttimeslots = get_user_preferences('mod_organizer_showpasttimeslots', true);
     $showonlymyslots = get_user_preferences('mod_organizer_showmyslotsonly', false);
     $showonlyfreeslots = get_user_preferences('mod_organizer_showfreeslotsonly', false);
-    $showhiddenslots = get_user_preferences('mod_organizer_showhiddenslots', true);
 
     $rows = array();
     if (count($slots) != 0) {
@@ -560,10 +545,12 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
 
             if ($slotpastdue) {
                 $row->attributes['class'] .= ' past_due';
-                if (!$showpasttimeslots && !$showonlyregslot) {
+                if (!$showpasttimeslots) {
                     $row->style = 'display: none;';
                     $hidden = true;
                 }
+            } else {
+                $row->attributes['class'] .= ' not_past_due';
             }
 
             if ($myslot) {
@@ -573,22 +560,27 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                     $row->style = 'display: none;';
                     $hidden = true;
                 }
+                $row->attributes['class'] .= ' not_my_slot';
             }
 
             if (!$slotx->is_full()) {
                 $row->attributes['class'] .= ' free_slot';
             } else {
-                if (!($showonlyregslot) && $showonlyfreeslots) {
+                if ($showonlyfreeslots) {
                     $row->style = 'display: none;';
                     $hidden = true;
                 }
+                $row->attributes['class'] .= ' not_free_slot';
             }
 
             if (!$slotvisible && $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
                 $row->attributes['class'] .= ' unavailable';
-            } elseif (!$slotvisible && $params['mode'] == ORGANIZER_TAB_STUDENT_VIEW) {
-                $row->style = 'display: none;';
-                $hidden = true;
+            } else {
+                if (!$slotvisible && $params['mode'] == ORGANIZER_TAB_STUDENT_VIEW) {
+                    $row->style = 'display: none;';
+                    $hidden = true;
+                }
+                $row->attributes['class'] .= ' not_unavailable';
             }
 
             if (!$hidden) {
@@ -619,15 +611,9 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                         $cell = $row->cells[] = new html_table_cell(organizer_location_link($slot));
                     break;
                     case 'participants':
-                        if ($showonlyregslot) {
-                            $cell = $row->cells[] = new html_table_cell(
-                            organizer_organizer_get_participant_list_infobox($params, $slot, false, $popups)
-                            );
-                        } else {
-                            $cell = $row->cells[] = new html_table_cell(
-                            organizer_get_participant_list($params, $slot, $app, $popups)
-                            );
-                        }
+                        $cell = $row->cells[] = new html_table_cell(
+                        organizer_get_participant_list($params, $slot, $app, $popups)
+                        );
                     break;
                     case 'teacher':
                         $cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $slot, $popups));
