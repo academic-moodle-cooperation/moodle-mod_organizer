@@ -1814,7 +1814,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
             }
         }
 
-    } else { // If groupmode.
+    } else { // If groupmode: .
 
         if ($count == 0) {
             $content .= "<em>" . get_string('group_slot_available', 'organizer') . "</em>";

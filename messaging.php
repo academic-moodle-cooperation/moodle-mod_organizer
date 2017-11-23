@@ -73,8 +73,8 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $strings->courseshortname = $course->shortname;
     $strings->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
 
-    if ($namesplit[0] == "edit_notify") {
-        if ($slot->teachervisible == 1) {
+    if ($namesplit[0] == "edit_notify_student" || $namesplit[0] == "edit_notify_teacher") {
+        if ($slot->teachervisible == 1 || $namesplit[0] == "edit_notify_teacher") {
             $strings->slot_teacher = fullname($DB->get_record('user', array('id' => $slot->teacherid)), true);
         } else {
             $strings->slot_teacher = get_string('teacherinvisible', 'organizer');
