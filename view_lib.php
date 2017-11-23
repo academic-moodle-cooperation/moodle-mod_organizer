@@ -490,7 +490,7 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
     return $header;
 }
 
-function organizer_generate_table_content($columns, $params, $organizer, &$popups) {
+function organizer_generate_table_content($columns, $params, $organizer, &$popups, $showonlyregslot = false) {
     global $DB, $USER;
 
     $translate = array('datetime' => "starttime {$params['dir']}", 'location' => "location {$params['dir']}",
@@ -500,10 +500,29 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
 
     $app = organizer_get_last_user_appointment($organizer);
 
-    $sqlparams = array('organizerid' => $organizer->id);
-    $query = "SELECT s.*, u.firstname, u.lastname FROM {organizer_slots} s
-    INNER JOIN {user} u ON s.teacherid = u.id WHERE s.organizerid = :organizerid ORDER BY $order";
-    $slots = $DB->get_records_sql($query, $sqlparams);
+    if ($showonlyregslot) {
+        if ($app) {
+            $evaldapp = organizer_get_last_user_appointment($organizer, 0, false, true);
+            if (!$evaldapp || $app->id == $evaldapp->id) {
+                $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)));
+            } else {
+                $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)),
+                        $DB->get_record('organizer_slots', array('id' => $evaldapp->slotid)));
+            }
+        } else {
+            $slots = array();
+        }
+    } else {
+        $sqlparams = array('organizerid' => $organizer->id);
+        if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW) {
+            $query = "SELECT s.*, u.firstname, u.lastname FROM {organizer_slots} s
+                  INNER JOIN {user} u ON s.teacherid = u.id WHERE s.organizerid = :organizerid ORDER BY $order";
+        } else {
+            $query = "SELECT s.*, u.firstname, u.lastname FROM {organizer_slots} s
+                  INNER JOIN {user} u ON s.teacherid = u.id WHERE s.organizerid = :organizerid AND s.visible = 1 ORDER BY $order";
+        }
+        $slots = $DB->get_records_sql($query, $sqlparams);
+    }
 
     $showpasttimeslots = get_user_preferences('mod_organizer_showpasttimeslots', true);
     $showonlymyslots = get_user_preferences('mod_organizer_showmyslotsonly', false);
@@ -545,7 +564,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
 
             if ($slotpastdue) {
                 $row->attributes['class'] .= ' past_due';
-                if (!$showpasttimeslots) {
+                if (!$showpasttimeslots && !$showonlyregslot) {
                     $row->style = 'display: none;';
                     $hidden = true;
                 }
@@ -566,7 +585,7 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
             if (!$slotx->is_full()) {
                 $row->attributes['class'] .= ' free_slot';
             } else {
-                if ($showonlyfreeslots) {
+                if (!($showonlyregslot) && $showonlyfreeslots) {
                     $row->style = 'display: none;';
                     $hidden = true;
                 }
@@ -611,9 +630,15 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                         $cell = $row->cells[] = new html_table_cell(organizer_location_link($slot));
                     break;
                     case 'participants':
-                        $cell = $row->cells[] = new html_table_cell(
-                        organizer_get_participant_list($params, $slot, $app, $popups)
-                        );
+                        if ($showonlyregslot) {
+                            $cell = $row->cells[] = new html_table_cell(
+                                    organizer_organizer_get_participant_list_infobox($params, $slot, false, $popups)
+                            );
+                        } else {
+                            $cell = $row->cells[] = new html_table_cell(
+                                    organizer_get_participant_list($params, $slot, $app, $popups)
+                            );
+                        }
                     break;
                     case 'teacher':
                         $cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $slot, $popups));

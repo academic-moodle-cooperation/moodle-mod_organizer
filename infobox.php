@@ -159,7 +159,7 @@ function organizer_make_myapp_section($params, $organizer, $app, &$popups) {
         $table->id = 'my_slot_overview';
         $table->attributes['class'] = 'generaltable boxaligncenter overview';
         $table->head = organizer_generate_table_header($columns, $sortable, $params);
-        $table->data = organizer_generate_table_content($columns, $params, $organizer, $popups, true, false);
+        $table->data = organizer_generate_table_content($columns, $params, $organizer, $popups, true);
         $table->align = $align;
         $output = organizer_render_table_with_footer($table, false);
         $output = preg_replace('/<th /', '<th style="width: 0%;" ', $output); // Afterburner fix - try to fix it using css!
