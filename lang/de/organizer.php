@@ -722,7 +722,7 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen der Zeitsl
 
 Trainer/in: {$a->slot_teacher}
 Ort: {$a->slot_location}
-Datum: {$a->date} at {$a->time}
+Datum: {$a->date} um {$a->time}
 
 Moodle Messaging System';
 $string['assign_notify_student:smallmessage'] = 'Termin am {$a->date} um {$a->time} durch {$a->sendername} zugewiesen.';
@@ -736,7 +736,7 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihrer Gruppe {$a
 
 Trainer/in: {$a->slot_teacher}
 Ort: {$a->slot_location}
-Datum: {$a->date} at {$a->time}
+Datum: {$a->date} um {$a->time}
 
 Moodle Messaging System';
 $string['assign_notify_student:group:smallmessage'] = 'Gruppen-Termin am {$a->date} um {$a->time} durch {$a->sendername} zugewiesen.';
@@ -750,7 +750,7 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen {$a->parti
 
 Teilnehmer/in: {$a->participantname}
 Ort: {$a->slot_location}
-Datum: {$a->date} at {$a->time}
+Datum: {$a->date} um {$a->time}
 
 Moodle Messaging System';
 $string['assign_notify_teacher:smallmessage'] = 'Termin am {$a->date} um {$a->time} von {$a->sendername} zugewiesen.';
@@ -764,7 +764,7 @@ Im Rahmen des Kurses {$a->courseid} {$a->coursefullname}, wurde Ihnen die Gruppe
 
 Gruppe: {$a->groupname}
 Ort: {$a->slot_location}
-Datum: {$a->date} at {$a->time}
+Datum: {$a->date} um {$a->time}
 
 Moodle Messaging System';
 $string['assign_notify_teacher:group:smallmessage'] = 'Termin am {$a->date} um {$a->time} für Gruppe {$a->groupname} von {$a->sendername} zugewiesen.';

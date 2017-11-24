@@ -84,8 +84,8 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
         $strings->slot_comments = s($slot->comments);
     }
 
-    if ($namesplit[0] == "assign_notify") {
-        if ($slot->teachervisible == 1) {
+    if ($namesplit[0] == "assign_notify_student" || $namesplit[0] == "assign_notify_teacher") {
+        if ($slot->teachervisible == 1 || $namesplit[0] == "assign_notify_teacher") {
             fullname($DB->get_record('user', array('id' => $slot->teacherid)), true);
         } else {
             get_string('teacherinvisible', 'organizer');
