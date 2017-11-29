@@ -321,7 +321,6 @@ M.mod_organizer.init_infobox = function (Y) {
         }
     }
 
-
     Y.one('#show_past_slots').on('click', toggle_all_slots);
     Y.one('#show_my_slots_only').on('click', toggle_all_slots);
     Y.one('#show_free_slots_only').on('click', toggle_all_slots);

@@ -1,15 +1,15 @@
 CHANGELOG
 =========
 
-3.4.0 (2017-11-27)
+3.4.0 (2017-11-29)
 ------------------
 
 * Moodle 3.4 compatible version
-* [FIXED] #4971: When sending notification mails triggered by slot assignment placeholders for location and teacher are not replaced by value
-* [FIXED] #4967: When sending notification emails triggered by changed slot data not all placeholders are replaced correctly
+* [FIXED] #4971: When sending notification mails triggered by slot assignment placeholders are not replaced by value
+* [FIXED] #4967: When sending notification emails triggered by changed slot data not all placeholders are replaced
 * [FIXED] #4923: Adding a slot - weekday names only in english
 * [FIXED] #4928: Warning when loading slot overview page with calendar
-* [FIXED] #4922: Organizer: lang string "Applications possible from" and "Starting now" are rendered twice in pages slots_add and slots_edit
+* [FIXED] #4922: Organizer: lang strings are rendered twice in pages slots_add and slots_edit
 * [FIXED] #4674: Dashboard error in group mode
 * [FEATURE] #3883 Hide slots from students
 

@@ -1258,8 +1258,8 @@ function organizer_count_slotappointments($slots) {
 function organizer_sortout_hiddenslots($slots) {
     global $DB;
 
-    foreach($slots as $slot) {
-        if (!$visible = $DB->get_field('organizer_slots','visible', array('id' => $slot))) {
+    foreach ($slots as $slot) {
+        if (!$visible = $DB->get_field('organizer_slots', 'visible', array('id' => $slot))) {
             if (($key = array_search($slot, $slots)) !== false) {
                 unset($slots[$key]);
             }

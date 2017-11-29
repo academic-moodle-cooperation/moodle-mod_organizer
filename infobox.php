@@ -204,7 +204,7 @@ function organizer_make_slotoptions_section($params) {
             ($pref ? 'checked="true" ' : '') . ' /> ' .
             get_string('infobox_showfreeslots', 'organizer') . '</p>';
 
-    if ($params['slots']) { // When added slots are shown show hidden slots anyway
+    if ($params['slots']) { // When added slots are shown show hidden slots anyway.
         $pref = true;
     } else {
         $pref = get_user_preferences('mod_organizer_showhiddenslots', true);
