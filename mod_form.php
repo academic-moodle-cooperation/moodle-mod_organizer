@@ -35,25 +35,20 @@ class mod_organizer_mod_form extends moodleform_mod
 {
 
     public function definition_after_data() {
-        global $DB, $PAGE;
+        global $PAGE;
         $mform = &$this->_form;
-
-        $jsmodule = array(
-                'name' => 'mod_organizer',
-                'fullpath' => '/mod/organizer/module.js',
-                'requires' => array('node-base', 'node-event-simulate'),
-        );
-
-        $organizerconfig = get_config('organizer');
-        $togglecheckbox = $organizerconfig->absolutedeadline == 'never';
 
         $instance = $mform->getElementValue('instance');
         if ($instance) {
-            $PAGE->requires->js_init_call('M.mod_organizer.init_mod_form', array(false), false, $jsmodule);
+            $activateduedatecheckbox = false;
         } else {
-            $activatecheckbox = $organizerconfig->absolutedeadline == 'never';
-            $PAGE->requires->js_init_call('M.mod_organizer.init_mod_form', array($togglecheckbox), false, $jsmodule);
+            $organizerconfig = get_config('organizer');
+            $activateduedatecheckbox = $organizerconfig->absolutedeadline != 'never';
         }
+        $params = new \stdClass();
+        $params->activatecheckbox = $activateduedatecheckbox;
+        $PAGE->requires->js_call_amd('mod_organizer/modform', 'init', array($params));
+
     }
 
     public function definition() {

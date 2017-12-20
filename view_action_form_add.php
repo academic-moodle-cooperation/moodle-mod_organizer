@@ -505,15 +505,7 @@ class organizer_add_slots_form extends moodleform
             return;
         }
 
-        $jsmodule = array(
-                'name' => 'mod_organizer',
-                'fullpath' => '/mod/organizer/module.js',
-                'requires' => array('node', 'node-scroll-info', 'scrollview-base')
-        );
-
-        $PAGE->requires->js_init_call('M.mod_organizer.init_add_form', null, false, $jsmodule);
-
-        $PAGE->requires->strings_for_js(array('confirm_conflicts'), 'organizer');
+        $PAGE->requires->js_call_amd('mod_organizer/addform', 'init', array(false));
 
         $mform = &$this->_form;
 

@@ -30,7 +30,7 @@ define(
 
         /**
      * @constructor
-     * @alias module:mod_datalynx/adddayslot
+     * @alias module:mod_organizer/adddayslot
      */
         var Adddayslot = function() {
 
