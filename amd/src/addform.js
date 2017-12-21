@@ -21,7 +21,7 @@
  */
 
 /**
- * In add_form: Force selection of grouping if group mode is choosen.
+ * In add form: Deactivate available from-date when checkbox "now" is clicked and vice versa.
  */
 
 

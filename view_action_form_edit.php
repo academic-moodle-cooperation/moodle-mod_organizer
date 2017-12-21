@@ -39,25 +39,15 @@ class organizer_edit_slots_form extends moodleform
 
     protected function definition() {
         global $CFG, $PAGE;
-        $jsmodule = array(
-                'name' => 'mod_organizer',
-                'fullpath' => '/mod/organizer/module.js',
-                'requires' => array('node', 'node-event-delegate'),
-                'strings' => array()
-        );
 
-        $imagepaths = array(
-                'warning' => "{$CFG->wwwroot}/mod/organizer/pix/warning.png",
-                'changed' => "{$CFG->wwwroot}/mod/organizer/pix/warning2.png");
+        $params = new \stdClass();
+        $params->imagepaths = array(
+            'warning' => "{$CFG->wwwroot}/mod/organizer/pix/warning.png",
+            'changed' => "{$CFG->wwwroot}/mod/organizer/pix/warning2.png");
+        $params->warningtext1 = get_string("warningtext1", "organizer");
+        $params->warningtext2 = get_string("warningtext2", "organizer");
 
-        $PAGE->requires->strings_for_js(
-            array(
-                'warningtext1',
-                'warningtext2'
-            ), 'organizer'
-        );
-
-        $PAGE->requires->js_init_call('M.mod_organizer.init_edit_form', array($imagepaths), false, $jsmodule);
+        $PAGE->requires->js_call_amd('mod_organizer/modform', 'init', array($params));
 
         $defaults = $this->_get_defaults();
         $this->_sethiddenfields();
@@ -80,6 +70,8 @@ class organizer_edit_slots_form extends moodleform
 
         foreach ($slotids as $slotid) {
             $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
+
+            // Only if all values of the selected slots are equal defaults[] will be set.
 
             if (!isset($defaults['visible']) && !$defset['visible']) {
                 $defaults['visible'] = $slot->visible;

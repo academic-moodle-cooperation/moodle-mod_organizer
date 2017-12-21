@@ -120,27 +120,26 @@ M.mod_organizer.init_edit_form = function (Y, imagepaths) {
     function detect_change() {
         var name = this.get('name').split("[")[0];
         set_modfield(name, 1);
-        set_icon(name, 'changed');
+        set_icon_changed(name);
     }
 
     function set_modfield(name, value) {
         Y.all("#mform1 input[name^=mod_" + name + "]").set('value', value);
     }
 
-    function set_icon(name, type) {
+    function set_icon_changed(name) {
         var icons = Y.all("#mform1 img[name$=" + name + "_warning]");
 
-        if (type == 'warning') {
-            icons.set('src', imagepaths['warning']);
-            icons.set('title', M.util.get_string('warningtext1', 'organizer'));
-        } else if (type == 'changed') {
-            icons.set('src', imagepaths['changed']);
-            icons.set('title', M.util.get_string('warningtext2', 'organizer'));
-        } else {
-            // Do nothing.
-        }
+        icons.set('src', imagepaths['changed']);
+        icons.set('title', M.util.get_string('warningtext2', 'organizer'));
     }
 
+    function set_icon_warning() {
+        var icons = Y.all("#mform1 img[name$=_warning]");
+
+        icons.set('src', imagepaths['warning']);
+        icons.set('title', M.util.get_string('warningtext1', 'organizer'));
+    }
     var initialstate;
 
     function toggle_hidden_field(e) {
@@ -165,7 +164,7 @@ M.mod_organizer.init_edit_form = function (Y, imagepaths) {
 
     function reset_edit_form(e) {
         set_modfield('', 0);
-        set_icon('', 'warning');
+        set_icon_warning();
         Y.all('#mform1 [name^=availablefrom]:not([name*=now])').set('disabled', initialstate);
     }
 
