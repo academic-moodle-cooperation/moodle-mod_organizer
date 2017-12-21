@@ -47,7 +47,7 @@ class organizer_edit_slots_form extends moodleform
         $params->warningtext1 = get_string("warningtext1", "organizer");
         $params->warningtext2 = get_string("warningtext2", "organizer");
 
-        $PAGE->requires->js_call_amd('mod_organizer/modform', 'init', array($params));
+        $PAGE->requires->js_call_amd('mod_organizer/editform', 'init', array($params));
 
         $defaults = $this->_get_defaults();
         $this->_sethiddenfields();
@@ -429,7 +429,7 @@ class organizer_edit_slots_form extends moodleform
         if (!$noshow) {
             $warningname = $name . '_warning';
             $text = get_string('warningtext1', 'organizer');
-            $columnicon = organizer_get_icon('warning', $text . ' '.  $warningname);
+            $columnicon = organizer_get_icon('warning', $text, "small", $warningname);
             return $columnicon;
         } else {
             return '';
