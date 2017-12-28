@@ -436,6 +436,7 @@ class organizer_add_slots_form extends moodleform
                 null, array(0, 1));
         $mform->setType("{$name}[visible]", PARAM_INT);
         $mform->setDefault("{$name}[visible]", 1);
+        $slotgroup[] = $mform->addElement("html", "<span name='{$name}forecastday'></span>");
 
         return $slotgroup;
     }

@@ -41,16 +41,17 @@ define(
 
         var instance = new Adddayslot();
 
-        instance.init = function(param) { // Parameter 'param' contains the parameter values!
+        instance.init = function(param) {
 
-            instance.totalslots = param.totalslots;
-            instance.displayallslots = param.displayallslots;
+            instance.totalslots = param.totalslots;  // Initial maximum of days (despite only one is displayed).
+            instance.displayallslots = param.displayallslots;  // Whether to display all days so far generated.
 
             log.info(instance.totalslots, "totalslots");
             log.info(instance.displayallslots, "displayallslots");
 
-            if (instance.displayallslots == 0) {
+            if (instance.displayallslots == 0) {  // So the form is loaded initially.
 
+                // Hide all days except the first one.
                 for(var i = instance.totalslots - 1; i > 0; i--) {
                     if ($('#id_newslots_' + String(i) + '_day').val() == -1) {
                         $("#id_newslots_" + String(i) + "_day").closest(".form-group.row.fitem").hide(); // Boost-theme.
@@ -63,6 +64,7 @@ define(
                     $('#id_addday').hide();
                 }
 
+                // As soon as one day is edited, display the next one.
                 $('[id^=id_newslots_]').change(
                     function () {
                         var id = $(this).attr("id");
@@ -74,12 +76,22 @@ define(
                         }
                     }
                 );
-
             }
+
+            $('div[data-groupname*="slotgroup"]').each( function() {
+                $( this ).find(':input').not(':checkbox').on('change', evaluaterow);
+            });
 
             if ($("#id_now").prop("checked") == true) {
                 $('[name^=availablefrom]').prop("disabled", true);
                 $('#id_availablefrom_timeunit').prop("disabled", true);
+            }
+
+            function evaluaterow(e) {
+                var target = $(e.target);
+                var name = target.attr("name");
+                var i = parseInt(name.replace('newslots[', ''));
+                $("span[name='newslots\["+i+"\]forecastday']").html(i);
             }
 
         };
