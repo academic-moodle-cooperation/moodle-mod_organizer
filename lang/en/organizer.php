@@ -93,7 +93,7 @@ $string['relativedeadline'] = 'Relative deadline';
 $string['relativedeadline_help'] = "Sets the deadline for the application for a specific slot specified time ahead. The students will not be able to change register or unregister once the deadline has expired.";
 $string['grade'] = 'Maximum grade';
 $string['grade_help'] = 'Defines the highest amount of points that can be awarded for any appointment that can be graded.';
-$string['changegradewarning'] = 'This organizer has graded appointments and changing the grade will not automatically re-calculate existing grades. You must re-grade all existing appointments, if you wish to change the grade.';
+$string['changegradewarning'] = 'This organizer has graded appointments and changing the grade settings will not automatically re-calculate existing grades. You must re-grade all existing appointments, if you wish to change the grade.';
 $string['groupoptions'] = 'Group settings';
 $string['organizercommon'] = 'Organizer settings';
 $string['grouppicker'] = 'Group picker';
@@ -964,7 +964,7 @@ $string['headerfooter_help'] = 'Print header/footer if checked';
 $string['printpreview'] = 'Print preview (first 10 entries)';
 
 $string['datapreviewtitle'] = "Data Preview";
-$string['datapreviewtitle_help'] = "Click on [+] or [-] for showing or hiding columns in the print-preview.";
+$string['datapreviewtitle_help'] = "Click on [+] or [-] for showing or hiding columns.";
 
 $string['unknown'] = 'Unknown';
 

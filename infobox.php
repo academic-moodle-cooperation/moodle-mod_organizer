@@ -33,7 +33,7 @@ require_once(dirname(__FILE__) . '/legend.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/slotlib.php');
 
-function organizer_make_infobox($params, $organizer, $context, &$popups) {
+function organizer_make_infobox($params, $organizer, $context) {
     global $PAGE;
 
     $output = '';
@@ -45,7 +45,7 @@ function organizer_make_infobox($params, $organizer, $context, &$popups) {
         case ORGANIZER_TAB_APPOINTMENTS_VIEW:
         break;
         case ORGANIZER_TAB_STUDENT_VIEW:
-            $output .= organizer_make_myapp_section($params, $organizer, organizer_get_last_user_appointment($organizer), $popups);
+            $output .= organizer_make_myapp_section($params, $organizer, organizer_get_last_user_appointment($organizer));
         break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             $output .= organizer_make_reminder_section($params, $context);
@@ -62,7 +62,12 @@ function organizer_make_infobox($params, $organizer, $context, &$popups) {
     user_preference_allow_ajax_update('mod_organizer_showmyslotsonly', PARAM_BOOL);
     user_preference_allow_ajax_update('mod_organizer_showfreeslotsonly', PARAM_BOOL);
     user_preference_allow_ajax_update('mod_organizer_showhiddenslots', PARAM_BOOL);
-    $PAGE->requires->js_init_call('M.mod_organizer.init_infobox');
+
+    $jsparams = new \stdClass();
+    $jsparams->showlegendstring = get_string("infobox_showlegend", "organizer");
+    $jsparams->hidelegendstring = get_string("infobox_hidelegend", "organizer");
+    $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams));
+
     return $output;
 }
 function organizer_make_section($name, $content, $hidden = false) {
@@ -149,7 +154,7 @@ function organizer_make_description_section($organizer) {
 
     return $OUTPUT->box($output, 'generalbox', 'intro');
 }
-function organizer_make_myapp_section($params, $organizer, $app, &$popups) {
+function organizer_make_myapp_section($params, $organizer, $app) {
     global $DB;
     if ($app) {
         $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
@@ -159,7 +164,7 @@ function organizer_make_myapp_section($params, $organizer, $app, &$popups) {
         $table->id = 'my_slot_overview';
         $table->attributes['class'] = 'generaltable boxaligncenter overview';
         $table->head = organizer_generate_table_header($columns, $sortable, $params);
-        $table->data = organizer_generate_table_content($columns, $params, $organizer, $popups, true);
+        $table->data = organizer_generate_table_content($columns, $params, $organizer, true);
         $table->align = $align;
         $output = organizer_render_table_with_footer($table, false);
         $output = preg_replace('/<th /', '<th style="width: 0%;" ', $output); // Afterburner fix - try to fix it using css!

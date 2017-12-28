@@ -52,13 +52,6 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title($organizer->name);
 $PAGE->set_heading($course->fullname);
 
-$jsmodule = array(
-        'name' => 'mod_organizer',
-        'fullpath' => '/mod/organizer/module.js',
-        'requires' => array('node', 'event', 'node-screen', 'panel', 'node-event-delegate'),
-);
-$PAGE->requires->js_module($jsmodule);
-
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => 3));
 
 $groupid = null;

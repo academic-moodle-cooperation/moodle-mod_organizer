@@ -176,13 +176,9 @@ class mod_organizer_mod_form extends moodleform_mod
         }
 
         if ($mform->elementExists('grade') && $hasgrade) {
-            $module = array(
-                    'name' => 'mod_organizer',
-                    'fullpath' => '/mod/organizer/module.js',
-                    'requires' => array('node', 'event'),
-                    'strings' => array(array('changegradewarning', 'mod_organizer'))
-            );
-            $PAGE->requires->js_init_call('M.mod_organizer.init_grade_change', null, false, $module);
+            $param = new \stdClass();
+            $param->changegradewarning = get_string('changegradewarning', 'organizer');
+            $PAGE->requires->js_call_amd('mod_organizer/modform', 'init_gradechange', array($param));
             // Add noscript tag in case.
             $noscriptwarning = $mform->createElement(
                 'static',

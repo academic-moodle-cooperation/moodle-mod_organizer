@@ -55,18 +55,7 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title($organizer->name);
 $PAGE->set_heading($course->fullname);
 
-$jsmodule = array(
-        'name' => 'mod_organizer',
-        'fullpath' => '/mod/organizer/module.js',
-        'requires' => array('node', 'event', 'node-screen', 'panel', 'node-event-delegate'),
-);
-$PAGE->requires->js_module($jsmodule);
-
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
-
-$logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
-
-$slots = optional_param_array('slots', null, PARAM_INT);
 
 $slots = organizer_sortout_hiddenslots($slots);
 
@@ -76,8 +65,12 @@ if (count($slots) == 0) {
 }
 
 if ($tsort != null) {
-    $_SESSION['organizer_tsort'] = $tsort;
-    $slots = $_SESSION['organizer_slots'];
+    if (isset($_SESSION['organizer_slots'])) {
+        $slots = $_SESSION['organizer_slots'];
+        $_SESSION['organizer_tsort'] = $tsort;
+    } else {
+        redirect($redirecturl);
+    }
 } else {
     $_SESSION['organizer_slots'] = $slots;
 }
@@ -208,9 +201,17 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
     $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
     $headerfooter = true, $filename = ''
 ) {
-    global $USER;
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    list(, $course, $organizer, ) = organizer_get_course_module_data();
+
+    if ($noprintfields = get_user_preferences("mod_organizer_noprintfields")) {
+        $noprintfieldsarray = explode(",", $noprintfields);
+        foreach ($noprintfieldsarray as $noprintfield) {
+            if ($key = array_search($noprintfield, $columns)) {
+                unset($columns[$key]);
+            }
+        }
+    }
 
     $columnwitdh = array();
     $titles = array();
@@ -350,7 +351,6 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
     $mpdftable->setColumnFormat($columnformats);
     $entries = organizer_fetch_table_entries($slots, $dosort);
     $rowspan = 0;
-    $isgroupmode = organizer_is_group_mode();
     foreach ($entries as $entry) {
         $row = array();
         if ($rowspan == 0) {

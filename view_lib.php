@@ -88,14 +88,14 @@ function organizer_add_calendar() {
     $PAGE->requires->js_init_call('M.mod_organizer.fix_calendar_styles');
 }
 
-function organizer_generate_appointments_view($params, $instance, &$popups) {
+function organizer_generate_appointments_view($params, $instance) {
     global $PAGE;
-    $PAGE->requires->js_init_call('M.mod_organizer.init_checkboxes');
+    $PAGE->requires->js_call_amd('mod_organizer/initcheckboxes', 'init', array(false));
 
     $organizerexpired = isset($instance->organizer->duedate) && $instance->organizer->duedate - time() < 0;
 
     $output = organizer_generate_tab_row($params, $instance->context);
-    $output .= organizer_make_infobox($params, $instance->organizer, $instance->context, $popups);
+    $output .= organizer_make_infobox($params, $instance->organizer, $instance->context);
     $output .= organizer_begin_form($params);
     $output .= organizer_generate_button_bar($params, $organizerexpired);
 
@@ -107,7 +107,7 @@ function organizer_generate_appointments_view($params, $instance, &$popups) {
     $table->id = 'slot_overview';
     $table->attributes['class'] = 'generaltable boxaligncenter overview';
     $table->head = organizer_generate_table_header($columns, $sortable, $params, true);
-    $table->data = organizer_generate_table_content($columns, $params, $instance->organizer, $popups);
+    $table->data = organizer_generate_table_content($columns, $params, $instance->organizer);
     $table->align = $align;
 
     $output .= organizer_render_table_with_footer($table);
@@ -117,9 +117,9 @@ function organizer_generate_appointments_view($params, $instance, &$popups) {
     return $output;
 }
 
-function organizer_generate_student_view($params, $instance, &$popups) {
+function organizer_generate_student_view($params, $instance) {
     $output = organizer_generate_tab_row($params, $instance->context);
-    $output .= organizer_make_infobox($params, $instance->organizer, $instance->context, $popups);
+    $output .= organizer_make_infobox($params, $instance->organizer, $instance->context);
 
     if (time() > $instance->organizer->allowregistrationsfromdate ) {
         $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
@@ -130,7 +130,7 @@ function organizer_generate_student_view($params, $instance, &$popups) {
         $table->id = 'slot_overview';
         $table->attributes['class'] = 'generaltable boxaligncenter overview';
         $table->head = organizer_generate_table_header($columns, $sortable, $params);
-        $table->data = organizer_generate_table_content($columns, $params, $instance->organizer, $popups);
+        $table->data = organizer_generate_table_content($columns, $params, $instance->organizer);
         $table->align = $align;
 
         $output .= organizer_render_table_with_footer($table);
@@ -152,10 +152,10 @@ function organizer_generate_student_view($params, $instance, &$popups) {
     return $output;
 }
 
-function organizer_generate_registration_status_view($params, $instance, &$popups) {
+function organizer_generate_registration_status_view($params, $instance) {
     $output = organizer_generate_tab_row($params, $instance->context);
 
-    $output .= organizer_make_infobox($params, $instance->organizer, $instance->context, $popups);
+    $output .= organizer_make_infobox($params, $instance->organizer, $instance->context);
 
     $columns = array('status');
 
@@ -178,8 +178,7 @@ function organizer_generate_registration_status_view($params, $instance, &$popup
     $table->attributes['class'] = 'generaltable boxaligncenter overview';
     $table->head = organizer_generate_reg_table_header($columns, $sortable, $params);
     $table->data = organizer_organizer_generate_registration_table_content(
-        $columns,
-        $params, $instance->organizer, $instance->context, $popups
+        $columns, $params, $instance->organizer, $instance->context
     );
     $table->align = $align;
 
@@ -188,7 +187,7 @@ function organizer_generate_registration_status_view($params, $instance, &$popup
     return $output;
 }
 
-function organizer_generate_assignment_view($params, $instance, &$popups) {
+function organizer_generate_assignment_view($params, $instance) {
 
     if ($instance->organizer->isgrouporganizer) {
         $content = get_string('availableslotsfor', 'organizer') .' <strong>' .
@@ -207,7 +206,7 @@ function organizer_generate_assignment_view($params, $instance, &$popups) {
     $table->id = 'slot_overview';
     $table->attributes['class'] = 'generaltable boxaligncenter overview';
     $table->head = organizer_generate_table_header($columns, $sortable, $params);
-    $table->data = organizer_generate_assignment_table_content($columns, $params, $instance->organizer, $popups);
+    $table->data = organizer_generate_assignment_table_content($columns, $params, $instance->organizer);
     $table->align = $align;
 
     $output .= organizer_render_table_with_footer($table);
@@ -490,7 +489,7 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
     return $header;
 }
 
-function organizer_generate_table_content($columns, $params, $organizer, &$popups, $showonlyregslot = false) {
+function organizer_generate_table_content($columns, $params, $organizer, $showonlyregslot = false) {
     global $DB, $USER;
 
     $translate = array('datetime' => "starttime {$params['dir']}", 'location' => "location {$params['dir']}",
@@ -632,16 +631,16 @@ function organizer_generate_table_content($columns, $params, $organizer, &$popup
                     case 'participants':
                         if ($showonlyregslot) {
                             $cell = $row->cells[] = new html_table_cell(
-                                    organizer_organizer_get_participant_list_infobox($params, $slot, false, $popups)
+                                    organizer_organizer_get_participant_list_infobox($params, $slot, false)
                             );
                         } else {
                             $cell = $row->cells[] = new html_table_cell(
-                                    organizer_get_participant_list($params, $slot, $app, $popups)
+                                    organizer_get_participant_list($params, $slot, $app)
                             );
                         }
                     break;
                     case 'teacher':
-                        $cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $slot, $popups));
+                        $cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $slot));
                     break;
                     case 'details':
                         $cell = $row->cells[] = new html_table_cell(organizer_slot_status($params, $slot));
@@ -876,7 +875,7 @@ function organizer_organizer_get_status_table_entries($params) {
     return $DB->get_records_sql($query, $par);
 }
 
-function organizer_organizer_generate_registration_table_content($columns, $params, $organizer, $context, &$popups) {
+function organizer_organizer_generate_registration_table_content($columns, $params, $organizer, $context) {
     global $DB;
 
     $cm = organizer_get_cm();
@@ -957,7 +956,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                             if ($groupentries) {
                                 if ($entry->comments != '') {
                                     $list .= "<span style='display:table-cell'>" .
-                                        organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments, $popups)
+                                        organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments)
                                         . "</span>";
                                 } else {
                                     $list .= "<span style='display:table-cell'> </span>";
@@ -969,7 +968,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                     . "</span>";
                             }
                             $list .= "<span style='display:table-cell'>" .
-                                organizer_reg_organizer_app_details($organizer, $member, $popups, $groupmode)
+                                organizer_reg_organizer_app_details($organizer, $member, $groupmode)
                                 . "</span>";
                             $list .= "</span>";
                         }
@@ -1010,7 +1009,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                     case 'teacher':
                         if ($groupentries) {
                             $cell = $row->cells[] = new html_table_cell(
-                                organizer_teacher_data($params, $entry, $popups));
+                                organizer_teacher_data($params, $entry));
                             $cell->style .= " text-align: left;";
                         } else {
                             $cell = $row->cells[] = new html_table_cell('-');
@@ -1065,14 +1064,14 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                         } else {
                             $outcell = '';
                         }
-                            $outcell .= organizer_reg_organizer_app_details($organizer, $entry->id, $popups, $groupmode);
+                            $outcell .= organizer_reg_organizer_app_details($organizer, $entry->id, $groupmode);
                             $cell = $row->cells[] = new html_table_cell($outcell);
                     break;
                     case 'location':
                         $cell = $row->cells[] = new html_table_cell(organizer_location_link($entry));
                     break;
                     case 'teacher':
-                        $cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $entry, $popups));
+                        $cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $entry));
                     break;
                     case 'actions':
                         $cell = $row->cells[] = new html_table_cell(organizer_teacher_action_new($params, $entry, $context));
@@ -1089,7 +1088,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
     return $rows;
 }
 
-function organizer_generate_assignment_table_content($columns, $params, $organizer, $popups, $redirecturl = null) {
+function organizer_generate_assignment_table_content($columns, $params, $organizer, $redirecturl = null) {
     global $DB;
 
     $translate = array('datetime' => "starttime {$params['dir']}", 'location' => "location {$params['dir']}",
@@ -1119,11 +1118,11 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
                         break;
                         case 'participants':
                             $cell = $row->cells[] = new html_table_cell(
-                            organizer_get_participant_list($params, $slot, null, $popups)
+                            organizer_get_participant_list($params, $slot, null)
                                 );
                         break;
                         case 'teacher':
-                            $cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $slot, $popups));
+                            $cell = $row->cells[] = new html_table_cell(organizer_teacher_data($params, $slot));
                         break;
                         case 'details':
                             $cell = $row->cells[] = new html_table_cell(organizer_slot_status($params, $slot));
@@ -1167,7 +1166,7 @@ function organizer_get_participant_entry($entry) {
     return $participantentry;
 }
 
-function organizer_app_details($appointment, &$popups) {
+function organizer_app_details($appointment) {
 
     if (!isset($appointment)) {
         return '';
@@ -1175,7 +1174,7 @@ function organizer_app_details($appointment, &$popups) {
 
     $list = '<span style="display:table-cell">';
     if ($appointment->comments) {
-        $list .= organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, s($appointment->comments), $popups);
+        $list .= organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, s($appointment->comments));
     } else {
         $list .= "&nbsp;";
     }
@@ -1196,7 +1195,7 @@ function organizer_app_details($appointment, &$popups) {
     }
 
     $list .= '<span style="display:table-cell">';
-    $list .= $appointment->feedback ? organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback, $popups) : " ";
+    $list .= $appointment->feedback ? organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback) : " ";
     $list .= '</span>';
 
     return $list;
@@ -1232,7 +1231,7 @@ function organizer_date_time($slot) {
     return "$date<br />$time ($duration)";
 }
 
-function organizer_teacher_data($params, $slot, &$popups) {
+function organizer_teacher_data($params, $slot) {
     global $USER;
 
     if (!isset($slot) || !isset($slot->teacherid)) {
@@ -1286,11 +1285,11 @@ function organizer_teacher_data($params, $slot, &$popups) {
 
     if (isset($slot->teachercomments)) {
         if ($slot->teachercomments != '') {
-            $output .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_COMMENT, s($slot->teachercomments), $popups);
+            $output .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_COMMENT, s($slot->teachercomments));
         }
     } else {
         if ($slot->comments != '') {
-            $output .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_COMMENT, s($slot->comments), $popups);
+            $output .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_COMMENT, s($slot->comments));
         }
     }
 
@@ -1301,7 +1300,7 @@ function organizer_teacher_data($params, $slot, &$popups) {
     return $output;
 }
 
-function organizer_reg_organizer_app_details($organizer, $userid, &$popups, $groupmode) {
+function organizer_reg_organizer_app_details($organizer, $userid, $groupmode) {
     $appointment = organizer_get_last_user_appointment($organizer, $userid, false);
     if ($appointment) {
         $list = '';
@@ -1315,7 +1314,7 @@ function organizer_reg_organizer_app_details($organizer, $userid, &$popups, $gro
             }
         }
         if (isset($appointment->feedback) && $appointment->feedback != '') {
-            $list .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback, $popups);
+            $list .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback);
         } else {
             $list .= ' ';
         }
@@ -1516,7 +1515,7 @@ function organizer_teacher_action_new_noentries($params, $group, $context) {
     return $output;
 }
 
-function organizer_organizer_get_participant_list_infobox($params, $slot, $userid = 0, &$popups) {
+function organizer_organizer_get_participant_list_infobox($params, $slot, $userid = 0) {
     global $DB, $USER;
 
     $output = "";
@@ -1557,7 +1556,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
                 $output .= organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);
                 $output .= '</span>';
             }
-            $output .= organizer_app_details($app, $popups);
+            $output .= organizer_app_details($app);
         } else if ($slot->visibility != ORGANIZER_VISIBILITY_ANONYMOUS && (organizer_is_my_slot($slot) ||
                         $slot->visibility == ORGANIZER_VISIBILITY_ALL) ) {
             $output .= '<span style="display:table-cell">';
@@ -1647,7 +1646,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
     return $output;
 }
 
-function organizer_get_participant_list($params, $slot, $app, &$popups) {
+function organizer_get_participant_list($params, $slot, $app) {
     global $DB, $USER;
 
     $slotx = new organizer_slot($slot);
@@ -1773,7 +1772,7 @@ function organizer_get_participant_list($params, $slot, $app, &$popups) {
                     );
                 }
                 $list .= '</span>';
-                $list .= organizer_app_details($appointment, $popups);
+                $list .= organizer_app_details($appointment);
                 $list .= '</span>';
             }
             $list .= '</span>';
@@ -1910,10 +1909,24 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
 function organizer_get_icon($iconname, $string, $size="small", $id="") {
     global $OUTPUT;
     if ($size == "big") {
-        $icon = organizer_get_img('pix/' . $iconname . '.png', $string, $string, $id, 'width="32" height="32"');
+        $alt = "";
+        $title = "";
+        $other = 'width="32" height="32"';
+        if ($string) {
+            $alt = $string;
+            $title = $string;
+            $other .= ' data-toggle="tooltip"';
+        }
+        $icon = organizer_get_img('pix/' . $iconname . '.png', $alt, $title, $id, $other);
     } else {
         $attributes = $id != '' ? array('id' => $id) : array();
-        $icon = $OUTPUT->pix_icon($iconname, $string, 'mod_organizer', $attributes);
+        $alt = "";
+        if ($string) {
+            $attributes['data-toggle'] = "tooltip";
+            $attributes['title'] = $string;
+            $alt = $string;
+        }
+        $icon = $OUTPUT->pix_icon($iconname, $alt, 'mod_organizer', $attributes);
     }
     return $icon;
 }
@@ -2222,14 +2235,15 @@ function organizer_get_user_idnumber($userid) {
     return $DB->get_field_select('user', 'idnumber', "id = {$userid}");
 }
 
-function organizer_popup_icon($type, $content, &$popups) {
+function organizer_popup_icon($type, $content) {
     $icons = array(
             ORGANIZER_ICON_STUDENT_COMMENT => 'feedback2',
             ORGANIZER_ICON_TEACHER_COMMENT => 'feedback2',
             ORGANIZER_ICON_TEACHER_FEEDBACK => 'feedback',
     );
-    $iconid = organizer_register_popup($type, $content, $popups);
-    return organizer_get_icon($icons[$type], '', '', $iconid);
+    $iconid = organizer_register_popup($type, $content);
+    $output = organizer_get_icon($icons[$type], $content, '', $iconid);
+    return $output;
 }
 
 function organizer_slot_is_free($slot, $userid) {
@@ -2248,6 +2262,16 @@ function organizer_slot_is_free($slot, $userid) {
 
     return false;
 }
+
+function organizer_register_popup() {
+    static $id = 0;
+
+    $elementid = "organizer_popup_icon_{$id}";
+    $id++;
+
+    return $elementid;
+}
+
 
 function organizer_write_places_inqueue_position($a) {
 

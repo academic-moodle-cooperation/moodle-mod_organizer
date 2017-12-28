@@ -79,7 +79,13 @@ define(
             }
         };
 
-        return instance;
+        instance.init_gradechange = function (param) {
+            $('input[id^=id_grade]').on("change", function() {
+                alert(param.changegradewarning);
+            });
+        };
+
+            return instance;
 
     }
 );

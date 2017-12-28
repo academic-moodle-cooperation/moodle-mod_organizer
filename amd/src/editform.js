@@ -30,7 +30,7 @@ define(
 
         /**
      * @constructor
-     * @alias module:mod_organizer/modform
+     * @alias module:mod_organizer/editform
      */
         var Editform = function() {
             this.imagepaths = false;

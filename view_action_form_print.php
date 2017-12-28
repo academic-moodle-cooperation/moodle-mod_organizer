@@ -80,10 +80,10 @@ class organizer_print_slots_form extends moodleform
 
         $identityfields = explode(',', $CFG->showuseridentity);
         $selcols = array('datetime', 'location', 'teacher', 'participant');
-        if (array_search('idnumber', $identityfields) !== false) {
+        if (in_array('idnumber', $identityfields)) {
             $selcols[] = 'idnumber';
         }
-        if (array_search('email', $identityfields) !== false) {
+        if (in_array('email', $identityfields)) {
             $selcols[] = 'email';
         }
         $selcols[] = 'attended';
@@ -174,7 +174,7 @@ class organizer_print_slots_form extends moodleform
     }
 
     public function display() {
-        global $OUTPUT;
+        global $OUTPUT, $CFG;
 
         // Finalize the form definition if not yet done.
         if (!$this->_definition_finalized) {
@@ -193,23 +193,37 @@ class organizer_print_slots_form extends moodleform
 
         $output .= '<div class="forced_scroll">';
 
+        $printcols = $this->_selcols;
+        $identityfields = explode(',', $CFG->showuseridentity);
+        if (in_array('idnumber', $identityfields) == false) {
+            if ($key = array_search('idnumber', $printcols)) {
+                unset($printcols[$key]);
+            }
+        }
+        if (in_array('email', $identityfields) == false) {
+            if ($key = array_search('email', $printcols)) {
+                unset($printcols[$key]);
+            }
+        }
+
         $output .= '<div style="float: left">';
-        $output .= $this->_create_preview_table($this->_selcols);
+        $output .= $this->_create_preview_table($printcols);
         $output .= '</div><div style="width: 1em; float: left;"> </div></div>';
 
         print $output;
     }
 
     private function _create_preview_table($columns) {
-        global $PAGE, $OUTPUT, $cm;
+        global $PAGE, $OUTPUT, $cm, $CFG;
 
-        $jsmodule = array(
-                'name' => 'mod_organizer',
-                'fullpath' => '/mod/organizer/module.js',
-                'requires' => array('node', 'node-event-delegate'),
-        );
+        user_preference_allow_ajax_update('mod_organizer_noprintfields', PARAM_TEXT);
 
-        $PAGE->requires->js_init_call('M.mod_organizer.init_organizer_print_slots_form', null, false, $jsmodule);
+        $param = new \stdClass();
+        $param->iconminus = $OUTPUT->image_icon('t/switch_minus', get_string('hide'), 'moodle', array(
+            'id' => 'xxx', 'col' =>'yyy', 'style' => 'cursor:pointer;margin-left:2px;'));
+        $param->iconplus = $OUTPUT->image_icon('t/switch_plus', get_string('show'), 'moodle', array(
+            'id' => 'xxx', 'col' =>'yyy', 'style' => 'cursor:pointer;margin-left:2px;'));
+        $PAGE->requires->js_call_amd('mod_organizer/printform', 'init', array($param));
 
         $isgrouporganizer = organizer_is_group_mode();
 
@@ -228,34 +242,52 @@ class organizer_print_slots_form extends moodleform
             }
         }
 
-        $iconup = $OUTPUT->pix_icon('t/up', get_string('up'));
-        $icondown = $OUTPUT->pix_icon('t/down', get_string('down'));
+        $iconup = $OUTPUT->image_icon('t/up', get_string('up'), 'moodle');
+        $icondown = $OUTPUT->image_icon('t/down', get_string('down'), 'moodle');
 
         $header = array();
+        $noprintfieldsarray = array();
+        if ($noprintfields = get_user_preferences("mod_organizer_noprintfields")) {
+            $noprintfieldsarray = explode(",", $noprintfields);
+        }
+
+        $data = &$this->_customdata;
+
+        $urlinit  = $CFG->wwwroot . '/mod/organizer/slots_print.php?';
+        $urlinit .= 'id=' . $cm->id;
+        $urlinit .= '&sesskey=' . sesskey();
+        $urlinit .= '&action=print';
+
         foreach ($columns as $column) {
-            $content = '<a href="?id=' . $cm->id . '&sesskey=' . sesskey() . '&action=print&tsort=' . $column;
+
+            $url = $urlinit;
 
             $icon = "";
             if ($column == $tsort) {
                 if ($order == "ASC") {
-                    $content .= "DESC";
+                    $url .= '&tsort=' . $column . "DESC";
                     $icon = $iconup;
                 } else {
+                    $url .= '&tsort=' . $column;
                     $icon = $icondown;
+                }
+            } else {
+                $url .= '&tsort=' . $column;
+            }
+
+            foreach ($data['slots'] as $slot) {
+                $url .= "&slots[]=" . $slot;
+            }
+
+            $linkarray = array('name' => $column . '_cell');
+
+            if ($noprintfieldsarray) {
+                if (in_array($column, $noprintfieldsarray)) {
+                    $linkarray['noprint'] = "1";
                 }
             }
 
-            $content .= '" name="' . $column . '_cell">' . get_string("th_{$column}", 'organizer') . $icon;
-            $content .= '</a>';
-
-            $content .= ' ' . $OUTPUT->image_icon(
-                't/switch_minus', get_string('hide'), 'moodle',
-                array("id" => "toggle_{$column}", "style" => 'cursor: pointer',
-                    'title' => get_string("th_{$column}", 'organizer')
-                )
-            );
-
-            $cell = new html_table_cell($content);
+            $cell = new html_table_cell(html_writer::link($url, get_string("th_{$column}", 'organizer') . $icon, $linkarray));
             $cell->header = true;
             $header[] = $cell;
         }
@@ -270,6 +302,7 @@ class organizer_print_slots_form extends moodleform
             break;
             case "teacher":
                 $sort = "teacherfirstname";
+            break;
             case "groupname":
                 $sort = "groupname";
             break;
@@ -301,7 +334,6 @@ class organizer_print_slots_form extends moodleform
             $order = "";
         }
 
-        $data = &$this->_customdata;
         $entries = organizer_fetch_table_entries($data['slots'], $sort . ' ' . $order);
 
         $rows = array();
@@ -309,9 +341,6 @@ class organizer_print_slots_form extends moodleform
         $numcols = 0;
         $evenodd = 0;
         foreach ($entries as $entry) {
-            if ($numcols == 10) {
-                break;
-            }
             $row = $rows[] = new html_table_row();
             foreach ($columns as $column) {
                 if ($rowspan == 0) {

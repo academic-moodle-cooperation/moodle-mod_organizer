@@ -36,13 +36,8 @@ class organizer_evaluate_slots_form extends moodleform
 
     protected function definition() {
         global $PAGE;
-        $jsmodule = array(
-                'name' => 'mod_organizer',
-                'fullpath' => '/mod/organizer/module.js',
-                'requires' => array('node-base'),
-        );
 
-        $PAGE->requires->js_init_call('M.mod_organizer.init_eval_form', null, false, $jsmodule);
+        $PAGE->requires->js_call_amd('mod_organizer/evalform', 'init', array(false));
 
         $this->_sethiddenfields();
         $this->_form->addElement('header', 'slots', get_string('eval_header', 'organizer'));

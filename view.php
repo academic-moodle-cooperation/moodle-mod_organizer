@@ -59,29 +59,12 @@ $PAGE->set_url($url);
 $PAGE->set_title($instance->organizer->name);
 $PAGE->set_heading($instance->course->shortname);
 
-// Output.
-$jsmodule = array(
-        'name' => 'mod_organizer',
-        'fullpath' => '/mod/organizer/module.js',
-        'requires' => array('node', 'event', 'node-screen', 'panel', 'node-event-delegate'),
-        'strings' => array(
-                array('teachercomment_title', 'organizer'),
-                array('studentcomment_title', 'organizer'),
-                array('teacherfeedback_title', 'organizer'),
-                array('infobox_showlegend', 'organizer'),
-                array('infobox_hidelegend', 'organizer'),
-        ),
-);
-$PAGE->requires->js_module($jsmodule);
-
 if ($instance->organizer->hidecalendar != 1) {
     organizer_add_calendar();
 }
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($instance->organizer->name), 2, null);
-
-$popups = array();
 
 echo $OUTPUT->box_start('', 'organizer_main_cointainer');
 switch ($params['mode']) {
@@ -95,7 +78,7 @@ switch ($params['mode']) {
             );
             $event->trigger();
 
-            echo organizer_generate_appointments_view($params, $instance, $popups);
+            echo organizer_generate_appointments_view($params, $instance);
 
         } else {
             print_error('You do not have the permission to view this page!');
@@ -112,7 +95,7 @@ switch ($params['mode']) {
             $event->add_record_snapshot('course', $PAGE->course);
             $event->trigger();
 
-            echo organizer_generate_student_view($params, $instance, $popups);
+            echo organizer_generate_student_view($params, $instance);
         } else {
             print_error('You do not have the permission to view this page!');
         }
@@ -127,14 +110,14 @@ switch ($params['mode']) {
             );
             $event->trigger();
 
-            echo organizer_generate_registration_status_view($params, $instance, $popups);
+            echo organizer_generate_registration_status_view($params, $instance);
         } else {
             print_error('You do not have the permission to view this page!');
         }
     break;
     case ORGANIZER_ASSIGNMENT_VIEW:
         if (has_capability('mod/organizer:assignslots', $instance->context)) {
-            echo organizer_generate_assignment_view($params, $instance, $popups);
+            echo organizer_generate_assignment_view($params, $instance);
         } else {
             print_error('You do not have the permission to view this page!');
         }
@@ -144,7 +127,11 @@ switch ($params['mode']) {
     break;
 }
 
-$PAGE->requires->js_init_call('M.mod_organizer.init_popups', array($popups));
+// Load bootstrap plugin tooltips for comment and feedback popups.
+$PAGE->requires->js_amd_inline("require(['theme_boost/loader']);
+require(['jquery', 'theme_boost/tooltip'], function($){
+    $('[data-toggle=\"tooltip\"]').tooltip();
+});");
 
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();
@@ -152,20 +139,6 @@ echo $OUTPUT->footer();
 die;
 
 // Utility functions.
-
-function organizer_register_popup($title, $content, &$popups) {
-    static $id = 0;
-
-    if (!isset($popups[$title])) {
-        $popups[$title] = array();
-    }
-    $popups[$title][$id] = str_replace(array("\n", "\r"), "<br />", $content);
-
-    $elementid = "organizer_popup_icon_{$title}_{$id}";
-    $id++;
-
-    return $elementid;
-}
 
 function organizer_create_url($params, $short = false) {
     $url = new moodle_url('/mod/organizer/view.php');
@@ -185,7 +158,6 @@ function organizer_create_url($params, $short = false) {
 }
 
 function organizer_load_params($instance) {
-    global $CFG;
 
     $params = array();
     $params['id'] = required_param('id', PARAM_INT);
