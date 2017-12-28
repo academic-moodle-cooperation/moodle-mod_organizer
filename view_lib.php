@@ -85,7 +85,6 @@ function organizer_add_calendar() {
     $calendar->set_sources($course, $courses);
     $renderer = $PAGE->get_renderer('core_calendar');
     $calendar->add_sidecalendar_blocks($renderer, true, 'month');
-    $PAGE->requires->js_init_call('M.mod_organizer.fix_calendar_styles');
 }
 
 function organizer_generate_appointments_view($params, $instance) {
@@ -939,9 +938,9 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                             $list = "<span style='display:table'>";
                         foreach ($members as $member) {
                             $list .= "<span style='display:table-row'>";
-                            $idnumber = organizer_get_user_idnumber($member);
-                            $list .= "<span style='display:table-cell'>" .
-                                organizer_get_name_link($member) . ($idnumber ? " ($idnumber) " : " ");
+                            $identity = organizer_get_user_identity($recepient);
+                            $identity = $identity != "" ? " ({$identity})" : "";
+                            $list .= "<span style='display:table-cell'>" . organizer_get_name_link($member) . $identity;
                             if ($groupentries) {
                                 if ($member == $entry->applicantid) {
                                     $list .= organizer_get_img(
@@ -1046,9 +1045,10 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                 switch ($column) {
                     case 'group':
                     case 'participants':
+                        $identity = organizer_get_user_identity($entry);
+                        $identity = $identity != "" ? " ({$identity})" : "";
                         $cell = $row->cells[] = new html_table_cell(
-                        organizer_get_name_link($entry->id) .
-                        ($entry->idnumber ? " ($entry->idnumber)" : "") .
+                        organizer_get_name_link($entry->id) . $identity .
                         organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified));
                     break;
                     case 'status':
@@ -1161,7 +1161,9 @@ function organizer_get_participant_entry($entry) {
     } else {
         $icon = ' ' . organizer_get_icon('transparent', '');
     }
-    $participantentry = organizer_get_name_link($entry->id) . " {$icon}<br/>({$entry->idnumber})" .
+    $identity = organizer_get_user_identity($entry);
+    $identity = $identity != "" ? "({$identity})" : "";
+    $participantentry = organizer_get_name_link($entry->id) . " {$icon}<br/>" . $identity .
             organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified);
     return $participantentry;
 }
@@ -1543,10 +1545,11 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
     foreach ($apps as $app) {
         $output .= '<span style="display:table-row">';
         $name = organizer_get_name_link($app->userid);
-        $idnumber = organizer_get_user_idnumber($app->userid);
+        $identity = organizer_get_user_identity($app->userid);
+        $identity = $identity != "" ? " ({$identity})" : "";
         if ($app->userid == $userid) {
             $output .= '<span style="display:table-cell">';
-            $output .= $name . ($idnumber ? " ($idnumber) " : " ");
+            $output .= $name . $identity;
             if ($isgroupmode && $app->userid == $app->applicantid) {
                 $output .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
             }
@@ -1560,7 +1563,7 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
         } else if ($slot->visibility != ORGANIZER_VISIBILITY_ANONYMOUS && (organizer_is_my_slot($slot) ||
                         $slot->visibility == ORGANIZER_VISIBILITY_ALL) ) {
             $output .= '<span style="display:table-cell">';
-            $output .= $name . ($idnumber ? " ($idnumber) " : " ");
+            $output .= $name . $identity;
             if ($isgroupmode && $app->userid == $app->applicantid) {
                 $output .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
             }
@@ -1694,8 +1697,7 @@ function organizer_get_participant_list($params, $slot, $app) {
 
         if ($slot->visibility == ORGANIZER_VISIBILITY_ANONYMOUS) {
             if ($ismyslot) {
-                $idnumber = organizer_get_user_idnumber($app->userid);
-                $content .= organizer_get_name_link($app->userid) . ($idnumber ? " ($idnumber) " : " ") .
+                $content .= organizer_get_name_link($app->userid) .
                         organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified) .
                         '<br />';
             }
@@ -1717,10 +1719,8 @@ function organizer_get_participant_list($params, $slot, $app) {
                 $content .= "<span style='display:table'>";
                 foreach ($appointments as $appointment) {
                     $content .= "<span style='display:table-row'>";
-                    $idnumber = organizer_get_user_idnumber($appointment->userid);
                     $content .= "<span style='display:table-cell'>";
-                    $content .= organizer_get_name_link($appointment->userid) .
-                    ($idnumber ? " ($idnumber) " : " ");
+                    $content .= organizer_get_name_link($appointment->userid);
                     if ($groupmode) {
                         if ($appointment->userid == $appointment->applicantid) {
                             $content .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
@@ -1759,8 +1759,9 @@ function organizer_get_participant_list($params, $slot, $app) {
             foreach ($appointments as $appointment) {
                 $list .= '<span style="display:table-row">';
                 $list .= '<span style="display:table-cell">';
-                $idnumber = organizer_get_user_idnumber($appointment->userid);
-                $list .= organizer_get_name_link($appointment->userid) . ($idnumber ? " ($idnumber)" : "");
+                $identity = organizer_get_user_identity($appointment->userid);
+                $identity = $identity != "" ? " ({$identity})" : "";
+                $list .= organizer_get_name_link($appointment->userid) . $identity;
                 if ($groupmode) {
                     if (organizer_is_group_mode() && $appointment->userid == $appointment->applicantid) {
                         $list .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
@@ -2233,6 +2234,11 @@ function organizer_get_countdown($time) {
 function organizer_get_user_idnumber($userid) {
     global $DB;
     return $DB->get_field_select('user', 'idnumber', "id = {$userid}");
+}
+
+function organizer_get_user_email($userid) {
+    global $DB;
+    return $DB->get_field_select('user', 'email', "id = {$userid}");
 }
 
 function organizer_popup_icon($type, $content) {

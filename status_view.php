@@ -55,9 +55,9 @@ function organizer_generate_registration_table_content($columns, $params) {
                         $list .= organizer_get_teacherapplicant_output(
                                 $entry->teacherapplicantid, $entry->teacherapplicanttimemodified);
                         foreach ($members as $member) {
-                            $idnumber = get_user_idnumber($member);
-
-                            $list .= get_name_link($member) . " ($idnumber) "
+                            $identity = organizer_get_user_identity($member);
+                            $identity = $identity ? " (" . $identity . ") " : "";
+                            $list .= organizer_get_name_link($member) . $identity
                                 . (isset($entry->comments) ? get_img('i/feedback', '', $entry->comments) : '');
                             if ($member == $entry->applicantid) {
                                 $list .= ' '

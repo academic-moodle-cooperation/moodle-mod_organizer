@@ -228,12 +228,9 @@ class organizer_evaluate_slots_form extends moodleform
         $a->firstname = $user->firstname;
         $a->lastname = $user->lastname;
         $name = get_string('fullname_template', 'organizer', $a);
-        if (isset($user->idnumber) && $user->idnumber !== '') {
-            return html_writer::link($profileurl, $name) . " ({$user->idnumber})";
-        } else {
-            return html_writer::link($profileurl, $name);
-        }
-
+        $identity = organizer_get_user_identity($user);
+        $identity = $identity ? " (" . $identity . ")" : "";
+        return html_writer::link($profileurl, $name) . $identity;
     }
 
     private function _addbuttons() {

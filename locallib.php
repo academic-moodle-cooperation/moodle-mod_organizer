@@ -1268,3 +1268,30 @@ function organizer_sortout_hiddenslots($slots) {
 
     return $slots;
 }
+
+function organizer_get_user_identity($user) {
+    global $CFG;
+
+    $identity = "";
+    $identityfields = explode(',', $CFG->showuseridentity);
+
+    if (is_object($user)) {
+        $id = $user->id;
+    } else {
+        if (is_numeric($user)) {
+            $id = $user;
+        } else {
+            return "";
+        }
+    }
+    if (in_array('idnumber', $identityfields)) {
+        $identity = organizer_get_user_idnumber($id);
+    } else {
+        if (in_array('email', $identityfields)) {
+            $identity = organizer_get_user_email($id);
+        }
+    }
+
+    return $identity;
+
+}

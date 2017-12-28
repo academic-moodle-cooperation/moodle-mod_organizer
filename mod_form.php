@@ -222,7 +222,8 @@ class mod_organizer_mod_form extends moodleform_mod
                     $a = new stdClass();
                     $user = $DB->get_record('user', array('id' => $userid));
                     $a->username = fullname($user);
-                    $a->idnumber = $user->idnumber != "" ? "({$user->idnumber})" : "";
+                    $identity = organizer_get_user_identity($user);
+                    $a->idnumber = $identity != "" ? "({$identity})" : "";
                     $grouplist = "";
                     $first = true;
                     foreach ($groups as $group) {

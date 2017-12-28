@@ -67,9 +67,11 @@ class organizer_remind_all_form extends moodleform
                 $mform->addElement('static', '', '', get_string('organizer_remind_all_recepients_pl', 'organizer', $a));
             }
             foreach ($recipients as $recepient) {
+                $identity = organizer_get_user_identity($recepient);
+                $identity = $identity != "" ? "({$identity})" : "";
                 $mform->addElement(
                     'static', '', '',
-                    organizer_get_name_link($recepient->id) . ($recepient->idnumber ? " ({$recepient->idnumber})" : '')
+                    organizer_get_name_link($recepient->id) . $identity
                 );
             }
             $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_organizer_remind_all', 'organizer'));
