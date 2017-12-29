@@ -179,12 +179,17 @@ class organizer_add_slots_form extends moodleform
             $slotgroup = $this->_create_day_slot_group($newslotindex);
             $grouplabel = get_string("weekdaylabel", "organizer") . " " . ($newslotindex + 1);
             $mform->insertElementBefore(
-                $mform->createElement(
-                    'group', "slotgroup{$newslotindex}",
-                    $grouplabel, $slotgroup, ORGANIZER_SPACING, false
+                $mform->createElement('group', "slotgroup{$newslotindex}", $grouplabel, $slotgroup, ORGANIZER_SPACING, false
                 ), 'other'
             );
         }
+        $forecasttotalgroup[] = $mform->createElement("html",
+                "<div name='organizer_newslots_forecasttotal' class='col-md-9 form-inline felement'></div>");
+        $mform->insertElementBefore(
+                $mform->createElement('group', "forecasttotalgroup", "&nbsp;", $forecasttotalgroup, ORGANIZER_SPACING, false
+                ), 'other'
+        );
+
         if (isset($_POST['addday'])) {
             $totalslots = $this->_add_slot_fields($newslotindex);
             $displayallslots = 1;
@@ -442,7 +447,9 @@ class organizer_add_slots_form extends moodleform
                 null, array(0, 1));
         $mform->setType("{$name}[visible]", PARAM_INT);
         $mform->setDefault("{$name}[visible]", 1);
-        $slotgroup[] = $mform->addElement("html", "<span name='forecastday_{$newslotindex}'></span>");
+        $slotgroup[] = $mform->createElement("html", "<span name='forecastday_{$newslotindex}'></span>");
+        $slotgroup[] = $mform->createElement("html", "<span name='newslots_{$newslotindex}' style='display:none'>0</span>");
+        $slotgroup[] = $mform->createElement("html", "<span name='newpax_{$newslotindex}' style='display:none'>0</span>");
 
         return $slotgroup;
     }

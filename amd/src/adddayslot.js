@@ -38,7 +38,7 @@ define(
             this.displayallslots = 0;
             this.totalday = "";
             this.totaltotal = "";
-
+            this.current = "0";
         };
 
         var instance = new Adddayslot();
@@ -70,31 +70,56 @@ define(
                     function () {
                         var id = $(this).attr("id");
                         var nextindex = parseInt(id.split("_")[2]) + 1;
-                        $("#id_newslots_" + String(nextindex) + "_day").closest(".form-group.row.fitem").show(); // Boost-theme.
-                        $("#fgroup_id_slotgroup" + String(nextindex)).show(); // Clean-theme.
-                        if (nextindex == instance.totalslots) {
-                            $('#id_addday').show();
+                        if (nextindex > instance.current) {
+                            $("#id_newslots_" + String(nextindex) + "_day").closest(".form-group.row.fitem").show(); // Boost-theme.
+                            $("#fgroup_id_slotgroup" + String(nextindex)).show(); // Clean-theme.
+                            if (nextindex == instance.totalslots) {
+                                $('#id_addday').show();
+                            }
+                            instance.current++;
                         }
                     }
                 );
             }
 
-            $('[name^="newslots"]').not(':checkbox').on('change', evaluaterow);
+            $('[name^="newslots"]').not(':checkbox').on('change', startevaluation);
+
+            $('input[name^="duration"]').on('change', evaluateallrows);
+            $('select[name^="duration"]').on('change', evaluateallrows);
+            $('input[name^="gap"]').on('change', evaluateallrows);
+            $('select[name^="gap"]').on('change', evaluateallrows);
+            $('input[name=maxparticipants]').on('change', evaluateallrows);
 
             if ($("#id_now").prop("checked") == true) {
                 $('[name^=availablefrom]').prop("disabled", true);
                 $('#id_availablefrom_timeunit').prop("disabled", true);
             }
 
-            function evaluaterow(e) {
+            function startevaluation(e) { // Get index of changed row and start evaluation.
                 var target = $(e.target);
                 var name = target.attr("name");
                 var i = parseInt(name.replace('newslots[', ''));
+                evaluaterow(i);
+                writetotal();
+            }
+
+            function evaluaterow(i) {
                 var days = get_days(i);
                 var slots = get_slots_per_day(i);
+                slots = slots * days;
                 var pax = get_pax();
-                log.info(i, "i");
-                $("span[name='forecastday_"+i+"']").html(days*slots*pax);
+                pax = pax * slots;
+                var forecaststring = instance.totalday.replace("xxx", slots.toString()).replace("yyy", pax.toString());
+                $("span[name='forecastday_"+i+"']").html(forecaststring);
+                $("span[name='newslots_"+i+"']").html(slots.toString());
+                $("span[name='newpax_"+i+"']").html(pax.toString());
+            }
+
+            function evaluateallrows() {
+                for (var i = 0;i < instance.current;i++) {
+                    evaluaterow(i);
+                }
+                writetotal();
             }
 
             function get_days(i) {
@@ -117,7 +142,7 @@ define(
                 var enddatemonth = $("select[name='enddate\[month\]']").val() - 1;
                 var enddateyear = $("select[name='enddate\[year\]']").val();
                 var enddate = new Date(enddateyear, enddatemonth, enddateday);
-                for (var idate = startdate;idate <= enddate;idate.addDays(1)) {
+                for (var idate = startdate;idate <= enddate;addDays(idate, 1)) {
                     if (idate.getDay() == weekdayindex) {
                         foundweekdays++;
                     }
@@ -133,18 +158,22 @@ define(
                     return 0;
                 }
                 var durationnumber = parseInt($("input[name='duration\[number\]']").val());
-                var durationtimeunit = parseInt($("input[name='duration\[timeunit\]']").val());
+                var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
                 var gapnumber = parseInt($("input[name='gap\[number\]']").val());
-                var gaptimeunit = parseInt($("input[name='gap\[timeunit\]']").val());
-                if ( durationnumber.isNaN() ) {
+                var gaptimeunit = parseInt($("select[name='gap\[timeunit\]']").val());
+                if ( isNaN(durationnumber) ) {
                     return 0;
                 }
                 var duration = durationnumber * durationtimeunit;
-                if ( gapnumber.isNaN() ) {
+                if ( isNaN(gapnumber) ) {
                     gapnumber = 0;
                 }
                 var gap = gapnumber * gaptimeunit;
-                for (var itime = timefrom;itime <= timeto;itime+duration+gap) {
+                var iteration = duration + gap;
+                for (var itime = timefrom+iteration;itime <= timeto;itime+=iteration) {
+                    slotsfound++;
+                }
+                if(itime-gap <= timeto) {
                     slotsfound++;
                 }
                 return slotsfound;
@@ -159,8 +188,27 @@ define(
                 }
             }
 
-            Date.prototype.addDays = function(days) {
-                var dat = new Date(this.valueOf());
+            function writetotal() {
+                var totalslots = 0;
+                var totalpax = 0;
+                $("span[name^='newslots_']").each (function() {
+                    var name = $( this ).attr("name");
+                    var slots = parseInt($( this ).html());
+                    if (isNaN(slots) == false) {
+                        totalslots += slots;
+                    }
+                });
+                $("span[name^='newpax_']").each (function() {
+                    var pax = parseInt($( this ).html());
+                    if (isNaN(pax) == false) {
+                        totalpax += pax;
+                    }
+                });
+                var forecaststring = instance.totaltotal.replace("xxx", totalslots.toString()).replace("yyy", totalpax.toString());
+                $("div[name='organizer_newslots_forecasttotal']").html(forecaststring);
+            }
+
+            function addDays (dat, days) {
                 dat.setDate(dat.getDate() + days);
                 return dat;
             };
