@@ -209,6 +209,12 @@ class organizer_add_slots_form extends moodleform
         $params = new \stdClass();
         $params->totalslots = $totalslots;
         $params->displayallslots = $displayallslots;
+        $params->totalday = get_string("totalday", "organizer");
+        if ($organizer->isgrouporganizer) {
+            $params->totaltotal = get_string("totaltotal_groups", "organizer");
+        } else {
+            $params->totaltotal = get_string("totaltotal", "organizer");
+        }
         $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', array($params));
     }
 
@@ -436,7 +442,7 @@ class organizer_add_slots_form extends moodleform
                 null, array(0, 1));
         $mform->setType("{$name}[visible]", PARAM_INT);
         $mform->setDefault("{$name}[visible]", 1);
-        $slotgroup[] = $mform->addElement("html", "<span name='{$name}forecastday'></span>");
+        $slotgroup[] = $mform->addElement("html", "<span name='forecastday_{$newslotindex}'></span>");
 
         return $slotgroup;
     }
