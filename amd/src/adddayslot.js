@@ -26,7 +26,7 @@
 
 
 define(
-    ['jquery', 'core/log'], function($, log) {
+    ['jquery'], function($) {
 
         /**
          * @constructor
@@ -82,32 +82,44 @@ define(
                 );
             }
 
+            // If a new slot field is changed evaluate the row to provide the forecast.
             $('[name^="newslots"]').not(':checkbox').on('change', startevaluation);
 
+            // After relevant input is changed recalculate the forecasts.
             $('input[name^="duration"]').on('change', evaluateallrows);
             $('select[name^="duration"]').on('change', evaluateallrows);
             $('input[name^="gap"]').on('change', evaluateallrows);
             $('select[name^="gap"]').on('change', evaluateallrows);
-            $('input[name=maxparticipants]').on('change', evaluateallrows);
+            $('input[name="maxparticipants"]').on('change', evaluateallrows);
+            $('select[name^="startdate"]').on('change', evaluateallrows);
+            $('select[name^="enddate"]').on('change', evaluateallrows);
 
+            // If apply period starts now deactivate apply date in form.
             if ($("#id_now").prop("checked") == true) {
                 $('[name^=availablefrom]').prop("disabled", true);
                 $('#id_availablefrom_timeunit').prop("disabled", true);
             }
 
-            function startevaluation(e) { // Get index of changed row and start evaluation.
+            // Get index of changed row and start evaluation.
+            function startevaluation(e) {
                 var target = $(e.target);
                 var name = target.attr("name");
                 var i = parseInt(name.replace('newslots[', ''));
+                var valfrom = parseInt($("select[name='newslots\["+i+"\]\[from\]']").val());
+                var valto = parseInt($("select[name='newslots\["+i+"\]\[to\]']").val());
+                if (valfrom > valto) {
+                    $("select[name='newslots\["+i+"\]\[to\]']").val(valfrom);
+                }
                 evaluaterow(i);
                 writetotal();
             }
 
+            // Evaluate a certain row to make forecast.
             function evaluaterow(i) {
-                var days = get_days(i);
-                var slots = get_slots_per_day(i);
+                var days = getdays(i);
+                var slots = getslotsperday(i);
                 slots = slots * days;
-                var pax = get_pax();
+                var pax = getpax();
                 pax = pax * slots;
                 var forecaststring = instance.totalday.replace("xxx", slots.toString()).replace("yyy", pax.toString());
                 $("span[name='forecastday_"+i+"']").html(forecaststring);
@@ -115,6 +127,7 @@ define(
                 $("span[name='newpax_"+i+"']").html(pax.toString());
             }
 
+            // Reevaluate all rows and write the totals.
             function evaluateallrows() {
                 for (var i = 0;i < instance.current;i++) {
                     evaluaterow(i);
@@ -122,17 +135,17 @@ define(
                 writetotal();
             }
 
-            function get_days(i) {
+            function getdays(i) {
                 var weekdays = 0;
                 var val = parseInt($("select[name^='newslots\["+i+"\]\[day\]']").val());
                 if (val >= 0 && val <= 6) {
                     var weekdayindex = val+1;
-                    weekdays = get_weekdays(weekdayindex == 7 ? 0 : weekdayindex);
+                    weekdays = getweekdays(weekdayindex == 7 ? 0 : weekdayindex);
                 }
                 return weekdays;
             }
 
-            function get_weekdays(weekdayindex) {
+            function getweekdays(weekdayindex) {
                 var foundweekdays = 0;
                 var startdateday = $("select[name='startdate\[day\]']").val();
                 var startdatemonth = $("select[name='startdate\[month\]']").val() - 1;
@@ -142,7 +155,7 @@ define(
                 var enddatemonth = $("select[name='enddate\[month\]']").val() - 1;
                 var enddateyear = $("select[name='enddate\[year\]']").val();
                 var enddate = new Date(enddateyear, enddatemonth, enddateday);
-                for (var idate = startdate;idate <= enddate;addDays(idate, 1)) {
+                for (var idate = startdate;idate <= enddate;idate=adddays(idate, 1)) {
                     if (idate.getDay() == weekdayindex) {
                         foundweekdays++;
                     }
@@ -150,7 +163,7 @@ define(
                 return foundweekdays;
             }
 
-            function get_slots_per_day(i) {
+            function getslotsperday(i) {
                 var slotsfound = 0;
                 var timefrom = parseInt($("select[name^='newslots\["+i+"\]\[from\]']").val());
                 var timeto = parseInt($("select[name^='newslots\["+i+"\]\[to\]']").val());
@@ -179,7 +192,7 @@ define(
                 return slotsfound;
             }
 
-            function get_pax() {
+            function getpax() {
                 var pax = $('input[name=maxparticipants]').val();
                 if ($.isNumeric(pax)) {
                     return pax;
@@ -192,7 +205,6 @@ define(
                 var totalslots = 0;
                 var totalpax = 0;
                 $("span[name^='newslots_']").each (function() {
-                    var name = $( this ).attr("name");
                     var slots = parseInt($( this ).html());
                     if (isNaN(slots) == false) {
                         totalslots += slots;
@@ -208,10 +220,10 @@ define(
                 $("div[name='organizer_newslots_forecasttotal']").html(forecaststring);
             }
 
-            function addDays (dat, days) {
+            function adddays(dat, days) {
                 dat.setDate(dat.getDate() + days);
                 return dat;
-            };
+            }
         };
 
         return instance;
