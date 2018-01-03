@@ -394,14 +394,16 @@ function organizer_display_grade($organizer, $grade, $userid) {
 
     if ($organizer->grade >= 0) {    // Normal number.
         if ($grade == -1 || $grade == null) {
-            if ($finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid)) {
+            $finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid);
+            if ($finalgrade !== false) {
                       return organizer_display_finalgrade($finalgrade);
             } else {
                       return $nograde;
             }
         } else {
             $returnstr = organizer_clean_num($grade) . '/' . organizer_clean_num($organizer->grade);
-            if ($finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid)) {
+            $finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid);
+            if ($finalgrade !== false) {
                       $returnstr .= organizer_display_finalgrade($finalgrade);
             }
             return $returnstr;
@@ -414,21 +416,26 @@ function organizer_display_grade($organizer, $grade, $userid) {
                 return $nograde;
             }
         }
-        if (isset($scalegrades[$organizer->id][intval($grade)])) {
-            if ($grade == 0 || $grade == null) {
-                return $nograde;
+        $finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid);
+        if ($finalgrade !== false) {
+            if (isset($scalegrades[$organizer->id][intval($finalgrade)])) {
+                return organizer_display_finalgrade($scalegrades[$organizer->id][intval($finalgrade)]);
             } else {
-                return $scalegrades[$organizer->id][intval($grade)];
+                return $nograde;
             }
         }
-        return $nograde;
+        if (isset($scalegrades[$organizer->id][intval($grade)])) {
+            return $scalegrades[$organizer->id][intval($grade)];
+        } else {
+            return $nograde;
+        }
     }
 }
 
 function organizer_display_finalgrade($finalgrade) {
     $nograde = get_string('nograde');
 
-    if ($finalgrade) {
+    if ($finalgrade !== false) {
         return html_writer::span('(' . $finalgrade . ')', 'finalgrade', array('title' => get_string('finalgrade', 'organizer')));
     } else {
         return $nograde;
@@ -450,7 +457,7 @@ function organizer_get_finalgrade_overwritten($organizerid, $userid) {
         if (is_null($grades->finalgrade)) {
             $grades->finalgrade = 0;
         }
-        if ($grades->rawgrade != $grades->finalgrade) {
+        if ($grades->rawgrade !== $grades->finalgrade) {
             return organizer_clean_num($grades->finalgrade);
         } else {
             return false;

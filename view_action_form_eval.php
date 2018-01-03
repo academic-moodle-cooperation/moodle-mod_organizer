@@ -149,7 +149,7 @@ class organizer_evaluate_slots_form extends moodleform
                     if ($maxgrade != 0) {
 
                         $grademenu = organizer_make_grades_menu_organizer($maxgrade);
-                        if ($finalgrade) {
+                        if ($finalgrade !== false) {
                             $appgrade = $app->grade == "0" ? "-1" : $app->grade;
                             $appgroup[] = $mform->createElement(
                                 'hidden', 'grade', $appgrade,
