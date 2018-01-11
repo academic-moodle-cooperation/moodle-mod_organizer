@@ -318,21 +318,9 @@ function organizer_get_user_grade($organizer, $userid = 0) {
                 ORDER BY id DESC';
         $arr = $DB->get_records_sql($query, $params);
         $result = reset($arr);
-        return array($result->userid => $result);
+        return array($userid => $result);
     } else {
-        // Tscpr: Why keep this query and this whole else-branch if we don't use it?
-        $query = 'SELECT
-                a.id AS id,
-                a.userid AS userid,
-                a.grade AS rawgrade,
-                s.starttime AS dategraded,
-                s.starttime AS datesubmitted,
-                a.feedback AS feedback
-            FROM {organizer_slot_appointments} a
-            INNER JOIN {organizer_slots} s ON a.slotid = s.id
-            WHERE s.organizerid = :organizerid
-            ORDER BY id DESC';
-        return array(); // Unused.
+        return array();
     }
 }
 
