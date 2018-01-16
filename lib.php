@@ -318,7 +318,11 @@ function organizer_get_user_grade($organizer, $userid = 0) {
                 ORDER BY id DESC';
         $arr = $DB->get_records_sql($query, $params);
         $result = reset($arr);
-        return array($userid => $result);
+        if ($result) {
+            return array($userid => $result);
+        } else {
+            return array();
+        }
     } else {
         return array();
     }
