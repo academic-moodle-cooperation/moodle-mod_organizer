@@ -330,15 +330,17 @@ function organizer_update_grades($organizer, $userid = 0) {
 
     if ($organizer->grade == 0) {
         return organizer_grade_item_update($organizer);
-    } else if ($grades = organizer_get_user_grade($organizer, $userid)) {
-        foreach ($grades as $key => $value) {
-            if ($value->rawgrade == -1) {
-                $grades[$key]->rawgrade = null;
-            }
-        }
-        return organizer_grade_item_update($organizer, $grades);
     } else {
-        return organizer_grade_item_update($organizer);
+        if ($grades = organizer_get_user_grade($organizer, $userid)) {
+            foreach ($grades as $key => $value) {
+                if ($value->rawgrade == -1) {
+                    $grades[$key]->rawgrade = null;
+                }
+            }
+            return organizer_grade_item_update($organizer, $grades);
+        } else {
+            return organizer_grade_item_update($organizer);
+        }
     }
 }
 
