@@ -938,7 +938,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                             $list = "<span style='display:table'>";
                         foreach ($members as $member) {
                             $list .= "<span style='display:table-row'>";
-                            $identity = organizer_get_user_identity($recepient);
+                            $identity = organizer_get_user_identity($member);
                             $identity = $identity != "" ? " ({$identity})" : "";
                             $list .= "<span style='display:table-cell'>" . organizer_get_name_link($member) . $identity;
                             if ($groupentries) {

@@ -35,12 +35,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 function organizer_send_message($sender, $receiver, $slot, $type, $digest = null, $customdata = array()) {
     global $DB;
 
-    // TODO: Remove this ugly, ugly hack. Slot contains an organizer instance when sending registration reminder.
-    if ($type == 'register_reminder_student') {
-        $organizerid = $slot->id;
-    } else {
-        $organizerid = $slot->organizerid;
-    }
+    $organizerid = $slot->organizerid;
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
 
@@ -62,12 +57,9 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $strings->sendername = fullname($sender, true);
     $strings->receivername = fullname($receiver, true);
 
-    if ($type != 'register_reminder_student') {
-        $strings->date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
-        $strings->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-        $strings->location = $slot->location;
-    }
-
+    $strings->date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
+    $strings->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
+    $strings->location = $slot->location;
     $strings->organizername = $organizer->name;
     $strings->coursefullname = $course->fullname;
     $strings->courseshortname = $course->shortname;
@@ -103,23 +95,95 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $strings->courselink = html_writer::link($courseurl, $course->fullname);
 
     if ($organizer->isgrouporganizer) {
-        if (strpos($type, 'register_notify') !== false || strpos($type, 'group_registration_notify') !== false) {
-            $group = groups_get_user_groups($organizer->course, $sender->id);
-            $group = reset($group);
-            $group = reset($group);
-            $group = groups_get_group($group);
+        if ($group = organizer_fetch_user_group($receiver->id, $organizerid)) {
+            $groupname = organizer_fetch_groupname($group->id);
+            $strings->groupname = $groupname;
         } else {
-            $group = groups_get_user_groups($organizer->course, $receiver->id);
-            $group = reset($group);
-            $group = reset($group);
-            $group = groups_get_group($group);
+            $strings->groupname = "groupname";
         }
-        $strings->groupname = isset($group->name) ? $group->name : "groupname";
         $type .= ":group";
     }
 
     if ($namesplit[0] == "eval_notify_newappointment") {
         $namesplit[0] = "eval_notify";
+    }
+
+    if (count($namesplit) == 1) {
+        $messagename = "$namesplit[0]";
+    } else {
+        $messagename = "$namesplit[0]_$namesplit[1]";
+    }
+    $message = new \core\message\message();
+    $message->component = 'mod_organizer';
+    $message->name = $messagename;
+    $message->courseid = $cm->course;
+    $message->notification = 1;
+    $message->fullmessageformat = FORMAT_PLAIN;
+    $message->userfrom = $sender;
+    $message->userto = $receiver;
+
+    if (isset($digest)) {
+        $strings->digest = $digest;
+        $type .= ":digest";
+    }
+
+    $message->subject = get_string("$type:subject", 'organizer', $strings);
+    $message->fullmessage = get_string("$type:fullmessage", 'organizer', $strings);
+    $message->fullmessagehtml = organizer_make_html(
+        get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm,
+        $course
+    );
+
+    if (isset($customdata['custommessage'])) {
+        $message->fullmessage = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessage);
+        $message->fullmessagehtml = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessagehtml);
+    }
+
+    $message->smallmessage = get_string("$type:smallmessage", 'organizer', $strings);
+
+    if (ORGANIZER_ENABLE_MESSAGING) {
+        return message_send($message);
+    } else {
+        return false;
+    }
+}
+
+function organizer_send_message_reminder($sender, $receiver, $organizerid, $type, $groupname = null, $digest = null, $customdata = array()) {
+    global $DB;
+
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
+
+    $sender = is_int($sender) ? $DB->get_record('user', array('id' => $sender)) : $sender;
+    $receiver = is_int($receiver) ? $DB->get_record('user', array('id' => $receiver)) : $receiver;
+
+    $roles = get_user_roles($context, $receiver->id);
+
+    $now = time();
+    if (!$cm->visible || (isset($cm->availablefrom) && $cm->availablefrom && $cm->availablefrom > $now)
+        || (isset($cm->availableuntil) && $cm->availableuntil && $cm->availableuntil < $now) || count($roles) == 0
+    ) {
+        return false;
+    }
+
+    $namesplit = explode(':', $type);
+
+    $strings = new stdClass();
+    $strings->sendername = fullname($sender, true);
+    $strings->receivername = fullname($receiver, true);
+
+    $strings->organizername = $organizer->name;
+    $strings->coursefullname = $course->fullname;
+    $strings->courseshortname = $course->shortname;
+    $strings->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
+
+    $courseurl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id));
+    $strings->courselink = html_writer::link($courseurl, $course->fullname);
+
+    if ($groupname) {
+        $strings->groupname = $groupname;
+        $type .= ":group";
+    } else {
+        $strings->groupname = "";
     }
 
     if (count($namesplit) == 1) {
@@ -287,10 +351,18 @@ function organizer_prepare_and_send_message($data, $type) {
             }
         break;
         case 'register_reminder_student':
-        return organizer_send_message(
-            intval($USER->id), intval($data['user']),
-            $data['organizer'], $type, null, array('custommessage' => $data['custommessage'])
-        );
+            $organizerid = $data['organizer']->id;
+            if ($data['organizer']->isgrouporganizer) {
+                if ($group = organizer_fetch_user_group(intval($data['user']), $organizerid)) {
+                    $groupname = organizer_fetch_groupname($group->id);
+                } else {
+                    $groupname = null;
+                }
+            } else {
+                $groupname = null;
+            }
+            return organizer_send_message_reminder(intval($USER->id), intval($data['user']),
+                $organizerid, $type, $groupname,null, array('custommessage' => $data['custommessage']));
         break;
         case 'assign_notify_student':
             $slot = $DB->get_record('organizer_slots', array('id' => $data->selectedslot));
