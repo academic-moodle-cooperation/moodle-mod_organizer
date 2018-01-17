@@ -1070,6 +1070,7 @@ $string['Warning'] = 'Warning';
 $string['Info'] = 'Info';
 $string['Error'] = 'Error';
 $string['visible'] = ' Slot visible';
+$string['totalday'] = 'xxx slots for yyy persons';
 $string['totaldaytotalday'] = 'xxx slots for yyy persons';
 $string['totaltotal'] = 'Total: xxx slots for yyy persons';
 $string['totaltotal_groups'] = 'Total: xxx slots for yyy groups';
