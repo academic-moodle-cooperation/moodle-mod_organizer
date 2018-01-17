@@ -214,11 +214,12 @@ class organizer_add_slots_form extends moodleform
         $params = new \stdClass();
         $params->totalslots = $totalslots;
         $params->displayallslots = $displayallslots;
-        $params->totalday = get_string("totalday", "organizer");
         if ($organizer->isgrouporganizer) {
             $params->totaltotal = get_string("totaltotal_groups", "organizer");
+            $params->totalday = get_string("totalday_groups", "organizer");
         } else {
             $params->totaltotal = get_string("totaltotal", "organizer");
+            $params->totalday = get_string("totalday", "organizer");
         }
         $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', array($params));
     }

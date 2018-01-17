@@ -1074,6 +1074,6 @@ $string['Error'] = 'Fehler!';
 
 $string['visible'] = 'Termin sichtbar';
 $string['totalday'] = 'xxx Termine für yyy Personen';
-$string['totaldaytotalday'] = 'xxx Termine für yyy Personen';
+$string['totalday_groups'] = 'xxx Termine für yyy Gruppen';
 $string['totaltotal'] = 'Insgesamt xxx Termine für yyy Personen';
-$string['totaltotal_group'] = 'Insgesamt xxx Termine für yyy Gruppen';
+$string['totaltotal_groups'] = 'Insgesamt xxx Termine für yyy Gruppen';
