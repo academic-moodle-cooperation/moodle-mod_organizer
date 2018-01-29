@@ -1,6 +1,19 @@
 CHANGELOG
 =========
 
+3.4.1 (2018-01-29)
+------------------
+
+* Moodle 3.4.1 compatible version
+* [FIXED] #4518: Values overwritten in gradebook of type scala are not shown in organizer
+* [FIXED] #4919: Overwritten grading value of 0 points is not shown in organizer
+* [FIXED] #5177: Error message in grouptool when importing new participant manually
+* [FIXED] #5231: Getting wrong user group when messaging in group mode
+* [FEATURE] #4899: Display forecast of the number of slots to be created in slots add page
+* [FEATURE] #3811: Rewrite YUI to JQuery/Javascript
+* [FEATURE] #3778: Students identity information (ID-number or email) not visible for other students
+* [FEATURE] #3883 Hide slots from students
+
 3.4.0 (2017-11-29)
 ------------------
 
