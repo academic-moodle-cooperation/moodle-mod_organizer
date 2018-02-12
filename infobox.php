@@ -42,7 +42,7 @@ function organizer_make_infobox($params, $organizer, $context, &$popups) {
 
     $output = '';
     if ($organizer->alwaysshowdescription ||  time() > $organizer->allowregistrationsfromdate) {
-        $output = organizer_make_description_section($organizer);
+        $output = organizer_make_description_section($organizer, $params['id']);
     }
 
     switch($params['mode']) {
@@ -116,11 +116,11 @@ function organizer_make_reminder_section($params, $context) {
         return '';
     }
 }
-function organizer_make_description_section($organizer) {
+function organizer_make_description_section($organizer, $cmid) {
     global $OUTPUT;
 
     $output = '<br>';
-    $output .= $organizer->intro;
+    $output .= format_module_intro('organizer', $organizer, $cmid);
     if ($organizer->isgrouporganizer) {
         $group = organizer_fetch_my_group();
         if ($group) {
