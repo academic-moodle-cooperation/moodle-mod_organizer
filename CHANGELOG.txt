@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.4.2 (2018-02-12)
+------------------
+
+* [FIXED] #5173: Decription text not processed by filters
+
 3.4.1 (2018-01-29)
 ------------------
 
