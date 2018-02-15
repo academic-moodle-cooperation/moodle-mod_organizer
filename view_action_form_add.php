@@ -63,10 +63,14 @@ class organizer_add_slots_form extends moodleform
 
         $mform->addElement('header', 'slotdetails', get_string('slotdetails', 'organizer'));
 
-        $mform->addElement('select', 'teacherid', get_string('teacher', 'organizer'), $this->_get_teacher_list());
+        $menu = $this->_get_teacher_list();
+        $mform->addElement('autocomplete', 'teacherid', null, $menu, array(
+                "multiple" => "true"
+        ));
         $mform->setType('teacherid', PARAM_INT);
         $mform->setDefault('teacherid', $USER->id);
         $mform->addHelpButton('teacherid', 'teacherid', 'organizer');
+        $mform->addRule('teacherid', null, 'required');
 
         $mform->addElement('checkbox', 'teachervisible', get_string('teachervisible', 'organizer'));
         $mform->setType('teachervisible', PARAM_BOOL);

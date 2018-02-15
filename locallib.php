@@ -143,7 +143,7 @@ function organizer_add_appointment_slots($data) {
             $newslot->maxparticipants = $data->maxparticipants;
             $newslot->visibility = $data->visibility;
             $newslot->timemodified = time();
-            $newslot->teacherid = $data->teacherid;
+            $newslot->teacherid = json_encode($data->teacherid);
             $newslot->teachervisible = isset($data->teachervisible) ? 1 : 0;
             $newslot->notificationtime = $data->notificationtime;
             $newslot->availablefrom = isset($data->availablefrom) ? $data->availablefrom : 0;
