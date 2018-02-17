@@ -429,7 +429,7 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017112201, 'organizer');
     }
 
-    if ($oldversion < 2018012903) {
+    if ($oldversion < 2018012908) {
 
         // Define table organizer_slot_trainer to be created.
         $table = new xmldb_table('organizer_slot_trainer');
@@ -444,39 +444,41 @@ function xmldb_organizer_upgrade($oldversion) {
         $table->add_key('slot', XMLDB_KEY_FOREIGN, array('slotid'), 'organizer_slots', array('id'));
         $table->add_key('trainer', XMLDB_KEY_FOREIGN, array('trainerid'), 'user', array('id'));
 
-        // Adding indexes to table organizer_slot_trainer.
-        $table->add_index('slot_trainer_slot', XMLDB_INDEX_NOTUNIQUE, array('slotid'));
-        $table->add_index('slot_trainer_trainer', XMLDB_INDEX_NOTUNIQUE, array('trainerid'));
-
         // Conditionally launch create table for organizer_slot_trainer.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
-        }
-        // Shift field trainerid of table organizer_slots to the new table organizer_slot_trainer.
-
-        $query = 'SELECT {organizer_slots}.id slotid, {organizer_slots}.trainerid
+            // Shift field trainerid of table organizer_slots to the new table organizer_slot_trainer.
+            $query = 'SELECT {organizer_slots}.id slotid, {organizer_slots}.teacherid
                   FROM {organizer_slots}';
-        $records = $DB->get_records_sql($query);
+            $records = $DB->get_records_sql($query);
 
-        $newrecord = new stdClass();
+            $newrecord = new stdClass();
 
-        foreach ($records as $record) {
+            foreach ($records as $record) {
 
-            $newrecord->slotid = $record->slotid;
-            $newrecord->trainerid = $record->trainerid;
+                $newrecord->slotid = $record->slotid;
+                $newrecord->trainerid = $record->teacherid;
+                $newid = $DB->insert_record('organizer_slot_trainer', $newrecord);
+            }
 
         }
 
-        // Drop field trainerid of table organizer_slots.
+        // Define index slots_userid (not unique) to be dropped form organizer_slots.
         $table = new xmldb_table('organizer_slots');
-        $field = new xmldb_field('trainerid');
+        $index = new xmldb_index('slots_userid', XMLDB_INDEX_NOTUNIQUE, array('teacherid'));
+        $field = new xmldb_field('teacherid');
 
-        // Conditionally drop field trainerid.
-        if (!$dbman->field_exists($table, $field)) {
+        // Conditionally launch drop index slots_userid.
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        // Conditionally launch drop field teacherid.
+        if ($dbman->field_exists($table, $field)) {
             $dbman->drop_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2018012903, 'organizer');
+        upgrade_mod_savepoint(true, 2018012908, 'organizer');
     }
 
 

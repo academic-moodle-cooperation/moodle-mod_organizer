@@ -226,6 +226,19 @@ function organizer_send_message_reminder($sender, $receiver, $organizerid, $type
     }
 }
 
+function organizer_send_message_from_trainer($receiver, $slot, $type, $digest = null, $customdata = array()) {
+    global $DB;
+
+    $success = false;
+
+    if ($trainer = $DB->get_field('organizer_slot_teacher', 'trainerid', array('slotid' => $slot->slotid))) {
+        $success = organizer_send_message($trainer, $receiver, $slot, $type, $digest, $customdata);
+    }
+
+    return $success;
+
+}
+
 function organizer_make_html($content, $organizer, $cm, $course) {
     global $CFG;
 

@@ -580,7 +580,7 @@ function organizer_get_counters($organizer) {
     return $a;
 }
 
-function organizer_get_eventaction_slot_teacher($eventid) {
+function organizer_get_eventaction_slot_trainer($eventid) {
     global $DB;
 
     $slotid = $DB->get_field("event", "uuid", array("id" => $eventid));
@@ -611,7 +611,7 @@ function organizer_get_eventaction_slot_teacher($eventid) {
 }
 
 
-function organizer_get_eventaction_instance_teacher($organizer) {
+function organizer_get_eventaction_instance_trainer($organizer) {
 
     $a = organizer_get_counters($organizer);
 
@@ -1047,7 +1047,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
     return $str;
 }
 
-function organizer_get_overview_teacher($organizer) {
+function organizer_get_overview_trainer($organizer) {
     global $DB, $USER;
 
     $str = '<div class="assignment overview">';
@@ -1070,11 +1070,11 @@ function organizer_get_overview_teacher($organizer) {
     $now = time();
 
     $slot = $DB->get_records_sql(
-        'SELECT * FROM {organizer_slots} WHERE
-            {organizer_slots}.teacherid = :uid AND
-            {organizer_slots}.organizerid = :oid AND
-            {organizer_slots}.starttime > :now
-            ORDER BY {organizer_slots}.starttime ASC', array('uid' => $USER->id, 'oid' => $organizer->id, 'now' => $now)
+        'SELECT * FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid  WHERE
+            t.trainerid = :uid AND
+            s.organizerid = :oid AND
+            s.starttime > :now
+            ORDER BY s.starttime ASC', array('uid' => $USER->id, 'oid' => $organizer->id, 'now' => $now)
     );
 
     $nextslot = reset($slot);
@@ -1110,7 +1110,7 @@ function organizer_print_overview($courses, &$htmlarray) {
         if (organizer_is_student_in_course($organizer->course, $USER->id)) {
             $str = organizer_get_overview_student($organizer);
         } else {
-            $str = organizer_get_overview_teacher($organizer);
+            $str = organizer_get_overview_trainer($organizer);
         }
 
         if (empty($htmlarray[$organizer->course]['organizer'])) {
@@ -1153,17 +1153,14 @@ function organizer_cron() {
     $success = true;
 
     $params = array('now' => $now, 'now2' => $now);
-    $appsquery = "SELECT a.*, s.teacherid, s.location, s.starttime, s.organizerid FROM {organizer_slot_appointments} a
+    $appsquery = "SELECT a.*, s.location, s.starttime, s.organizerid FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id WHERE
         s.starttime - s.notificationtime < :now AND s.starttime > :now2 AND
         a.notified = 0";
 
     $apps = $DB->get_records_sql($appsquery, $params);
     foreach ($apps as $app) {
-        $success &= organizer_send_message(
-            intval($app->teacherid), intval($app->userid), $app,
-            'appointment_reminder_student'
-        );
+        $success &= organizer_send_message_from_trainer(intval($app->userid), $app, 'appointment_reminder_student');
     }
 
     if (empty($apps)) {
@@ -1182,36 +1179,36 @@ function organizer_cron() {
         $params['tomorrowstart'] = mktime(0, 0, 0, date("m"), date("d") + 1, date("Y"));
         $params['tomorrowend'] = mktime(0, 0, 0, date("m"), date("d") + 2, date("Y"));
 
-        $slotsquery = "SELECT DISTINCT s.teacherid FROM {organizer_slots} s
+        $slotsquery = "SELECT DISTINCT t.teacherid FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
                 WHERE s.starttime >= :tomorrowstart AND
                 s.starttime < :tomorrowend AND
                 s.notified = 0";
 
-        $teacherids = $DB->get_fieldset_sql($slotsquery, $params);
+        $trainerids = $DB->get_fieldset_sql($slotsquery, $params);
 
-        if (empty($teacherids)) {
-            $teacherids = array(0);
+        if (empty($trainerids)) {
+            $trainerids = array(0);
         }
 
-        list($insql, $inparams) = $DB->get_in_or_equal($teacherids, SQL_PARAMS_NAMED);
+        list($insql, $inparams) = $DB->get_in_or_equal($trainerids, SQL_PARAMS_NAMED);
 
-        $slotsquery = "SELECT *
-            FROM {organizer_slots} s
+        $slotsquery = "SELECT s.*, t.trainerid
+            FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
             WHERE s.starttime >= :tomorrowstart AND
             s.starttime < :tomorrowend AND
             s.notified = 0 AND
-            s.teacherid $insql";
+            t.trainerid $insql";
 
         $params = array_merge($params, $inparams);
 
         $slots = $DB->get_records_sql($slotsquery, $params);
 
-        foreach ($teacherids as $teacherid) {
+        foreach ($trainerids as $trainerid) {
             $digest = '';
 
             $found = false;
             foreach ($slots as $slot) {
-                if ($slot->teacherid == $teacherid) {
+                if ($slot->trainerid == $trainerid) {
                     $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
                     $time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
                     $digest .= "$time @ $slot->location\n";
@@ -1227,17 +1224,13 @@ function organizer_cron() {
 
             if ($found) {
                 $success &= $thissuccess = organizer_send_message(
-                    intval($teacherid), intval($teacherid), reset($slots),
+                    intval($trainerid), intval($trainerid), reset($slots),
                     'appointment_reminder_teacher', $digest
                 );
 
                 if ($thissuccess) {
-                    list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
-                    $inparams['teacherid'] = $teacherid;
-                    $DB->execute(
-                        "UPDATE {organizer_slots} SET notified = 1 WHERE teacherid = :teacherid AND id $insql",
-                        $inparams
-                    );
+                    list($insql, ) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+                    $DB->execute("UPDATE {organizer_slots} SET notified = 1 WHERE id $insql");
                 }
             }
 
@@ -1247,18 +1240,18 @@ function organizer_cron() {
     return $success;
 }
 
-function organizer_create_digest($teacherid) {
+function organizer_create_digest($trainerid) {
     include_once(dirname(__FILE__) . '/messaging.php');
     global $DB;
     $now = time();
 
     $success = true;
 
-    $params = array('now' => $now, 'teacherid' => $teacherid);
+    $params = array('now' => $now, 'trainerid' => $trainerid);
 
-    $slotsquery = 'SELECT * FROM {organizer_slots} s
+    $slotsquery = 'SELECT s.*, t.trainerid, t.slotid FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
             WHERE s.starttime - s.notificationtime < :now AND
-            s.notified = 0 AND s.teacherid = :teacherid';
+            s.notified = 0 AND t.trainerid = :trainerid';
 
     $digest = '';
 
@@ -1269,14 +1262,10 @@ function organizer_create_digest($teacherid) {
             $time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
         }
         $digest .= $date.', '.$time.' @ '.$slot->location.'; ';
-        $slot->notified = 1;
-        $DB->update_record('organizer_slots', $slot);
+        $DB->execute("UPDATE {organizer_slots} SET notified = 1 WHERE id = $slot->slotid");
     }
 
-    $success = organizer_send_message(
-        intval($slot->teacherid), intval($slot->teacherid), $slot,
-        'appointment_reminder_teacher:digest', $digest
-    );
+    $success = organizer_send_message($trainerid, $trainerid, $slot, 'appointment_reminder_teacher:digest', $digest);
 
     return $success;
 }
@@ -1434,12 +1423,12 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
         if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {
             $context = context_module::instance($cm->id, MUST_EXIST);
             if (has_capability('mod/organizer:viewallslots', $context)) {
-                $name = organizer_get_eventaction_instance_teacher($organizer);
+                $name = organizer_get_eventaction_instance_trainer($organizer);
             } else {
                 $name = organizer_get_eventaction_instance_student($organizer);
             }
         } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT) {
-            $name = organizer_get_eventaction_slot_teacher($props->id);
+            $name = organizer_get_eventaction_slot_trainer($props->id);
         } else {
             return false;
         }

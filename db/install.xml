@@ -115,10 +115,6 @@
         <KEY NAME="slot" TYPE="foreign" FIELDS="slotid" REFTABLE="organizer_slots" REFFIELDS="id" PREVIOUS="primary" NEXT="trainer"/>
         <KEY NAME="trainer" TYPE="foreign" FIELDS="trainerid" REFTABLE="user" REFFIELDS="id" PREVIOUS="slot"/>
       </KEYS>
-      <INDEXES>
-        <INDEX NAME="slot_trainer_slot" UNIQUE="false" FIELDS="slotid" NEXT="slot_trainer_trainer"/>
-        <INDEX NAME="slot_trainer_trainer" UNIQUE="false" FIELDS="trainerid" PREVIOUS="slot_trainer_slot"/>
-      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>
