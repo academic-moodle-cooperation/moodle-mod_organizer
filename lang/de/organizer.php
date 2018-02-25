@@ -109,8 +109,8 @@ $string['slottimeframesheader'] = 'Zeitfenster angeben';
 $string['slottimeframesheader_help'] = 'Hier können Sie Zeitfenster auf Wochentagsbasis definieren die mit Terminslots befüllt werden, wie oben spezifiziert. Mehr als ein Zeitfenster pro Tag ist erlaubt. Ist ein Zeitfenster an einem Tag ausgewählt (zB Montag), so werden für jeden Montag im Datumszeitraum Zeitfenster und Termine erstellt.';
 $string['slotdetails'] = 'Slot Details';
 $string['back'] = 'Zurück';
-$string['teacherid'] = 'Trainer/in';
-$string['teacherid_help'] = 'Bitte Trainer/in auswählen, der/die die Termine leitet';
+$string['trainerid'] = 'Trainer/in';
+$string['trainerid_help'] = 'Bitte Trainer/in auswählen, der/die die Termine leitet';
 $string['teacher'] = 'Trainer/in';
 $string['otherheader'] = 'Anderes';
 $string['day_0'] = 'Montag';
@@ -1054,8 +1054,11 @@ $string['visibility_anonymous'] = 'Anonym';
 $string['visibility_slot'] = 'Sichtbar nur, wenn eigener Slot';
 $string['visibility_all'] = 'Sichtbar';
 
+$string['calendarsettings'] = 'Kalender Einstellungen';
 $string['hidecalendar'] = 'Kalender verbergen';
 $string['hidecalendar_help'] = 'Stellen Sie hier ein, ob der Kalender in diesem Terminplaner ausgeblendet werden soll.';
+$string['nocalendareventslotcreation'] = 'Keine Kalendereinträge für (noch) leere Slots';
+$string['nocalendareventslotcreation_help'] = 'Wenn Sie diese Option anklicken werden beim Anlegen von Terminen noch keine Kalendereinträge erstellt. Erst Verabredungen führen zu Kalendereinträgen für Termine.';
 
 $string['finalgrade'] = 'Dieser Wert wurde in der Kursbewertung eingetragen und kann im Terminplaner nicht überschrieben werden.';
 

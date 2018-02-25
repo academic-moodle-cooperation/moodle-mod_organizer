@@ -59,7 +59,7 @@ class organizer_edit_slots_form extends moodleform
     private function _get_defaults() {
         global $DB;
         $defaults = array();
-        $defset = array('visible' => false,  'teacherid' => false, 'visibility' => false,  'comments' => false,
+        $defset = array('visible' => false,  'trainerids' => false, 'visibility' => false,  'comments' => false,
                         'location' => false, 'locationlink' => false,
                         'maxparticipants' => false, 'availablefrom' => false, 'teachervisible' => false,
                         'notificationtime' => false);
@@ -81,12 +81,13 @@ class organizer_edit_slots_form extends moodleform
                     unset($defaults['visible']);
                 }
             }
-            if (!isset($defaults['teacherid']) && !$defset['teacherid']) {
-                $defaults['teacherid'] = $slot->teacherid;
-                $defset['teacherid'] = true;
+            $trainerids = organizer_get_slot_trainers($slotid);
+            if (!isset($defaults['trainerids']) && !$defset['trainerids']) {
+                $defaults['trainerids'] = $trainerids;
+                $defset['trainerids'] = true;
             } else {
-                if (isset($defaults['teacherid']) && $defaults['teacherid'] != $slot->teacherid) {
-                    unset($defaults['teacherid']);
+                if (isset($defaults['trainerids']) && $defaults['trainerids'] != $trainerids) {
+                    unset($defaults['trainerids']);
                 }
             }
             if (!isset($defaults['visibility']) && !$defset['visibility']) {
@@ -232,18 +233,17 @@ class organizer_edit_slots_form extends moodleform
         $mform->addElement('hidden', 'mod_visible', 0);
         $mform->setType('mod_visible', PARAM_BOOL);
 
-        $teachers = $this->_load_teachers($defaults);
-
+        $trainers = $this->_load_trainers($defaults);
         $group = array();
-        $group[] = $mform->createElement('select', 'teacherid', get_string('teacher', 'organizer'), $teachers);
-
-        $group[] = $mform->createElement('static', '', '', $this->_warning_icon('teacherid', isset($defaults['teacherid'])));
-
-        $mform->setType('teacherid', PARAM_INT);
-
+        $group[] = $mform->createElement('select', 'trainerid', get_string('teacher', 'organizer'), $trainers, array('multiple' => 'true'));
+        $group[] = $mform->createElement('static', '', '', $this->_warning_icon('teacherid', isset($defaults['trainerids'])));
+        $mform->setType('trainerid', PARAM_INT);
         $mform->addGroup($group, 'teachergrp', get_string('teacher', 'organizer'), ORGANIZER_SPACING, false);
-        $mform->addElement('hidden', 'mod_teacherid', 0);
-        $mform->setType('mod_teacherid', PARAM_BOOL);
+        if (isset($defaults['trainerids'])) {
+            $mform->setDefault('trainerid', $defaults['trainerids']);
+        }
+        $mform->addElement('hidden', 'mod_trainerid', 0);
+        $mform->setType('mod_trainerid', PARAM_BOOL);
 
         $group = array();
         $group[] = $mform->createElement('advcheckbox', 'teachervisible', get_string('teachervisible', 'organizer'),
@@ -408,21 +408,21 @@ class organizer_edit_slots_form extends moodleform
         return $errors;
     }
 
-    private function _load_teachers() {
+    private function _load_trainers() {
         $context = organizer_get_context();
 
-        $teachersraw = get_users_by_capability($context, 'mod/organizer:leadslots');
+        $trainersraw = get_users_by_capability($context, 'mod/organizer:leadslots');
 
-        $teachers = array();
-        foreach ($teachersraw as $teacher) {
+        $trainers = array();
+        foreach ($trainersraw as $trainer) {
             $a = new stdClass();
-            $a->firstname = $teacher->firstname;
-            $a->lastname = $teacher->lastname;
-            $name = get_string('fullname_template', 'organizer', $a) . " ({$teacher->email})";
-            $teachers[$teacher->id] = $name;
+            $a->firstname = $trainer->firstname;
+            $a->lastname = $trainer->lastname;
+            $name = get_string('fullname_template', 'organizer', $a) . " ({$trainer->email})";
+            $trainers[$trainer->id] = $name;
         }
 
-        return $teachers;
+        return $trainers;
     }
 
     private function _warning_icon($name, $noshow = false) {

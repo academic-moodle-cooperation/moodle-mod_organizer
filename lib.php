@@ -1564,7 +1564,6 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
             'text' => $intro,
             'format' => $organizer->introformat
     );
-    $event->userid = $userid;
     $event->courseid = $organizer->course;
     $event->groupid = $group;
     $event->modulename = 'organizer';
@@ -1574,8 +1573,9 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
     $event->timeduration = $duration;
     $event->visible = 1;
     $event->uuid = $uuid;
-
+    $event->userid = $userid;
     calendar_event::create($event, false);
+
     return $event->id;
 }
 
@@ -1597,7 +1597,6 @@ function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $even
             'text' => $intro,
             'format' => $organizer->introformat
     );
-    $event->userid = $userid;
     $event->courseid = $organizer->course;
     $data->groupid = $group;
     $data->modulename = 'organizer';
@@ -1607,7 +1606,8 @@ function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $even
     $data->timeduration = $duration;
     $data->visible = 1;
     $data->uuid = $uuid;
-
+    $event->userid = $userid;
     $event->update($data, false);
+
     return $event->id;
 }

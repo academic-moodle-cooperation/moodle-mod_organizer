@@ -63,14 +63,13 @@ class organizer_add_slots_form extends moodleform
 
         $mform->addElement('header', 'slotdetails', get_string('slotdetails', 'organizer'));
 
-        $menu = $this->_get_teacher_list();
-        $mform->addElement('autocomplete', 'teacherid', null, $menu, array(
-                "multiple" => "true"
-        ));
-        $mform->setType('teacherid', PARAM_INT);
-        $mform->setDefault('teacherid', $USER->id);
-        $mform->addHelpButton('teacherid', 'teacherid', 'organizer');
-        $mform->addRule('teacherid', null, 'required');
+        $menu = $this->_get_trainer_list();
+        $select = $mform->addElement('select', 'trainerid', get_string('trainerid', 'organizer'), $menu);
+        $select->setMultiple(true);
+        $mform->setType('trainerid', PARAM_INT);
+        $mform->setDefault('trainerid', $USER->id);
+        $mform->addHelpButton('trainerid', 'trainerid', 'organizer');
+        $mform->addRule('trainerid', null, 'required');
 
         $mform->addElement('checkbox', 'teachervisible', get_string('teachervisible', 'organizer'));
         $mform->setType('teachervisible', PARAM_BOOL);
@@ -471,21 +470,21 @@ class organizer_add_slots_form extends moodleform
         return $visibilities;
     }
 
-    private function _get_teacher_list() {
+    private function _get_trainer_list() {
         $context = organizer_get_context();
 
-        $teachersraw = get_users_by_capability($context, 'mod/organizer:leadslots');
+        $trainerraw = get_users_by_capability($context, 'mod/organizer:leadslots');
 
-        $teachers = array();
-        foreach ($teachersraw as $teacher) {
+        $trainers = array();
+        foreach ($trainerraw as $trainer) {
             $a = new stdClass();
-            $a->firstname = $teacher->firstname;
-            $a->lastname = $teacher->lastname;
-            $name = get_string('fullname_template', 'organizer', $a) . " ({$teacher->email})";
-            $teachers[$teacher->id] = $name;
+            $a->firstname = $trainer->firstname;
+            $a->lastname = $trainer->lastname;
+            $name = get_string('fullname_template', 'organizer', $a) . " ({$trainer->email})";
+            $trainers[$trainer->id] = $name;
         }
 
-        return $teachers;
+        return $trainers;
     }
 
     private function _between($num, $lower, $upper) {

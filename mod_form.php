@@ -140,15 +140,24 @@ class mod_organizer_mod_form extends moodleform_mod
         $mform->setDefault('emailteachers', $organizerconfig->emailteachers);
         $mform->addHelpButton('emailteachers', 'emailteachers', 'organizer');
 
-        $calendargroup = array();
-        $calendargroup[] = $mform->createElement(
-            'advcheckbox', 'hidecalendar',
-            get_string('hidecalendar', 'organizer'), null, null, array(0, 1)
+        $calendargroup1 = array();
+        $calendargroup1[] = $mform->createElement(
+                'advcheckbox', 'hidecalendar', get_string('hidecalendar', 'organizer'), null, null, array(0, 1)
         );
-        $mform->setType('calendar', PARAM_INT);
+        $mform->setType('hidecalendar', PARAM_INT);
         $mform->setDefault('hidecalendar', 0);
-           $mform->addGroup($calendargroup, 'calendargroup', get_string('hidecalendar', 'organizer'), null, false);
-        $mform->addHelpButton('calendargroup', 'hidecalendar', 'organizer');
+        $mform->addGroup($calendargroup1, 'hidecalendargroup', get_string('calendarsettings', 'organizer'), null, false);
+        $mform->addHelpButton('hidecalendargroup', 'hidecalendar', 'organizer');
+
+        $calendargroup2 = array();
+        $calendargroup2[] = $mform->createElement(
+                'advcheckbox', 'nocalendareventslotcreation',
+                get_string('nocalendareventslotcreation', 'organizer'), null, null, array(0, 1)
+        );
+        $mform->setType('nocalendareventslotcreation', PARAM_INT);
+        $mform->setDefault('nocalendareventslotcreation', 1);
+        $mform->addGroup($calendargroup2, 'eventscalendargroup', '&nbsp;', null, false);
+        $mform->addHelpButton('eventscalendargroup', 'nocalendareventslotcreation', 'organizer');
 
         if ($organizerconfig->absolutedeadline != 'never') {
             $absdefault = strtotime($organizerconfig->absolutedeadline);

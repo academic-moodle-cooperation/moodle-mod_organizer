@@ -309,7 +309,7 @@ function xmldb_organizer_upgrade($oldversion) {
         $table = new xmldb_table('organizer');
         $field = new xmldb_field('hidecalendar', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'visibility');
 
-        // Conditionally launch add field hidecalender.
+        // Conditionally launch add field hidecalendar.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -429,7 +429,7 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017112201, 'organizer');
     }
 
-    if ($oldversion < 2018012908) {
+    if ($oldversion < 2018012909) {
 
         // Define table organizer_slot_trainer to be created.
         $table = new xmldb_table('organizer_slot_trainer');
@@ -438,6 +438,7 @@ function xmldb_organizer_upgrade($oldversion) {
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('slotid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('trainerid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('eventid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
 
         // Adding keys to table organizer_slot_trainer.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -448,8 +449,8 @@ function xmldb_organizer_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
             // Shift field trainerid of table organizer_slots to the new table organizer_slot_trainer.
-            $query = 'SELECT {organizer_slots}.id slotid, {organizer_slots}.teacherid
-                  FROM {organizer_slots}';
+            $query = 'SELECT {organizer_slots}.id slotid, {organizer_slots}.teacherid, {organizer_slots}.eventid
+                      FROM {organizer_slots}';
             $records = $DB->get_records_sql($query);
 
             $newrecord = new stdClass();
@@ -458,6 +459,7 @@ function xmldb_organizer_upgrade($oldversion) {
 
                 $newrecord->slotid = $record->slotid;
                 $newrecord->trainerid = $record->teacherid;
+                $newrecord->eventid = $record->eventid;
                 $newid = $DB->insert_record('organizer_slot_trainer', $newrecord);
             }
 
@@ -478,7 +480,16 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->drop_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2018012908, 'organizer');
+        // Define field nocalendareventslotcreation to be added to organizer.
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('nocalendareventslotcreation', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'hidecalendar');
+
+        // Conditionally launch add field nocalendareventslotcreation.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2018012909, 'organizer');
     }
 
 

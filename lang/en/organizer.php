@@ -107,8 +107,8 @@ $string['slottimeframesheader'] = 'Specific time frames';
 $string['slottimeframesheader_help'] = 'This section allows for weekday-based definition of time frames which will be filled with appointment slots with properties specified above. There can be more than one time frame per day. If a time frame on Monday is selected, it will generate time slots for every Monday between the starting and the ending date (inclusive).';
 $string['slotdetails'] = 'Slot details';
 $string['back'] = 'Back';
-$string['teacherid'] = 'Teacher';
-$string['teacherid_help'] = 'Select the teacher you want to lead the appointments';
+$string['trainerid'] = 'Teacher';
+$string['trainerid_help'] = 'Select the teacher you want to lead the appointments';
 $string['teacher'] = 'Teacher';
 $string['otherheader'] = 'Other';
 $string['day_0'] = 'Monday';
@@ -1052,8 +1052,11 @@ $string['visibility_anonymous'] = 'Anonymous';
 $string['visibility_slot'] = 'Only visible to slot members';
 $string['visibility_all'] = 'Visible';
 
+$string['calendarsettings'] = 'Calendar settings';
 $string['hidecalendar'] = 'Hide calendar';
 $string['hidecalendar_help'] = 'Check to hide the calendar in this organizer';
+$string['nocalendareventslotcreation'] = 'No calendar events for empty slots';
+$string['nocalendareventslotcreation_help'] = 'If you check this option no calendar events will be created when creating slots. Only appointments will create slot calendar events.';
 
 $string['finalgrade'] = 'This value has been set in the gradebook and can not be changed with the organizer.';
 

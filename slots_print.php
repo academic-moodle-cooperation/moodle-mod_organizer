@@ -291,9 +291,6 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
         case "location":
             $sort = "s.location";
         break;
-        case "teacher":
-            $sort = "teacherfirstname";
-        break;
         case "groupname":
             $sort = "groupname";
         break;
@@ -380,9 +377,15 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                         $row[] = null;
                     } else {
                         $a = new stdClass();
-                        $a->firstname = $entry->teacherfirstname;
-                        $a->lastname = $entry->teacherlastname;
-                        $name = get_string('fullname_template', 'organizer', $a);
+                        $trainers = organizer_get_slot_trainers($entry->slotid, true);
+                        $name = "";
+                        $conn = "";
+                        foreach($trainers as $trainer) {
+                            $a->firstname = $trainer->firstname;
+                            $a->lastname = $trainer->lastname;
+                            $name .= $conn . get_string('fullname_template', 'organizer', $a);
+                            $conn = ", ";
+                        }
                         $row[] = array('data' => $name, 'rowspan' => $rowspan - 1);
                     }
                 break;
