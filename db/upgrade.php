@@ -475,7 +475,7 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->drop_index($table, $index);
         }
 
-        // Conditionally launch drop field teacherid.
+        // Conditionally drop field teacherid.
         if ($dbman->field_exists($table, $field)) {
             $dbman->drop_field($table, $field);
         }

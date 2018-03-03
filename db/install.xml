@@ -38,7 +38,6 @@
         <FIELD NAME="location" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="duration" NEXT="locationlink"/>
         <FIELD NAME="locationlink" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="location" NEXT="maxparticipants"/>
         <FIELD NAME="maxparticipants" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" PREVIOUS="locationlink" NEXT="teacherid"/>
-        <FIELD NAME="teacherid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="maxparticipants" NEXT="visibility"/>
         <FIELD NAME="visibility" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="teacherid" NEXT="availablefrom"/>
         <FIELD NAME="availablefrom" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="visibility" NEXT="timemodified"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="availablefrom" NEXT="notificationtime"/>
@@ -54,7 +53,6 @@
         <KEY NAME="organizer" TYPE="foreign" FIELDS="organizerid" REFTABLE="organizer" REFFIELDS="id" PREVIOUS="primary"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="slots_userid" UNIQUE="false" FIELDS="teacherid" NEXT="slots_eventid"/>
         <INDEX NAME="slots_eventid" UNIQUE="false" FIELDS="eventid" PREVIOUS="slots_userid"/>
       </INDEXES>
     </TABLE>
