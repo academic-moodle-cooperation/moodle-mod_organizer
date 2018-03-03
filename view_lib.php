@@ -82,7 +82,11 @@ function organizer_add_calendar() {
     $now = usergetdate(time());
 
     $calendar = new calendar_information($now['mday'], $now['mon'], $now['year']);
-    $calendar->set_sources($course, $courses);
+    if ($CFG->branch > 33) {
+        $calendar->set_sources($course, $courses);
+    } else {
+        $calendar->prepare_for_view($course, $courses);
+    }
     $renderer = $PAGE->get_renderer('core_calendar');
     $calendar->add_sidecalendar_blocks($renderer, true, 'month');
 }
