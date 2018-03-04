@@ -67,7 +67,7 @@ function organizer_display_form(moodleform $mform, $title) {
 }
 
 function organizer_add_calendar() {
-    global $PAGE, $DB;
+    global $PAGE, $DB, $CFG;
 
     $courseid = optional_param('course', SITEID, PARAM_INT);
 
