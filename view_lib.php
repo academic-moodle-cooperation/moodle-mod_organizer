@@ -487,6 +487,7 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
             $cell = new html_table_cell(get_string("th_{$column}", 'organizer'));
         }
         $cell->header = true;
+        $cell->style = 'text-align: center; vertical-align: middle;';
         $header[] = $cell;
     }
     return $header;
@@ -774,14 +775,14 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
                 THEN " . ORGANIZER_APP_STATUS_NOT_REGISTERED . "
             ELSE " . ORGANIZER_APP_STATUS_INVALID . "
         END AS status, a2.starttime, a2.duration, a2.location, a2.locationlink,
-        a2.teacherid, a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible,
+        a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible,
         a2.slotid, a2.allownewappointments, a2.teacherapplicantid, a2.teacherapplicanttimemodified
 
         FROM {groups} g
         LEFT JOIN
         (SELECT
         a.id, a.groupid, a.allownewappointments, s.id as slotid, s.starttime, s.location,
-        s.locationlink, s.teacherid, s.teachervisible,
+        s.locationlink, s.teachervisible,
         s.duration, a.applicantid, a.comments, s.comments AS teachercomments, a.teacherapplicantid, a.teacherapplicanttimemodified,
         (SELECT MAX(a3.attended) FROM {organizer_slot_appointments} a3
         WHERE a3.groupid = a.groupid GROUP BY a3.slotid ORDER BY a3.slotid DESC LIMIT 1) AS attended
@@ -1002,6 +1003,8 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                         }
                     break;
                     case 'appdetails':
+                        $cell = $row->cells[] = new html_table_cell('-');
+                        $cell->style .= " text-align: center;";
                     break;
                     case 'location':
                         if ($groupentries) {
