@@ -50,7 +50,6 @@ define(
             function check_group_members_only(e) {
                 var groupmodeselect = $(e.target);
 
-                $('.collapseexpand').click();
                 if (groupmodeselect.val() == 1) {
                     $('#id_groupmode').val('2');
                     warningdiv.show();

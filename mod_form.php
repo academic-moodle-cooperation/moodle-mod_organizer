@@ -195,6 +195,10 @@ class mod_organizer_mod_form extends moodleform_mod
             );
             $mform->insertElementBefore($noscriptwarning, 'grade');
         }
+
+        $mform->setExpanded('organizercommon');
+        $mform->setExpanded('modstandardelshdr');
+
     }
 
     public function validation($data, $files) {
