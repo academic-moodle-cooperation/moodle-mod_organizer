@@ -108,14 +108,9 @@ class mod_organizer_mod_form extends moodleform_mod
         $mform->setDefault('relativedeadline', $organizerconfig->relativedeadline);
         $mform->addHelpButton('relativedeadline', 'relativedeadline', 'organizer');
 
-        $group = array();
-        $group[] = $mform->createElement(
-            'advcheckbox', 'isgrouporganizer',
-            get_string('isgrouporganizer', 'organizer'), null, null, array(0, 1)
-        );
-        $mform->setType('isgrouporganizer', PARAM_INT);
-        $mform->addGroup($group, 'isgrouporganizergroup', get_string('isgrouporganizer', 'organizer'), null, false);
-        $mform->addHelpButton('isgrouporganizergroup', 'isgrouporganizer', 'organizer');
+        $mform->addElement('select', 'isgrouporganizer', get_string('isgrouporganizer', 'organizer'), $this->_get_groupmodes());
+        $mform->setDefault('isgrouporganizer', 0);
+        $mform->addHelpButton('isgrouporganizer', 'isgrouporganizer', 'organizer');
 
         $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->_get_visibilities());
         $mform->setType('visibility', PARAM_INT);
@@ -291,6 +286,17 @@ class mod_organizer_mod_form extends moodleform_mod
         $visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('visibility_slot', 'organizer');
 
         return $visibilities;
+    }
+
+    private function _get_groupmodes() {
+
+        $groupmodes = array();
+        $groupmodes[ORGANIZER_GROUPMODE_NOGROUPS] = get_string('groupmodenogroups', 'organizer');
+        $groupmodes[ORGANIZER_GROUPMODE_EXISTINGGROUPS] = get_string('groupmodeexistingcoursegroups', 'organizer');
+        $groupmodes[ORGANIZER_GROUPMODE_NEWGROUPSLOT] = get_string('groupmodeslotgroups', 'organizer');
+        $groupmodes[ORGANIZER_GROUPMODE_NEWGROUPBOOKING] = get_string('groupmodeslotgroupsappointment', 'organizer');
+
+        return $groupmodes;
     }
 
 }

@@ -308,7 +308,7 @@ function organizer_add_event_slot($cmid, $slot, $userid = null, $eventid = null)
     $a->organizername = $organizer->name;
     $a->organizerlink = html_writer::link($organizerurl, $organizer->name);
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
         $app = reset($apps);
         if (isset($slot->eventid) && $app) {
@@ -393,7 +393,7 @@ function organizer_add_event_appointment($cmid, $appointment) {
     $a->organizername = $organizer->name;
     $a->organizerlink = html_writer::link($organizerurl, $organizer->name);
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $a->appwith = get_string('eventappwith:group', 'organizer');
         $a->with = get_string('eventwith', 'organizer');
         $group = groups_get_group($appointment->groupid);
@@ -723,7 +723,7 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
     $slotid = $slotobj->get_slot()->id;
 
     $ok = true;
-    if ($organizer->isgrouporganizer && $groupid) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS && $groupid) {
         $memberids = $DB->get_fieldset_select(
             'groups_members', 'userid', "groupid = :groupid",
             array('groupid' => $groupid)
@@ -1113,7 +1113,7 @@ function organizer_is_group_mode() {
     $id = optional_param('id', 0, PARAM_INT);
     $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
     $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
-    return $organizer->isgrouporganizer;
+    return $organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS;
 }
 
 function organizer_is_queueable() {

@@ -38,7 +38,15 @@ $string['pluginname'] = 'Terminplaner';
 $string['crontaskname'] = 'Terminplaner cron Job';
 $string['search:activity'] = 'Terminplaner - Aktivitätsinformation';
 $string['isgrouporganizer'] = 'Gruppentermine';
-$string['isgrouporganizer_help'] = "Ankreuzen um den Terminplaner im Gruppenmodus zu verwenden. Statt einzelner Benutzer/innen können sich Gruppen für Termine anmelden. Wenn nicht angekreuzt ist es trotzdem möglich mehrere Benutzer/innen zu einem einzelnen Termin zuzulassen.";
+$string['isgrouporganizer_help'] = 'Ankreuzen, um den Terminplaner im Gruppenmodus zu verwenden.
+Modus \'Existierende Kurs-Gruppen verwenden\': Ein Mitglied einer Kurs-Gruppe kann einen Termin für die ganze Gruppe buchen.
+Modus \'Gruppen per Slot erzeugen\': Beim Anlegen eines Slots wird eine Kurs-Gruppe für den Slot angelegt.
+Modus \'Gruppen per gebuchten Slot erzeugen\': Bei der ersten Buchung eines Slots wird eine Kurs-Gruppe für den Slot angelegt.
+';
+$string['groupmodenogroups'] = 'Kein Gruppenmodus';
+$string['groupmodeexistingcoursegroups'] = 'Existierende Kurs-Gruppen verwenden';
+$string['groupmodeslotgroups'] = 'Gruppen per Slot erzeugen';
+$string['groupmodeslotgroupsappointment'] = 'Gruppen per gebuchten Slot erzeugen';
 $string['appointmentdatetime'] = 'Datum & Zeit';
 $string['multipleappointmentstartdate'] = 'Startdatum';
 $string['multipleappointmentenddate'] = 'Enddatum';

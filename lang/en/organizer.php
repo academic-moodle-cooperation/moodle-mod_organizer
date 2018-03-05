@@ -38,7 +38,15 @@ $string['pluginname'] = 'Organizer';
 $string['crontaskname'] = 'Organizer cron job';
 $string['search:activity'] = 'Organizer - activity information';
 $string['isgrouporganizer'] = 'Group appointments';
-$string['isgrouporganizer_help'] = "Check this if you want this organizer to deal with groups instead of individual users. Note that, if left unchecked, the organizer still allows more users to attend the same appointment.";
+$string['isgrouporganizer_help'] = 'Check this if you want this organizer to deal with groups instead of individual users.
+Modus \'Use existing groups\': A single groupmember books a slot for the group.
+Modus \'Group creation per empty slot\': A course group is created for every new slot.
+Modus \'Group creation per booked slot\': A course group is created for every booked slot.
+';
+$string['groupmodenogroups'] = 'No group appointments';
+$string['groupmodeexistingcoursegroups'] = 'Use existing course groups';
+$string['groupmodeslotgroups'] = 'Group creation per empty slot';
+$string['groupmodeslotgroupsappointment'] = 'Group creation per booked slot';
 $string['appointmentdatetime'] = 'Date & time';
 $string['multipleappointmentstartdate'] = 'Start date';
 $string['multipleappointmentenddate'] = 'End date';

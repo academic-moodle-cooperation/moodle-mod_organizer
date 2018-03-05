@@ -394,7 +394,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                         $row[] = null;
                     } else {
                         $groupname = isset($entry->groupname) ? $entry->groupname : '';
-                        if ($organizer->isgrouporganizer) {
+                        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                             $groupname .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                         }
                         $row[] = array('data' => $groupname, 'rowspan' => $rowspan - 1);
@@ -406,7 +406,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     $a->firstname = $entry->firstname;
                     $a->lastname = $entry->lastname;
                     $name = get_string('fullname_template', 'organizer', $a);
-                    if (!$organizer->isgrouporganizer) {
+                    if (!$organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                         $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                     }
                     $row[] = array('data' => $name, 'rowspan' => 0);

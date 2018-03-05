@@ -532,7 +532,7 @@ function organizer_get_last_group_appointment($organizer, $groupid) {
 function organizer_get_counters($organizer) {
     global $DB;
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
         $params = array('groupingid' => $cm->groupingid);
         $query = 'SELECT {groups}.* FROM {groups}
@@ -620,7 +620,7 @@ function organizer_get_eventaction_instance_trainer($organizer) {
 
     $a = organizer_get_counters($organizer);
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         if ($a->attended == 0) {
             $str = get_string('mymoodle_registered_group_short', 'organizer', $a);
         } else {
@@ -643,7 +643,7 @@ function organizer_get_eventaction_instance_student($organizer) {
     $app = organizer_get_next_user_appointment($organizer);
 
     if ($app) {
-        if ($organizer->isgrouporganizer) {
+        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $group = organizer_fetch_group($organizer);
             $a = new stdClass();
             $a->groupname = $group->name;
@@ -652,7 +652,7 @@ function organizer_get_eventaction_instance_student($organizer) {
             $str = get_string('mymoodle_reg_slot', 'organizer');
         }
     } else {
-        if ($organizer->isgrouporganizer) {
+        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $group = organizer_fetch_group($organizer);
             $a = new stdClass();
             $a->groupname = $group->name;
@@ -672,7 +672,7 @@ function organizer_get_eventaction_student($organizer) {
 
     $eventstr = "";
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $group = organizer_fetch_group($organizer);
 
         if ($app && isset($app->attended) && (int) $app->attended === 1) {
@@ -885,7 +885,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
         $element = "p";
     }
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $group = organizer_fetch_group($organizer);
         $app = organizer_get_last_user_appointment($organizer);
 
@@ -1060,7 +1060,7 @@ function organizer_get_overview_trainer($organizer) {
 
     $a = organizer_get_counters($organizer);
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $reg = get_string('mymoodle_registered_group', 'organizer', $a);
         $att = get_string('mymoodle_attended_group', 'organizer', $a);
 

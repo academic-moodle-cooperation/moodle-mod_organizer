@@ -48,7 +48,7 @@ function organizer_get_last_user_appointment($organizer, $userid = null, $mergeg
     $apps = $DB->get_records_sql($query, $paramssql);
     $app = reset($apps);
 
-    if ($organizer->isgrouporganizer && $mergegroupapps && $app !== false) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
         $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
         $query = "SELECT a.* FROM {organizer_slot_appointments} a
                 INNER JOIN {organizer_slots} s ON a.slotid = s.id
@@ -97,7 +97,7 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
     $apps = $DB->get_records_sql($query, $paramssql);
 
     $app = reset($apps);
-    if ($organizer->isgrouporganizer && $mergegroupapps && $app !== false) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
         $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
         $query = "SELECT a.* FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id
@@ -142,7 +142,7 @@ function organizer_get_next_user_appointment($organizer, $userid = null) {
 
     $todaymidnight = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         require_once('locallib.php');
         if ($group = organizer_fetch_user_group($userid, $organizer->id)) {
             $paramssql = array('organizerid' => $organizer->id, 'groupid' => $group->id, 'todaymidnight' => $todaymidnight);
@@ -249,7 +249,7 @@ class organizer_slot
     public function is_full() {
         $this->load_organizer();
         $this->load_appointments();
-        if ($this->organizer->isgrouporganizer) {
+        if ($this->organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             return count($this->apps) > 0;
         } else {
             return count($this->apps) >= $this->slot->maxparticipants;
@@ -284,7 +284,7 @@ class organizer_slot
     public function organizer_user_has_access() {
         $this->load_organizer();
         global $DB;
-        if ($this->organizer->isgrouporganizer) {
+        if ($this->organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $moduleid = $DB->get_field('modules', 'id', array('name' => 'organizer'));
             $courseid = $DB->get_field(
                 'course_modules', 'course',

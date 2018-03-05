@@ -122,7 +122,7 @@ class organizer_add_slots_form extends moodleform
         global $DB;
         $cm = get_coursemodule_from_id('organizer', $data['id'], 0, false, MUST_EXIST);
         $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
-        if ($organizer->isgrouporganizer) {
+        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $mform->addElement('hidden', 'isgrouporganizer', '1');
             $mform->setType('isgrouporganizer', PARAM_BOOL);
 
@@ -217,7 +217,7 @@ class organizer_add_slots_form extends moodleform
         $params = new \stdClass();
         $params->totalslots = $totalslots;
         $params->displayallslots = $displayallslots;
-        if ($organizer->isgrouporganizer) {
+        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $params->totaltotal = get_string("totaltotal_groups", "organizer");
             $params->totalday = get_string("totalday_groups", "organizer");
         } else {

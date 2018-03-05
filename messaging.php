@@ -107,7 +107,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $courseurl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id));
     $strings->courselink = html_writer::link($courseurl, $course->fullname);
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         if ($group = organizer_fetch_user_group($receiver->id, $organizerid)) {
             $groupname = organizer_fetch_groupname($group->id);
             $strings->groupname = $groupname;

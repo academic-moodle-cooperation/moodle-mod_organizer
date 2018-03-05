@@ -48,25 +48,13 @@ define(
             warningdiv.hide();
 
             function check_group_members_only(e) {
-                var groupcheckbox = $(e.target);
-                var groupmembersonlycheckbox = $('#id_error_groupingid');
+                var groupmodeselect = $(e.target);
 
-                if (groupcheckbox.is(':checked') == true) {
-                    if (groupmembersonlycheckbox) {
-                        groupmembersonlycheckbox.prop('checked', true);
-                    }
-                    if ($('.hide.advanced') !== null) {
-                        $('input[name="mform_showadvanced"]').click();
-                    }
+                $('.collapseexpand').click();
+                if (groupmodeselect.val() == 1) {
                     $('#id_groupmode').val('2');
                     warningdiv.show();
                 } else {
-                    if (groupmembersonlycheckbox) {
-                        groupmembersonlycheckbox.prop('checked', false);
-                    }
-                    if ($('.hide.advanced') !== null) {
-                        $('input[name="mform_showadvanced"]').click();
-                    }
                     $('#id_groupmode').val('0');
                     warningdiv.hide();
                 }

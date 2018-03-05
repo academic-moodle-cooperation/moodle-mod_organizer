@@ -100,7 +100,7 @@ if ($data = $mform->get_data()) {
            );
            $appointmentstotal = $appointmentstotal->total;
 
-        if ($organizer->isgrouporganizer) {
+        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $redirecturl->param('messages[]', 'message_info_slots_deleted_group');
 
             $groups = groups_get_all_groups($course->id, 0, $cm->groupingid);
@@ -129,7 +129,7 @@ if ($data = $mform->get_data()) {
         $redirecturl->param('data[notregistered]', $notregistered); // Anzahl noch nicht angemeldeter studenten.
 
         $prefix = ($notregistered > $freetotal) ? 'warning' : 'info';
-        $suffix = ($organizer->isgrouporganizer) ? '_group' : '';
+        $suffix = ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) ? '_group' : '';
 
         $redirecturl->param('messages[1]', 'message_' . $prefix . '_available' . $suffix);
 
