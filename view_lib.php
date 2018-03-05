@@ -1018,7 +1018,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                     case 'teacher':
                         if ($groupentries) {
                             $cell = $row->cells[] = new html_table_cell(
-                                organizer_trainer_data($params, $entry, organizer_get_slot_trainers($entry->id)));
+                                organizer_trainer_data($params, $entry, organizer_get_slot_trainers($entry->slotid)));
                             $cell->style .= " text-align: left;";
                         } else {
                             $cell = $row->cells[] = new html_table_cell('-');
