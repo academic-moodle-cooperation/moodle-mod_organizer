@@ -1034,6 +1034,7 @@ $string['print_return'] = 'Zurück zur Terminansicht';
 
 $string['message_error_slot_full_single'] = 'Dieser Slot hat keine freien Plätze mehr!';
 $string['message_error_slot_full_group'] = 'Dieser Slot ist vergeben!';
+$string['message_error_groupsynchronization'] = 'Die Synchronisierung der Termin-Gruppen schlug fehl!';
 
 $string['message_error_unknown_unqueue'] = 'Ihr Wartelisten-Eintrag konnte nicht entfernt werden! Unbekannter Fehler.';
 $string['message_error_unknown_unregister'] = 'Ihre Registrierung konnte nicht entfernt werden! Unbekannter Fehler.';

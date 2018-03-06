@@ -2172,8 +2172,7 @@ function organizer_get_reg_button($type, $slotid, $params, $disabled = false) {
     );
 
     return $OUTPUT->single_button(
-        $actionurl, get_string("btn_$type", 'organizer'), 'post',
-        array('disabled' => $disabled)
+        $actionurl, get_string("btn_$type", 'organizer'), 'post', array('disabled' => $disabled)
     );
 }
 
@@ -2368,26 +2367,4 @@ function organizer_get_entries_queue_group($slot) {
     }
 
     return $output;
-}
-
-function organizer_get_slot_trainers($slotid, $withname = false) {
-    global $DB;
-
-    if ($withname) {
-        $paramssql = array('slotid' => $slotid);
-        $slotquery = 'SELECT u.id, u.firstname, u.lastname, u.email
-				FROM {organizer_slot_trainer} t
-				INNER JOIN {user} u ON t.trainerid = u.id
-				WHERE t.slotid = :slotid';
-        $trainers = $DB->get_records_sql($slotquery, $paramssql);
-    } else {
-        if ($trainers = $DB->get_fieldset_select(
-                'organizer_slot_trainer', 'trainerid', 'slotid = :slotid', array('slotid' => $slotid)))
-        {
-            sort($trainers);
-        }
-
-    }
-
-    return $trainers;
 }

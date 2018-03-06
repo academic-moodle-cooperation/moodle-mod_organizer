@@ -1032,6 +1032,7 @@ $string['print_return'] = 'Return to slot overview';
 
 $string['message_error_slot_full_single'] = 'This timeslot has no free places left!';
 $string['message_error_slot_full_group'] = 'This timeslot is already taken!';
+$string['message_error_groupsynchronization'] = 'Slotgroup synchronization failed!';
 
 $string['message_error_unknown_unqueue'] = 'Your waiting list entry could not be removed! Unknown error.';
 $string['message_error_unknown_unregister'] = 'Your registration could not be removed! Unknown error.';

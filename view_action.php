@@ -162,7 +162,6 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
             }
         }
         $event->trigger();
-
     } else {
         if (organizer_is_group_mode()) {
             $redirecturl->param('messages[]', 'message_error_slot_full_group');
@@ -220,8 +219,6 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
             }
         }
         $event->trigger();
-
-
     } else {
         if ($action == ORGANIZER_ACTION_UNREGISTER) {
             $redirecturl->param('messages[]', 'message_error_unknown_unregister');
@@ -229,7 +226,6 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
             $redirecturl->param('messages[]', 'message_error_unknown_unqueue');
         }
     }
-
 
     redirect($redirecturl);
 
