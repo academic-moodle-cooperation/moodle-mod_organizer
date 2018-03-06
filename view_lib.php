@@ -804,7 +804,7 @@ function organizer_organizer_get_status_table_entries($params) {
 
     $studentids = array();
 
-    if (!$organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+    if ($organizer->isgrouporganizer!=ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $students = get_enrolled_users($context, 'mod/organizer:register');
         foreach ($students as $student) {
             $studentids[] = $student->id;
@@ -1065,8 +1065,14 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                         $cell = $row->cells[] = new html_table_cell(organizer_get_status_icon_new($entry->status));
                     break;
                     case 'datetime':
-                        $cell = $row->cells[] = new html_table_cell(organizer_date_time($entry));
-                        $cell->style .= " text-align: left;";
+                        $text = organizer_date_time($entry);
+                        if ($text != "-") {
+                            $cell = $row->cells[] = new html_table_cell($text);
+                            $cell->style .= " text-align: left;";
+                        } else {
+                            $cell = $row->cells[] = new html_table_cell("-");
+                            $cell->style = " text-align: center;";
+                        }
                     break;
                     case 'appdetails':
                         if ($queueable) {
@@ -1075,18 +1081,33 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                             $outcell = '';
                         }
                         $outcell .= organizer_reg_organizer_app_details($organizer, $entry->id, $groupmode);
-                        $cell = $row->cells[] = new html_table_cell($outcell);
+                        if ($outcell != "-") {
+                            $cell = $row->cells[] = new html_table_cell($outcell);
+                            $cell->style = " text-align: left;";
+                        } else {
+                            $cell = $row->cells[] = new html_table_cell("-");
+                            $cell->style = " text-align: center;";
+                        }
                     break;
                     case 'location':
-                        $cell = $row->cells[] = new html_table_cell(organizer_location_link($entry));
+                        $text = organizer_location_link($entry);
+                        if ($text != "-") {
+                            $cell = $row->cells[] = new html_table_cell($text);
+                            $cell->style = " text-align: left;";
+                        } else {
+                            $cell = $row->cells[] = new html_table_cell("-");
+                            $cell->style = " text-align: center;";
+                        }
                     break;
                     case 'teacher':
                         if ($entry->slotid) {
-                            $outcell = organizer_trainer_data($params, $entry, organizer_get_slot_trainers($entry->slotid));
+                            $cell = $row->cells[] = new html_table_cell(
+                                    organizer_trainer_data($params, $entry, organizer_get_slot_trainers($entry->slotid)));
+                            $cell->style = " text-align: left;";
                         } else {
-                            $outcell = '-';
+                            $cell = $row->cells[] = new html_table_cell("-");
+                            $cell->style = " text-align: center;";
                         }
-                        $cell = $row->cells[] = new html_table_cell($outcell);
                     break;
                     case 'actions':
                         $cell = $row->cells[] = new html_table_cell(organizer_teacher_action_new($params, $entry, $context));

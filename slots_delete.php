@@ -76,11 +76,11 @@ if ($data = $mform->get_data()) {
     if (isset($slots)) {
         $notified = 0;
         foreach ($slots as $slotid) {
-            $notified += organizer_delete_appointment_slot($slotid);
             if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_NEWGROUPSLOT ||
                     $organizer->isgrouporganizer==ORGANIZER_GROUPMODE_NEWGROUPBOOKING) {
                 organizer_delete_coursegroup(null, $slotid);
             }
+            $notified += organizer_delete_appointment_slot($slotid);
         }
 
         $slotsdeleted = count($slots);
