@@ -1416,8 +1416,8 @@ function organizer_create_coursegroup($slot) {
 function organizer_create_coursename($name, $time, $courseid) {
     global $DB;
 
-    $coursename = str_replace("_", "-", $name) . "_";
-    $coursename .= date('d_m_Y_H_i', $time);
+    $coursename = str_replace("_", "-", $name) . " ";
+    $coursename .= date('Y-m-d H:i', $time);
     $params = array('coursename' => '%' . $coursename . '%', 'courseid' => $courseid);
     $query = "SELECT name FROM {groups}
               WHERE courseid = :courseid AND " . $DB->sql_like('name', ':coursename') . "
