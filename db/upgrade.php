@@ -403,9 +403,7 @@ function xmldb_organizer_upgrade($oldversion) {
             $update = $DB->update_record('event', $event);
             // Insert event-ds for the organizer instance, if there is none yet.
             if (!$DB->get_field(
-                'event', 'id',
-                array ('modulename' => 'organizer',
-                            'instance' => $record->organizerid,
+                'event', 'id', array ('modulename' => 'organizer', 'instance' => $record->organizerid,
                 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE)
             )) {
                 organizer_change_event_instance($record->organizerid);

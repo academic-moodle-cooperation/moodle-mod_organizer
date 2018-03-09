@@ -65,6 +65,7 @@ $string['allowsubmissionsfromdatesummary'] = 'This organizer will accept registr
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The organizer details and registration form will be available from <strong>{$a}</strong>';
 $string['duedate'] = 'Due date';
 $string['availability'] = 'Availability';
+$string['allowsubmissionstodate'] = 'Registration end';
 
 $string['eventslotviewed'] = 'Appointments tab viewed.';
 $string['eventregistrationsviewed'] = 'Registrations tab viewed.';

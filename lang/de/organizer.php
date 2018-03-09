@@ -65,6 +65,7 @@ $string['allowsubmissionsfromdatesummary'] = 'Anmeldungen möglich ab <strong>{$
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'Die Terminplanerdetails und die Registrierung stehen zur Verfügung ab <strong>{$a}</strong>';
 $string['duedate'] = 'Abgabetermin';
 $string['availability'] = 'Verfügbarkeit';
+$string['allowsubmissionstodate'] = 'Anmeldeende';
 
 $string['eventslotviewed'] = 'Termine angezeigt.';
 $string['eventregistrationsviewed'] = 'Anmeldungen angezeigt.';

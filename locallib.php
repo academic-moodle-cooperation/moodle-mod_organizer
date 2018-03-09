@@ -363,7 +363,7 @@ function organizer_add_event_slot($cmid, $slot, $userid = null, $eventid = null)
 
     if ($eventid) {
         return organizer_change_calendarevent(
-            $eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_SLOT,
+            array($eventid), $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_SLOT,
             $userid, $slot->starttime, $slot->duration, 0, $slot->id
         );
     } else {
@@ -453,7 +453,7 @@ function organizer_add_event_appointment($cmid, $appointment) {
 
     if (isset($appointment->eventid)) {
         return organizer_change_calendarevent(
-            $appointment->eventid, $organizer, $eventtitle, $eventdescription,
+            array($appointment->eventid), $organizer, $eventtitle, $eventdescription,
             ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT, $appointment->userid, $slot->starttime, $slot->duration, $groupid, 0
         );
     } else {

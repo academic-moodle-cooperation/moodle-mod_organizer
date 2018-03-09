@@ -111,12 +111,17 @@ function organizer_update_instance($organizer) {
 
     organizer_grade_item_update($organizer);
 
-    $eventid = $DB->get_field(
-        'event', 'id',
-        array('instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE)
-    );
+    $params = array('modulename' => 'organizer', 'instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE);
 
-    organizer_change_event_instance($organizer->id, $eventid);
+    $query = 'SELECT id
+                    FROM {event} 
+                    WHERE modulename = :modulename
+                    AND instance = :instance
+                    AND eventtype = :eventtype';
+
+    $eventids = $DB->get_fieldset_sql($query, $params);
+
+    organizer_change_event_instance($organizer->id, $eventids);
 
     return $DB->update_record('organizer', $organizer);
 }
@@ -154,7 +159,13 @@ function organizer_delete_instance($id) {
         $DB->delete_records('organizer_slots', array('id' => $slot->id));
     }
 
+    if (ORGANIZER_DELETE_EVENTS) {
+        $DB->delete_records('event', array(
+                'modulename' => 'organizer', 'instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE));
+    }
+
     $DB->delete_records('organizer', array('id' => $organizer->id));
+
 
     organizer_grade_item_update($organizer);
 
@@ -1528,7 +1539,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
     return $isvisible;
 }
 
-function organizer_change_event_instance($organizerid, $eventid = false) {
+function organizer_change_event_instance($organizerid, $eventids = array()) {
     global $DB, $USER;
 
     $organizer = $DB->get_record('organizer', array('id' => $organizerid));
@@ -1536,11 +1547,11 @@ function organizer_change_event_instance($organizerid, $eventid = false) {
     $eventtitle = $organizer->name;
     $eventdescription = $organizer->intro;
 
-    if ($eventid) {
+    if ($eventids) {
         $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : time();
         $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
         return organizer_change_calendarevent(
-            $eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
+            $eventids, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
             $USER->id, $startdate, $duration, 0, $organizerid
         );
     } else {
@@ -1563,7 +1574,6 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
     $event = new stdClass();
     $event->eventtype = $eventtype;
     $event->type = CALENDAR_EVENT_TYPE_ACTION;
-    $event->name = $eventtitle;
     $intro = strip_pluginfile_content($eventdescription);
     $event->description = array(
             'text' => $intro,
@@ -1573,30 +1583,43 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
     $event->groupid = $group;
     $event->modulename = 'organizer';
     $event->instance = $organizer->id;
-    $event->timestart = $timestart;
-    $event->timesort = $timestart;
-    $event->timeduration = $duration;
     $event->visible = 1;
     $event->uuid = $uuid;
     $event->userid = $userid;
-    calendar_event::create($event, false);
 
+    if ($eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {   // If type is instance.
+        $event->timestart = $timestart;
+        $event->timesort = $timestart;
+        $event->timeduration = 0;
+        $event->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $eventtitle;
+        calendar_event::create($event, false);
+        unset($event->id);
+        $event->timestart = $timestart+$duration;
+        $event->timesort = $timestart+$duration;
+        $event->timeduration = 0;
+        $event->name = get_string('allowsubmissionstodate', 'organizer') . ": " . $eventtitle;
+        calendar_event::create($event, false);
+    } else {
+        $event->timestart = $timestart;
+        $event->timesort = $timestart;
+        $event->timeduration = $duration;
+        $event->name = $eventtitle;
+        calendar_event::create($event, false);
+    }
     return $event->id;
 }
 
-function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
+function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
     $timestart, $duration, $group, $uuid
 ) {
     global $CFG;
 
     include_once($CFG->dirroot.'/calendar/lib.php');
 
-    $event = calendar_event::load($eventid);
-
+    $event = calendar_event::load($eventids[0]);
     $data = new stdClass();
     $data->eventtype = $eventtype;
     $data->type = CALENDAR_EVENT_TYPE_ACTION;
-    $data->name = $eventtitle;
     $intro = strip_pluginfile_content($eventdescription);
     $data->description = array(
             'text' => $intro,
@@ -1606,13 +1629,28 @@ function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $even
     $data->groupid = $group;
     $data->modulename = 'organizer';
     $data->instance = $organizer->id;
-    $data->timestart = $timestart;
-    $data->timesort = $timestart;
-    $data->timeduration = $duration;
     $data->visible = 1;
     $data->uuid = $uuid;
     $event->userid = $userid;
-    $event->update($data, false);
 
-    return $event->id;
+    if (!$eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE && count($eventids)==1) {   // If not type instance.
+        $data->timestart = $timestart;
+        $data->timesort = $timestart;
+        $data->timeduration = $duration;
+        $data->name = $eventtitle;
+        $event->update($data, false);
+    } else {
+        $data->timestart = $timestart;
+        $data->timesort = $timestart;
+        $data->timeduration = 0;
+        $data->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $eventtitle;
+        $event->update($data, false);
+        $data->timestart = $timestart+$duration;
+        $data->timesort = $timestart+$duration;
+        $data->timeduration = 0;
+        $data->name = get_string('allowsubmissionstodate', 'organizer') . ": " . $eventtitle;
+        $event->update($data, false);
+    }
+
+    return true;
 }
