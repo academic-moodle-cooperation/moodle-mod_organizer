@@ -126,13 +126,18 @@ function organizer_add_appointment_slots($data) {
     $startdate = $data->startdate;
     $enddate = $data->enddate;
 
-    for ($daydate = $startdate; $daydate <= $enddate; $daydate += 604800) {
+    for ($daydate = $startdate; $daydate <= $enddate; $daydate += 86400) {
 
+        $weekday = date('w', strtotime($daydate));
         foreach ($data->newslots as $slot) {
-            if ($slot['day'] == -1) {
+            if ($slot['day'] != $weekday || $slot['day'] == -1 || $slot['dayto'] == -1 ) {
                 continue;
             }
             $slot['date'] = organizer_get_day_date($slot['day'], $daydate);
+            $slot['dateto'] = organizer_get_day_date($slot['dayto'], $daydate);
+            while ($slot['dateto'] <= $slot['date']) {
+                $slot['dateto'] = strtotime($slot['dateto'] + '7 day');
+            }
             if ($slot['date'] < $startdate || $slot['date'] > $enddate) {
                 continue;
             }
@@ -232,9 +237,9 @@ function organizer_get_slotstarttime($slotdate, $time) {
     return $starttime;
 }
 
-function organizer_get_day_date($dayindex, $dateday) {
+function organizer_get_day_date($day, $dateday) {
 
-    switch($dayindex) {
+    switch($day) {
         case 0:  // Monday.
             if (date('l', $dateday) == 'Monday') {
                 $date = $dateday;
@@ -284,6 +289,94 @@ function organizer_get_day_date($dayindex, $dateday) {
                 $date = strtotime("next Sunday", $dateday);
             }
         break;
+        default:
+            $date = null;
+    }
+
+    return $date;
+}
+
+function organizer_get_dayto_date($dayto, $datefrom) {
+
+
+    switch($dayto) {
+        case 0:  // Monday.
+            if (date('l', $datefrom) == 'Monday') {
+                while ($dateto) {
+                    $date = strtotime("next Monday", $datefrom);
+                } else {
+                    $date = $datefrom;
+                }
+            } else {
+                $date = strtotime("next Monday", $datefrom);
+            }
+            break;
+        case 1:  // Tuesday.
+            if (date('l', $datefrom) == 'Tuesday') {
+                if ($timetogreater) {
+                    $date = strtotime("next Tuesday", $datefrom);
+                } else {
+                    $date = $datefrom;
+                }
+            } else {
+                $date = strtotime("next Tuesday", $datefrom);
+            }
+            break;
+        case 2:  // Wednesday.
+            if (date('l', $datefrom) == 'Wednesday') {
+                if ($timetogreater) {
+                    $date = strtotime("next Wednesday", $datefrom);
+                } else {
+                    $date = $datefrom;
+                }
+            } else {
+                $date = strtotime("next Wednesday", $datefrom);
+            }
+            break;
+        case 3:  // Thursday.
+            if (date('l', $datefrom) == 'Thursday') {
+                if ($timetogreater) {
+                    $date = strtotime("next Thursday", $datefrom);
+                } else {
+                    $date = $datefrom;
+                }
+            } else {
+                $date = strtotime("next Thursday", $datefrom);
+            }
+            break;
+        case 4:  // Friday.
+            if (date('l', $datefrom) == 'Friday') {
+                if ($timetogreater) {
+                    $date = strtotime("next Friday", $datefrom);
+                } else {
+                    $date = $datefrom;
+                }
+            } else {
+                $date = strtotime("next Friday", $datefrom);
+            }
+            break;
+        case 5:  // Saturday.
+            if (date('l', $datefrom) == 'Saturday') {
+                if ($timetogreater) {
+                    $date = strtotime("next Monday", $datefrom);
+                } else {
+                    $date = $datefrom;
+                }
+            } else {
+                $date = strtotime("next Saturday", $datefrom);
+            }
+            break;
+        case 6:  // Sunday.
+            if (date('l', $datefrom) == 'Sunday') {
+                if ($timetogreater) {
+                    $date = strtotime("next Monday", $datefrom);
+                } else {
+                    $date = $datefrom;
+                }
+            } else {
+                $date = strtotime("next Sunday", $datefrom);
+            }
+            break;
         default:
             $date = null;
     }

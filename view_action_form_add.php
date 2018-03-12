@@ -98,7 +98,6 @@ class organizer_add_slots_form extends moodleform
         $mform->setDefault('duration', 900);
         $duration = $mform->getElement('duration')->getElements();
         $duration[1]->removeOption(1);
-        $duration[1]->removeOption(86400);
         $duration[1]->removeOption(604800);
         $mform->addHelpButton('duration', 'duration', 'organizer');
 
@@ -110,7 +109,6 @@ class organizer_add_slots_form extends moodleform
         $mform->setDefault('gap', 0);
         $duration = $mform->getElement('gap')->getElements();
         $duration[1]->removeOption(1);
-        $duration[1]->removeOption(86400);
         $duration[1]->removeOption(604800);
         $mform->addHelpButton('gap', 'gap', 'organizer');
 
@@ -285,18 +283,13 @@ class organizer_add_slots_form extends moodleform
 
         // For new slots.
         if (isset($data['newslots'])) {
-            $invalidslots = array();
             $slots = $data['newslots'];
 
             $slotcount = 0;
 
-            // Slot "from" after slot "to"?
+            // Count used slots
             for ($i = 0; $i < count($slots); $i++) {
                 $slot = $slots[$i];
-                if ($slot['day'] != -1 && ($slot['from'] >= $slot['to'])) {
-                    $errors['slotgroup' . $i] = get_string('err_fromto', 'organizer');
-                    $invalidslots[] = $i;
-                }
                 if ($slot['day'] != -1) {
                     $slotcount++;
                 }
@@ -305,13 +298,10 @@ class organizer_add_slots_form extends moodleform
             // Are there overlapping slots? Is the gap considered?
             for ($i = 0; $i < count($slots); $i++) {
                 $currentslot = $slots[$i];
-                if (in_array($i, $invalidslots)) {
-                    continue;
-                }
                 $message = ' ';
                 for ($j = 0; $j < $i; $j++) {
                     $otherslot = $slots[$j];
-                    if (!in_array($j, $invalidslots) && $currentslot['day'] == $otherslot['day']
+                    if ($currentslot['day'] == $otherslot['day']
                         && ($this->_between($currentslot['from'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
                         || $this->_between($currentslot['to'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
                         || $this->_between($otherslot['from'], $currentslot['from'] - $gap, $currentslot['to'] + $gap)
@@ -443,6 +433,11 @@ class organizer_add_slots_form extends moodleform
         $slotgroup[] = $mform->createElement('select', "{$name}[from]", '', $this->pickeroptions);
         $mform->setType("{$name}[from]", PARAM_INT);
         $mform->setDefault("{$name}[from]", 8 * 3600);
+
+        $slotgroup[] = $mform->createElement('select', "{$name}[dayto]", '', $this->weekdays);
+        $mform->setType("{$name}[dayto]", PARAM_INT);
+        $mform->setDefault("{$name}[dayto]", -1);
+
         $slotgroup[] = $mform->createElement('static', '', '', get_string('slotto', 'organizer'));
         $slotgroup[] = $mform->createElement('select', "{$name}[to]", '', $this->pickeroptions);
         $mform->setType("{$name}[to]", PARAM_INT);

@@ -105,13 +105,26 @@ define(
                 var target = $(e.target);
                 var name = target.attr("name");
                 var i = parseInt(name.replace('newslots[', ''));
+                var valdayfrom = parseInt($("select[name='newslots\["+i+"\]\[day\]']").val());
+                var valdayto = parseInt($("select[name='newslots\["+i+"\]\[dayto\]']").val());
                 var valfrom = parseInt($("select[name='newslots\["+i+"\]\[from\]']").val());
-                var valto = parseInt($("select[name='newslots\["+i+"\]\[to\]']").val());
-                if (valfrom > valto) {
-                    $("select[name='newslots\["+i+"\]\[to\]']").val(valfrom);
+                if (valdayfrom != -1 && valdayto == -1) {
+                    var adaptvalue;
+                    if (valfrom < 29700) {
+                        adaptvalue = valfrom + 300;
+                        $("select[name='newslots\["+i+"\]\[dayto\]']").val(valdayfrom);
+                        $("select[name='newslots\["+i+"\]\[to\]']").val(adaptvalue);
+                    } else {
+                        adaptvalue = 0;
+                        var adaptday = (valdayto + 1) % 6;
+                        $("select[name='newslots\["+i+"\]\[dayto\]']").val(adaptday);
+                        $("select[name='newslots\["+i+"\]\[to\]']").val(adaptvalue);
+                    }
                 }
-                evaluaterow(i);
-                writetotal();
+                if (valdayfrom != -1 && valdayto != -1) {
+                    evaluaterow(i);
+                    writetotal();
+                }
             }
 
             // Evaluate a certain row to make forecast.
@@ -165,10 +178,15 @@ define(
 
             function getslotsperday(i) {
                 var slotsfound = 0;
-                var timefrom = parseInt($("select[name^='newslots\["+i+"\]\[from\]']").val());
-                var timeto = parseInt($("select[name^='newslots\["+i+"\]\[to\]']").val());
-                if (timeto <= timefrom) {
-                    return 0;
+                var valdayfrom = parseInt($("select[name='newslots\["+i+"\]\[day\]']").val());
+                var valdayto = parseInt($("select[name='newslots\["+i+"\]\[dayto\]']").val());
+                var valfrom = parseInt($("select[name='newslots\["+i+"\]\[from\]']").val());
+                var valto = parseInt($("select[name='newslots\["+i+"\]\[to\]']").val());
+                var datefrom = (valdayfrom * 86400) + valfrom;
+                var dateto = (valdayto * 86400) + valto;
+                while (dateto <= datefrom) {
+                    valdayto += 7;
+                    dateto = (valdayto * 86400) + valto;
                 }
                 var durationnumber = parseInt($("input[name='duration\[number\]']").val());
                 var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
@@ -183,10 +201,10 @@ define(
                 }
                 var gap = gapnumber * gaptimeunit;
                 var iteration = duration + gap;
-                for (var itime = timefrom+iteration;itime <= timeto;itime+=iteration) {
+                for (var itime = datefrom+iteration;itime <= dateto;itime+=iteration) {
                     slotsfound++;
                 }
-                if(itime-gap <= timeto) {
+                if(itime-gap <= dateto) {
                     slotsfound++;
                 }
                 return slotsfound;
