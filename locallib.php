@@ -121,7 +121,6 @@ function organizer_add_appointment_slots($data) {
         return $count;
     }
 
-    $timezone = new DateTimeZone(date_default_timezone_get());
     $collisionmessages = "";
     $startdate = $data->startdate;
     $enddate = $data->enddate;
@@ -133,19 +132,14 @@ function organizer_add_appointment_slots($data) {
             if ($slot['day'] != $weekday || $slot['day'] == -1 || $slot['dayto'] == -1 ) {
                 continue;
             }
-            $slot['date'] = organizer_get_day_date($slot['day'], $daydate);
+            $slot['datefrom'] = strtotime($daydate + $slot['from'].' seconds');
             $slot['dateto'] = organizer_get_day_date($slot['dayto'], $daydate);
             while ($slot['dateto'] <= $slot['date']) {
                 $slot['dateto'] = strtotime($slot['dateto'] + '7 day');
             }
-            if ($slot['date'] < $startdate || $slot['date'] > $enddate) {
+            $slot['dateto'] = strtotime($slot['dateto'] + $slot['to'].' seconds');
+            if ($slot['datefrom'] < $startdate || $slot['datefrom'] > $enddate || $slot['dateto'] > $enddate) {
                 continue;
-            }
-            $transitions = $timezone->getTransitions($slot['date'], $slot['date'] + $slot['from']);
-            $dstoffset = 0;
-
-            foreach ($transitions as $trans) {
-                $dstoffset += $trans['isdst'] ? ($trans['offset']) : (+$trans['offset']);
             }
 
             $newslot = new stdClass();
@@ -172,9 +166,9 @@ function organizer_add_appointment_slots($data) {
                 print_error('Gap is invalid (not set or < 0). No slots will be added. Contact support!');
             }
 
-            for ($time = $slot['from']; $time + $data->duration <= $slot['to']; $time += ($data->duration + $data->gap)) {
+            for ($time = $slot['datefrom']; $time + $data->duration <= $slot['dateto']; $time += ($data->duration + $data->gap)) {
 
-                $newslot->starttime = organizer_get_slotstarttime($slot['date'], $time);
+                $newslot->starttime = organizer_get_slotstarttime($slot['datefrom'], $time);
                 $newslot->id = $DB->insert_record('organizer_slots', $newslot);
 
                 $newtrainerslot = new stdClass();
@@ -289,94 +283,6 @@ function organizer_get_day_date($day, $dateday) {
                 $date = strtotime("next Sunday", $dateday);
             }
         break;
-        default:
-            $date = null;
-    }
-
-    return $date;
-}
-
-function organizer_get_dayto_date($dayto, $datefrom) {
-
-
-    switch($dayto) {
-        case 0:  // Monday.
-            if (date('l', $datefrom) == 'Monday') {
-                while ($dateto) {
-                    $date = strtotime("next Monday", $datefrom);
-                } else {
-                    $date = $datefrom;
-                }
-            } else {
-                $date = strtotime("next Monday", $datefrom);
-            }
-            break;
-        case 1:  // Tuesday.
-            if (date('l', $datefrom) == 'Tuesday') {
-                if ($timetogreater) {
-                    $date = strtotime("next Tuesday", $datefrom);
-                } else {
-                    $date = $datefrom;
-                }
-            } else {
-                $date = strtotime("next Tuesday", $datefrom);
-            }
-            break;
-        case 2:  // Wednesday.
-            if (date('l', $datefrom) == 'Wednesday') {
-                if ($timetogreater) {
-                    $date = strtotime("next Wednesday", $datefrom);
-                } else {
-                    $date = $datefrom;
-                }
-            } else {
-                $date = strtotime("next Wednesday", $datefrom);
-            }
-            break;
-        case 3:  // Thursday.
-            if (date('l', $datefrom) == 'Thursday') {
-                if ($timetogreater) {
-                    $date = strtotime("next Thursday", $datefrom);
-                } else {
-                    $date = $datefrom;
-                }
-            } else {
-                $date = strtotime("next Thursday", $datefrom);
-            }
-            break;
-        case 4:  // Friday.
-            if (date('l', $datefrom) == 'Friday') {
-                if ($timetogreater) {
-                    $date = strtotime("next Friday", $datefrom);
-                } else {
-                    $date = $datefrom;
-                }
-            } else {
-                $date = strtotime("next Friday", $datefrom);
-            }
-            break;
-        case 5:  // Saturday.
-            if (date('l', $datefrom) == 'Saturday') {
-                if ($timetogreater) {
-                    $date = strtotime("next Monday", $datefrom);
-                } else {
-                    $date = $datefrom;
-                }
-            } else {
-                $date = strtotime("next Saturday", $datefrom);
-            }
-            break;
-        case 6:  // Sunday.
-            if (date('l', $datefrom) == 'Sunday') {
-                if ($timetogreater) {
-                    $date = strtotime("next Monday", $datefrom);
-                } else {
-                    $date = $datefrom;
-                }
-            } else {
-                $date = strtotime("next Sunday", $datefrom);
-            }
-            break;
         default:
             $date = null;
     }
