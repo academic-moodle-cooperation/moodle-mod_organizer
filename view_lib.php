@@ -1260,13 +1260,14 @@ function organizer_date_time($slot) {
         return '-';
     }
 
-    $date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
-    $time = userdate($slot->starttime, get_string('timetemplate', 'organizer')) . ' - '
-            . userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
+    $datefrom = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer')) . " " .
+            userdate($slot->starttime, get_string('timetemplate', 'organizer'));
+    $dateto = userdate($slot->starttime + $slot->duration, get_string('fulldatetemplate', 'organizer')) . " " .
+            userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
     list($unitname, $value) = organizer_figure_out_unit($slot->duration);
     $duration = ($slot->duration / $value) . ' ' . $unitname;
 
-    return "$date<br />$time ($duration)";
+    return "$datefrom -<br />$dateto ($duration)";
 }
 
 function organizer_trainer_data($params, $slot, $trainerids = null) {

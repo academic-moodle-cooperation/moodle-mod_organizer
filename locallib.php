@@ -127,17 +127,14 @@ function organizer_add_appointment_slots($data) {
 
     for ($daydate = $startdate; $daydate <= $enddate; $daydate += 86400) {
 
-        $weekday = date('w', strtotime($daydate));
+        $weekday = date('N', $daydate) - 1;
         foreach ($data->newslots as $slot) {
             if ($slot['day'] != $weekday || $slot['day'] == -1 || $slot['dayto'] == -1 ) {
                 continue;
             }
-            $slot['datefrom'] = strtotime($daydate + $slot['from'].' seconds');
-            $slot['dateto'] = organizer_get_day_date($slot['dayto'], $daydate);
-            while ($slot['dateto'] <= $slot['date']) {
-                $slot['dateto'] = strtotime($slot['dateto'] + '7 day');
-            }
-            $slot['dateto'] = strtotime($slot['dateto'] + $slot['to'].' seconds');
+            $slot['datefrom'] = $daydate + $slot['from'];
+            $slot['dateto'] = organizer_get_dayto($slot['dayto'], $daydate);
+            $slot['dateto'] = $slot['dateto'] + $slot['to'];
             if ($slot['datefrom'] < $startdate || $slot['datefrom'] > $enddate || $slot['dateto'] > $enddate) {
                 continue;
             }
@@ -168,7 +165,7 @@ function organizer_add_appointment_slots($data) {
 
             for ($time = $slot['datefrom']; $time + $data->duration <= $slot['dateto']; $time += ($data->duration + $data->gap)) {
 
-                $newslot->starttime = organizer_get_slotstarttime($slot['datefrom'], $time);
+                $newslot->starttime = $time;
                 $newslot->id = $DB->insert_record('organizer_slots', $newslot);
 
                 $newtrainerslot = new stdClass();
@@ -184,29 +181,30 @@ function organizer_add_appointment_slots($data) {
                         $eventids[] = $newtrainerslot->eventid;
                     }
                 }
-
-                // Collision checking only if slot has a single trainer.
-                if (count($trainerids) == 1 && count($eventids) > 0) {
-                    $events = organizer_load_events(
+                if (count($eventids) > 0) {
+                    if ($events = organizer_load_events(
                             $trainerids, $newslot->starttime, $newslot->starttime + $newslot->duration, $eventids
-                    );
-                    $collisions = organizer_check_collision(
-                            $newslot->starttime, $newslot->starttime + $newslot->duration, $events
-                    );
-                    $head = true;
-                    $collisionmessage = "";
-                    foreach ($collisions as $event) {
-                        if ($head) {
-                            $collisionmessage .= '<span class="error">' . get_string('collision', 'organizer') . '</span><br />';
-                            $head = false;
-                        }
-                        $collisionmessage .= '<strong>' . $event->name . '</strong> from '
-                                . userdate($event->timestart, get_string('fulldatetimetemplate', 'organizer')) . ' to '
-                                . userdate($event->timestart + $event->timeduration, get_string('fulldatetimetemplate', 'organizer')) .
-                                '<br />';
-                    }
+                    )) {
+                        if ($collisions = organizer_check_collision(
+                                $newslot->starttime, $newslot->starttime + $newslot->duration, $events
+                        )) {
+                            $head = true;
+                            $collisionmessage = "";
+                            foreach ($collisions as $event) {
+                                if ($head) {
+                                    $collisionmessage .= '<span class="error">' . get_string('collision', 'organizer') . '</span><br />';
+                                    $head = false;
+                                }
+                                $collisionmessage .= '<strong>' . $event->name . '</strong> from '
+                                        . userdate($event->timestart, get_string('fulldatetimetemplate', 'organizer')) . ' to '
+                                        . userdate($event->timestart + $event->timeduration, get_string('fulldatetimetemplate', 'organizer')) .
+                                        '<br />';
+                            }
 
-                    $collisionmessages .= $collisionmessage;
+                            $collisionmessages .= $collisionmessage;
+                        }
+
+                    }
                 }
 
                 if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPSLOT) {
@@ -231,9 +229,9 @@ function organizer_get_slotstarttime($slotdate, $time) {
     return $starttime;
 }
 
-function organizer_get_day_date($day, $dateday) {
+function organizer_get_dayto($dayto, $dateday) {
 
-    switch($day) {
+    switch($dayto) {
         case 0:  // Monday.
             if (date('l', $dateday) == 'Monday') {
                 $date = $dateday;
