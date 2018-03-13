@@ -1372,17 +1372,15 @@ function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupmode)
     $list = "";
     if ($groupmode) {
         $group = organizer_fetch_user_group($userid, $organizerid);
-        $query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.teacherid, s.location, t.firstname, t.lastname
+        $query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.location
                 FROM {organizer_slot_queues} q
 				INNER JOIN {organizer_slots} s ON s.id = q.slotid
-				INNER JOIN {user} t ON s.teacherid = t.id
 				WHERE q.groupid = :groupid and s.organizerid = :organizerid";
         $par = array('groupid' => $group->id, 'organizerid' => $organizerid);
     } else {
-        $query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.teacherid, s.location, t.firstname, t.lastname FROM {user} u
+        $query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.location FROM {user} u
 				INNER JOIN {organizer_slot_queues} q ON q.userid = u.id
 				INNER JOIN {organizer_slots} s ON s.id = q.slotid
-				INNER JOIN {user} t ON s.teacherid = t.id
 				WHERE u.id = :userid and s.organizerid = :organizerid";
         $par = array('userid' => $userid, 'organizerid' => $organizerid);
     }
@@ -1396,7 +1394,15 @@ function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupmode)
         $list = get_string('inwaitingqueue', 'organizer');
         $slotinfo = str_replace("<br />", " ", organizer_date_time($slot));
         $slotinfo .= "\n" . get_string('teacherid', 'organizer') . ": ";
-        $slotinfo .= $slot->teacherid ? $slot->firstname . " ". $slot->lastname : "-";
+        $trainerstr = "";
+        if ($trainers = organizer_get_slot_trainers($slot->id, true)) {
+            $conn = "";
+            foreach($trainers as $trainer) {
+                $trainerstr .= $conn . $trainer->firstname . " " . $trainer->lastname;
+                $conn = ", ";
+            }
+        }
+        $slotinfo .= $trainerstr ? $trainerstr : "-";
         $slotinfo .= "\n" . get_string('location', 'organizer') . ": ";
         $slotinfo .= $slot->location ? $slot->location : "-";
         $slotinfo .= "\n" . get_string('position', 'organizer') . ": ";

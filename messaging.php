@@ -143,8 +143,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $message->subject = get_string("$type:subject", 'organizer', $strings);
     $message->fullmessage = get_string("$type:fullmessage", 'organizer', $strings);
     $message->fullmessagehtml = organizer_make_html(
-        get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm,
-        $course
+        get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm, $course
     );
 
     if (isset($customdata['custommessage'])) {
