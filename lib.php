@@ -121,9 +121,11 @@ function organizer_update_instance($organizer) {
 
     $eventids = $DB->get_fieldset_sql($query, $params);
 
+    $ok = $DB->update_record('organizer', $organizer);
+
     organizer_change_event_instance($organizer->id, $eventids);
 
-    return $DB->update_record('organizer', $organizer);
+    return $ok;
 }
 
 /**
@@ -1645,11 +1647,14 @@ function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eve
         $data->timeduration = 0;
         $data->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $eventtitle;
         $event->update($data, false);
-        $data->timestart = $timestart+$duration;
-        $data->timesort = $timestart+$duration;
+        $event2 = calendar_event::load($eventids[1]);
+        $timedue = (int)$timestart + (int)$duration;
+        $data->timestart = $timedue;
+        $data->timesort = $timedue;
         $data->timeduration = 0;
         $data->name = get_string('allowsubmissionstodate', 'organizer') . ": " . $eventtitle;
-        $event->update($data, false);
+        $event2->userid = $userid;
+        $event2->update($data, false);
     }
 
     return true;
