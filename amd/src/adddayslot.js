@@ -26,7 +26,7 @@
 
 
 define(
-    ['jquery', 'core/log'], function($, log) {
+    ['jquery'], function($) {
 
         /**
          * @constructor
@@ -186,7 +186,7 @@ define(
                 for (daydate = startdate; daydate <= enddate; daydate += 86400) {
                     daydatedate = new Date(daydate*1000);
                     iweekday = daydatedate.getDay() - 1;
-                    if (iweekday == -1) iweekday = 6;
+                    iweekday = (iweekday == -1) ? 6 : iweekday;
                     if (valday != iweekday) {
                         continue;
                     }
@@ -231,11 +231,6 @@ define(
                 });
                 var forecaststring = instance.totaltotal.replace("xxx", totalslots.toString()).replace("yyy", totalpax.toString());
                 $("div[name='organizer_newslots_forecasttotal']").html(forecaststring);
-            }
-
-            function adddays(dat, days) {
-                dat.setDate(dat.getDate() + days);
-                return dat;
             }
         };
 
