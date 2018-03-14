@@ -44,7 +44,7 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
             'organizer', array('id'),
             array('course', 'name', 'intro', 'introformat', 'timemodified', 'isgrouporganizer', 'emailteachers',
             'allowregistrationsfromdate', 'duedate', 'alwaysshowdescription', 'relativedeadline', 'grade', 'visibility', 'queue',
-                    'hidecalendar', 'nocalendareventslotcreation')
+                    'hidecalendar', 'nocalendareventslotcreation', 'includetraineringroups')
         );
 
         $slots = new backup_nested_element('slots');

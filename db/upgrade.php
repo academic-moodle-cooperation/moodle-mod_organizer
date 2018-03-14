@@ -497,6 +497,19 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018012909, 'organizer');
     }
 
+    if ($oldversion < 2018012915) {
 
-    return true;
+        // Define field nocalendareventslotcreation to be added to organizer.
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('includetraineringroups', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'nocalendareventslotcreation');
+
+        // Conditionally launch add field nocalendareventslotcreation.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2018012915, 'organizer');
+    }
+
+        return true;
 }

@@ -1392,7 +1392,7 @@ function organizer_create_coursegroup($slot) {
 
     require_once($CFG->dirroot.'/group/lib.php');
 
-    $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid), 'name,course');
+    $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid), 'name,course,includetraineringroups');
     $group = new stdClass();
     $group->courseid = $organizer->course;
     $group->name = organizer_create_coursename($organizer->name, $slot->starttime, $organizer->course);
@@ -1401,9 +1401,11 @@ function organizer_create_coursegroup($slot) {
     $group->timemodified = $time;
     if ($groupid = groups_create_group($group)) {
         $DB->set_field('organizer_slots', 'coursegroup', $groupid, array('id' => $slot->id));
-        $trainers = organizer_get_slot_trainers($slot->id);
-        foreach($trainers as $trainerid){
-            groups_add_member($groupid, $trainerid);
+        if ($organizer->includetraineringroups) {
+            $trainers = organizer_get_slot_trainers($slot->id);
+            foreach($trainers as $trainerid){
+                groups_add_member($groupid, $trainerid);
+            }
         }
     }
 

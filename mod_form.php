@@ -112,6 +112,16 @@ class mod_organizer_mod_form extends moodleform_mod
         $mform->setDefault('isgrouporganizer', 0);
         $mform->addHelpButton('isgrouporganizer', 'isgrouporganizer', 'organizer');
 
+        $traineringroupgroup = array();
+        $traineringroupgroup[] = $mform->createElement(
+                'advcheckbox', 'includetraineringroups',
+                get_string('includetraineringroups', 'organizer'), null, null, array(0, 1)
+        );
+        $mform->setType('includetraineringroups', PARAM_INT);
+        $mform->setDefault('includetraineringroups', 0);
+        $mform->addGroup($traineringroupgroup, 'traineringroupgroup', '&nbsp;', null, false);
+        $mform->addHelpButton('traineringroupgroup', 'includetraineringroups', 'organizer');
+
         $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->_get_visibilities());
         $mform->setType('visibility', PARAM_INT);
         $mform->setDefault('visibility', ORGANIZER_VISIBILITY_SLOT);

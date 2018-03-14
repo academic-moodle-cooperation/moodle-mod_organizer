@@ -1067,6 +1067,8 @@ $string['hidecalendar'] = 'Hide calendar';
 $string['hidecalendar_help'] = 'Check to hide the calendar in this organizer';
 $string['nocalendareventslotcreation'] = 'No calendar events for empty slots';
 $string['nocalendareventslotcreation_help'] = 'If you check this option no calendar events will be created when creating slots. Only appointments will create slot calendar events.';
+$string['includetraineringroups'] = 'Include trainer in groups';
+$string['includetraineringroups_help'] = 'If you check this option not only the slot\'s participants but also its trainers are included in the groups.';
 
 $string['finalgrade'] = 'This value has been set in the gradebook and can not be changed with the organizer.';
 

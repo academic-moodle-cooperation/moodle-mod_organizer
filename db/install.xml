@@ -22,7 +22,8 @@
         <FIELD NAME="queue" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="grade" NEXT="visibility" COMMENT="Flag to trigger waiting queues for slot appointments."/>
         <FIELD NAME="visibility" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="queue" NEXT="hidecalendar"/>
         <FIELD NAME="hidecalendar" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="visibility" NEXT="nocalendareventslotcreation"/>
-        <FIELD NAME="nocalendareventslotcreation" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="hidecalendar"/>
+        <FIELD NAME="nocalendareventslotcreation" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="hidecalendar" NEXT="includetraineringroups"/>
+        <FIELD NAME="includetraineringroups" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="nocalendareventslotcreation"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

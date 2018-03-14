@@ -1069,6 +1069,8 @@ $string['hidecalendar'] = 'Kalender verbergen';
 $string['hidecalendar_help'] = 'Stellen Sie hier ein, ob der Kalender in diesem Terminplaner ausgeblendet werden soll.';
 $string['nocalendareventslotcreation'] = 'Keine Kalendereinträge für (noch) leere Slots';
 $string['nocalendareventslotcreation_help'] = 'Wenn Sie diese Option anklicken werden beim Anlegen von Terminen noch keine Kalendereinträge erstellt. Erst Verabredungen führen zu Kalendereinträgen für Termine.';
+$string['includetraineringroups'] = 'Trainer in die Gruppen einschliessen';
+$string['includetraineringroups_help'] = 'Wenn Sie diese Option anklicken werden beim Anlegen von Gruppen neben den Teilnehmer/innen auch die Trainer/innen inkludiert.';
 
 $string['finalgrade'] = 'Dieser Wert wurde in der Kursbewertung eingetragen und kann im Terminplaner nicht überschrieben werden.';
 
