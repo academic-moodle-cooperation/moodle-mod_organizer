@@ -1374,7 +1374,13 @@ function organizer_groupsynchronization($slotid, $userid, $action) {
     require_once($CFG->dirroot.'/group/lib.php');
 
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-    if (!$coursegroup = $slot->coursegroup){
+    if ($coursegroup = $slot->coursegroup) {
+        // If group is not there anymore create a new one.
+        if (!$groupid = $DB->get_fieldset_select('groups', 'id', 'id = :groupid', array('groupid' => $coursegroup))) {
+            $coursegroup = null;
+        }
+    }
+    if (!$coursegroup){
         $coursegroup = organizer_create_coursegroup($slot);
     }
     if ($action == 'add'){
@@ -1395,7 +1401,7 @@ function organizer_create_coursegroup($slot) {
     $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid), 'name,course,includetraineringroups');
     $group = new stdClass();
     $group->courseid = $organizer->course;
-    $group->name = organizer_create_coursename($organizer->name, $slot->starttime, $organizer->course);
+    $group->name = organizer_create_coursegroupname($organizer->name, $slot->starttime, $organizer->course);
     $time = time();
     $group->timecreated = $time;
     $group->timemodified = $time;
@@ -1412,7 +1418,7 @@ function organizer_create_coursegroup($slot) {
     return $groupid;
 }
 
-function organizer_create_coursename($name, $time, $courseid) {
+function organizer_create_coursegroupname($name, $time, $courseid) {
     global $DB;
 
     $coursename = str_replace("_", "-", $name) . " ";
@@ -1455,4 +1461,20 @@ function organizer_delete_coursegroup($groupid, $slotid=null) {
         $ok = groups_delete_group($groupid);
     }
         return $ok;
+}
+
+function organizer_fetch_allslots($organizerid){
+    global $DB;
+
+    $slots = $DB->get_records_select('organizer_slots', 'organizerid = :organizerid', array('organizerid' => $organizerid));
+
+    return $slots;
+}
+
+function organizer_fetch_slotparticipants($slotid){
+    global $DB;
+
+    $participants = $DB->get_fieldset_select('organizer_slot_appointments', 'userid', 'slotid = :slotid', array('slotid' => $slotid));
+
+    return $participants;
 }
