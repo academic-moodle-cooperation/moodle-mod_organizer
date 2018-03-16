@@ -49,6 +49,8 @@ class mod_organizer_mod_form extends moodleform_mod
         $params->activatecheckbox = $activateduedatecheckbox;
         $PAGE->requires->js_call_amd('mod_organizer/modform', 'init', array($params));
 
+        parent::definition_after_data();
+
     }
 
     public function definition() {
