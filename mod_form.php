@@ -29,18 +29,36 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
-require_once(dirname(__FILE__) . '/lib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
 class mod_organizer_mod_form extends moodleform_mod
 {
 
     public function definition_after_data() {
-        global $PAGE;
+        global $PAGE, $DB;
         $mform = &$this->_form;
 
         $instance = $mform->getElementValue('instance');
         if ($instance) {
             $activateduedatecheckbox = false;
+            // If mode of coursegroup creation is changed to 'slot creation' create groups from existing slots.
+            $isgrouporganizer_db = $DB->get_field('organizer', 'isgrouporganizer', array('id' => $instance));
+            $isgrouporganizer_data = $mform->getElementValue('isgrouporganizer');
+            $isgrouporganizer_data = reset($isgrouporganizer_data);
+            if ($isgrouporganizer_data != $isgrouporganizer_db &&
+                $isgrouporganizer_data == ORGANIZER_GROUPMODE_NEWGROUPSLOT) {
+                if ($slots = organizer_fetch_allslots($instance)) {
+                    foreach($slots as $slot) {
+                        if ($participants = organizer_fetch_slotparticipants($slot->id)){
+                            foreach($participants as $participantid){
+                                organizer_groupsynchronization($slot->id, $participantid, 'add');
+                            }
+                        } else {
+                            organizer_create_coursegroup($slot);
+                        }
+                    }
+                }
+            }
         } else {
             $organizerconfig = get_config('organizer');
             $activateduedatecheckbox = $organizerconfig->absolutedeadline != 'never';
@@ -48,6 +66,8 @@ class mod_organizer_mod_form extends moodleform_mod
         $params = new \stdClass();
         $params->activatecheckbox = $activateduedatecheckbox;
         $PAGE->requires->js_call_amd('mod_organizer/modform', 'init', array($params));
+
+        parent::definition_after_data();
 
     }
 
