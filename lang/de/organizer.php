@@ -226,9 +226,13 @@ $string['assignsuccess'] = 'Der Termin wurde erfolgreich zugeteilt und der/die T
 
 $string['btn_add'] = 'Neue Slots hinzufügen';
 $string['btn_edit'] = 'Ausgewählte Slots bearbeiten';
+$string['btn_editsingle'] = 'Ausgewählten Slot bearbeiten';
 $string['btn_delete'] = 'Ausgewählte Slots entfernen';
+$string['btn_deletesingle'] = 'Ausgewählten Slot entfernen';
 $string['btn_eval'] = 'Ausgewählte Slots bewerten';
+$string['btn_evalsingle'] = 'Ausgewählten Slot bewerten';
 $string['btn_print'] = 'Ausgewählte Slots drucken';
+$string['btn_printsingle'] = 'Ausgewählten Slot drucken';
 $string['printsubmit'] = 'Tabellendruckansicht';
 $string['title_print'] = 'Druckansicht';
 

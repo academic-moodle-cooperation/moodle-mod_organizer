@@ -234,9 +234,13 @@ $string['availableslotsfor'] = 'Available slots for';
 
 $string['btn_add'] = 'Add new slots';
 $string['btn_edit'] = 'Edit selected slots';
+$string['btn_editsingle'] = 'Edit selected slot';
 $string['btn_delete'] = 'Remove selected slots';
+$string['btn_deletesingle'] = 'Remove selected slot';
 $string['btn_eval'] = 'Grade selected slots';
+$string['btn_evalsingle'] = 'Grade selected slot';
 $string['btn_print'] = 'Print selected slots';
+$string['btn_printsingle'] = 'Print selected slot';
 $string['printsubmit'] = 'Display printable table';
 $string['title_print'] = 'Print slots';
 

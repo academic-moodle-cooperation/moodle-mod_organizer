@@ -102,8 +102,8 @@ function organizer_generate_appointments_view($params, $instance) {
     $output .= organizer_begin_form($params);
     $output .= organizer_generate_button_bar($params, $organizerexpired);
 
-    $columns = array('select', 'datetime', 'location', 'participants', 'teacher', 'details');
-    $align = array('center', 'left', 'left', 'left', 'left', 'center');
+    $columns = array('select', 'singleslotcommands', 'datetime', 'location', 'participants', 'teacher', 'details');
+    $align = array('center', 'center', 'left', 'left', 'left', 'left', 'center');
     $sortable = array('datetime', 'location');
 
     $table = new html_table();
@@ -341,6 +341,8 @@ function organizer_generate_table_header($columns, $sortable, $params, $usersort
                     array('title' => get_string('select_all_slots', 'organizer'))
                 )
             );
+        } else if ($column == 'singleslotcommands') {
+            $cell = new html_table_cell(get_string("th_actions", 'organizer'));
         } else if ($column == 'participants' && $usersort) {
             if ($params['psort'] == 'name') {
                 $namedir = $params['pdir'] == 'ASC' ? 'DESC' : 'ASC';
@@ -628,6 +630,9 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
                             array('class' => 'checkbox_slot')
                         )
                             );
+                    break;
+                    case 'singleslotcommands':
+                        $cell = $row->cells[] = new html_table_cell(organizer_slot_commands($slot->id, $params));
                     break;
                     case 'datetime':
                         $cell = $row->cells[] = new html_table_cell(organizer_date_time($slot));
@@ -2020,6 +2025,48 @@ function organizer_slot_status($params, $slot) {
     } else {
         print_error("This shouldn't happen.");
     }
+}
+
+function organizer_slot_commands($slotid, $params) {
+    global $OUTPUT;
+
+    $outstr = "";
+    // EDIT.
+    $actionurl = new moodle_url(
+            '/mod/organizer/slots_edit.php',
+            array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
+    );
+    $outstr .= \html_writer::link($actionurl,
+            $OUTPUT->image_icon('t/edit', get_string('btn_editsingle', 'organizer')),
+            array('class' => 'editbutton', 'title' => get_string('btn_editsingle', 'organizer')));
+
+    // DELETE.
+    $actionurl = new moodle_url(
+            '/mod/organizer/slots_delete.php',
+            array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
+    );
+    $outstr .= \html_writer::link($actionurl,
+            $OUTPUT->image_icon('t/delete', get_string('btn_deletesingle', 'organizer')),
+            array('class' => 'deletebutton', 'title' => get_string('btn_deletesingle', 'organizer')));
+    // PRINT.
+    $actionurl = new moodle_url(
+            '/mod/organizer/slots_print.php',
+            array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
+    );
+    $outstr .= \html_writer::link($actionurl,
+            $OUTPUT->image_icon('t/print', get_string('btn_printsingle', 'organizer')),
+            array('class' => 'printbutton', 'title' => get_string('btn_printsingle', 'organizer')));
+    // GRADE/EVALUATE.
+    $actionurl = new moodle_url(
+            '/mod/organizer/slots_eval.php',
+            array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
+    );
+    $outstr .= \html_writer::link($actionurl,
+            $OUTPUT->image_icon('t/grades', get_string('btn_evalsingle', 'organizer')),
+            array('class' => 'gradesbutton', 'title' => get_string('btn_evalsingle', 'organizer')));
+
+    return $outstr;
+
 }
 
 function organizer_slot_reg_status($organizer, $slot) {
