@@ -1103,4 +1103,4 @@ $string['signature'] = 'Signature';
 $string['slot'] = 'Appointment';
 $string['trainer'] = 'Trainer';
 $string['created'] = 'Created';
-$string['nosingleslotprintfields'] = 'There are no user fields defined for printing. See the organizer settings.';
+$string['nosingleslotprintfields'] = 'Printing is not possible. There are no user fields defined. See the organizer settings.';

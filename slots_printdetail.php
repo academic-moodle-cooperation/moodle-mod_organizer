@@ -106,10 +106,14 @@ if ($data = $mform->get_data()) {
     );
     $event->trigger();
 
-    organizer_display_printable_slotdetail_table($data->cols, $data->slot, $ppp, $data->textsize,
-        $data->pageorientation, $data->headerfooter
-    );
-    redirect($redirecturl);
+    if (!isset($data->cols)) {
+        redirect($redirecturl, get_string('nosingleslotprintfields', 'organizer'), null, \core\output\notification::NOTIFY_ERROR);
+    } else {
+        organizer_display_printable_slotdetail_table($data->cols, $data->slot, $ppp, $data->textsize,
+                $data->pageorientation, $data->headerfooter
+        );
+        redirect($redirecturl);
+    }
 
 } else if ($mform->is_cancelled()) {
     // Form canceled.
@@ -198,7 +202,6 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
     $titles = array();
     $columnformats = array();
 
-    $i = 0;
     foreach ($columns as $column) {
 
         switch ($column) {
