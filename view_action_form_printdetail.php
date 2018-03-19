@@ -201,6 +201,10 @@ class organizer_print_slotdetail_form extends moodleform
         $table->id = 'print_preview';
         $table->attributes['class'] = 'boxaligncenter';
 
+        If (!$columns) {
+            return "<strong> ==> " . get_string('nosingleslotprintfields', 'organizer') . "</strong>";
+        }
+
         $header = array();
         $data = &$this->_customdata;
 

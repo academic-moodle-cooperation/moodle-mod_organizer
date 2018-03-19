@@ -1106,3 +1106,4 @@ $string['signature'] = 'Unterschrift';
 $string['slot'] = 'Termin';
 $string['trainer'] = 'Trainer/in';
 $string['created'] = 'Erstellt';
+$string['nosingleslotprintfields'] = 'Es wurden keine Profilfelder zum Ausdruck bestimmt. Siehe die Terminplaner-Einstellungen.';
