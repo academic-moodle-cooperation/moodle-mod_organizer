@@ -396,9 +396,9 @@ $string['configmonth'] = 'month';
 $string['configmonths'] = 'months';
 $string['configyear'] = 'year';
 $string['configahead'] = 'ahead';
-
 $string['configemailteachers_label'] = 'Send E-mail notifications to teachers';
 $string['configdigest_label'] = 'Send appointment digest to teachers';
+$string['configsingleslotprintfield'] = 'user field to be printed out when single slot is printed';
 
 $string['organizer:addinstance'] = 'Add a new organizer';
 $string['organizer:comment'] = 'Add comments';
@@ -1093,3 +1093,13 @@ $string['totalday'] = 'xxx slots for yyy persons';
 $string['totalday_groups'] = 'xxx slots for yyy groups';
 $string['totaltotal'] = 'Total: xxx slots for yyy persons';
 $string['totaltotal_groups'] = 'Total: xxx slots for yyy groups';
+
+$string['singleslotprintfield'] = 'Print slot user field';
+$string['singleslotprintfields'] = 'Print slot user fields';
+$string['singleslotprintfield0'] = 'Print slot user field';
+$string['singleslotprintfield0_help'] = 'These user fields are used for each participant when a single slot is printed out.';
+$string['attended'] = 'attended';
+$string['signature'] = 'Signature';
+$string['slot'] = 'Appointment';
+$string['trainer'] = 'Trainer';
+$string['created'] = 'Created';

@@ -188,6 +188,24 @@ class mod_organizer_mod_form extends moodleform_mod
             $absdefault = strtotime($organizerconfig->absolutedeadline);
             $mform->setDefault('duedate', $absdefault);
         }
+
+        $mform->addElement('header', 'printslotuserfields', get_string('singleslotprintfields', 'organizer'));
+
+        $printslotuserfields = organizer_printslotuserfields();
+        for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
+            $fieldname = 'singleslotprintfield' . $i;
+            if (isset($organizerconfig->{'singleslotprintfield' . $i})) {
+                $default = $organizerconfig->{'singleslotprintfield' . $i};
+            } else {
+                $default = "";
+            }
+            $mform->addElement('select', $fieldname, $i+1 . '. ' . get_string('singleslotprintfield', 'organizer'),
+                    $printslotuserfields);
+            $mform->setType($fieldname, PARAM_TEXT);
+            $mform->setDefault($fieldname,$default);
+        }
+        $mform->addHelpButton('singleslotprintfield0', 'singleslotprintfield0', 'organizer');
+
         $this->standard_coursemodule_elements();
         $warning = $mform->createElement(
             'static', '', '',

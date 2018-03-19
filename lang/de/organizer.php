@@ -379,9 +379,9 @@ $string['configmonth'] = 'Monat';
 $string['configmonths'] = 'Monate';
 $string['configyear'] = 'Jahr';
 $string['configahead'] = 'vorher';
-
 $string['configemailteachers_label'] = 'E-Mail Benachrichtigungen';
 $string['configdigest_label'] = 'Zusammenfassungen';
+$string['configsingleslotprintfield'] = 'Profilfeld das beim Ausdruck eines einzelnen Termins gedruckt wird.';
 
 $string['no_slots_defined'] = 'Derzeit sind keine Zeitslots verfügbar.';
 $string['no_slots_defined_teacher'] = 'Derzeit sind keine Zeitslots verfügbar. Legen Sie <a href="{$a->link}">hier</a> neue an.';
@@ -1096,3 +1096,13 @@ $string['totalday'] = 'xxx Termine für yyy Personen';
 $string['totalday_groups'] = 'xxx Termine für yyy Gruppen';
 $string['totaltotal'] = 'Insgesamt xxx Termine für yyy Personen';
 $string['totaltotal_groups'] = 'Insgesamt xxx Termine für yyy Gruppen';
+
+$string['singleslotprintfield'] = 'Termin-Ausdruck Profilfeld';
+$string['singleslotprintfields'] = 'Termin-Ausdruck Profilfelder';
+$string['singleslotprintfield0'] = 'Termin-Ausdruck Profilfeld';
+$string['singleslotprintfield0_help'] = 'Diese Profilfelder werden für jede/n TeilnehmerIn beim Ausdruck eines einzelnen Termins ausgedruckt.';
+$string['attended'] = 'teilgenommen';
+$string['signature'] = 'Unterschrift';
+$string['slot'] = 'Termin';
+$string['trainer'] = 'Trainer/in';
+$string['created'] = 'Erstellt';

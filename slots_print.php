@@ -330,6 +330,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
 
     $registrationsfromdate = $registrationsfromdate ? userdate($registrationsfromdate) : get_string('pdf_notactive', 'organizer');
     $timedue = $timedue ? userdate($timedue) : get_string('pdf_notactive', 'organizer');
+    $coursename = $course->idnumber ? $course->idnumber . " " . $course->fullname : $course->fullname;
 
     $mpdftable = new \mod_organizer\MTablePDF($orientation, $columnwitdh);
     $mpdftable->SetTitle(
@@ -340,9 +341,12 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
     $mpdftable->ShowHeaderFooter($headerfooter);
     $mpdftable->SetFontSize($textsize);
     $mpdftable->setHeaderText(
-        get_string('course') . ':', "{$course->idnumber} {$course->fullname}",
-        get_string('availablefrom', 'organizer').':', $registrationsfromdate, get_string('date') . ':', userdate(time()),
-        get_string('modulename', 'organizer') . ':', $organizer->name, get_string('duedate', 'organizer').':', $timedue, '', ''
+            get_string('course') . ':', $coursename,
+            get_string('modulename', 'organizer') . ':', $organizer->name,
+            get_string('availablefrom', 'organizer').':', $registrationsfromdate,
+            get_string('duedate', 'organizer').':', $timedue,
+            '', get_string('created', 'organizer') . " " . userdate(time()),
+            '', ''
     );
     $mpdftable->setTitles($titles);
     $mpdftable->setColumnFormat($columnformats);

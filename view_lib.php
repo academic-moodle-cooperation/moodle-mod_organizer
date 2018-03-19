@@ -2050,8 +2050,8 @@ function organizer_slot_commands($slotid, $params) {
             array('class' => 'deletebutton', 'title' => get_string('btn_deletesingle', 'organizer')));
     // PRINT.
     $actionurl = new moodle_url(
-            '/mod/organizer/slots_print.php',
-            array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
+            '/mod/organizer/slots_printdetail.php',
+            array('id' => $params['id'], 'slot' => $slotid, 'mode' => $params['mode'])
     );
     $outstr .= \html_writer::link($actionurl,
             $OUTPUT->image_icon('t/print', get_string('btn_printsingle', 'organizer')),

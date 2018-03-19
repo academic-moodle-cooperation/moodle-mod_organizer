@@ -23,7 +23,17 @@
         <FIELD NAME="visibility" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="queue" NEXT="hidecalendar"/>
         <FIELD NAME="hidecalendar" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="visibility" NEXT="nocalendareventslotcreation"/>
         <FIELD NAME="nocalendareventslotcreation" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="hidecalendar" NEXT="includetraineringroups"/>
-        <FIELD NAME="includetraineringroups" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="nocalendareventslotcreation"/>
+        <FIELD NAME="includetraineringroups" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="nocalendareventslotcreation" NEXT="singleslotprintfield0"/>
+        <FIELD NAME="singleslotprintfield0" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="includetraineringroups" NEXT="singleslotprintfield1"/>
+        <FIELD NAME="singleslotprintfield1" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield0" NEXT="singleslotprintfield2"/>
+        <FIELD NAME="singleslotprintfield2" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield1" NEXT="singleslotprintfield3"/>
+        <FIELD NAME="singleslotprintfield3" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield2" NEXT="singleslotprintfield4"/>
+        <FIELD NAME="singleslotprintfield4" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield3" NEXT="singleslotprintfield5"/>
+        <FIELD NAME="singleslotprintfield5" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield4" NEXT="singleslotprintfield6"/>
+        <FIELD NAME="singleslotprintfield6" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield5" NEXT="singleslotprintfield7"/>
+        <FIELD NAME="singleslotprintfield7" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield6" NEXT="singleslotprintfield8"/>
+        <FIELD NAME="singleslotprintfield8" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield7" NEXT="singleslotprintfield9"/>
+        <FIELD NAME="singleslotprintfield9" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield8"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

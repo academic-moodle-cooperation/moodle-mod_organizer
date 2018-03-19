@@ -1478,3 +1478,56 @@ function organizer_fetch_slotparticipants($slotid){
 
     return $participants;
 }
+
+function organizer_printslotuserfields($nochoiceoption=false) {
+    global $CFG;
+
+    require_once($CFG->dirroot . '/user/profile/lib.php');
+
+
+    if ($nochoiceoption) {
+        $profilefields = array();
+    } else {
+        $profilefields = array('' => '--');
+    }
+    $profilefields['lastname'] = get_string('lastname');
+    $profilefields['firstname'] = get_string('firstname');
+    $profilefields['email'] = get_string('email');
+    $profilefields['idnumber'] = get_string('idnumber');
+    $profilefields['attended'] = get_string('attended', 'organizer');
+    $profilefields['grade'] = get_string('grade');
+    $profilefields['feedback'] = get_string('feedback');
+    $profilefields['signature'] = get_string('signature', 'organizer');
+    /*if ($CFG->showuseridentity) {
+        $profilefields[$CFG->showuseridentity] = $CFG->showuseridentity;
+    }*/
+    foreach (profile_get_custom_fields() as $customfield) {
+        $profilefields[$customfield->id] = $customfield->shortname;
+    }
+
+    return $profilefields;
+}
+
+function organizer_fetch_printdetail_entries($slot) {
+    global $DB;
+
+    $params = array('slotid' => $slot);
+    $query = "SELECT u.id,
+                    u.firstname,
+                    u.lastname,
+                    u.email,
+                    u.idnumber,
+                    a.attended,
+                    a.grade,
+                    a.feedback,
+                    g.name AS groupname
+                    FROM {organizer_slots} s
+                    LEFT JOIN {organizer_slot_appointments} a ON a.slotid = s.id
+                    LEFT JOIN {user} u ON a.userid = u.id
+                    LEFT JOIN {groups} g ON a.groupid = g.id               
+                    WHERE s.id = :slotid
+                    ORDER BY lastname, firstname
+                  ";
+
+    return $DB->get_records_sql($query, $params);
+}

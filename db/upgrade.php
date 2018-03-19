@@ -497,7 +497,7 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018012909, 'organizer');
     }
 
-    if ($oldversion < 2018012915) {
+    if ($oldversion < 2018012918) {
 
         // Define field nocalendareventslotcreation to be added to organizer.
         $table = new xmldb_table('organizer');
@@ -508,7 +508,59 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2018012915, 'organizer');
+        // Define fields singleslotprintfields to be added to organizer.
+        $field = new xmldb_field('singleslotprintfield0', XMLDB_TYPE_TEXT, null, null, null, null, null, 'includetraineringroups');
+        // Conditionally launch add field singleslotprintfield0.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield1', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield0');
+        // Conditionally launch add field singleslotprintfield1.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield2', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield1');
+        // Conditionally launch add field singleslotprintfield2.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield3', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield2');
+        // Conditionally launch add field singleslotprintfield3.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield4', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield3');
+        // Conditionally launch add field singleslotprintfield4.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield5', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield4');
+        // Conditionally launch add field singleslotprintfield5.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield6', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield5');
+        // Conditionally launch add field singleslotprintfield6.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield7', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield6');
+        // Conditionally launch add field singleslotprintfield7.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield8', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield7');
+        // Conditionally launch add field singleslotprintfield8.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield9', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield8');
+        // Conditionally launch add field singleslotprintfield9.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2018012918, 'organizer');
     }
 
         return true;
