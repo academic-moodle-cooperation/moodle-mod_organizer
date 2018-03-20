@@ -1636,7 +1636,7 @@ function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eve
     $data->uuid = $uuid;
     $event->userid = $userid;
 
-    if (!$eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE && count($eventids)==1) {   // If not type instance.
+    if ($eventtype != ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE && count($eventids)==1) {   // If not type instance.
         $data->timestart = $timestart;
         $data->timesort = $timestart;
         $data->timeduration = $duration;
