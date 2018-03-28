@@ -497,7 +497,7 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018012909, 'organizer');
     }
 
-    if ($oldversion < 2018012918) {
+    if ($oldversion < 2018012921) {
 
         // Define field nocalendareventslotcreation to be added to organizer.
         $table = new xmldb_table('organizer');
@@ -560,7 +560,27 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2018012918, 'organizer');
+        $sqlparams = array('modulename' => 'organizer', 'eventtype' => 'Instance');
+        $query = 'SELECT {event}.*
+                  FROM {event}
+                  WHERE {event}.modulename = :modulename AND {event}.eventtype = :eventtype AND {event}.timeduration > 0';
+        $records = $DB->get_records_sql($query, $sqlparams);
+
+        // Change old calendar instance events to new scheme: One event fromdate, one event todate, duration 0.
+        foreach ($records as $record) {
+            $newtimestart = $DB->get_field('organizer', 'duedate', array('id' => $record->instance));
+            $newname = get_string('allowsubmissionstodate', 'organizer') . ": " . $record->name;
+            $record->timeduration = 0;
+            $record->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $record->name;
+            $DB->update_record('event', $record);
+            $record->timestart = $newtimestart;
+            $record->timesort = $newtimestart;
+            $record->name = $newname;
+            unset($record->id);
+            $DB->insert_record('event', $record);
+        }
+
+        upgrade_mod_savepoint(true, 2018012921, 'organizer');
     }
 
         return true;
