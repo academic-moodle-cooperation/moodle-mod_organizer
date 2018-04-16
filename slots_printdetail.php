@@ -253,6 +253,119 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                     $titles[] = $name;
                     $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
+                } else {  // Field of moodle user table.
+                    switch ($column) {
+                        case 'id':
+                            $titles[] = get_string('dbid', 'organizer');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'username':
+                            $titles[] = get_string('username', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'auth':
+                            $titles[] = get_string('auth', 'organizer');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'icq':
+                            $titles[] = get_string('icqnumber', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'skype':
+                            $titles[] = get_string('skypeid', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'yahoo':
+                            $titles[] = get_string('yahooid', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'aim':
+                            $titles[] = get_string('aimid', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'msn':
+                            $titles[] = get_string('msnid', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'phone1':
+                            $titles[] = get_string('phone1', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'phone2':
+                            $titles[] = get_string('phone2', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'institution':
+                            $titles[] = get_string('institution', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'department':
+                            $titles[] = get_string('department', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'address':
+                            $titles[] = get_string('address', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'city':
+                            $titles[] = get_string('city', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'country':
+                            $titles[] = get_string('country', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'lang':
+                            $titles[] = get_string('language', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'timezone':
+                            $titles[] = get_string('timezone', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'description':
+                            $titles[] = get_string('userdescription', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'lastnamephonetic':
+                            $titles[] = get_string('lastnamephonetic', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'firstnamephonetic':
+                            $titles[] = get_string('firstnamephonetic', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'middlename':
+                            $titles[] = get_string('middlename', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                        case 'alternatename':
+                            $titles[] = get_string('alternatename', 'moodle');
+                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                            $columnformats[] = array('fill' => 0, 'align' => 'C');
+                            break;
+                    }
                 }
         }
     }
@@ -266,18 +379,21 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
         $conn = ", ";
     }
     $coursename = $course->idnumber ? $course->idnumber . " " . $course->fullname : $course->fullname;
+    $coursename .= $course->shortname ? " (" . $course->shortname . ")" : "";
+
+    $coursename = format_text($coursename, FORMAT_PLAIN, array("filter" => true));
+    $organizername = format_text($organizer->name, FORMAT_PLAIN, array("filter" => true));
 
     $mpdftable = new \mod_organizer\MTablePDF($orientation, $columnwitdh);
     $mpdftable->SetTitle(
-        get_string('modulename', 'organizer') . " " .
-        $organizer->name . " - " . get_string('printout', 'organizer')
+        get_string('modulename', 'organizer') . " " . $organizername . " - " . get_string('printout', 'organizer')
     );
     $mpdftable->setRowsperPage($entriesperpage);
     $mpdftable->ShowHeaderFooter($headerfooter);
     $mpdftable->SetFontSize($textsize);
     $mpdftable->setheadertext(
             get_string('course')                  . ':', $coursename,
-            get_string('modulename', 'organizer') . ':', $organizer->name,
+            get_string('modulename', 'organizer') . ':', $organizername,
             get_string('slot', 'organizer')       . ':', $slotdatetime,
             get_string('trainer', 'organizer')    . ':', $trainerstr,
             '', get_string('created', 'organizer') . " " . userdate(time()),
@@ -347,7 +463,35 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                             $content = '';
                             $row[] = array('data' => $content);
                         }
+                    } else {  // Field of moodle user table.
+                        switch ($column) {
+                            case 'id':
+                            case 'username':
+                            case 'auth':
+                            case 'icq':
+                            case 'skype':
+                            case 'yahoo':
+                            case 'aim':
+                            case 'msn':
+                            case 'phone1':
+                            case 'phone2':
+                            case 'institution':
+                            case 'department':
+                            case 'address':
+                            case 'city':
+                            case 'country':
+                            case 'lang':
+                            case 'timezone':
+                            case 'description':
+                            case 'lastnamephonetic':
+                            case 'firstnamephonetic':
+                            case 'middlename':
+                            case 'alternatename':
+                                $content = (isset($entry->{$column}) && $entry->{$column} !== '') ? $entry->{$column} : '';
+                                $row[] = array('data' => $content);
+                        }
                     }
+
             }
 
         }

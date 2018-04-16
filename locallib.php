@@ -1539,7 +1539,28 @@ function organizer_fetch_printdetail_entries($slot) {
                     a.attended,
                     a.grade,
                     a.feedback,
-                    g.name AS groupname
+                    g.name AS groupname,
+                    u.username,
+                    u.auth,
+                    u.icq,
+                    u.skype,
+                    u.yahoo,
+                    u.aim,
+                    u.msn,
+                    u.phone1,
+                    u.phone2,
+                    u.institution,
+                    u.department,
+                    u.address,
+                    u.city,
+                    u.country,
+                    u.lang,
+                    u.timezone,
+                    u.description,
+                    u.lastnamephonetic,
+                    u.firstnamephonetic,
+                    u.middlename,
+                    u.alternatename
                     FROM {organizer_slots} s
                     LEFT JOIN {organizer_slot_appointments} a ON a.slotid = s.id
                     LEFT JOIN {user} u ON a.userid = u.id

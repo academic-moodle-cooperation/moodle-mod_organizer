@@ -148,7 +148,6 @@ class organizer_print_slotdetail_form extends moodleform
         $mform->setType('headerfooter', PARAM_BOOL);
         $mform->setDefault('headerfooter', $headerfooter);
         $mform->addHelpButton('headerfooter', 'headerfooter', 'organizer');
-        $mform->disabledif ('headerfooter', 'format', 'neq', 'pdf');
 
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'downloadfile', get_string('downloadfile', 'organizer'));
@@ -199,7 +198,7 @@ class organizer_print_slotdetail_form extends moodleform
 
         $table = new html_table();
         $table->id = 'print_preview';
-        $table->attributes['class'] = 'boxaligncenter';
+        $table->attributes['class'] = 'flexible generaltable generalbox';
 
         If (!$columns) {
             return "<strong> ==> " . get_string('nosingleslotprintfields', 'organizer') . "</strong>";
@@ -251,6 +250,97 @@ class organizer_print_slotdetail_form extends moodleform
                             $name = "???";
                         }
                         $cell = new html_table_cell($name);
+                    } else {  // Field of moodle user table.
+                        switch ($column) {
+                            case 'id':
+                                $name = get_string('dbid', 'organizer');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'username':
+                                $name = get_string('username', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'auth':
+                                $name = get_string('auth', 'organizer');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'icq':
+                                $name = get_string('icqnumber', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'skype':
+                                $name = get_string('skypeid', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'yahoo':
+                                $name = get_string('yahooid', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'aim':
+                                $name = get_string('aimid', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'msn':
+                                $name = get_string('msnid', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'phone1':
+                                $name = get_string('phone1', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'phone2':
+                                $name = get_string('phone2', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'institution':
+                                $name = get_string('institution', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'department':
+                                $name = get_string('department', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'address':
+                                $name = get_string('address', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'city':
+                                $name = get_string('city', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'country':
+                                $name = get_string('country', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'lang':
+                                $name = get_string('language', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'timezone':
+                                $name = get_string('timezone', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'description':
+                                $name = get_string('userdescription', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'lastnamephonetic':
+                                $name = get_string('lastnamephonetic', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'firstnamephonetic':
+                                $name = get_string('firstnamephonetic', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'middlename':
+                                $name = get_string('middlename', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                            case 'alternatename':
+                                $name = get_string('alternatename', 'moodle');
+                                $cell = new html_table_cell($name);
+                                break;
+                        }
                     }
 
             }
@@ -331,7 +421,35 @@ class organizer_print_slotdetail_form extends moodleform
                                 }
                                 $row->cells[] = $cell;
                             } else {
-                                $cell = new html_table_cell("");
+                                $row->cells[] = new html_table_cell("");
+                            }
+                        } else {  // Field of moodle user table.
+                            switch ($column) {
+                                case 'id':
+                                case 'username':
+                                case 'auth':
+                                case 'icq':
+                                case 'skype':
+                                case 'yahoo':
+                                case 'aim':
+                                case 'msn':
+                                case 'phone1':
+                                case 'phone2':
+                                case 'institution':
+                                case 'department':
+                                case 'address':
+                                case 'city':
+                                case 'country':
+                                case 'lang':
+                                case 'timezone':
+                                case 'description':
+                                case 'lastnamephonetic':
+                                case 'firstnamephonetic':
+                                case 'middlename':
+                                case 'alternatename':
+                                    $content = "<span name='{$column}_cell'>" .  $entry->{$column} . '</span>';
+                                    $cell = new html_table_cell($content);
+                                    $row->cells[] = $cell;
                             }
                         }
                 }

@@ -824,13 +824,15 @@ class MTablePDF extends \pdf
 
         $line = 0;
 
-        // Write header.
-        for ($i = 0; $i < count($this->header); $i += 2) {
-            $worksheet->write_string($line, 0, $this->header[$i], $hdrleft);
-            $worksheet->write_string($line, 1, $this->header[$i + 1], $hdrright);
+        if ($this->showheaderfooter) {
+            // Write header.
+            for ($i = 0; $i < count($this->header); $i += 2) {
+                $worksheet->write_string($line, 0, $this->header[$i], $hdrleft);
+                $worksheet->write_string($line, 1, $this->header[$i + 1], $hdrright);
+                $line++;
+            }
             $line++;
         }
-        $line++;
 
         // Table header.
         $i = 0;
