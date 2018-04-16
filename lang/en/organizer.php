@@ -1104,3 +1104,5 @@ $string['slot'] = 'Appointment';
 $string['trainer'] = 'Trainer';
 $string['created'] = 'Created';
 $string['nosingleslotprintfields'] = 'Printing is not possible. There are no user fields defined. See the organizer settings.';
+$string['dbid'] = 'DB ID';
+$string['auth'] = 'Authentification method';

@@ -1498,12 +1498,31 @@ function organizer_printslotuserfields($nochoiceoption=false) {
     $profilefields['grade'] = get_string('grade');
     $profilefields['feedback'] = get_string('feedback');
     $profilefields['signature'] = get_string('signature', 'organizer');
-    /*if ($CFG->showuseridentity) {
-        $profilefields[$CFG->showuseridentity] = $CFG->showuseridentity;
-    }*/
     foreach (profile_get_custom_fields() as $customfield) {
         $profilefields[$customfield->id] = $customfield->shortname;
     }
+    $profilefields['id'] = get_string('dbid', 'organizer');
+    $profilefields['username'] = get_string('username', 'moodle');
+    $profilefields['auth'] = get_string('auth', 'organizer');
+    $profilefields['icq'] = get_string('icqnumber', 'moodle');
+    $profilefields['skype'] = get_string('skypeid', 'moodle');
+    $profilefields['yahoo'] = get_string('yahooid', 'moodle');
+    $profilefields['aim'] = get_string('aimid', 'moodle');
+    $profilefields['msn'] = get_string('msnid', 'moodle');
+    $profilefields['phone1'] = get_string('phone1', 'moodle');
+    $profilefields['phone2'] = get_string('phone2', 'moodle');
+    $profilefields['institution'] = get_string('institution', 'moodle');
+    $profilefields['department'] = get_string('department', 'moodle');
+    $profilefields['address'] = get_string('address', 'moodle');
+    $profilefields['city'] = get_string('city', 'moodle');
+    $profilefields['country'] = get_string('country', 'moodle');
+    $profilefields['lang'] = get_string('language', 'moodle');
+    $profilefields['timezone'] = get_string('timezone', 'moodle');
+    $profilefields['description'] = get_string('userdescription', 'moodle');
+    $profilefields['lastnamephonetic'] = get_string('lastnamephonetic', 'moodle');
+    $profilefields['firstnamephonetic'] = get_string('firstnamephonetic', 'moodle');
+    $profilefields['middlename'] = get_string('middlename', 'moodle');
+    $profilefields['alternatename'] = get_string('alternatename', 'moodle');
 
     return $profilefields;
 }
