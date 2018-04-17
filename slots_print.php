@@ -120,7 +120,7 @@ if ($data = $mform->get_data()) {
     organizer_display_printable_table(
         $organizer->allowregistrationsfromdate,
         $organizer->duedate, $data->cols, $data->slots, $ppp, $data->textsize,
-        $data->pageorientation, $data->headerfooter, $course->shortname . '-' . $organizer->name
+        $data->pageorientation, $data->headerfooter
     );
     redirect($redirecturl);
 
@@ -199,10 +199,18 @@ function organizer_organizer_student_action_allowed($action, $slot) {
 
 function organizer_display_printable_table($registrationsfromdate, $timedue, $columns,
     $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
-    $headerfooter = true, $filename = ''
+    $headerfooter = true
 ) {
 
     list(, $course, $organizer, ) = organizer_get_course_module_data();
+
+    $coursename = $course->idnumber ? $course->idnumber . " " . $course->fullname : $course->fullname;
+    $coursename .= $course->shortname ? " (" . $course->shortname . ")" : "";
+    $coursename = format_text($coursename, FORMAT_MOODLE, array("filter" => true, "trusted" => true));
+    $organizername = format_text($organizer->name, FORMAT_MOODLE, array("filter" => true, "trusted" => true));
+    $coursename = html_to_text($coursename);
+    $organizername = html_to_text($organizername);
+    $filename = $coursename . '-' . $organizername;
 
     if ($noprintfields = get_user_preferences("mod_organizer_noprintfields")) {
         $noprintfieldsarray = explode(",", $noprintfields);
@@ -330,19 +338,18 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
 
     $registrationsfromdate = $registrationsfromdate ? userdate($registrationsfromdate) : get_string('pdf_notactive', 'organizer');
     $timedue = $timedue ? userdate($timedue) : get_string('pdf_notactive', 'organizer');
-    $coursename = $course->idnumber ? $course->idnumber . " " . $course->fullname : $course->fullname;
 
     $mpdftable = new \mod_organizer\MTablePDF($orientation, $columnwitdh);
     $mpdftable->SetTitle(
         get_string('modulename', 'organizer') . " " .
-        $organizer->name . " - " . get_string('printout', 'organizer')
+        $organizername . "-" . get_string('printout', 'organizer')
     );
     $mpdftable->setRowsperPage($entriesperpage);
     $mpdftable->ShowHeaderFooter($headerfooter);
     $mpdftable->SetFontSize($textsize);
     $mpdftable->setHeaderText(
             get_string('course') . ':', $coursename,
-            get_string('modulename', 'organizer') . ':', $organizer->name,
+            get_string('modulename', 'organizer') . ':', $organizername,
             get_string('availablefrom', 'organizer').':', $registrationsfromdate,
             get_string('duedate', 'organizer').':', $timedue,
             '', get_string('created', 'organizer') . " " . userdate(time()),

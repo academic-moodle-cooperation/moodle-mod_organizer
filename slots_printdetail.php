@@ -195,9 +195,16 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
 
     list(, $course, $organizer, ) = organizer_get_course_module_data();
 
+    $coursename = $course->idnumber ? $course->idnumber . " " . $course->fullname : $course->fullname;
+    $coursename .= $course->shortname ? " (" . $course->shortname . ")" : "";
+    $coursename = format_text($coursename, FORMAT_MOODLE, array("filter" => true, "trusted" => true));
+    $organizername = format_text($organizer->name, FORMAT_MOODLE, array("filter" => true, "trusted" => true));
+    $coursename = html_to_text($coursename);
+    $organizername = html_to_text($organizername);
+
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
     $trainers = organizer_get_slot_trainers($slotid, true);
-    $filename = $course->shortname . " - " . $organizer->name;
+    $filename = $coursename . "-" . $organizername;
     $columnwitdh = array();
     $titles = array();
     $columnformats = array();
@@ -378,11 +385,6 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
         $trainerstr .= $conn . $trainer->firstname . " " . $trainer->lastname;
         $conn = ", ";
     }
-    $coursename = $course->idnumber ? $course->idnumber . " " . $course->fullname : $course->fullname;
-    $coursename .= $course->shortname ? " (" . $course->shortname . ")" : "";
-
-    $coursename = format_text($coursename, FORMAT_PLAIN, array("filter" => true));
-    $organizername = format_text($organizer->name, FORMAT_PLAIN, array("filter" => true));
 
     $mpdftable = new \mod_organizer\MTablePDF($orientation, $columnwitdh);
     $mpdftable->SetTitle(
