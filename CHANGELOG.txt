@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.4.3 (2018-04-26)
+------------------
+
+* [FIXED] #5418: Error when writing groupmode in course_modules after an organizer instance was restored
+
 3.4.2 (2018-02-12)
 ------------------
 
