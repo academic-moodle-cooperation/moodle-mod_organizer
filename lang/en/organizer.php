@@ -37,12 +37,15 @@ $string['pluginadministration'] = 'Organizer administration';
 $string['pluginname'] = 'Organizer';
 $string['crontaskname'] = 'Organizer cron job';
 $string['search:activity'] = 'Organizer - activity information';
-$string['isgrouporganizer'] = 'Group appointments';
-$string['isgrouporganizer_help'] = 'Check this if you want this organizer to deal with groups instead of individual users.
+$string['traineringroupgroup'] = 'Group appointments';
+$string['traineringroupgroup_help'] = 'Check this if you want this organizer to deal with groups instead of individual users.
 Modus \'Use existing groups\': A single groupmember books a slot for the group.
 Modus \'Group creation per empty slot\': A course group is created for every new slot.
 Modus \'Group creation per booked slot\': A course group is created for every booked slot.
+If you check the checkbox not only the slot\'s participants but also its trainers are included in the groups.
 ';
+$string['includetraineringroups'] = 'Include trainer in groups';
+
 $string['groupmodenogroups'] = 'No group appointments';
 $string['groupmodeexistingcoursegroups'] = 'Use existing course groups';
 $string['groupmodeslotgroups'] = 'Group creation per empty slot';
@@ -379,6 +382,8 @@ $string['configrequiremodintro'] = 'Disable this option if you do not want to fo
 $string['configmaximumgrade'] = 'Sets the default value selected in the grade field when creating a new organizer. This is the maximum grade assignable to a student for his appointment.';
 $string['configabsolutedeadline'] = 'The default offset of the date and time selector from the current date and time.';
 $string['configrelativedeadline'] = 'The default time ahead of an appointment when the participants should be notified of it.';
+$string['allowcreationofpasttimeslots'] = 'Past time slots creation';
+$string['configallowcreationofpasttimeslots'] = 'Is it allowed to create past time slots?';
 $string['configdigest'] = 'Send summary of the next day appointments to the teacher.';
 $string['configemailteachers'] = 'Send E-mail notifications to teachers about registration status changes.';
 $string['configlocationlink'] = 'The link to a search engine used to show the way to the location. Place $searchstring in the URL where the query goes.';
@@ -1071,8 +1076,6 @@ $string['hidecalendar'] = 'Hide calendar';
 $string['hidecalendar_help'] = 'Check to hide the calendar in this organizer';
 $string['nocalendareventslotcreation'] = 'No calendar events for empty slots';
 $string['nocalendareventslotcreation_help'] = 'If you check this option no calendar events will be created when creating slots. Only appointments will create slot calendar events.';
-$string['includetraineringroups'] = 'Include trainer in groups';
-$string['includetraineringroups_help'] = 'If you check this option not only the slot\'s participants but also its trainers are included in the groups.';
 
 $string['finalgrade'] = 'This value has been set in the gradebook and can not be changed with the organizer.';
 

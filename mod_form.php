@@ -43,10 +43,10 @@ class mod_organizer_mod_form extends moodleform_mod
             $activateduedatecheckbox = false;
             // If mode of coursegroup creation is changed to 'slot creation' create groups from existing slots.
             $isgrouporganizer_db = $DB->get_field('organizer', 'isgrouporganizer', array('id' => $instance));
-            $isgrouporganizer_data = $mform->getElementValue('isgrouporganizer');
+            $isgrouporganizer_data = $mform->getElementValue('traineringroupgroup');
             $isgrouporganizer_data = reset($isgrouporganizer_data);
-            if ($isgrouporganizer_data != $isgrouporganizer_db &&
-                $isgrouporganizer_data == ORGANIZER_GROUPMODE_NEWGROUPSLOT) {
+            if ($isgrouporganizer_data[0] != $isgrouporganizer_db &&
+                $isgrouporganizer_data[0] == ORGANIZER_GROUPMODE_NEWGROUPSLOT) {
                 if ($slots = organizer_fetch_allslots($instance)) {
                     foreach($slots as $slot) {
                         if ($participants = organizer_fetch_slotparticipants($slot->id)){
@@ -128,33 +128,26 @@ class mod_organizer_mod_form extends moodleform_mod
         $mform->setDefault('relativedeadline', $organizerconfig->relativedeadline);
         $mform->addHelpButton('relativedeadline', 'relativedeadline', 'organizer');
 
-        $mform->addElement('select', 'isgrouporganizer', get_string('isgrouporganizer', 'organizer'), $this->_get_groupmodes());
-        $mform->setDefault('isgrouporganizer', 0);
-        $mform->addHelpButton('isgrouporganizer', 'isgrouporganizer', 'organizer');
-
         $traineringroupgroup = array();
         $traineringroupgroup[] = $mform->createElement(
-                'advcheckbox', 'includetraineringroups',
-                get_string('includetraineringroups', 'organizer'), null, null, array(0, 1)
+                'select', 'isgrouporganizer', '', $this->_get_groupmodes());
+        $mform->setDefault('isgrouporganizer', 0);
+        $traineringroupgroup[] = $mform->createElement(
+                'advcheckbox', 'includetraineringroups', '&nbsp;', get_string('includetraineringroups', 'organizer'),
+                null, array(0, 1)
         );
         $mform->setType('includetraineringroups', PARAM_INT);
         $mform->setDefault('includetraineringroups', 0);
-        $mform->addGroup($traineringroupgroup, 'traineringroupgroup', '&nbsp;', null, false);
-        $mform->addHelpButton('traineringroupgroup', 'includetraineringroups', 'organizer');
+        $mform->addGroup($traineringroupgroup, 'traineringroupgroup', get_string('traineringroupgroup', 'organizer'), null, false);
 
         $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->_get_visibilities());
         $mform->setType('visibility', PARAM_INT);
         $mform->setDefault('visibility', ORGANIZER_VISIBILITY_SLOT);
         $mform->addHelpButton('visibility', 'visibility', 'organizer');
 
-        $queuegroup = array();
-        $queuegroup[] = $mform->createElement(
-            'advcheckbox', 'queue',
-            get_string('queue', 'organizer'), null, null, array(0, 1)
-        );
+        $mform->addElement('advcheckbox', 'queue', get_string('queue', 'organizer'), null, null, array(0, 1));
         $mform->setType('queue', PARAM_INT);
-        $mform->addGroup($queuegroup, 'queuegroup', get_string('queue', 'organizer'), null, false);
-        $mform->addHelpButton('queuegroup', 'queue', 'organizer');
+        $mform->addHelpButton('queue', 'queue', 'organizer');
 
         $pickeroptions = array();
         $pickeroptions[0] = get_string('messages_none', 'organizer');
@@ -165,24 +158,20 @@ class mod_organizer_mod_form extends moodleform_mod
         $mform->setDefault('emailteachers', $organizerconfig->emailteachers);
         $mform->addHelpButton('emailteachers', 'emailteachers', 'organizer');
 
-        $calendargroup1 = array();
-        $calendargroup1[] = $mform->createElement(
+        $mform->addElement(
                 'advcheckbox', 'hidecalendar', get_string('hidecalendar', 'organizer'), null, null, array(0, 1)
         );
         $mform->setType('hidecalendar', PARAM_INT);
         $mform->setDefault('hidecalendar', 0);
-        $mform->addGroup($calendargroup1, 'hidecalendargroup', get_string('calendarsettings', 'organizer'), null, false);
-        $mform->addHelpButton('hidecalendargroup', 'hidecalendar', 'organizer');
+        $mform->addHelpButton('hidecalendar', 'hidecalendar', 'organizer');
 
-        $calendargroup2 = array();
-        $calendargroup2[] = $mform->createElement(
+        $mform->addElement(
                 'advcheckbox', 'nocalendareventslotcreation',
                 get_string('nocalendareventslotcreation', 'organizer'), null, null, array(0, 1)
         );
         $mform->setType('nocalendareventslotcreation', PARAM_INT);
         $mform->setDefault('nocalendareventslotcreation', 1);
-        $mform->addGroup($calendargroup2, 'eventscalendargroup', '&nbsp;', null, false);
-        $mform->addHelpButton('eventscalendargroup', 'nocalendareventslotcreation', 'organizer');
+        $mform->addHelpButton('nocalendareventslotcreation', 'nocalendareventslotcreation', 'organizer');
 
         if ($organizerconfig->absolutedeadline != 'never') {
             $absdefault = strtotime($organizerconfig->absolutedeadline);

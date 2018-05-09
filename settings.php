@@ -104,6 +104,12 @@ if ($ADMIN->fulltree) {
                     get_string('relativedeadline', 'organizer'),
                     get_string('configrelativedeadline', 'organizer'), 86400, $relchoices));
 
+    $yesno = array ('0' => get_string('no'), '1' => get_string('yes'));
+    $settings->add(
+            new admin_setting_configselect('organizer/allowcreationofpasttimeslots',
+                    get_string('allowcreationofpasttimeslots', 'organizer'),
+                    get_string('configallowcreationofpasttimeslots', 'organizer'), 0, $yesno));
+
     // User profile fields for printing single slots.
     $settings->add(new admin_setting_heading('organizersingleslotprintfields', '', get_string('singleslotprintfields', 'organizer')));
 

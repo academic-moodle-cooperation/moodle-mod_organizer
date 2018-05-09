@@ -52,9 +52,11 @@ define(
 
                 if (groupmodeselect.val() == 1) {
                     $('#id_groupmode').val('2');
+                    $('#id_groupingid').prop('disabled', false);
                     warningdiv.show();
                 } else {
                     $('#id_groupmode').val('0');
+                    $('#id_groupingid').prop('disabled', true);
                     warningdiv.hide();
                 }
             }

@@ -37,12 +37,14 @@ $string['pluginadministration'] = 'Terminplaner Administration';
 $string['pluginname'] = 'Terminplaner';
 $string['crontaskname'] = 'Terminplaner cron Job';
 $string['search:activity'] = 'Terminplaner - Aktivitätsinformation';
-$string['isgrouporganizer'] = 'Gruppentermine';
-$string['isgrouporganizer_help'] = 'Ankreuzen, um den Terminplaner im Gruppenmodus zu verwenden.
+$string['traineringroupgroup'] = 'Gruppentermine';
+$string['traineringroupgroup_help'] = 'Ankreuzen, um den Terminplaner im Gruppenmodus zu verwenden.
 Modus \'Existierende Kurs-Gruppen verwenden\': Ein Mitglied einer Kurs-Gruppe kann einen Termin für die ganze Gruppe buchen.
 Modus \'Gruppen per Slot erzeugen\': Beim Anlegen eines Slots wird eine Kurs-Gruppe für den Slot angelegt.
 Modus \'Gruppen per gebuchten Slot erzeugen\': Bei der ersten Buchung eines Slots wird eine Kurs-Gruppe für den Slot angelegt.
+Wenn Sie die Checkbox anklicken werden beim Anlegen von Gruppen neben den Teilnehmer/innen auch die Trainer/innen inkludiert.
 ';
+$string['includetraineringroups'] = 'Trainer in die Gruppen einschliessen';
 $string['groupmodenogroups'] = 'Kein Gruppenmodus';
 $string['groupmodeexistingcoursegroups'] = 'Existierende Kurs-Gruppen verwenden';
 $string['groupmodeslotgroups'] = 'Gruppen per Slot erzeugen';
@@ -362,6 +364,8 @@ $string['configrequiremodintro'] = 'Deaktivieren Sie diese Option, wenn die Eing
 $string['configmaximumgrade'] = 'Voreinstellung für den Wert im Feld "Höchste Bewertung" beim Erstellen eines neuen Terminplaners. Diese Einstellung entspricht dem Beurteilungsmaximum, das ein/e Teilnehmer/in erhalten kann.';
 $string['configabsolutedeadline'] = 'Voreinstellung für den Offset der Datums- und Zeitauswahl, ausgehend vom jetzigen Zeitpunkt.';
 $string['configrelativedeadline'] = 'Voreinstellung für den Zeitpunkt an dem Teilnehmer/innen vor einem Termin davon in Kenntnis gesetzt werden sollten.';
+$string['allowcreationofpasttimeslots'] = 'Vergangene Termine anlegen';
+$string['configallowcreationofpasttimeslots'] = 'Dürfen vergangene Termine angelegt werden?';
 $string['configdigest'] = 'Zusammenfassung der Termine für den jeweils nächsten Tag an Trainer/in versenden.';
 $string['configemailteachers'] = 'E-Mail Benachrichtigungen an Trainer/in bezüglich Änderungen der Anmeldungsstatus';
 $string['configlocationlink'] = 'Link zu Suchmaschine, die den Weg zum Zielort zeigt. Setzen Sie $searchstring in die URL ein, die die Anfrage bearbeitet.';
@@ -1073,8 +1077,6 @@ $string['hidecalendar'] = 'Kalender verbergen';
 $string['hidecalendar_help'] = 'Stellen Sie hier ein, ob der Kalender in diesem Terminplaner ausgeblendet werden soll.';
 $string['nocalendareventslotcreation'] = 'Keine Kalendereinträge für (noch) leere Slots';
 $string['nocalendareventslotcreation_help'] = 'Wenn Sie diese Option anklicken werden beim Anlegen von Terminen noch keine Kalendereinträge erstellt. Erst Verabredungen führen zu Kalendereinträgen für Termine.';
-$string['includetraineringroups'] = 'Trainer in die Gruppen einschliessen';
-$string['includetraineringroups_help'] = 'Wenn Sie diese Option anklicken werden beim Anlegen von Gruppen neben den Teilnehmer/innen auch die Trainer/innen inkludiert.';
 
 $string['finalgrade'] = 'Dieser Wert wurde in der Kursbewertung eingetragen und kann im Terminplaner nicht überschrieben werden.';
 

@@ -314,6 +314,8 @@ function organizer_prepare_and_send_message($data, $type) {
 
                     if ($app->allownewappointments == 1) {
                         $type = 'eval_notify_newappointment:student';
+                    } else {
+                        $type = 'eval_notify_student';
                     }
 
                     organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
@@ -404,46 +406,52 @@ function organizer_prepare_and_send_message($data, $type) {
         break;
         case 'assign_notify_student':
             $slot = $DB->get_record('organizer_slots', array('id' => $data->selectedslot));
-            if ($data->participant) {
-                  $apps = $DB->get_records(
-                          'organizer_slot_appointments', array('slotid' => $data->selectedslot, 'userid' => $data->participant)
-                  );
-            } else {
-                $apps = $DB->get_records(
-                        'organizer_slot_appointments', array('slotid' => $data->selectedslot, 'groupid' => $data->group)
-                );
-            }
-            foreach ($apps as $app) {
-                if ($app->groupid && !groups_is_member($app->groupid, $app->userid)) {
-                    continue;
+            $slotx = new organizer_slot($slot);
+            if (!$slotx->is_past_due()) {
+                if ($data->participant) {
+                    $apps = $DB->get_records(
+                            'organizer_slot_appointments', array('slotid' => $data->selectedslot, 'userid' => $data->participant)
+                    );
+                } else {
+                    $apps = $DB->get_records(
+                            'organizer_slot_appointments', array('slotid' => $data->selectedslot, 'groupid' => $data->group)
+                    );
                 }
-                  organizer_send_message(intval($app->teacherapplicantid), intval($app->userid), $slot, $type);
+                foreach ($apps as $app) {
+                    if ($app->groupid && !groups_is_member($app->groupid, $app->userid)) {
+                        continue;
+                    }
+                    organizer_send_message(intval($app->teacherapplicantid), intval($app->userid), $slot, $type);
+                }
             }
         break;
         case 'assign_notify_teacher':
             $slot = $DB->get_record('organizer_slots', array('id' => $data->selectedslot));
-            if ($data->participant) {
-                  $apps = $DB->get_records(
-                          'organizer_slot_appointments', array('slotid' => $data->selectedslot, 'userid' => $data->participant)
-                  );
-            } else {
-                $apps = $DB->get_records(
-                        'organizer_slot_appointments', array('slotid' => $data->selectedslot, 'groupid' => $data->group)
-                );
-            }
-            $app = reset($apps);
-            $trainers = organizer_get_slot_trainers($slot->id);
-            foreach($trainers as $trainerid) {
-                if ($app->teacherapplicantid != $trainerid) {
-                    $customdata = array();
-                    if ($data->participant) {
-                        $participant = $DB->get_record('user', array('id' => $data->participant));
-                        $customdata['participantname'] = fullname($participant, true);
-                    } else {
-                        $customdata['groupname'] = organizer_fetch_groupname($data->group);
+            $slotx = new organizer_slot($slot);
+            if (!$slotx->is_past_due()) {
+                if ($data->participant) {
+                    $apps = $DB->get_records(
+                            'organizer_slot_appointments', array('slotid' => $data->selectedslot, 'userid' => $data->participant)
+                    );
+                } else {
+                    $apps = $DB->get_records(
+                            'organizer_slot_appointments', array('slotid' => $data->selectedslot, 'groupid' => $data->group)
+                    );
+                }
+                $app = reset($apps);
+                $trainers = organizer_get_slot_trainers($slot->id);
+                foreach ($trainers as $trainerid) {
+                    if ($app->teacherapplicantid != $trainerid) {
+                        $customdata = array();
+                        if ($data->participant) {
+                            $participant = $DB->get_record('user', array('id' => $data->participant));
+                            $customdata['participantname'] = fullname($participant, true);
+                        } else {
+                            $customdata['groupname'] = organizer_fetch_groupname($data->group);
+                        }
+                        organizer_send_message(intval($app->teacherapplicantid), intval($trainerid), $slot, $type, null,
+                                $customdata);
                     }
-                    organizer_send_message(intval($app->teacherapplicantid), intval($trainerid), $slot, $type, null,
-                            $customdata);
                 }
             }
         break;

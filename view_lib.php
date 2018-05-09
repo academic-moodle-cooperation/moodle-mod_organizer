@@ -1145,7 +1145,7 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
     if (count($slots) != 0) {
         $numshown = 0;
         foreach ($slots as $slot) {
-            if (organizer_slot_is_free($slot, $assignid)) {
+            if (organizer_slot_is_free($slot, $assignid, true)) {
                    $row = new html_table_row();
                 foreach ($columns as $column) {
                     switch ($column) {
@@ -2343,10 +2343,19 @@ function organizer_popup_icon($type, $content) {
     return $output;
 }
 
-function organizer_slot_is_free($slot, $userid) {
+function organizer_slot_is_free($slot, $userid, $assignmentview = null) {
 
     $slotx = new organizer_slot($slot);
-    if (!$slotx->is_past_due() && !$slotx->is_full() && $slotx->is_available() ) {
+    if ($assignmentview) {
+        $organizerconfig = get_config('organizer');
+        if (isset($organizerconfig->allowcreationofpasttimeslots) && $organizerconfig->allowcreationofpasttimeslots!=1) {
+            $ispastdue = $slotx->is_past_due();
+        } else {
+            $ispastdue = false;
+        }
+
+        }
+    if (!$ispastdue && !$slotx->is_full() && $slotx->is_available() ) {
 
         $apps = organizer_get_all_user_appointments($slotx->organizerid, $userid);
         foreach ($apps as $app) {  // Is own slot?
