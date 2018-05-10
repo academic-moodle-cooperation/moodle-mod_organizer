@@ -139,15 +139,13 @@ class mod_organizer_mod_form extends moodleform_mod
         $mform->setType('includetraineringroups', PARAM_INT);
         $mform->setDefault('includetraineringroups', 0);
         $mform->addGroup($traineringroupgroup, 'traineringroupgroup', get_string('traineringroupgroup', 'organizer'), null, false);
+        $mform->disabledif ('includetraineringroups', 'isgrouporganizer', 'eq', 0);
+        $mform->disabledif ('includetraineringroups', 'isgrouporganizer', 'eq', 1);
 
         $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->_get_visibilities());
         $mform->setType('visibility', PARAM_INT);
         $mform->setDefault('visibility', ORGANIZER_VISIBILITY_SLOT);
         $mform->addHelpButton('visibility', 'visibility', 'organizer');
-
-        $mform->addElement('advcheckbox', 'queue', get_string('queue', 'organizer'), null, null, array(0, 1));
-        $mform->setType('queue', PARAM_INT);
-        $mform->addHelpButton('queue', 'queue', 'organizer');
 
         $pickeroptions = array();
         $pickeroptions[0] = get_string('messages_none', 'organizer');
@@ -157,6 +155,10 @@ class mod_organizer_mod_form extends moodleform_mod
         $mform->addElement('select', 'emailteachers', get_string('emailteachers', 'organizer'), $pickeroptions);
         $mform->setDefault('emailteachers', $organizerconfig->emailteachers);
         $mform->addHelpButton('emailteachers', 'emailteachers', 'organizer');
+
+        $mform->addElement('advcheckbox', 'queue', get_string('queue', 'organizer'), null, null, array(0, 1));
+        $mform->setType('queue', PARAM_INT);
+        $mform->addHelpButton('queue', 'queue', 'organizer');
 
         $mform->addElement(
                 'advcheckbox', 'hidecalendar', get_string('hidecalendar', 'organizer'), null, null, array(0, 1)
