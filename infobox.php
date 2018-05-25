@@ -63,10 +63,7 @@ function organizer_make_infobox($params, $organizer, $context) {
     user_preference_allow_ajax_update('mod_organizer_showfreeslotsonly', PARAM_BOOL);
     user_preference_allow_ajax_update('mod_organizer_showhiddenslots', PARAM_BOOL);
 
-    $jsparams = new \stdClass();
-    $jsparams->showlegendstring = get_string("infobox_showlegend", "organizer");
-    $jsparams->hidelegendstring = get_string("infobox_hidelegend", "organizer");
-    $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams));
+    $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array());
 
     return $output;
 }
@@ -192,43 +189,41 @@ function organizer_make_myapp_section($params, $organizer, $app) {
     return organizer_make_section('infobox_myslot', $output);
 }
 function organizer_make_slotoptions_section($params) {
-    $output = '<div style="float:left;">';
+    $output = '<div>';
 
     $displaymyslotsonly = $displayhiddenslots = $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW;
     $displayfreeslots = $displaypastslots = $params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW;
 
     $pref = get_user_preferences('mod_organizer_showmyslotsonly', false);
-    $output .= '<p' . ($displaymyslotsonly ? '' : ' style="display: none;" ') . '>' .
+    $output .= '<span' . ($displaymyslotsonly ? '' : ' style="display: none;" ') . '>' .
                 '<input type="checkbox" id="show_my_slots_only" ' .
                 ($pref ? 'checked="true" ' : '') . ' /> ' .
-                get_string('infobox_showmyslotsonly', 'organizer') . '</p>';
+                get_string('infobox_showmyslotsonly', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
 
     $pref = get_user_preferences('mod_organizer_showfreeslotsonly', false);
-    $output .= '<p' . ($displayfreeslots ? '' : ' style="display: none;" ') . '>' .
+    $output .= '<span' . ($displayfreeslots ? '' : ' style="display: none;" ') . '>' .
             '<input type="checkbox" id="show_free_slots_only" ' .
             ($pref ? 'checked="true" ' : '') . ' /> ' .
-            get_string('infobox_showfreeslots', 'organizer') . '</p>';
+            get_string('infobox_showfreeslots', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
 
     if ($params['slots']) { // When added slots are shown show hidden slots anyway.
         $pref = true;
     } else {
         $pref = get_user_preferences('mod_organizer_showhiddenslots', true);
     }
-    $output .= '<p' . ($displayhiddenslots ? '' : ' style="display: none;" ') . '>' .
+    $output .= '<span' . ($displayhiddenslots ? '' : ' style="display: none;" ') . '>' .
         '<input type="checkbox" id="show_hidden_slots" ' .
         ($pref ? 'checked="true" ' : '') . ' /> ' .
-        get_string('infobox_showhiddenslots', 'organizer') . '</p>';
+        get_string('infobox_showhiddenslots', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
 
     $pref = get_user_preferences('mod_organizer_showpasttimeslots', true);
-    $output .= '<p' . ($displaypastslots ? '' : ' style="display: none;" ') . '>' .
+    $output .= '<span' . ($displaypastslots ? '' : ' style="display: none;" ') . '>' .
                 '<input type="checkbox" id="show_past_slots" ' .
                 ($pref ? 'checked="true" ' : '') . ' /> ' .
-                get_string('infobox_showslots', 'organizer') . '</p>';
+                get_string('infobox_showslots', 'organizer') . '</span>';
 
+    $output .= organizer_generate_filterfield();
     $output .= '</div>';
-    $output .= '<div style="float:right;"><input id="toggle_legend" class= "btn btn-secondary" type="button" value="' .
-            get_string('infobox_showlegend', 'organizer') . '" /></div>';
-    $output .= '<div class="clearer"></div>';
-    return organizer_make_section('infobox_slotoverview', $output) .
-        organizer_make_section('infobox_legend', organizer_make_legend($params), true);
+    $output .= '<div class="clearer">&nbsp;</div>';
+    return organizer_make_section('infobox_slotoverview', $output);
 }

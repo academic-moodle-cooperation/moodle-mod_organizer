@@ -100,7 +100,7 @@ function organizer_generate_appointments_view($params, $instance) {
     $output = organizer_generate_tab_row($params, $instance->context);
     $output .= organizer_make_infobox($params, $instance->organizer, $instance->context);
     $output .= organizer_begin_form($params);
-    $output .= organizer_generate_button_bar($params, $organizerexpired);
+    $output .= organizer_generate_addslotbutton($params, $organizerexpired);
 
     $columns = array('select', 'singleslotcommands', 'datetime', 'location', 'participants', 'teacher', 'details');
     $align = array('center', 'center', 'left', 'left', 'left', 'left', 'center');
@@ -109,7 +109,7 @@ function organizer_generate_appointments_view($params, $instance) {
     $table = new html_table();
     $table->id = 'slot_overview';
     $table->attributes['class'] = 'generaltable boxaligncenter overview';
-    $table->head = organizer_generate_table_header($columns, $sortable, $params, true);
+    $table->head = organizer_generate_table_header($columns, $sortable, $params);
     $table->data = organizer_generate_table_content($columns, $params, $instance->organizer);
     $table->align = $align;
 
@@ -127,7 +127,7 @@ function organizer_generate_student_view($params, $instance) {
     if (time() > $instance->organizer->allowregistrationsfromdate ) {
         $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
         $align = array('left', 'left', 'left', 'left', 'center', 'center');
-        $sortable = array('datetime', 'location', 'teacher');
+        $sortable = array('datetime', 'location');
 
         $table = new html_table();
         $table->id = 'slot_overview';
@@ -203,7 +203,7 @@ function organizer_generate_assignment_view($params, $instance) {
 
     $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
     $align = array('left', 'left', 'left', 'left', 'center', 'center');
-    $sortable = array('datetime', 'location', 'teacher');
+    $sortable = array('datetime', 'location');
 
     $table = new html_table();
     $table->id = 'slot_overview';
@@ -265,9 +265,9 @@ function organizer_generate_tab_row($params, $context) {
     }
 }
 
-function organizer_generate_button_bar($params, $organizerexpired) {
+function organizer_generate_addslotbutton($params, $organizerexpired) {
 
-    $output = '<div name="button_bar" class="buttons">';
+    $output = '<div id="organizer_addbutton_div">';
 
     $slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
     $output .= '<input class="btn btn-primary" type="submit" value="' . get_string('btn_add', 'organizer') .
@@ -279,6 +279,17 @@ function organizer_generate_button_bar($params, $organizerexpired) {
     return $output;
 }
 
+function organizer_generate_filterfield() {
+
+    $output = '<span id="organizer_filterfield">' . get_string('filter') . ": ";
+
+    $output .= html_writer::tag('input', null,
+        array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
+
+    $output .= '</span>';
+
+    return $output;
+}
 
 function organizer_generate_actionlink_bar($context, $organizerexpired) {
 
@@ -375,7 +386,7 @@ function organizer_generate_table_header($columns, $sortable, $params, $usersort
             $links = "(" . html_writer::link($urln, get_string('name')) . $nameicon . "/"
                     . html_writer::link($urli, get_string('id', 'organizer')) . $idicon . ")";
 
-            $cell = new html_table_cell(get_string("th_{$column}", 'organizer') . " " . $links);
+            $cell = new html_table_cell(get_string("th_{$column}", 'organizer') . " " . $links . $input);
         } else {
             $cell = new html_table_cell(get_string("th_{$column}", 'organizer'));
         }
@@ -1940,7 +1951,8 @@ function organizer_location_link($slot) {
     }
 
     if (isset($slot->locationlink)) {
-        if (strpos($slot->locationlink, 'http://') === false) {
+        if (strpos($slot->locationlink, 'http://') === false &&
+                strpos($slot->locationlink, 'https://') === false  ) {
             $link = 'http://' . $slot->locationlink;
         } else {
             $link = $slot->locationlink;
@@ -2307,9 +2319,11 @@ function organizer_figure_out_unit($time) {
         $out = (($time / 3600) == 1) ? get_string('hour', 'organizer') : get_string('hour_pl', 'organizer');
         return array($out, 3600);
     } else if ($time % 60 == 0) {
-        return array(get_string('min', 'organizer'), 60);
+        $out = (($time / 60) == 1) ? get_string('min', 'organizer') : get_string('min_pl', 'organizer');
+        return array($out, 60);
     } else {
-        return array(get_string('sec', 'organizer'), 1);
+        $out = (($time == 1) ? get_string('sec', 'organizer') : get_string('sec_pl', 'organizer'));
+        return array($out, 1);
     }
 }
 
