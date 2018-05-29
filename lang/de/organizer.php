@@ -225,6 +225,7 @@ $string['assign'] = 'Zuweisen';
 $string['slotassignedby'] = 'Termin zugewiesen von';
 $string['slotlistempty'] = 'Es konnten keine Termine gefunden werden.';
 $string['assignsuccess'] = 'Der Termin wurde erfolgreich zugeteilt und der/die Teilnehmer/Innen verständigt.';
+$string['assignsuccessnotsent'] = 'Der Termin wurde erfolgreich zugeteilt ABER der/die Teilnehmer/Innen WURDEN NICHT verständigt.';
 
 $string['btn_add'] = 'Neue Slots hinzufügen';
 $string['btn_edit'] = 'Ausgewählte Slots bearbeiten';

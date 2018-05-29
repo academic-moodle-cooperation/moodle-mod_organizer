@@ -228,6 +228,7 @@ $string['assign'] = 'Assign';
 $string['slotassignedby'] = 'Slot assigned by';
 $string['slotlistempty'] = 'No slots were found.';
 $string['assignsuccess'] = 'The slot has been assigned successfully and the participant(s) has been notified.';
+$string['assignsuccessnotsent'] = 'The slot has been assigned successfully BUT the participant(s) has NOT been notified.';
 
 $string['evaluate'] = 'Evaluate';
 $string['eval_header'] = 'Selected time slots';

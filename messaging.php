@@ -275,6 +275,8 @@ function organizer_make_html($content, $organizer, $cm, $course) {
 function organizer_prepare_and_send_message($data, $type) {
     global $DB, $USER;
 
+    $sentok = false;
+
     include_once('lib.php');
 
     switch ($type) {
@@ -288,7 +290,7 @@ function organizer_prepare_and_send_message($data, $type) {
                     if ($app->groupid && !groups_is_member($app->groupid, $app->userid)) {
                         continue;
                     }
-                    organizer_send_message(intval($trainerid), intval($app->userid), $slot, $type);
+                    $sentok = organizer_send_message(intval($trainerid), intval($app->userid), $slot, $type);
                 }
             }
         break;
@@ -298,7 +300,7 @@ function organizer_prepare_and_send_message($data, $type) {
                 $trainers = organizer_get_slot_trainers($slot->id);
                 foreach($trainers as $trainerid) {
                     if ($USER->id != $trainerid) {
-                        organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
+                        $sentok = organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
                     }
                 }
             }
@@ -318,7 +320,7 @@ function organizer_prepare_and_send_message($data, $type) {
                         $type = 'eval_notify_student';
                     }
 
-                    organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
+                    $sentok = organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
                 }
             }
         break;
@@ -328,7 +330,7 @@ function organizer_prepare_and_send_message($data, $type) {
             if ($organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
                 $trainers = organizer_get_slot_trainers($slot->id);
                 foreach($trainers as $trainerid) {
-                    organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
+                    $sentok = organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
                 }
             }
         break;
@@ -338,7 +340,7 @@ function organizer_prepare_and_send_message($data, $type) {
             if ($organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
                 $trainers = organizer_get_slot_trainers($slot->id);
                 foreach($trainers as $trainerid) {
-                    organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
+                    $sentok = organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
                 }
             }
         break;
@@ -349,7 +351,7 @@ function organizer_prepare_and_send_message($data, $type) {
             if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG || $organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
                 $trainers = organizer_get_slot_trainers($slot->id);
                 foreach($trainers as $trainerid) {
-                    organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
+                    $sentok = organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
                 }
             }
         break;
@@ -359,7 +361,7 @@ function organizer_prepare_and_send_message($data, $type) {
             if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG || $organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
                 $trainers = organizer_get_slot_trainers($slot->id);
                 foreach($trainers as $trainerid) {
-                    organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
+                    $sentok = organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
                 }
             }
         break;
@@ -374,7 +376,7 @@ function organizer_prepare_and_send_message($data, $type) {
                     continue;
                 }
                 if ($app->userid != $USER->id) {
-                    organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
+                    $sentok = organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
                 }
             }
         break;
@@ -386,7 +388,7 @@ function organizer_prepare_and_send_message($data, $type) {
                     continue;
                 }
                 if ($app->userid != $USER->id) {
-                    organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
+                    $sentok = organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
                 }
             }
         break;
@@ -421,7 +423,7 @@ function organizer_prepare_and_send_message($data, $type) {
                     if ($app->groupid && !groups_is_member($app->groupid, $app->userid)) {
                         continue;
                     }
-                    organizer_send_message(intval($app->teacherapplicantid), intval($app->userid), $slot, $type);
+                    $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($app->userid), $slot, $type);
                 }
             }
         break;
@@ -449,7 +451,7 @@ function organizer_prepare_and_send_message($data, $type) {
                         } else {
                             $customdata['groupname'] = organizer_fetch_groupname($data->group);
                         }
-                        organizer_send_message(intval($app->teacherapplicantid), intval($trainerid), $slot, $type, null,
+                        $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($trainerid), $slot, $type, null,
                                 $customdata);
                     }
                 }
@@ -458,5 +460,5 @@ function organizer_prepare_and_send_message($data, $type) {
         default:
             print_error('Not debugged yet!');
     }
-    return;
+    return $sentok;
 }
