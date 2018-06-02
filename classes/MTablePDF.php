@@ -217,66 +217,64 @@ class MTablePDF extends \pdf
             $pagewidth = $this->getPageWidth();
             $scale = $pagewidth / 200;
             $oldfontsize = $this->getFontSize();
-            $this->setFontSize('12');
+            $this->setFontSize('10');
             // First row.
             $border = 0;
-            $height = 4;
+            $height = 3;
             $this->SetFont('', 'B');
-            $this->Cell(40 * $scale, $height, $header[0], $border, false, 'L', 0, '', 1, false);
+            $this->Cell(30 * $scale, $height, $header[0], $border, false, 'L', 0, '', 1, false);
             $this->SetFont('', '');
-            $this->Cell(160 * $scale, $height, $header[1], $border, false, 'L', 0, '', 1, false);
+            $this->Cell(170 * $scale, $height, $header[1], $border, false, 'L', 0, '', 1, false);
 
             $this->Ln();
 
             // Second row.
             $border = 0;
-            $height = 4;
+            $height = 3;
             $this->SetFont('', 'B');
-            $this->Cell(40 * $scale, $height, $header[2], $border, false, 'L', 0, '', 1, false);
+            $this->Cell(30 * $scale, $height, $header[2], $border, false, 'L', 0, '', 1, false);
             $this->SetFont('', '');
-            $this->Cell(160 * $scale, $height, $header[3], $border, false, 'L', 0, '', 1, false);
+            $this->Cell(170 * $scale, $height, $header[3], $border, false, 'L', 0, '', 1, false);
 
             $this->Ln();
 
             // Third row.
             $border = 0;
-            $height = 4;
+            $height = 3;
             $this->SetFont('', 'B');
-            $this->Cell(40 * $scale, $height, $header[4], $border, false, 'L', 0, '', 1, false);
+            $this->Cell(30 * $scale, $height, $header[4], $border, false, 'L', 0, '', 1, false);
             $this->SetFont('', '');
-            $this->Cell(160 * $scale, $height, $header[5], $border, false, 'L', 0, '', 1, false);
+            $this->Cell(170 * $scale, $height, $header[5], $border, false, 'L', 0, '', 1, false);
 
             $this->Ln();
 
             // Fourth row.
             $border = 0;
-            $height = 4;
+            $height = 3;
             $this->SetFont('', 'B');
-            $this->Cell(40 * $scale, $height, $header[6], $border, false, 'L', 0, '', 1, false);
+            $this->Cell(30 * $scale, $height, $header[6], $border, false, 'L', 0, '', 1, false);
             $this->SetFont('', '');
-            $this->Cell(160 * $scale, $height, $header[7], $border, false, 'L', 0, '', 1, false);
+            $this->Cell(170 * $scale, $height, $header[7], $border, false, 'L', 0, '', 1, false);
 
             $this->Ln();
 
-            $this->setFontSize('9');
-
             // Fifth row.
             $border = 0;
-            $height = 4;
-            $this->SetFont('', 'I');
-            $this->Cell(40 * $scale, $height, $header[8], $border, false, 'L', 0, '', 1, false);
+            $height = 3;
+            $this->SetFont('', 'B');
+            $this->Cell(30 * $scale, $height, $header[8], $border, false, 'L', 0, '', 1, false);
             $this->SetFont('', '');
-            $this->Cell(160 * $scale, $height, $header[9], $border, false, 'L', 0, '', 1, false);
+            $this->Cell(170 * $scale, $height, $header[9], $border, false, 'L', 0, '', 1, false);
 
             $this->Ln();
 
             // Sixth row.
             $border = 0;
-            $height = 4;
+            $height = 3;
             $this->SetFont('', 'B');
-            $this->Cell(40 * $scale, $height, $header[10], $border, false, 'L', 0, '', 1, false);
+            $this->Cell(30 * $scale, $height, $header[10], $border, false, 'L', 0, '', 1, false);
             $this->SetFont('', '');
-            $this->Cell(160 * $scale, $height, $header[11], $border, false, 'L', 0, '', 1, false);
+            $this->Cell(170 * $scale, $height, $header[11], $border, false, 'L', 0, '', 1, false);
 
             $this->Ln();
 

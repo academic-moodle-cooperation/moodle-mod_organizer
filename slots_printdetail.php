@@ -196,11 +196,9 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
     list(, $course, $organizer, ) = organizer_get_course_module_data();
 
     $coursename = $course->idnumber ? $course->idnumber . " " . $course->fullname : $course->fullname;
-    $coursename .= $course->shortname ? " (" . $course->shortname . ")" : "";
-    $coursename = format_text($coursename, FORMAT_MOODLE, array("filter" => true, "trusted" => true));
-    $organizername = format_text($organizer->name, FORMAT_MOODLE, array("filter" => true, "trusted" => true));
-    $coursename = html_to_text($coursename);
-    $organizername = html_to_text($organizername);
+    $coursename = organizer_filter_text($coursename);
+    $courseshortname = organizer_filter_text($course->shortname);
+    $organizername = organizer_filter_text($organizer->name);
 
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
     $trainers = organizer_get_slot_trainers($slotid, true);
@@ -395,11 +393,11 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
     $mpdftable->SetFontSize($textsize);
     $mpdftable->setheadertext(
             get_string('course')                  . ':', $coursename,
+            get_string('shortnamecourse')         . ':', $courseshortname,
             get_string('modulename', 'organizer') . ':', $organizername,
             get_string('slot', 'organizer')       . ':', $slotdatetime,
             get_string('trainer', 'organizer')    . ':', $trainerstr,
-            '', get_string('created', 'organizer') . " " . userdate(time()),
-            '', ''
+            get_string('created', 'organizer')    . ':', userdate(time())
     );
     $mpdftable->setTitles($titles);
     $mpdftable->setColumnFormat($columnformats);

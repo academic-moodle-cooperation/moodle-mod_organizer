@@ -1571,3 +1571,14 @@ function organizer_fetch_printdetail_entries($slot) {
 
     return $DB->get_records_sql($query, $params);
 }
+
+function organizer_filter_text($text) {
+    global $PAGE, $CFG;
+
+    $context = $PAGE->context;
+    $filtermanager = filter_manager::instance();
+    $filtermanager->setup_page_for_filters($PAGE, $context); // Setup global stuff filters may have.
+    $text = $filtermanager->filter_string($text, $context);
+
+    return $text;
+}
