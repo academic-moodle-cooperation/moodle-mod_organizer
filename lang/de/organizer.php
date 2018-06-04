@@ -429,6 +429,8 @@ $string['messageprovider:edit_notify_teacher'] = 'Terminplaner Änderungen (Trai
 $string['messageprovider:slotdeleted_notify_student'] = 'Terminplaner Slot absagen';
 $string['messageprovider:assign_notify_student'] = 'Terminplaner Zuweisung durch Trainer/in';
 $string['messageprovider:assign_notify_teacher'] = 'Terminplaner Zuweisung';
+$string['messageprovider:register_notify_teacher_queue'] = 'Terminplaner Wartelisteneintrag';
+$string['messageprovider:register_notify_teacher_unqueue'] = 'Terminplaner Wartelistenaustrag';
 
 /* Message templates following.
  * Please note that the following strings are available:

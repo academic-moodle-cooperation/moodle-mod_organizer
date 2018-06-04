@@ -441,6 +441,8 @@ $string['messageprovider:edit_notify_teacher'] = 'Organizer changes (Teacher)';
 $string['messageprovider:slotdeleted_notify_student'] = 'Organizer slots cancelled';
 $string['messageprovider:assign_notify_student'] = 'Organizer assignment by teacher';
 $string['messageprovider:assign_notify_teacher'] = 'Organizer assignment';
+$string['messageprovider:register_notify_teacher_queue'] = 'Organizer queueing notification';
+$string['messageprovider:register_notify_teacher_unqueue'] = 'Organizer unqueueing notification';
 
 $string['reg_status_organizer_expired'] = 'Organizer expired';
 $string['reg_status_slot_expired'] = 'Slot expired';

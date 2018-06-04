@@ -61,9 +61,9 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $strings->date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
     $strings->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
     $strings->location = $slot->location;
-    $strings->organizername = $organizer->name;
-    $strings->coursefullname = $course->fullname;
-    $strings->courseshortname = $course->shortname;
+    $strings->organizername = organizer_filter_text($organizer->name);
+    $strings->coursefullname = organizer_filter_text($course->fullname);
+    $strings->courseshortname = organizer_filter_text($course->shortname);
     $strings->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
 
     if ($namesplit[0] == "edit_notify_student" || $namesplit[0] == "edit_notify_teacher") {
@@ -183,13 +183,13 @@ function organizer_send_message_reminder($sender, $receiver, $organizerid, $type
     $strings->sendername = fullname($sender, true);
     $strings->receivername = fullname($receiver, true);
 
-    $strings->organizername = $organizer->name;
-    $strings->coursefullname = $course->fullname;
-    $strings->courseshortname = $course->shortname;
+    $strings->organizername = organizer_filter_text($organizer->name);
+    $strings->coursefullname = organizer_filter_text($course->fullname);
+    $strings->courseshortname = organizer_filter_text($course->shortname);
     $strings->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
 
     $courseurl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id));
-    $strings->courselink = html_writer::link($courseurl, $course->fullname);
+    $strings->courselink = html_writer::link($courseurl, $strings->coursefullname);
 
     if ($groupname) {
         $strings->groupname = $groupname;
@@ -260,10 +260,10 @@ function organizer_make_html($content, $organizer, $cm, $course) {
     $posthtml .= '</head>';
     $posthtml .= "<body id=\"email\">";
     $posthtml .= '<div class="navbar">' . '<a target="_blank" href="' . $CFG->wwwroot . '/course/view.php?id='
-            . $course->id . '">' . $course->shortname . '</a> &raquo; ' . '<a target="_blank" href="' . $CFG->wwwroot
-            . '/mod/organizer/index.php?id=' . $course->id . '">' . get_string('modulenameplural', 'organizer')
+            . $course->id . '">' . organizer_filter_text($course->shortname) . '</a> &raquo; ' . '<a target="_blank" href="' .
+            $CFG->wwwroot . '/mod/organizer/index.php?id=' . $course->id . '">' . get_string('modulenameplural', 'organizer')
             . '</a> &raquo; ' . '<a target="_blank" href="' . $CFG->wwwroot . '/mod/organizer/view.php?id=' . $cm->id
-            . '">' . format_string($organizer->name, true) . '</a>' . '</div>';
+            . '">' . organizer_filter_text($organizer->name) . '</a>' . '</div>';
     $posthtml .= '<div id="content"><p>' . str_replace("\n", '<br />', $content) . '</p></div>';
     $link = $CFG->wwwroot . '/mod/organizer/view.php?id=' . $cm->id;
     $posthtml .= '<div id="link"><p>' . get_string('maillink', 'organizer', $link) . '</p></div>';
