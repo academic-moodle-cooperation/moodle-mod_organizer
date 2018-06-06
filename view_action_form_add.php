@@ -63,10 +63,13 @@ class organizer_add_slots_form extends moodleform
 
         $mform->addElement('header', 'slotdetails', get_string('slotdetails', 'organizer'));
 
-        $mform->addElement('select', 'teacherid', get_string('teacher', 'organizer'), $this->_get_teacher_list());
-        $mform->setType('teacherid', PARAM_INT);
-        $mform->setDefault('teacherid', $USER->id);
-        $mform->addHelpButton('teacherid', 'teacherid', 'organizer');
+        $menu = $this->_get_trainer_list();
+        $select = $mform->addElement('select', 'trainerid', get_string('trainerid', 'organizer'), $menu);
+        $select->setMultiple(true);
+        $mform->setType('trainerid', PARAM_INT);
+        $mform->setDefault('trainerid', $USER->id);
+        $mform->addHelpButton('trainerid', 'trainerid', 'organizer');
+        $mform->addRule('trainerid', null, 'required');
 
         $mform->addElement('checkbox', 'teachervisible', get_string('teachervisible', 'organizer'));
         $mform->setType('teachervisible', PARAM_BOOL);
@@ -95,7 +98,6 @@ class organizer_add_slots_form extends moodleform
         $mform->setDefault('duration', 900);
         $duration = $mform->getElement('duration')->getElements();
         $duration[1]->removeOption(1);
-        $duration[1]->removeOption(86400);
         $duration[1]->removeOption(604800);
         $mform->addHelpButton('duration', 'duration', 'organizer');
 
@@ -107,7 +109,6 @@ class organizer_add_slots_form extends moodleform
         $mform->setDefault('gap', 0);
         $duration = $mform->getElement('gap')->getElements();
         $duration[1]->removeOption(1);
-        $duration[1]->removeOption(86400);
         $duration[1]->removeOption(604800);
         $mform->addHelpButton('gap', 'gap', 'organizer');
 
@@ -119,7 +120,7 @@ class organizer_add_slots_form extends moodleform
         global $DB;
         $cm = get_coursemodule_from_id('organizer', $data['id'], 0, false, MUST_EXIST);
         $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
-        if ($organizer->isgrouporganizer) {
+        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $mform->addElement('hidden', 'isgrouporganizer', '1');
             $mform->setType('isgrouporganizer', PARAM_BOOL);
 
@@ -214,7 +215,7 @@ class organizer_add_slots_form extends moodleform
         $params = new \stdClass();
         $params->totalslots = $totalslots;
         $params->displayallslots = $displayallslots;
-        if ($organizer->isgrouporganizer) {
+        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $params->totaltotal = get_string("totaltotal_groups", "organizer");
             $params->totalday = get_string("totalday_groups", "organizer");
         } else {
@@ -267,10 +268,13 @@ class organizer_add_slots_form extends moodleform
         if ($data['startdate'] != 0 && $data['enddate'] != 0) {
             $today = mktime(0, 0, 0, date("m", time()), date("d", time()), date("Y", time()));
             if ($data['startdate'] < $today) {
-                $a = new stdClass();
-                $a->now = userdate($data['startdate'], get_string('datetemplate', 'organizer'));
-                $errors['startdate'] = get_string('err_startdate', 'organizer', $a) . ' (' . get_string("today") . ": "
-                        . userdate($today, get_string('datetemplate', 'organizer')) . ')';
+                $organizerconfig = get_config('organizer');
+                if (isset($organizerconfig->allowcreationofpasttimeslots) && $organizerconfig->allowcreationofpasttimeslots!=1) {
+                    $a = new stdClass();
+                    $a->now = userdate($data['startdate'], get_string('datetemplate', 'organizer'));
+                    $errors['startdate'] = get_string('err_startdate', 'organizer', $a) . ' (' . get_string("today") . ": "
+                            . userdate($today, get_string('datetemplate', 'organizer')) . ')';
+                }
             }
             if ($data['startdate'] > $data['enddate']) {
                 $errors['enddate'] = get_string('err_enddate', 'organizer');
@@ -282,18 +286,13 @@ class organizer_add_slots_form extends moodleform
 
         // For new slots.
         if (isset($data['newslots'])) {
-            $invalidslots = array();
             $slots = $data['newslots'];
 
             $slotcount = 0;
 
-            // Slot "from" after slot "to"?
+            // Count used slots
             for ($i = 0; $i < count($slots); $i++) {
                 $slot = $slots[$i];
-                if ($slot['day'] != -1 && ($slot['from'] >= $slot['to'])) {
-                    $errors['slotgroup' . $i] = get_string('err_fromto', 'organizer');
-                    $invalidslots[] = $i;
-                }
                 if ($slot['day'] != -1) {
                     $slotcount++;
                 }
@@ -302,13 +301,10 @@ class organizer_add_slots_form extends moodleform
             // Are there overlapping slots? Is the gap considered?
             for ($i = 0; $i < count($slots); $i++) {
                 $currentslot = $slots[$i];
-                if (in_array($i, $invalidslots)) {
-                    continue;
-                }
                 $message = ' ';
                 for ($j = 0; $j < $i; $j++) {
                     $otherslot = $slots[$j];
-                    if (!in_array($j, $invalidslots) && $currentslot['day'] == $otherslot['day']
+                    if ($currentslot['day'] == $otherslot['day']
                         && ($this->_between($currentslot['from'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
                         || $this->_between($currentslot['to'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
                         || $this->_between($otherslot['from'], $currentslot['from'] - $gap, $currentslot['to'] + $gap)
@@ -440,6 +436,11 @@ class organizer_add_slots_form extends moodleform
         $slotgroup[] = $mform->createElement('select', "{$name}[from]", '', $this->pickeroptions);
         $mform->setType("{$name}[from]", PARAM_INT);
         $mform->setDefault("{$name}[from]", 8 * 3600);
+
+        $slotgroup[] = $mform->createElement('select', "{$name}[dayto]", '', $this->weekdays);
+        $mform->setType("{$name}[dayto]", PARAM_INT);
+        $mform->setDefault("{$name}[dayto]", -1);
+
         $slotgroup[] = $mform->createElement('static', '', '', get_string('slotto', 'organizer'));
         $slotgroup[] = $mform->createElement('select', "{$name}[to]", '', $this->pickeroptions);
         $mform->setType("{$name}[to]", PARAM_INT);
@@ -467,21 +468,21 @@ class organizer_add_slots_form extends moodleform
         return $visibilities;
     }
 
-    private function _get_teacher_list() {
+    private function _get_trainer_list() {
         $context = organizer_get_context();
 
-        $teachersraw = get_users_by_capability($context, 'mod/organizer:leadslots');
+        $trainerraw = get_users_by_capability($context, 'mod/organizer:leadslots');
 
-        $teachers = array();
-        foreach ($teachersraw as $teacher) {
+        $trainers = array();
+        foreach ($trainerraw as $trainer) {
             $a = new stdClass();
-            $a->firstname = $teacher->firstname;
-            $a->lastname = $teacher->lastname;
-            $name = get_string('fullname_template', 'organizer', $a) . " ({$teacher->email})";
-            $teachers[$teacher->id] = $name;
+            $a->firstname = $trainer->firstname;
+            $a->lastname = $trainer->lastname;
+            $name = get_string('fullname_template', 'organizer', $a) . " ({$trainer->email})";
+            $trainers[$trainer->id] = $name;
         }
 
-        return $teachers;
+        return $trainers;
     }
 
     private function _between($num, $lower, $upper) {

@@ -37,8 +37,19 @@ $string['pluginadministration'] = 'Organizer administration';
 $string['pluginname'] = 'Organizer';
 $string['crontaskname'] = 'Organizer cron job';
 $string['search:activity'] = 'Organizer - activity information';
-$string['isgrouporganizer'] = 'Group appointments';
-$string['isgrouporganizer_help'] = "Check this if you want this organizer to deal with groups instead of individual users. Note that, if left unchecked, the organizer still allows more users to attend the same appointment.";
+$string['traineringroupgroup'] = 'Group appointments';
+$string['traineringroupgroup_help'] = 'Check this if you want this organizer to deal with groups instead of individual users.
+Modus \'Use existing groups\': A single groupmember books a slot for the group.
+Modus \'Group creation per empty slot\': A course group is created for every new slot.
+Modus \'Group creation per booked slot\': A course group is created for every booked slot.
+If you check the checkbox not only the slot\'s participants but also its trainers are included in the groups.
+';
+$string['includetraineringroups'] = 'Include trainer in groups';
+
+$string['groupmodenogroups'] = 'No group appointments';
+$string['groupmodeexistingcoursegroups'] = 'Use existing course groups';
+$string['groupmodeslotgroups'] = 'Group creation per empty slot';
+$string['groupmodeslotgroupsappointment'] = 'Group creation per booked slot';
 $string['appointmentdatetime'] = 'Date & time';
 $string['multipleappointmentstartdate'] = 'Start date';
 $string['multipleappointmentenddate'] = 'End date';
@@ -57,6 +68,7 @@ $string['allowsubmissionsfromdatesummary'] = 'This organizer will accept registr
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The organizer details and registration form will be available from <strong>{$a}</strong>';
 $string['duedate'] = 'Due date';
 $string['availability'] = 'Availability';
+$string['allowsubmissionstodate'] = 'Registration end';
 
 $string['eventslotviewed'] = 'Appointments tab viewed.';
 $string['eventregistrationsviewed'] = 'Registrations tab viewed.';
@@ -107,8 +119,8 @@ $string['slottimeframesheader'] = 'Specific time frames';
 $string['slottimeframesheader_help'] = 'This section allows for weekday-based definition of time frames which will be filled with appointment slots with properties specified above. There can be more than one time frame per day. If a time frame on Monday is selected, it will generate time slots for every Monday between the starting and the ending date (inclusive).';
 $string['slotdetails'] = 'Slot details';
 $string['back'] = 'Back';
-$string['teacherid'] = 'Teacher';
-$string['teacherid_help'] = 'Select the teacher you want to lead the appointments';
+$string['trainerid'] = 'Teacher';
+$string['trainerid_help'] = 'Select the teacher you want to lead the appointments';
 $string['teacher'] = 'Teacher';
 $string['otherheader'] = 'Other';
 $string['day_0'] = 'Monday';
@@ -216,6 +228,7 @@ $string['assign'] = 'Assign';
 $string['slotassignedby'] = 'Slot assigned by';
 $string['slotlistempty'] = 'No slots were found.';
 $string['assignsuccess'] = 'The slot has been assigned successfully and the participant(s) has been notified.';
+$string['assignsuccessnotsent'] = 'The slot has been assigned successfully BUT the participant(s) has NOT been notified.';
 
 $string['evaluate'] = 'Evaluate';
 $string['eval_header'] = 'Selected time slots';
@@ -225,9 +238,13 @@ $string['availableslotsfor'] = 'Available slots for';
 
 $string['btn_add'] = 'Add new slots';
 $string['btn_edit'] = 'Edit selected slots';
+$string['btn_editsingle'] = 'Edit selected slot';
 $string['btn_delete'] = 'Remove selected slots';
+$string['btn_deletesingle'] = 'Remove selected slot';
 $string['btn_eval'] = 'Grade selected slots';
+$string['btn_evalsingle'] = 'Grade selected slot';
 $string['btn_print'] = 'Print selected slots';
+$string['btn_printsingle'] = 'Print selected slot';
 $string['printsubmit'] = 'Display printable table';
 $string['title_print'] = 'Print slots';
 
@@ -366,6 +383,8 @@ $string['configrequiremodintro'] = 'Disable this option if you do not want to fo
 $string['configmaximumgrade'] = 'Sets the default value selected in the grade field when creating a new organizer. This is the maximum grade assignable to a student for his appointment.';
 $string['configabsolutedeadline'] = 'The default offset of the date and time selector from the current date and time.';
 $string['configrelativedeadline'] = 'The default time ahead of an appointment when the participants should be notified of it.';
+$string['allowcreationofpasttimeslots'] = 'Past time slots creation';
+$string['configallowcreationofpasttimeslots'] = 'Is it allowed to create past time slots?';
 $string['configdigest'] = 'Send summary of the next day appointments to the teacher.';
 $string['configemailteachers'] = 'Send E-mail notifications to teachers about registration status changes.';
 $string['configlocationlink'] = 'The link to a search engine used to show the way to the location. Place $searchstring in the URL where the query goes.';
@@ -383,9 +402,9 @@ $string['configmonth'] = 'month';
 $string['configmonths'] = 'months';
 $string['configyear'] = 'year';
 $string['configahead'] = 'ahead';
-
 $string['configemailteachers_label'] = 'Send E-mail notifications to teachers';
 $string['configdigest_label'] = 'Send appointment digest to teachers';
+$string['configsingleslotprintfield'] = 'user field to be printed out when single slot is printed';
 
 $string['organizer:addinstance'] = 'Add a new organizer';
 $string['organizer:comment'] = 'Add comments';
@@ -422,6 +441,8 @@ $string['messageprovider:edit_notify_teacher'] = 'Organizer changes (Teacher)';
 $string['messageprovider:slotdeleted_notify_student'] = 'Organizer slots cancelled';
 $string['messageprovider:assign_notify_student'] = 'Organizer assignment by teacher';
 $string['messageprovider:assign_notify_teacher'] = 'Organizer assignment';
+$string['messageprovider:register_notify_teacher_queue'] = 'Organizer queueing notification';
+$string['messageprovider:register_notify_teacher_unqueue'] = 'Organizer unqueueing notification';
 
 $string['reg_status_organizer_expired'] = 'Organizer expired';
 $string['reg_status_slot_expired'] = 'Slot expired';
@@ -1024,6 +1045,7 @@ $string['print_return'] = 'Return to slot overview';
 
 $string['message_error_slot_full_single'] = 'This timeslot has no free places left!';
 $string['message_error_slot_full_group'] = 'This timeslot is already taken!';
+$string['message_error_groupsynchronization'] = 'Slotgroup synchronization failed!';
 
 $string['message_error_unknown_unqueue'] = 'Your waiting list entry could not be removed! Unknown error.';
 $string['message_error_unknown_unregister'] = 'Your registration could not be removed! Unknown error.';
@@ -1052,8 +1074,11 @@ $string['visibility_anonymous'] = 'Anonymous';
 $string['visibility_slot'] = 'Only visible to slot members';
 $string['visibility_all'] = 'Visible';
 
+$string['calendarsettings'] = 'Calendar settings';
 $string['hidecalendar'] = 'Hide calendar';
 $string['hidecalendar_help'] = 'Check to hide the calendar in this organizer';
+$string['nocalendareventslotcreation'] = 'No calendar events for empty slots';
+$string['nocalendareventslotcreation_help'] = 'If you check this option no calendar events will be created when creating slots. Only appointments will create slot calendar events.';
 
 $string['finalgrade'] = 'This value has been set in the gradebook and can not be changed with the organizer.';
 
@@ -1074,3 +1099,16 @@ $string['totalday'] = 'xxx slots for yyy persons';
 $string['totalday_groups'] = 'xxx slots for yyy groups';
 $string['totaltotal'] = 'Total: xxx slots for yyy persons';
 $string['totaltotal_groups'] = 'Total: xxx slots for yyy groups';
+
+$string['singleslotprintfield'] = 'Print slot user field';
+$string['singleslotprintfields'] = 'Print slot user fields';
+$string['singleslotprintfield0'] = 'Print slot user field';
+$string['singleslotprintfield0_help'] = 'These user fields are used for each participant when a single slot is printed out.';
+$string['attended'] = 'attended';
+$string['signature'] = 'Signature';
+$string['slot'] = 'Appointment';
+$string['trainer'] = 'Trainer';
+$string['created'] = 'Created';
+$string['nosingleslotprintfields'] = 'Printing is not possible. There are no user fields defined. See the organizer settings.';
+$string['dbid'] = 'DB ID';
+$string['auth'] = 'Authentification method';

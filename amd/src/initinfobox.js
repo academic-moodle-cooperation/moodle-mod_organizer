@@ -32,19 +32,13 @@ define(
      * @constructor
      * @alias module:mod_organizer/initinfobox
      */
-        var Initinfobox = function() {
-            this.showlegendstring = "";
-            this.hidelegendstring = "";
-        };
+        var Initinfobox = function() {};
 
         var instance = new Initinfobox();
 
-        instance.init = function (param) {
+        instance.init = function () {
 
-            instance.showlegendstring = param.showlegendstring;
-            instance.hidelegendstring = param.hidelegendstring;
-
-            // What happens when a view option checkbox is clicked.
+            // What happens when a view option checkbox is clicked or the filter field has been changed.
             function toggle_all_slots() {
                 var tablebody = $('#slot_overview tbody');
                 var showpastslots = $('#show_past_slots').is(':checked');
@@ -52,7 +46,6 @@ define(
                 var showfreeslotsonly = $('#show_free_slots_only').is(':checked');
                 var showhiddenslots = $('#show_hidden_slots').is(':checked');
 
-                tablebody.hide();
                 tablebody.find('tr').show();
 
                 if (!showhiddenslots) {
@@ -69,6 +62,34 @@ define(
 
                 if (showfreeslotsonly) {
                     tablebody.find('tr.not_free_slot').hide();
+                }
+
+                var target = $('.organizer_filtertable');
+                if (target) {
+                    var filter = target.val().toUpperCase();
+                    if (filter) {
+                        var tr = tablebody.find('tr:visible:not(.info)');
+                        // Loop through all table rows, and hide those who don't match the search query
+                        var i, j, td, text, found;
+                        for (i = 0; i < tr.length; i++) {
+                            found = false;
+                            td = tr[i].getElementsByTagName("td");
+                            if (td) {
+                                for (j = 0; j < td.length; j++) {
+                                    text = extracttext(td[j]);
+                                    if (text) {
+                                        if (text.toUpperCase().indexOf(filter) > -1) {
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if (!found) {
+                                $(tr[i]).hide();
+                            }
+                        }
+                    }
                 }
 
                 tablebody.show();
@@ -119,47 +140,43 @@ define(
                 }
             }
 
-            function toggle_legend() {
-                $('#infobox_legend_box').toggle();
-                $('#toggle_legend').val(function() {
-                    if ($(this).val() == instance.hidelegendstring) {
-                        return instance.showlegendstring;
-                    } else {
-                        return instance.hidelegendstring;
+            // extract visible text from 'element' down thru DOM tree
+            function extracttext(element) {
+                var text, last, img;
+
+                last = $(element).clone().find("script,style").remove().end();
+                text = last.text();
+                if (!text) {
+                    img = last.find('img:not(.icon)').first();
+                    var attr = img.attr('alt');
+                    if (typeof attr !== typeof undefined && attr !== false) {
+                        text = attr;
                     }
-                });
+                }
+                return text;
             }
 
             $('#show_past_slots').on('click', toggle_all_slots);
             $('#show_my_slots_only').on('click', toggle_all_slots);
             $('#show_free_slots_only').on('click', toggle_all_slots);
             $('#show_hidden_slots').on('click', toggle_all_slots);
-            $('#toggle_legend').on('click', toggle_legend);
+            $('.organizer_filtertable').on('keyup', toggle_all_slots);
 
             toggle_all_slots();
 
             function set_user_preference(name, value) {
-                var cfg = {
-                    method : 'get',
-                    url : config.wwwroot + '/lib/ajax/setuserpref.php',
-                    data: {
-                        'sesskey': config.sesskey,
-                        'pref': encodeURI(name),
-                        'value': encodeURI(value)
-                    },
-                    dataType: 'json',
-                    beforeSend: function() {
-                        log.info("set user preference " + name + ": " + value, "organizer");
-                    },
-                    success: function() {
-                        log.info("set user preference OK", "organizer");
-                    },
-                    error: function() {
-                        log.error("set user preference FAILED", "organizer");
-                    }
-                };
 
-                $.ajax(cfg);
+
+                $.get( config.wwwroot + '/lib/ajax/setuserpref.php', {
+                    sesskey: config.sesskey,
+                    pref: encodeURI(name),
+                    value: encodeURI(value)
+                } , 'json').done(function( data ) {
+                    if (data != 'OK') {
+                        log.error(data);
+                    }
+                });
+
             }
         };
 

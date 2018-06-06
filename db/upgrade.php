@@ -309,7 +309,7 @@ function xmldb_organizer_upgrade($oldversion) {
         $table = new xmldb_table('organizer');
         $field = new xmldb_field('hidecalendar', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'visibility');
 
-        // Conditionally launch add field hidecalender.
+        // Conditionally launch add field hidecalendar.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -403,9 +403,7 @@ function xmldb_organizer_upgrade($oldversion) {
             $update = $DB->update_record('event', $event);
             // Insert event-ds for the organizer instance, if there is none yet.
             if (!$DB->get_field(
-                'event', 'id',
-                array ('modulename' => 'organizer',
-                            'instance' => $record->organizerid,
+                'event', 'id', array ('modulename' => 'organizer', 'instance' => $record->organizerid,
                 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE)
             )) {
                 organizer_change_event_instance($record->organizerid);
@@ -429,5 +427,161 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017112201, 'organizer');
     }
 
-    return true;
+    if ($oldversion < 2018012909) {
+
+        // Define table organizer_slot_trainer to be created.
+        $table = new xmldb_table('organizer_slot_trainer');
+
+        // Adding fields to table organizer_slot_trainer.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('slotid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('trainerid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('eventid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        // Adding keys to table organizer_slot_trainer.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('slot', XMLDB_KEY_FOREIGN, array('slotid'), 'organizer_slots', array('id'));
+        $table->add_key('trainer', XMLDB_KEY_FOREIGN, array('trainerid'), 'user', array('id'));
+
+        // Conditionally launch create table for organizer_slot_trainer.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+            // Shift field trainerid of table organizer_slots to the new table organizer_slot_trainer.
+            $query = 'SELECT {organizer_slots}.id slotid, {organizer_slots}.teacherid, {organizer_slots}.eventid
+                      FROM {organizer_slots}';
+            $records = $DB->get_records_sql($query);
+
+            $newrecord = new stdClass();
+
+            foreach ($records as $record) {
+
+                $newrecord->slotid = $record->slotid;
+                $newrecord->trainerid = $record->teacherid;
+                $newrecord->eventid = $record->eventid;
+                $newid = $DB->insert_record('organizer_slot_trainer', $newrecord);
+            }
+
+        }
+
+        // Define index slots_userid (not unique) to be dropped form organizer_slots.
+        $table = new xmldb_table('organizer_slots');
+        $index = new xmldb_index('slots_userid', XMLDB_INDEX_NOTUNIQUE, array('teacherid'));
+        $field = new xmldb_field('teacherid');
+
+        // Conditionally launch drop index slots_userid.
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        // Conditionally drop field teacherid.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Define field nocalendareventslotcreation to be added to organizer.
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('nocalendareventslotcreation', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'hidecalendar');
+
+        // Conditionally launch add field nocalendareventslotcreation.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field coursegroup to be added to organizer_slots.
+        $table = new xmldb_table('organizer_slots');
+        $field = new xmldb_field('coursegroup', XMLDB_TYPE_INTEGER, '4', null, null, null, null, 'visible');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2018012909, 'organizer');
+    }
+
+    if ($oldversion < 2018012921) {
+
+        // Define field nocalendareventslotcreation to be added to organizer.
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('includetraineringroups', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'nocalendareventslotcreation');
+
+        // Conditionally launch add field nocalendareventslotcreation.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define fields singleslotprintfields to be added to organizer.
+        $field = new xmldb_field('singleslotprintfield0', XMLDB_TYPE_TEXT, null, null, null, null, null, 'includetraineringroups');
+        // Conditionally launch add field singleslotprintfield0.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield1', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield0');
+        // Conditionally launch add field singleslotprintfield1.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield2', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield1');
+        // Conditionally launch add field singleslotprintfield2.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield3', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield2');
+        // Conditionally launch add field singleslotprintfield3.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield4', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield3');
+        // Conditionally launch add field singleslotprintfield4.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield5', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield4');
+        // Conditionally launch add field singleslotprintfield5.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield6', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield5');
+        // Conditionally launch add field singleslotprintfield6.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield7', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield6');
+        // Conditionally launch add field singleslotprintfield7.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield8', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield7');
+        // Conditionally launch add field singleslotprintfield8.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('singleslotprintfield9', XMLDB_TYPE_TEXT, null, null, null, null, null, 'singleslotprintfield8');
+        // Conditionally launch add field singleslotprintfield9.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $sqlparams = array('modulename' => 'organizer', 'eventtype' => 'Instance');
+        $query = 'SELECT {event}.*
+                  FROM {event}
+                  WHERE {event}.modulename = :modulename AND {event}.eventtype = :eventtype AND {event}.timeduration > 0';
+        $records = $DB->get_records_sql($query, $sqlparams);
+
+        // Change old calendar instance events to new scheme: One event fromdate, one event todate, duration 0.
+        foreach ($records as $record) {
+            $newtimestart = $DB->get_field('organizer', 'duedate', array('id' => $record->instance));
+            $newname = get_string('allowsubmissionstodate', 'organizer') . ": " . $record->name;
+            $record->timeduration = 0;
+            $record->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $record->name;
+            $DB->update_record('event', $record);
+            $record->timestart = $newtimestart;
+            $record->timesort = $newtimestart;
+            $record->name = $newname;
+            unset($record->id);
+            $DB->insert_record('event', $record);
+        }
+
+        upgrade_mod_savepoint(true, 2018012921, 'organizer');
+    }
+
+        return true;
 }

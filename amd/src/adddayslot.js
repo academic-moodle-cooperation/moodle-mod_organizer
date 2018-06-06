@@ -105,20 +105,31 @@ define(
                 var target = $(e.target);
                 var name = target.attr("name");
                 var i = parseInt(name.replace('newslots[', ''));
+                var valdayfrom = parseInt($("select[name='newslots\["+i+"\]\[day\]']").val());
+                var valdayto = parseInt($("select[name='newslots\["+i+"\]\[dayto\]']").val());
                 var valfrom = parseInt($("select[name='newslots\["+i+"\]\[from\]']").val());
-                var valto = parseInt($("select[name='newslots\["+i+"\]\[to\]']").val());
-                if (valfrom > valto) {
-                    $("select[name='newslots\["+i+"\]\[to\]']").val(valfrom);
+                if (valdayfrom != -1 && valdayto == -1) {
+                    var adaptvalue;
+                    if (valfrom < 29700) {
+                        adaptvalue = valfrom + 300;
+                        $("select[name='newslots\["+i+"\]\[dayto\]']").val(valdayfrom);
+                        $("select[name='newslots\["+i+"\]\[to\]']").val(adaptvalue);
+                    } else {
+                        adaptvalue = 0;
+                        var adaptday = (valdayto + 1) % 6;
+                        $("select[name='newslots\["+i+"\]\[dayto\]']").val(adaptday);
+                        $("select[name='newslots\["+i+"\]\[to\]']").val(adaptvalue);
+                    }
                 }
-                evaluaterow(i);
-                writetotal();
+                if (valdayfrom != -1 && valdayto != -1) {
+                    evaluaterow(i);
+                    writetotal();
+                }
             }
 
             // Evaluate a certain row to make forecast.
             function evaluaterow(i) {
-                var days = getdays(i);
-                var slots = getslotsperday(i);
-                slots = slots * days;
+                var slots = getslots(i);
                 var pax = getpax();
                 pax = pax * slots;
                 var forecaststring = instance.totalday.replace("xxx", slots.toString()).replace("yyy", pax.toString());
@@ -135,41 +146,28 @@ define(
                 writetotal();
             }
 
-            function getdays(i) {
-                var weekdays = 0;
-                var val = parseInt($("select[name^='newslots\["+i+"\]\[day\]']").val());
-                if (val >= 0 && val <= 6) {
-                    var weekdayindex = val+1;
-                    weekdays = getweekdays(weekdayindex == 7 ? 0 : weekdayindex);
-                }
-                return weekdays;
-            }
+            function getslots(i) {
 
-            function getweekdays(weekdayindex) {
-                var foundweekdays = 0;
                 var startdateday = $("select[name='startdate\[day\]']").val();
                 var startdatemonth = $("select[name='startdate\[month\]']").val() - 1;
                 var startdateyear = $("select[name='startdate\[year\]']").val();
-                var startdate = new Date(startdateyear, startdatemonth, startdateday);
+                var startdatedate = new Date(startdateyear, startdatemonth, startdateday);
+                var startdate = startdatedate.getTime()/1000;
                 var enddateday = $("select[name='enddate\[day\]']").val();
                 var enddatemonth = $("select[name='enddate\[month\]']").val() - 1;
                 var enddateyear = $("select[name='enddate\[year\]']").val();
-                var enddate = new Date(enddateyear, enddatemonth, enddateday);
-                for (var idate = startdate;idate <= enddate;idate=adddays(idate, 1)) {
-                    if (idate.getDay() == weekdayindex) {
-                        foundweekdays++;
-                    }
-                }
-                return foundweekdays;
-            }
-
-            function getslotsperday(i) {
-                var slotsfound = 0;
-                var timefrom = parseInt($("select[name^='newslots\["+i+"\]\[from\]']").val());
-                var timeto = parseInt($("select[name^='newslots\["+i+"\]\[to\]']").val());
-                if (timeto <= timefrom) {
+                var enddatedate = new Date(enddateyear, enddatemonth, enddateday);
+                var enddate = enddatedate.getTime()/1000;
+                var valday = parseInt($("select[name^='newslots\["+i+"\]\[day\]']").val());
+                if (valday == -1) {
                     return 0;
                 }
+                var valdayto = parseInt($("select[name^='newslots\["+i+"\]\[dayto\]']").val());
+                if (valdayto == -1) {
+                    return 0;
+                }
+                var valfrom = parseInt($("select[name='newslots\["+i+"\]\[from\]']").val());
+                var valto = parseInt($("select[name='newslots\["+i+"\]\[to\]']").val());
                 var durationnumber = parseInt($("input[name='duration\[number\]']").val());
                 var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
                 var gapnumber = parseInt($("input[name='gap\[number\]']").val());
@@ -183,13 +181,28 @@ define(
                 }
                 var gap = gapnumber * gaptimeunit;
                 var iteration = duration + gap;
-                for (var itime = timefrom+iteration;itime <= timeto;itime+=iteration) {
-                    slotsfound++;
+                var iweekday, daydate, daydatedate, datefrom, dateto, itime;
+                var slots = 0;
+                for (daydate = startdate; daydate <= enddate; daydate += 86400) {
+                    daydatedate = new Date(daydate*1000);
+                    iweekday = daydatedate.getDay() - 1;
+                    iweekday = (iweekday == -1) ? 6 : iweekday;
+                    if (valday != iweekday) {
+                        continue;
+                    }
+                    datefrom = daydate + valfrom;
+                    dateto = daydate + ((valdayto-valday) * 86400) + valto;
+                    if (dateto < datefrom) {
+                        dateto += (7 * 86400);
+                    }
+                    if (datefrom < startdate || datefrom > enddate || dateto > enddate) {
+                        continue;
+                    }
+                    for (itime = datefrom; itime + duration <= dateto; itime += iteration) {
+                        slots++;
+                    }
                 }
-                if(itime-gap <= timeto) {
-                    slotsfound++;
-                }
-                return slotsfound;
+                return slots;
             }
 
             function getpax() {
@@ -218,11 +231,6 @@ define(
                 });
                 var forecaststring = instance.totaltotal.replace("xxx", totalslots.toString()).replace("yyy", totalpax.toString());
                 $("div[name='organizer_newslots_forecasttotal']").html(forecaststring);
-            }
-
-            function adddays(dat, days) {
-                dat.setDate(dat.getDate() + days);
-                return dat;
             }
         };
 

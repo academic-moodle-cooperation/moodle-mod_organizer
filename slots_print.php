@@ -120,7 +120,7 @@ if ($data = $mform->get_data()) {
     organizer_display_printable_table(
         $organizer->allowregistrationsfromdate,
         $organizer->duedate, $data->cols, $data->slots, $ppp, $data->textsize,
-        $data->pageorientation, $data->headerfooter, $course->shortname . '-' . $organizer->name
+        $data->pageorientation, $data->headerfooter
     );
     redirect($redirecturl);
 
@@ -199,10 +199,18 @@ function organizer_organizer_student_action_allowed($action, $slot) {
 
 function organizer_display_printable_table($registrationsfromdate, $timedue, $columns,
     $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
-    $headerfooter = true, $filename = ''
+    $headerfooter = true
 ) {
 
     list(, $course, $organizer, ) = organizer_get_course_module_data();
+
+    $coursename = $course->idnumber ? $course->idnumber . " " . $course->fullname : $course->fullname;
+    $coursename .= $course->shortname ? " (" . $course->shortname . ")" : "";
+    $coursename = format_text($coursename, FORMAT_MOODLE, array("filter" => true, "trusted" => true));
+    $organizername = format_text($organizer->name, FORMAT_MOODLE, array("filter" => true, "trusted" => true));
+    $coursename = html_to_text($coursename);
+    $organizername = html_to_text($organizername);
+    $filename = $coursename . '-' . $organizername;
 
     if ($noprintfields = get_user_preferences("mod_organizer_noprintfields")) {
         $noprintfieldsarray = explode(",", $noprintfields);
@@ -291,9 +299,6 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
         case "location":
             $sort = "s.location";
         break;
-        case "teacher":
-            $sort = "teacherfirstname";
-        break;
         case "groupname":
             $sort = "groupname";
         break;
@@ -337,15 +342,18 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
     $mpdftable = new \mod_organizer\MTablePDF($orientation, $columnwitdh);
     $mpdftable->SetTitle(
         get_string('modulename', 'organizer') . " " .
-        $organizer->name . " - " . get_string('printout', 'organizer')
+        $organizername . "-" . get_string('printout', 'organizer')
     );
     $mpdftable->setRowsperPage($entriesperpage);
     $mpdftable->ShowHeaderFooter($headerfooter);
     $mpdftable->SetFontSize($textsize);
     $mpdftable->setHeaderText(
-        get_string('course') . ':', "{$course->idnumber} {$course->fullname}",
-        get_string('availablefrom', 'organizer').':', $registrationsfromdate, get_string('date') . ':', userdate(time()),
-        get_string('modulename', 'organizer') . ':', $organizer->name, get_string('duedate', 'organizer').':', $timedue, '', ''
+            get_string('course') . ':', $coursename,
+            get_string('modulename', 'organizer') . ':', $organizername,
+            get_string('availablefrom', 'organizer').':', $registrationsfromdate,
+            get_string('duedate', 'organizer').':', $timedue,
+            '', get_string('created', 'organizer') . " " . userdate(time()),
+            '', ''
     );
     $mpdftable->setTitles($titles);
     $mpdftable->setColumnFormat($columnformats);
@@ -380,9 +388,15 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                         $row[] = null;
                     } else {
                         $a = new stdClass();
-                        $a->firstname = $entry->teacherfirstname;
-                        $a->lastname = $entry->teacherlastname;
-                        $name = get_string('fullname_template', 'organizer', $a);
+                        $trainers = organizer_get_slot_trainers($entry->slotid, true);
+                        $name = "";
+                        $conn = "";
+                        foreach($trainers as $trainer) {
+                            $a->firstname = $trainer->firstname;
+                            $a->lastname = $trainer->lastname;
+                            $name .= $conn . get_string('fullname_template', 'organizer', $a);
+                            $conn = ", ";
+                        }
                         $row[] = array('data' => $name, 'rowspan' => $rowspan - 1);
                     }
                 break;
@@ -391,7 +405,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                         $row[] = null;
                     } else {
                         $groupname = isset($entry->groupname) ? $entry->groupname : '';
-                        if ($organizer->isgrouporganizer) {
+                        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                             $groupname .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                         }
                         $row[] = array('data' => $groupname, 'rowspan' => $rowspan - 1);
@@ -403,7 +417,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     $a->firstname = $entry->firstname;
                     $a->lastname = $entry->lastname;
                     $name = get_string('fullname_template', 'organizer', $a);
-                    if (!$organizer->isgrouporganizer) {
+                    if (!$organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                         $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                     }
                     $row[] = array('data' => $name, 'rowspan' => 0);

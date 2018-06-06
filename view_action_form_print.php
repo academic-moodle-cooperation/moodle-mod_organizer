@@ -206,14 +206,15 @@ class organizer_print_slots_form extends moodleform
             }
         }
 
+        $notsortable = array('teacher');
         $output .= '<div style="float: left">';
-        $output .= $this->_create_preview_table($printcols);
+        $output .= $this->_create_preview_table($printcols, $notsortable);
         $output .= '</div><div style="width: 1em; float: left;"> </div></div>';
 
         print $output;
     }
 
-    private function _create_preview_table($columns) {
+    private function _create_preview_table($columns, $notsortable) {
         global $PAGE, $OUTPUT, $cm, $CFG;
 
         user_preference_allow_ajax_update('mod_organizer_noprintfields', PARAM_TEXT);
@@ -287,7 +288,11 @@ class organizer_print_slots_form extends moodleform
                 }
             }
 
-            $cell = new html_table_cell(html_writer::link($url, get_string("th_{$column}", 'organizer') . $icon, $linkarray));
+            if (!in_array($column, $notsortable)) {
+                $cell = new html_table_cell(html_writer::link($url, get_string("th_{$column}", 'organizer') . $icon, $linkarray));
+            } else {
+                $cell = new html_table_cell(get_string("th_{$column}", 'organizer'));
+            }
             $cell->header = true;
             $header[] = $cell;
         }
@@ -301,7 +306,8 @@ class organizer_print_slots_form extends moodleform
                 $sort = "s.location";
             break;
             case "teacher":
-                $sort = "teacherfirstname";
+                $sort = null;
+                $order = null;
             break;
             case "groupname":
                 $sort = "groupname";
@@ -326,6 +332,7 @@ class organizer_print_slots_form extends moodleform
             break;
             default:
                 $sort = null;
+                $order = null;
         }
 
         if (!isset($order)) {
@@ -368,9 +375,15 @@ class organizer_print_slots_form extends moodleform
                         break;
                         case 'teacher':
                             $a = new stdClass();
-                            $a->firstname = $entry->teacherfirstname;
-                            $a->lastname = $entry->teacherlastname;
-                            $name = get_string('fullname_template', 'organizer', $a);
+                            $trainers = organizer_get_slot_trainers($entry->slotid, true);
+                            $name = "";
+                            $conn = "";
+                            foreach($trainers as $trainer) {
+                                $a->firstname = $trainer->firstname;
+                                $a->lastname = $trainer->lastname;
+                                $name .= $conn . get_string('fullname_template', 'organizer', $a);
+                                $conn = ", ";
+                            }
                             $content = "<span name='{$column}_cell'>" . $name . '</span>';
                             $cell = new html_table_cell($content);
                             $cell->rowspan = $entry->rowspan;

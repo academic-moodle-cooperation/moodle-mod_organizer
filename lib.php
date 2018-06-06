@@ -38,11 +38,17 @@ define('ORGANIZER_VISIBILITY_ALL', 0);
 define('ORGANIZER_VISIBILITY_ANONYMOUS', 1);
 define('ORGANIZER_VISIBILITY_SLOT', 2);
 
+define('ORGANIZER_GROUPMODE_NOGROUPS', 0);
+define('ORGANIZER_GROUPMODE_EXISTINGGROUPS', 1);
+define('ORGANIZER_GROUPMODE_NEWGROUPSLOT', 2);
+define('ORGANIZER_GROUPMODE_NEWGROUPBOOKING', 3);
+
 define('ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT', 'Appointment');
 define('ORGANIZER_CALENDAR_EVENTTYPE_SLOT', 'Slot');
 define('ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE', 'Instance');
 
 define('EIGHTDAYS', 691200);
+define('ORGANIZER_PRINTSLOTUSERFIELDS', 9);
 
 require_once(dirname(__FILE__) . '/slotlib.php');
 
@@ -106,14 +112,21 @@ function organizer_update_instance($organizer) {
 
     organizer_grade_item_update($organizer);
 
-    $eventid = $DB->get_field(
-        'event', 'id',
-        array('instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE)
-    );
+    $params = array('modulename' => 'organizer', 'instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE);
 
-    organizer_change_event_instance($organizer->id, $eventid);
+    $query = 'SELECT id
+                    FROM {event} 
+                    WHERE modulename = :modulename
+                    AND instance = :instance
+                    AND eventtype = :eventtype';
 
-    return $DB->update_record('organizer', $organizer);
+    $eventids = $DB->get_fieldset_sql($query, $params);
+
+    $ok = $DB->update_record('organizer', $organizer);
+
+    organizer_change_event_instance($organizer->id, $eventids);
+
+    return $ok;
 }
 
 /**
@@ -149,7 +162,13 @@ function organizer_delete_instance($id) {
         $DB->delete_records('organizer_slots', array('id' => $slot->id));
     }
 
+    if (ORGANIZER_DELETE_EVENTS) {
+        $DB->delete_records('event', array(
+                'modulename' => 'organizer', 'instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE));
+    }
+
     $DB->delete_records('organizer', array('id' => $organizer->id));
+
 
     organizer_grade_item_update($organizer);
 
@@ -527,7 +546,7 @@ function organizer_get_last_group_appointment($organizer, $groupid) {
 function organizer_get_counters($organizer) {
     global $DB;
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
         $params = array('groupingid' => $cm->groupingid);
         $query = 'SELECT {groups}.* FROM {groups}
@@ -580,7 +599,7 @@ function organizer_get_counters($organizer) {
     return $a;
 }
 
-function organizer_get_eventaction_slot_teacher($eventid) {
+function organizer_get_eventaction_slot_trainer($eventid) {
     global $DB;
 
     $slotid = $DB->get_field("event", "uuid", array("id" => $eventid));
@@ -611,11 +630,11 @@ function organizer_get_eventaction_slot_teacher($eventid) {
 }
 
 
-function organizer_get_eventaction_instance_teacher($organizer) {
+function organizer_get_eventaction_instance_trainer($organizer) {
 
     $a = organizer_get_counters($organizer);
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         if ($a->attended == 0) {
             $str = get_string('mymoodle_registered_group_short', 'organizer', $a);
         } else {
@@ -638,7 +657,7 @@ function organizer_get_eventaction_instance_student($organizer) {
     $app = organizer_get_next_user_appointment($organizer);
 
     if ($app) {
-        if ($organizer->isgrouporganizer) {
+        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $group = organizer_fetch_group($organizer);
             $a = new stdClass();
             $a->groupname = $group->name;
@@ -647,7 +666,7 @@ function organizer_get_eventaction_instance_student($organizer) {
             $str = get_string('mymoodle_reg_slot', 'organizer');
         }
     } else {
-        if ($organizer->isgrouporganizer) {
+        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $group = organizer_fetch_group($organizer);
             $a = new stdClass();
             $a->groupname = $group->name;
@@ -667,7 +686,7 @@ function organizer_get_eventaction_student($organizer) {
 
     $eventstr = "";
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $group = organizer_fetch_group($organizer);
 
         if ($app && isset($app->attended) && (int) $app->attended === 1) {
@@ -880,7 +899,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
         $element = "p";
     }
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $group = organizer_fetch_group($organizer);
         $app = organizer_get_last_user_appointment($organizer);
 
@@ -1047,7 +1066,7 @@ function organizer_get_overview_student($organizer, $forindex = false) {
     return $str;
 }
 
-function organizer_get_overview_teacher($organizer) {
+function organizer_get_overview_trainer($organizer) {
     global $DB, $USER;
 
     $str = '<div class="assignment overview">';
@@ -1055,7 +1074,7 @@ function organizer_get_overview_teacher($organizer) {
 
     $a = organizer_get_counters($organizer);
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $reg = get_string('mymoodle_registered_group', 'organizer', $a);
         $att = get_string('mymoodle_attended_group', 'organizer', $a);
 
@@ -1070,11 +1089,11 @@ function organizer_get_overview_teacher($organizer) {
     $now = time();
 
     $slot = $DB->get_records_sql(
-        'SELECT * FROM {organizer_slots} WHERE
-            {organizer_slots}.teacherid = :uid AND
-            {organizer_slots}.organizerid = :oid AND
-            {organizer_slots}.starttime > :now
-            ORDER BY {organizer_slots}.starttime ASC', array('uid' => $USER->id, 'oid' => $organizer->id, 'now' => $now)
+        'SELECT * FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid  WHERE
+            t.trainerid = :uid AND
+            s.organizerid = :oid AND
+            s.starttime > :now
+            ORDER BY s.starttime ASC', array('uid' => $USER->id, 'oid' => $organizer->id, 'now' => $now)
     );
 
     $nextslot = reset($slot);
@@ -1110,7 +1129,7 @@ function organizer_print_overview($courses, &$htmlarray) {
         if (organizer_is_student_in_course($organizer->course, $USER->id)) {
             $str = organizer_get_overview_student($organizer);
         } else {
-            $str = organizer_get_overview_teacher($organizer);
+            $str = organizer_get_overview_trainer($organizer);
         }
 
         if (empty($htmlarray[$organizer->course]['organizer'])) {
@@ -1153,17 +1172,14 @@ function organizer_cron() {
     $success = true;
 
     $params = array('now' => $now, 'now2' => $now);
-    $appsquery = "SELECT a.*, s.teacherid, s.location, s.starttime, s.organizerid FROM {organizer_slot_appointments} a
+    $appsquery = "SELECT a.*, s.location, s.starttime, s.organizerid FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id WHERE
         s.starttime - s.notificationtime < :now AND s.starttime > :now2 AND
         a.notified = 0";
 
     $apps = $DB->get_records_sql($appsquery, $params);
     foreach ($apps as $app) {
-        $success &= organizer_send_message(
-            intval($app->teacherid), intval($app->userid), $app,
-            'appointment_reminder_student'
-        );
+        $success &= organizer_send_message_from_trainer(intval($app->userid), $app, 'appointment_reminder_student');
     }
 
     if (empty($apps)) {
@@ -1182,36 +1198,36 @@ function organizer_cron() {
         $params['tomorrowstart'] = mktime(0, 0, 0, date("m"), date("d") + 1, date("Y"));
         $params['tomorrowend'] = mktime(0, 0, 0, date("m"), date("d") + 2, date("Y"));
 
-        $slotsquery = "SELECT DISTINCT s.teacherid FROM {organizer_slots} s
+        $slotsquery = "SELECT DISTINCT t.teacherid FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
                 WHERE s.starttime >= :tomorrowstart AND
                 s.starttime < :tomorrowend AND
                 s.notified = 0";
 
-        $teacherids = $DB->get_fieldset_sql($slotsquery, $params);
+        $trainerids = $DB->get_fieldset_sql($slotsquery, $params);
 
-        if (empty($teacherids)) {
-            $teacherids = array(0);
+        if (empty($trainerids)) {
+            $trainerids = array(0);
         }
 
-        list($insql, $inparams) = $DB->get_in_or_equal($teacherids, SQL_PARAMS_NAMED);
+        list($insql, $inparams) = $DB->get_in_or_equal($trainerids, SQL_PARAMS_NAMED);
 
-        $slotsquery = "SELECT *
-            FROM {organizer_slots} s
+        $slotsquery = "SELECT s.*, t.trainerid
+            FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
             WHERE s.starttime >= :tomorrowstart AND
             s.starttime < :tomorrowend AND
             s.notified = 0 AND
-            s.teacherid $insql";
+            t.trainerid $insql";
 
         $params = array_merge($params, $inparams);
 
         $slots = $DB->get_records_sql($slotsquery, $params);
 
-        foreach ($teacherids as $teacherid) {
+        foreach ($trainerids as $trainerid) {
             $digest = '';
 
             $found = false;
             foreach ($slots as $slot) {
-                if ($slot->teacherid == $teacherid) {
+                if ($slot->trainerid == $trainerid) {
                     $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
                     $time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
                     $digest .= "$time @ $slot->location\n";
@@ -1227,17 +1243,13 @@ function organizer_cron() {
 
             if ($found) {
                 $success &= $thissuccess = organizer_send_message(
-                    intval($teacherid), intval($teacherid), reset($slots),
+                    intval($trainerid), intval($trainerid), reset($slots),
                     'appointment_reminder_teacher', $digest
                 );
 
                 if ($thissuccess) {
-                    list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
-                    $inparams['teacherid'] = $teacherid;
-                    $DB->execute(
-                        "UPDATE {organizer_slots} SET notified = 1 WHERE teacherid = :teacherid AND id $insql",
-                        $inparams
-                    );
+                    list($insql, ) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+                    $DB->execute("UPDATE {organizer_slots} SET notified = 1 WHERE id $insql");
                 }
             }
 
@@ -1247,18 +1259,18 @@ function organizer_cron() {
     return $success;
 }
 
-function organizer_create_digest($teacherid) {
+function organizer_create_digest($trainerid) {
     include_once(dirname(__FILE__) . '/messaging.php');
     global $DB;
     $now = time();
 
     $success = true;
 
-    $params = array('now' => $now, 'teacherid' => $teacherid);
+    $params = array('now' => $now, 'trainerid' => $trainerid);
 
-    $slotsquery = 'SELECT * FROM {organizer_slots} s
+    $slotsquery = 'SELECT s.*, t.trainerid, t.slotid FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
             WHERE s.starttime - s.notificationtime < :now AND
-            s.notified = 0 AND s.teacherid = :teacherid';
+            s.notified = 0 AND t.trainerid = :trainerid';
 
     $digest = '';
 
@@ -1269,14 +1281,10 @@ function organizer_create_digest($teacherid) {
             $time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
         }
         $digest .= $date.', '.$time.' @ '.$slot->location.'; ';
-        $slot->notified = 1;
-        $DB->update_record('organizer_slots', $slot);
+        $DB->execute("UPDATE {organizer_slots} SET notified = 1 WHERE id = $slot->slotid");
     }
 
-    $success = organizer_send_message(
-        intval($slot->teacherid), intval($slot->teacherid), $slot,
-        'appointment_reminder_teacher:digest', $digest
-    );
+    $success = organizer_send_message($trainerid, $trainerid, $slot, 'appointment_reminder_teacher:digest', $digest);
 
     return $success;
 }
@@ -1434,12 +1442,12 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
         if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {
             $context = context_module::instance($cm->id, MUST_EXIST);
             if (has_capability('mod/organizer:viewallslots', $context)) {
-                $name = organizer_get_eventaction_instance_teacher($organizer);
+                $name = organizer_get_eventaction_instance_trainer($organizer);
             } else {
                 $name = organizer_get_eventaction_instance_student($organizer);
             }
         } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT) {
-            $name = organizer_get_eventaction_slot_teacher($props->id);
+            $name = organizer_get_eventaction_slot_trainer($props->id);
         } else {
             return false;
         }
@@ -1534,7 +1542,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
     return $isvisible;
 }
 
-function organizer_change_event_instance($organizerid, $eventid = false) {
+function organizer_change_event_instance($organizerid, $eventids = array()) {
     global $DB, $USER;
 
     $organizer = $DB->get_record('organizer', array('id' => $organizerid));
@@ -1542,11 +1550,11 @@ function organizer_change_event_instance($organizerid, $eventid = false) {
     $eventtitle = $organizer->name;
     $eventdescription = $organizer->intro;
 
-    if ($eventid) {
+    if ($eventids) {
         $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : time();
         $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
         return organizer_change_calendarevent(
-            $eventid, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
+            $eventids, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
             $USER->id, $startdate, $duration, 0, $organizerid
         );
     } else {
@@ -1569,56 +1577,86 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
     $event = new stdClass();
     $event->eventtype = $eventtype;
     $event->type = CALENDAR_EVENT_TYPE_ACTION;
-    $event->name = $eventtitle;
     $intro = strip_pluginfile_content($eventdescription);
     $event->description = array(
             'text' => $intro,
             'format' => $organizer->introformat
     );
-    $event->userid = $userid;
     $event->courseid = $organizer->course;
     $event->groupid = $group;
     $event->modulename = 'organizer';
     $event->instance = $organizer->id;
-    $event->timestart = $timestart;
-    $event->timesort = $timestart;
-    $event->timeduration = $duration;
     $event->visible = 1;
     $event->uuid = $uuid;
+    $event->userid = $userid;
 
-    calendar_event::create($event, false);
+    if ($eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {   // If type is instance.
+        $event->timestart = $timestart;
+        $event->timesort = $timestart;
+        $event->timeduration = 0;
+        $event->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $eventtitle;
+        calendar_event::create($event, false);
+        unset($event->id);
+        $event->timestart = $timestart+$duration;
+        $event->timesort = $timestart+$duration;
+        $event->timeduration = 0;
+        $event->name = get_string('allowsubmissionstodate', 'organizer') . ": " . $eventtitle;
+        calendar_event::create($event, false);
+    } else {
+        $event->timestart = $timestart;
+        $event->timesort = $timestart;
+        $event->timeduration = $duration;
+        $event->name = $eventtitle;
+        calendar_event::create($event, false);
+    }
     return $event->id;
 }
 
-function organizer_change_calendarevent($eventid, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
+function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
     $timestart, $duration, $group, $uuid
 ) {
     global $CFG;
 
     include_once($CFG->dirroot.'/calendar/lib.php');
 
-    $event = calendar_event::load($eventid);
-
+    $event = calendar_event::load($eventids[0]);
     $data = new stdClass();
     $data->eventtype = $eventtype;
     $data->type = CALENDAR_EVENT_TYPE_ACTION;
-    $data->name = $eventtitle;
     $intro = strip_pluginfile_content($eventdescription);
     $data->description = array(
             'text' => $intro,
             'format' => $organizer->introformat
     );
-    $event->userid = $userid;
     $event->courseid = $organizer->course;
     $data->groupid = $group;
     $data->modulename = 'organizer';
     $data->instance = $organizer->id;
-    $data->timestart = $timestart;
-    $data->timesort = $timestart;
-    $data->timeduration = $duration;
     $data->visible = 1;
     $data->uuid = $uuid;
+    $event->userid = $userid;
 
-    $event->update($data, false);
-    return $event->id;
+    if ($eventtype != ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE && count($eventids)==1) {   // If not type instance.
+        $data->timestart = $timestart;
+        $data->timesort = $timestart;
+        $data->timeduration = $duration;
+        $data->name = $eventtitle;
+        $event->update($data, false);
+    } else {
+        $data->timestart = $timestart;
+        $data->timesort = $timestart;
+        $data->timeduration = 0;
+        $data->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $eventtitle;
+        $event->update($data, false);
+        $event2 = calendar_event::load($eventids[1]);
+        $timedue = (int)$timestart + (int)$duration;
+        $data->timestart = $timedue;
+        $data->timesort = $timedue;
+        $data->timeduration = 0;
+        $data->name = get_string('allowsubmissionstodate', 'organizer') . ": " . $eventtitle;
+        $event2->userid = $userid;
+        $event2->update($data, false);
+    }
+
+    return true;
 }

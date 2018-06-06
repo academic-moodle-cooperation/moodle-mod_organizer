@@ -103,13 +103,14 @@ foreach ($organizers as $organizer) {
     }
 
     $row[] = $link;
-    $row[] = $organizer->intro;
 
     $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
     $context = context_module::instance($cm->id, MUST_EXIST);
+
+    $row[] = format_module_intro('organizer', $organizer, $cm->id);
     if (has_capability('mod/organizer:viewregistrations', $context)) {
         $a = organizer_get_counters($organizer);
-        if ($organizer->isgrouporganizer) {
+        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $reg = get_string('mymoodle_registered_group_short', 'organizer', $a);
             $att = get_string('mymoodle_attended_group_short', 'organizer', $a);
 

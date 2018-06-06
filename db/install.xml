@@ -20,8 +20,20 @@
         <FIELD NAME="relativedeadline" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="alwaysshowdescription" NEXT="grade"/>
         <FIELD NAME="grade" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="relativedeadline" NEXT="queue"/>
         <FIELD NAME="queue" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="grade" NEXT="visibility" COMMENT="Flag to trigger waiting queues for slot appointments."/>
-        <FIELD NAME="visibility" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="queue"/>
-        <FIELD NAME="hidecalendar" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="visibility"/>
+        <FIELD NAME="visibility" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="queue" NEXT="hidecalendar"/>
+        <FIELD NAME="hidecalendar" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="visibility" NEXT="nocalendareventslotcreation"/>
+        <FIELD NAME="nocalendareventslotcreation" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="hidecalendar" NEXT="includetraineringroups"/>
+        <FIELD NAME="includetraineringroups" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="nocalendareventslotcreation" NEXT="singleslotprintfield0"/>
+        <FIELD NAME="singleslotprintfield0" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="includetraineringroups" NEXT="singleslotprintfield1"/>
+        <FIELD NAME="singleslotprintfield1" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield0" NEXT="singleslotprintfield2"/>
+        <FIELD NAME="singleslotprintfield2" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield1" NEXT="singleslotprintfield3"/>
+        <FIELD NAME="singleslotprintfield3" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield2" NEXT="singleslotprintfield4"/>
+        <FIELD NAME="singleslotprintfield4" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield3" NEXT="singleslotprintfield5"/>
+        <FIELD NAME="singleslotprintfield5" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield4" NEXT="singleslotprintfield6"/>
+        <FIELD NAME="singleslotprintfield6" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield5" NEXT="singleslotprintfield7"/>
+        <FIELD NAME="singleslotprintfield7" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield6" NEXT="singleslotprintfield8"/>
+        <FIELD NAME="singleslotprintfield8" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield7" NEXT="singleslotprintfield9"/>
+        <FIELD NAME="singleslotprintfield9" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield8"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -37,7 +49,6 @@
         <FIELD NAME="location" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="duration" NEXT="locationlink"/>
         <FIELD NAME="locationlink" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="location" NEXT="maxparticipants"/>
         <FIELD NAME="maxparticipants" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" PREVIOUS="locationlink" NEXT="teacherid"/>
-        <FIELD NAME="teacherid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="maxparticipants" NEXT="visibility"/>
         <FIELD NAME="visibility" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="teacherid" NEXT="availablefrom"/>
         <FIELD NAME="availablefrom" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="visibility" NEXT="timemodified"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="availablefrom" NEXT="notificationtime"/>
@@ -46,18 +57,18 @@
         <FIELD NAME="teachervisible" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="comments" NEXT="eventid"/>
         <FIELD NAME="eventid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="teachervisible" NEXT="notified"/>
         <FIELD NAME="notified" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="eventid" NEXT="visible"/>
-        <FIELD NAME="visible" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="notified"/>
+        <FIELD NAME="visible" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="notified" NEXT="coursegroup"/>
+        <FIELD NAME="coursegroup" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" PREVIOUS="visible"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="organizer"/>
         <KEY NAME="organizer" TYPE="foreign" FIELDS="organizerid" REFTABLE="organizer" REFFIELDS="id" PREVIOUS="primary"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="slots_userid" UNIQUE="false" FIELDS="teacherid" NEXT="slots_eventid"/>
         <INDEX NAME="slots_eventid" UNIQUE="false" FIELDS="eventid" PREVIOUS="slots_userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="organizer_slot_appointments" COMMENT="organizer_slot_appointments table retrofitted from MySQL" PREVIOUS="organizer_slots">
+    <TABLE NAME="organizer_slot_appointments" COMMENT="organizer_slot_appointments table retrofitted from MySQL" PREVIOUS="organizer_slots" NEXT="organizer_slot_queues">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="slotid"/>
         <FIELD NAME="slotid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="userid"/>
@@ -84,7 +95,7 @@
         <INDEX NAME="slot_appointments_eventid" UNIQUE="false" FIELDS="eventid" PREVIOUS="slot_appointments_groupid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="organizer_slot_queues" COMMENT="organizer_slot_queues table retrofitted from MySQL">
+    <TABLE NAME="organizer_slot_queues" COMMENT="organizer_slot_queues table retrofitted from MySQL" PREVIOUS="organizer_slot_appointments" NEXT="organizer_slot_trainer">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="slotid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -103,6 +114,19 @@
         <INDEX NAME="slot_queue_groupid" UNIQUE="false" FIELDS="groupid"/>
         <INDEX NAME="slot_queue_eventid" UNIQUE="false" FIELDS="eventid"/>
       </INDEXES>
+    </TABLE>
+    <TABLE NAME="organizer_slot_trainer" COMMENT="organizer_slot_trainer n:n table" PREVIOUS="organizer_slot_queues">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="organizerid"/>
+        <FIELD NAME="slotid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="trainerid"/>
+        <FIELD NAME="trainerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="slotid" NEXT="eventid"/>
+        <FIELD NAME="eventid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="trainerid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="slot"/>
+        <KEY NAME="slot" TYPE="foreign" FIELDS="slotid" REFTABLE="organizer_slots" REFFIELDS="id" PREVIOUS="primary" NEXT="trainer"/>
+        <KEY NAME="trainer" TYPE="foreign" FIELDS="trainerid" REFTABLE="user" REFFIELDS="id" PREVIOUS="slot"/>
+      </KEYS>
     </TABLE>
   </TABLES>
 </XMLDB>

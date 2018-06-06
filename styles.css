@@ -153,3 +153,17 @@
     cursor:help;
     color: red;
 }
+
+#organizer_filterfield {
+    padding-left: 2em;
+}
+
+#organizer_addbutton_div{
+    margin-top: 0.5em;
+    margin-bottom: 0.7em;
+}
+
+#slot_overview th {
+    background-color: inherit;
+}
+

@@ -131,8 +131,10 @@ class restore_organizer_activity_task extends restore_activity_task
         $courseid = $this->get_courseid();
         $cm = get_coursemodule_from_instance('organizer', $organizerid, $courseid, false, MUST_EXIST);
         if (!$cm->groupingid) {
-            $DB->set_field('course_modules', 'groupmode', '0');
-            $DB->set_field('organizer', 'isgrouporganizer', '0');
+            $DB->set_field_select('course_modules', 'groupmode', '0',  'id = :cmid',
+                    array('cmid' => $cm->id));
+            $DB->set_field_select('organizer', 'isgrouporganizer', '0',  'id = :organizerid',
+                    array('organizerid' => $organizerid));
         }
     }
 }

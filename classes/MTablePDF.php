@@ -148,8 +148,8 @@ class MTablePDF extends \pdf
         parent::__construct($orientation);
 
         // Set default configuration.
-        $this->SetCreator('TUWEL');
-        $this->SetMargins(10, 20, 10, true);
+        $this->SetCreator('MOODLE');
+        $this->SetMargins(10, 36, 10, true);
         $this->setHeaderMargin(7);
         $this->SetFont('freesans', '');
         $this->columnwidths = $columnwidths;
@@ -217,56 +217,67 @@ class MTablePDF extends \pdf
             $pagewidth = $this->getPageWidth();
             $scale = $pagewidth / 200;
             $oldfontsize = $this->getFontSize();
-            $this->setFontSize('12');
+            $this->setFontSize('10');
             // First row.
             $border = 0;
-            $height = 4;
+            $height = 3;
             $this->SetFont('', 'B');
-            $this->Cell(15 * $scale, $height, $header[0], $border, false, 'L', 0, '', 1, false);
+            $this->Cell(30 * $scale, $height, $header[0], $border, false, 'L', 0, '', 1, false);
             $this->SetFont('', '');
-            $this->Cell(31 * $scale, $height, $header[1], $border, false, 'R', 0, '', 1, false);
-            $this->Cell(15 * $scale, $height, "", $border, false, 'C', 0, '', 1, false);
-
-            $this->SetFont('', 'B');
-            $this->Cell(21 * $scale, $height, $header[2], $border, false, 'L', 0, '', 1, false);
-            $this->SetFont('', '');
-
-            $this->SetFont('', '');
-            $this->Cell(41 * $scale, $height, $header[3], $border, false, 'R', 0, '', 1, false);
-            $this->Cell(15 * $scale, $height, "", $border, false, 'C', 0, '', 1, false);
-
-            $this->SetFont('', 'B');
-            $this->Cell(15 * $scale, $height, $header[4], $border, false, 'L', 0, '', 1, false);
-            $this->SetFont('', '');
-            $this->Cell(31 * $scale, $height, $header[5], $border, false, 'R', 0, '', 1, false);
+            $this->Cell(170 * $scale, $height, $header[1], $border, false, 'L', 0, '', 1, false);
 
             $this->Ln();
 
             // Second row.
-            $height = 4;
-
+            $border = 0;
+            $height = 3;
             $this->SetFont('', 'B');
-            $this->Cell(15 * $scale, $height, $header[6], $border, false, 'L', 0, '', 1, false);
-
+            $this->Cell(30 * $scale, $height, $header[2], $border, false, 'L', 0, '', 1, false);
             $this->SetFont('', '');
-            $this->Cell(31 * $scale, $height, $header[7], $border, false, 'R', 0, '', 1, false);
-            $this->Cell(15 * $scale, $height, "", $border, false, 'C', 0, '', 1, false);
-
-            $this->SetFont('', 'B');
-            $this->Cell(21 * $scale, $height, $header[8], $border, false, 'L', 0, '', 1, false);
-            $this->SetFont('', '');
-
-            $this->SetFont('', '');
-            $this->Cell(41 * $scale, $height, $header[9], $border, false, 'R', 0, '', 1, false);
-
-            $this->Cell(15 * $scale, $height, "", $border, false, 'C', 0, '', 1, false);
-
-            $this->SetFont('', 'B');
-            $this->Cell(15 * $scale, $height, $header[10], $border, false, 'L', 0, '', 1, false);
-            $this->SetFont('', '');
-            $this->Cell(31 * $scale, $height, $header[11], $border, false, 'R', 0, '', 1, false);
+            $this->Cell(170 * $scale, $height, $header[3], $border, false, 'L', 0, '', 1, false);
 
             $this->Ln();
+
+            // Third row.
+            $border = 0;
+            $height = 3;
+            $this->SetFont('', 'B');
+            $this->Cell(30 * $scale, $height, $header[4], $border, false, 'L', 0, '', 1, false);
+            $this->SetFont('', '');
+            $this->Cell(170 * $scale, $height, $header[5], $border, false, 'L', 0, '', 1, false);
+
+            $this->Ln();
+
+            // Fourth row.
+            $border = 0;
+            $height = 3;
+            $this->SetFont('', 'B');
+            $this->Cell(30 * $scale, $height, $header[6], $border, false, 'L', 0, '', 1, false);
+            $this->SetFont('', '');
+            $this->Cell(170 * $scale, $height, $header[7], $border, false, 'L', 0, '', 1, false);
+
+            $this->Ln();
+
+            // Fifth row.
+            $border = 0;
+            $height = 3;
+            $this->SetFont('', 'B');
+            $this->Cell(30 * $scale, $height, $header[8], $border, false, 'L', 0, '', 1, false);
+            $this->SetFont('', '');
+            $this->Cell(170 * $scale, $height, $header[9], $border, false, 'L', 0, '', 1, false);
+
+            $this->Ln();
+
+            // Sixth row.
+            $border = 0;
+            $height = 3;
+            $this->SetFont('', 'B');
+            $this->Cell(30 * $scale, $height, $header[10], $border, false, 'L', 0, '', 1, false);
+            $this->SetFont('', '');
+            $this->Cell(170 * $scale, $height, $header[11], $border, false, 'L', 0, '', 1, false);
+
+            $this->Ln();
+
             $this->SetFontSize($oldfontsize);
         }
     }
@@ -349,7 +360,7 @@ class MTablePDF extends \pdf
     public function addrow($row) {
         if (count($row) != count($this->columnwidths)) {
             print_error(
-                "number of columns from row (" . count($row) . ") doenst match " .
+                "number of columns from row (" . count($row) . ") does not match " .
                 "the number defined (" . count($this->columnwidths) . ")"
             );
             return false;
@@ -811,13 +822,15 @@ class MTablePDF extends \pdf
 
         $line = 0;
 
-        // Write header.
-        for ($i = 0; $i < count($this->header); $i += 2) {
-            $worksheet->write_string($line, 0, $this->header[$i], $hdrleft);
-            $worksheet->write_string($line, 1, $this->header[$i + 1], $hdrright);
+        if ($this->showheaderfooter) {
+            // Write header.
+            for ($i = 0; $i < count($this->header); $i += 2) {
+                $worksheet->write_string($line, 0, $this->header[$i], $hdrleft);
+                $worksheet->write_string($line, 1, $this->header[$i + 1], $hdrright);
+                $line++;
+            }
             $line++;
         }
-        $line++;
 
         // Table header.
         $i = 0;

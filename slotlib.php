@@ -48,7 +48,7 @@ function organizer_get_last_user_appointment($organizer, $userid = null, $mergeg
     $apps = $DB->get_records_sql($query, $paramssql);
     $app = reset($apps);
 
-    if ($organizer->isgrouporganizer && $mergegroupapps && $app !== false) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
         $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
         $query = "SELECT a.* FROM {organizer_slot_appointments} a
                 INNER JOIN {organizer_slots} s ON a.slotid = s.id
@@ -97,7 +97,7 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
     $apps = $DB->get_records_sql($query, $paramssql);
 
     $app = reset($apps);
-    if ($organizer->isgrouporganizer && $mergegroupapps && $app !== false) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
         $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
         $query = "SELECT a.* FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id
@@ -142,24 +142,28 @@ function organizer_get_next_user_appointment($organizer, $userid = null) {
 
     $todaymidnight = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
 
-    if ($organizer->isgrouporganizer) {
+    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         require_once('locallib.php');
-        $group = organizer_fetch_user_group($userid, $organizer->id);
-        $paramssql = array('organizerid' => $organizer->id, 'groupid' => $group->id, 'todaymidnight' => $todaymidnight);
-        $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
+        if ($group = organizer_fetch_user_group($userid, $organizer->id)) {
+            $paramssql = array('organizerid' => $organizer->id, 'groupid' => $group->id, 'todaymidnight' => $todaymidnight);
+            $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
                   INNER JOIN {organizer_slots} s ON a.slotid = s.id
                   WHERE s.organizerid = :organizerid AND a.groupid = :groupid AND s.starttime > :todaymidnight
                   ORDER BY s.starttime ASC";
+            $apps = $DB->get_records_sql($query, $paramssql);
+            $app = reset($apps);
+        } else {
+            $app = null;
+        }
     } else {
         $paramssql = array('organizerid' => $organizer->id, 'userid' => $userid, 'todaymidnight' => $todaymidnight);
         $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
                   INNER JOIN {organizer_slots} s ON a.slotid = s.id
                   WHERE s.organizerid = :organizerid AND a.userid = :userid AND s.starttime > :todaymidnight
                   ORDER BY s.starttime ASC";
+        $apps = $DB->get_records_sql($query, $paramssql);
+        $app = reset($apps);
     }
-    $apps = $DB->get_records_sql($query, $paramssql);
-
-    $app = reset($apps);
 
     return $app;
 }
@@ -245,7 +249,7 @@ class organizer_slot
     public function is_full() {
         $this->load_organizer();
         $this->load_appointments();
-        if ($this->organizer->isgrouporganizer) {
+        if ($this->organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             return count($this->apps) > 0;
         } else {
             return count($this->apps) >= $this->slot->maxparticipants;
@@ -280,7 +284,7 @@ class organizer_slot
     public function organizer_user_has_access() {
         $this->load_organizer();
         global $DB;
-        if ($this->organizer->isgrouporganizer) {
+        if ($this->organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $moduleid = $DB->get_field('modules', 'id', array('name' => 'organizer'));
             $courseid = $DB->get_field(
                 'course_modules', 'course',
@@ -444,4 +448,26 @@ function organizer_user_has_access($slotid) {
         return false;
     }
     return true;
+}
+
+function organizer_get_slot_trainers($slotid, $withname = false) {
+    global $DB;
+
+    if ($withname) {
+        $paramssql = array('slotid' => $slotid);
+        $slotquery = 'SELECT u.id, u.firstname, u.lastname, u.email
+				FROM {organizer_slot_trainer} t
+				INNER JOIN {user} u ON t.trainerid = u.id
+				WHERE t.slotid = :slotid';
+        $trainers = $DB->get_records_sql($slotquery, $paramssql);
+    } else {
+        if ($trainers = $DB->get_fieldset_select(
+                'organizer_slot_trainer', 'trainerid', 'slotid = :slotid', array('slotid' => $slotid)))
+        {
+            sort($trainers);
+        }
+
+    }
+
+    return $trainers;
 }

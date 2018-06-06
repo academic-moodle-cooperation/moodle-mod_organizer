@@ -37,8 +37,18 @@ $string['pluginadministration'] = 'Terminplaner Administration';
 $string['pluginname'] = 'Terminplaner';
 $string['crontaskname'] = 'Terminplaner cron Job';
 $string['search:activity'] = 'Terminplaner - Aktivitätsinformation';
-$string['isgrouporganizer'] = 'Gruppentermine';
-$string['isgrouporganizer_help'] = "Ankreuzen um den Terminplaner im Gruppenmodus zu verwenden. Statt einzelner Benutzer/innen können sich Gruppen für Termine anmelden. Wenn nicht angekreuzt ist es trotzdem möglich mehrere Benutzer/innen zu einem einzelnen Termin zuzulassen.";
+$string['traineringroupgroup'] = 'Gruppentermine';
+$string['traineringroupgroup_help'] = 'Ankreuzen, um den Terminplaner im Gruppenmodus zu verwenden.
+Modus \'Existierende Kurs-Gruppen verwenden\': Ein Mitglied einer Kurs-Gruppe kann einen Termin für die ganze Gruppe buchen.
+Modus \'Gruppen per Slot erzeugen\': Beim Anlegen eines Slots wird eine Kurs-Gruppe für den Slot angelegt.
+Modus \'Gruppen per gebuchten Slot erzeugen\': Bei der ersten Buchung eines Slots wird eine Kurs-Gruppe für den Slot angelegt.
+Wenn Sie die Checkbox anklicken werden beim Anlegen von Gruppen neben den Teilnehmer/innen auch die Trainer/innen inkludiert.
+';
+$string['includetraineringroups'] = 'Trainer in die Gruppen einschliessen';
+$string['groupmodenogroups'] = 'Kein Gruppenmodus';
+$string['groupmodeexistingcoursegroups'] = 'Existierende Kurs-Gruppen verwenden';
+$string['groupmodeslotgroups'] = 'Gruppen per Slot erzeugen';
+$string['groupmodeslotgroupsappointment'] = 'Gruppen per gebuchten Slot erzeugen';
 $string['appointmentdatetime'] = 'Datum & Zeit';
 $string['multipleappointmentstartdate'] = 'Startdatum';
 $string['multipleappointmentenddate'] = 'Enddatum';
@@ -57,6 +67,7 @@ $string['allowsubmissionsfromdatesummary'] = 'Anmeldungen möglich ab <strong>{$
 $string['allowsubmissionsanddescriptionfromdatesummary'] = 'Die Terminplanerdetails und die Registrierung stehen zur Verfügung ab <strong>{$a}</strong>';
 $string['duedate'] = 'Abgabetermin';
 $string['availability'] = 'Verfügbarkeit';
+$string['allowsubmissionstodate'] = 'Anmeldeende';
 
 $string['eventslotviewed'] = 'Termine angezeigt.';
 $string['eventregistrationsviewed'] = 'Anmeldungen angezeigt.';
@@ -109,8 +120,8 @@ $string['slottimeframesheader'] = 'Zeitfenster angeben';
 $string['slottimeframesheader_help'] = 'Hier können Sie Zeitfenster auf Wochentagsbasis definieren die mit Terminslots befüllt werden, wie oben spezifiziert. Mehr als ein Zeitfenster pro Tag ist erlaubt. Ist ein Zeitfenster an einem Tag ausgewählt (zB Montag), so werden für jeden Montag im Datumszeitraum Zeitfenster und Termine erstellt.';
 $string['slotdetails'] = 'Slot Details';
 $string['back'] = 'Zurück';
-$string['teacherid'] = 'Trainer/in';
-$string['teacherid_help'] = 'Bitte Trainer/in auswählen, der/die die Termine leitet';
+$string['trainerid'] = 'Trainer/in';
+$string['trainerid_help'] = 'Bitte Trainer/in auswählen, der/die die Termine leitet';
 $string['teacher'] = 'Trainer/in';
 $string['otherheader'] = 'Anderes';
 $string['day_0'] = 'Montag';
@@ -214,12 +225,17 @@ $string['assign'] = 'Zuweisen';
 $string['slotassignedby'] = 'Termin zugewiesen von';
 $string['slotlistempty'] = 'Es konnten keine Termine gefunden werden.';
 $string['assignsuccess'] = 'Der Termin wurde erfolgreich zugeteilt und der/die Teilnehmer/Innen verständigt.';
+$string['assignsuccessnotsent'] = 'Der Termin wurde erfolgreich zugeteilt ABER der/die Teilnehmer/Innen WURDEN NICHT verständigt.';
 
 $string['btn_add'] = 'Neue Slots hinzufügen';
 $string['btn_edit'] = 'Ausgewählte Slots bearbeiten';
+$string['btn_editsingle'] = 'Ausgewählten Slot bearbeiten';
 $string['btn_delete'] = 'Ausgewählte Slots entfernen';
+$string['btn_deletesingle'] = 'Ausgewählten Slot entfernen';
 $string['btn_eval'] = 'Ausgewählte Slots bewerten';
+$string['btn_evalsingle'] = 'Ausgewählten Slot bewerten';
 $string['btn_print'] = 'Ausgewählte Slots drucken';
+$string['btn_printsingle'] = 'Ausgewählten Slot drucken';
 $string['printsubmit'] = 'Tabellendruckansicht';
 $string['title_print'] = 'Druckansicht';
 
@@ -349,6 +365,8 @@ $string['configrequiremodintro'] = 'Deaktivieren Sie diese Option, wenn die Eing
 $string['configmaximumgrade'] = 'Voreinstellung für den Wert im Feld "Höchste Bewertung" beim Erstellen eines neuen Terminplaners. Diese Einstellung entspricht dem Beurteilungsmaximum, das ein/e Teilnehmer/in erhalten kann.';
 $string['configabsolutedeadline'] = 'Voreinstellung für den Offset der Datums- und Zeitauswahl, ausgehend vom jetzigen Zeitpunkt.';
 $string['configrelativedeadline'] = 'Voreinstellung für den Zeitpunkt an dem Teilnehmer/innen vor einem Termin davon in Kenntnis gesetzt werden sollten.';
+$string['allowcreationofpasttimeslots'] = 'Vergangene Termine anlegen';
+$string['configallowcreationofpasttimeslots'] = 'Dürfen vergangene Termine angelegt werden?';
 $string['configdigest'] = 'Zusammenfassung der Termine für den jeweils nächsten Tag an Trainer/in versenden.';
 $string['configemailteachers'] = 'E-Mail Benachrichtigungen an Trainer/in bezüglich Änderungen der Anmeldungsstatus';
 $string['configlocationlink'] = 'Link zu Suchmaschine, die den Weg zum Zielort zeigt. Setzen Sie $searchstring in die URL ein, die die Anfrage bearbeitet.';
@@ -366,9 +384,9 @@ $string['configmonth'] = 'Monat';
 $string['configmonths'] = 'Monate';
 $string['configyear'] = 'Jahr';
 $string['configahead'] = 'vorher';
-
 $string['configemailteachers_label'] = 'E-Mail Benachrichtigungen';
 $string['configdigest_label'] = 'Zusammenfassungen';
+$string['configsingleslotprintfield'] = 'Profilfeld das beim Ausdruck eines einzelnen Termins gedruckt wird.';
 
 $string['no_slots_defined'] = 'Derzeit sind keine Zeitslots verfügbar.';
 $string['no_slots_defined_teacher'] = 'Derzeit sind keine Zeitslots verfügbar. Legen Sie <a href="{$a->link}">hier</a> neue an.';
@@ -411,6 +429,8 @@ $string['messageprovider:edit_notify_teacher'] = 'Terminplaner Änderungen (Trai
 $string['messageprovider:slotdeleted_notify_student'] = 'Terminplaner Slot absagen';
 $string['messageprovider:assign_notify_student'] = 'Terminplaner Zuweisung durch Trainer/in';
 $string['messageprovider:assign_notify_teacher'] = 'Terminplaner Zuweisung';
+$string['messageprovider:register_notify_teacher_queue'] = 'Terminplaner Wartelisteneintrag';
+$string['messageprovider:register_notify_teacher_unqueue'] = 'Terminplaner Wartelistenaustrag';
 
 /* Message templates following.
  * Please note that the following strings are available:
@@ -1026,6 +1046,7 @@ $string['print_return'] = 'Zurück zur Terminansicht';
 
 $string['message_error_slot_full_single'] = 'Dieser Slot hat keine freien Plätze mehr!';
 $string['message_error_slot_full_group'] = 'Dieser Slot ist vergeben!';
+$string['message_error_groupsynchronization'] = 'Die Synchronisierung der Termin-Gruppen schlug fehl!';
 
 $string['message_error_unknown_unqueue'] = 'Ihr Wartelisten-Eintrag konnte nicht entfernt werden! Unbekannter Fehler.';
 $string['message_error_unknown_unregister'] = 'Ihre Registrierung konnte nicht entfernt werden! Unbekannter Fehler.';
@@ -1054,8 +1075,11 @@ $string['visibility_anonymous'] = 'Anonym';
 $string['visibility_slot'] = 'Sichtbar nur, wenn eigener Slot';
 $string['visibility_all'] = 'Sichtbar';
 
+$string['calendarsettings'] = 'Kalender Einstellungen';
 $string['hidecalendar'] = 'Kalender verbergen';
 $string['hidecalendar_help'] = 'Stellen Sie hier ein, ob der Kalender in diesem Terminplaner ausgeblendet werden soll.';
+$string['nocalendareventslotcreation'] = 'Keine Kalendereinträge für (noch) leere Slots';
+$string['nocalendareventslotcreation_help'] = 'Wenn Sie diese Option anklicken werden beim Anlegen von Terminen noch keine Kalendereinträge erstellt. Erst Verabredungen führen zu Kalendereinträgen für Termine.';
 
 $string['finalgrade'] = 'Dieser Wert wurde in der Kursbewertung eingetragen und kann im Terminplaner nicht überschrieben werden.';
 
@@ -1077,3 +1101,16 @@ $string['totalday'] = 'xxx Termine für yyy Personen';
 $string['totalday_groups'] = 'xxx Termine für yyy Gruppen';
 $string['totaltotal'] = 'Insgesamt xxx Termine für yyy Personen';
 $string['totaltotal_groups'] = 'Insgesamt xxx Termine für yyy Gruppen';
+
+$string['singleslotprintfield'] = 'Termin-Ausdruck Profilfeld';
+$string['singleslotprintfields'] = 'Termin-Ausdruck Profilfelder';
+$string['singleslotprintfield0'] = 'Termin-Ausdruck Profilfeld';
+$string['singleslotprintfield0_help'] = 'Diese Profilfelder werden für jede/n TeilnehmerIn beim Ausdruck eines einzelnen Termins ausgedruckt.';
+$string['attended'] = 'teilgenommen';
+$string['signature'] = 'Unterschrift';
+$string['slot'] = 'Termin';
+$string['trainer'] = 'Trainer/in';
+$string['created'] = 'Erstellt';
+$string['nosingleslotprintfields'] = 'Es kann kein Ausdruck vorgenommen werden. Es wurden keine Profilfelder zum Ausdruck bestimmt. Siehe die Terminplaner-Einstellungen.';
+$string['dbid'] = 'DB ID';
+$string['auth'] = 'Authentifizierungsmethode';
