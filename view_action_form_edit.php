@@ -264,12 +264,21 @@ class organizer_edit_slots_form extends moodleform
         $mform->addElement('hidden', 'mod_visibility', 0);
         $mform->setType('mod_visibility', PARAM_BOOL);
 
-        $group = array();
-        $group[] = $mform->createElement('text', 'location', get_string('location', 'organizer'),
-            array('size' => '64', 'group' => null)
+        $locations = get_config('mod_organizer', 'locations');
+        if (!$locations) {
+            $locations = [];
+        } else {
+            $locations = explode("\n", $locations);
+        }
+        $options = array(
+                'multiple' => false,
+                'tags' => true,
         );
+
+        $group = array();
+        $group[] = $mform->createElement('autocomplete', 'location', null,
+                array_combine($locations, $locations), $options);
         $group[] = $mform->createElement('static', '', '', $this->_warning_icon('location', isset($defaults['location'])));
-        $mform->setType('location', PARAM_TEXT);
 
         $mform->addGroup($group, 'locationgroup', get_string('location', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_location', 0);

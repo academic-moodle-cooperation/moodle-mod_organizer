@@ -110,6 +110,11 @@ if ($ADMIN->fulltree) {
                     get_string('allowcreationofpasttimeslots', 'organizer'),
                     get_string('configallowcreationofpasttimeslots', 'organizer'), 0, $yesno));
 
+
+    // Predefine locations for slots.
+    $settings->add(new admin_setting_configtextarea('mod_organizer/locations', get_string('configlocationslist', 'organizer'),
+            get_string('configlocationslist_desc', 'organizer'), '', PARAM_TEXT, '60', '8'));
+
     // User profile fields for printing single slots.
     $settings->add(new admin_setting_heading('organizersingleslotprintfields', '', get_string('singleslotprintfields', 'organizer')));
 

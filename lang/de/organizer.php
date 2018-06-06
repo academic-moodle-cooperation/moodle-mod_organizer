@@ -1114,3 +1114,6 @@ $string['created'] = 'Erstellt';
 $string['nosingleslotprintfields'] = 'Es kann kein Ausdruck vorgenommen werden. Es wurden keine Profilfelder zum Ausdruck bestimmt. Siehe die Terminplaner-Einstellungen.';
 $string['dbid'] = 'DB ID';
 $string['auth'] = 'Authentifizierungsmethode';
+
+$string['configlocationslist'] = 'Locations für Autocomplete';
+$string['configlocationslist_desc'] = 'Es kann eine Location je Zeile eingegeben werden!';
