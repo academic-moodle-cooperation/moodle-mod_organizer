@@ -74,8 +74,8 @@ if (organizer_is_group_mode()) {
     $data->participant = $participantid;
     $data->group = false;
 }
-$sent = organizer_prepare_and_send_message($data, 'assign_notify_student'); // Message.
-$sent = organizer_prepare_and_send_message($data, 'assign_notify_teacher'); // Message.
+$studentnotified = organizer_prepare_and_send_message($data, 'assign_notify_student'); // Message.
+organizer_prepare_and_send_message($data, 'assign_notify_teacher'); // Message.
 
 $newurl = $redirecturl->out();
 
@@ -87,7 +87,7 @@ $event = \mod_organizer\event\appointment_assigned::create(
 );
 $event->trigger();
 
-if ($sent) {  // If slot not in the past.
+if ($studentnotified) {  // If participant has been notified (=slot is not past due).
     redirect($newurl, get_string('assignsuccess', 'organizer'), 5);
 } else {
     redirect($newurl, get_string('assignsuccessnotsent', 'organizer'), 5);
