@@ -29,8 +29,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 define('ORGANIZER_SPACING', '&nbsp;&nbsp;');
-define('ORGANIZER_NUM_DAYS', '7');
-define('ORGANIZER_NUM_DAYS_ADD', '3');
+define('ORGANIZER_NUM_DAYS', '10');
+define('ORGANIZER_NUM_DAYS_ADD', '5');
 define('ORGANIZER_NO_DAY', '-1');
 define('ORGANIZER_DAY_IN_SECS', '86400');
 define('ORGANIZER_USE_SCROLL_FIX', '1');
@@ -184,12 +184,6 @@ class organizer_add_slots_form extends moodleform
                 ), 'other'
             );
         }
-        $forecasttotalgroup[] = $mform->createElement("html",
-                "<div name='organizer_newslots_forecasttotal' class='col-md-9 form-inline felement'></div>");
-        $mform->insertElementBefore(
-                $mform->createElement('group', "forecasttotalgroup", "&nbsp;", $forecasttotalgroup, ORGANIZER_SPACING, false
-                ), 'other'
-        );
 
         if (isset($_POST['addday'])) {
             $totalslots = $this->_add_slot_fields($newslotindex);
@@ -197,6 +191,13 @@ class organizer_add_slots_form extends moodleform
         } else {
             $displayallslots = 0;
         }
+        $forecasttotalgroup[] = $mform->createElement("html",
+                "<div name='organizer_newslots_forecasttotal' class='col-md-9 form-inline felement'></div>");
+        $mform->insertElementBefore(
+                $mform->createElement('group', "forecasttotalgroup", "&nbsp;", $forecasttotalgroup, ORGANIZER_SPACING, false
+                ), 'other'
+        );
+
         $mform->insertElementBefore(
             $mform->createElement('submit', "addday", get_string('newslot', 'organizer')), 'other'
         );

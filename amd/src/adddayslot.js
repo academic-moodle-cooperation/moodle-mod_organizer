@@ -61,11 +61,12 @@ define(
                         break;
                     }
                 }
+                //  As long as not all slots are visible hide the add day button.
                 if (i < instance.totalslots - 1) {
                     $('#id_addday').hide();
                 }
 
-                // As soon as one day is edited, display the next one.
+                // As soon as a to time is edited, display the next day.
                 $('[id^=id_newslots_]').change(
                     function () {
                         var id = $(this).attr("id");
@@ -80,6 +81,9 @@ define(
                         }
                     }
                 );
+            } else {
+                instance.current = instance.totalslots;
+                evaluateallrows();
             }
 
             // If a new slot field is changed evaluate the row to provide the forecast.
@@ -111,7 +115,10 @@ define(
                 if (valdayfrom != -1 && valdayto == -1) {
                     var adaptvalue;
                     if (valfrom < 29700) {
-                        adaptvalue = valfrom + 300;
+                        var durationnumber = parseInt($("input[name='duration\[number\]']").val());
+                        var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
+                        var duration = durationnumber * durationtimeunit;
+                        adaptvalue = valfrom + duration;
                         $("select[name='newslots\["+i+"\]\[dayto\]']").val(valdayfrom);
                         $("select[name='newslots\["+i+"\]\[to\]']").val(adaptvalue);
                     } else {
@@ -121,6 +128,8 @@ define(
                         $("select[name='newslots\["+i+"\]\[to\]']").val(adaptvalue);
                     }
                 }
+                valdayfrom = parseInt($("select[name='newslots\["+i+"\]\[day\]']").val());
+                valdayto = parseInt($("select[name='newslots\["+i+"\]\[dayto\]']").val());
                 if (valdayfrom != -1 && valdayto != -1) {
                     evaluaterow(i);
                     writetotal();
