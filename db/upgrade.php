@@ -427,7 +427,7 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017112201, 'organizer');
     }
 
-    if ($oldversion < 2018062601) {
+    if ($oldversion < 2018062602) {
 
         // Define table organizer_slot_trainer to be created.
         $table = new xmldb_table('organizer_slot_trainer');
@@ -563,19 +563,21 @@ function xmldb_organizer_upgrade($oldversion) {
 
         // Change old calendar instance events to new scheme: One event fromdate, one event todate, duration 0.
         foreach ($records as $record) {
-            $newtimestart = $DB->get_field('organizer', 'duedate', array('id' => $record->instance));
-            $newname = get_string('allowsubmissionstodate', 'organizer') . ": " . $record->name;
-            $record->timeduration = 0;
-            $record->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $record->name;
-            $DB->update_record('event', $record);
-            $record->timestart = $newtimestart;
-            $record->timesort = $newtimestart;
-            $record->name = $newname;
-            unset($record->id);
-            $DB->insert_record('event', $record);
+            // Change the old events only if there is a duedate.
+            if ($newtimestart = $DB->get_field('organizer', 'duedate', array('id' => $record->instance))) {
+                $newname = get_string('allowsubmissionstodate', 'organizer') . ": " . $record->name;
+                $record->timeduration = 0;
+                $record->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $record->name;
+                $DB->update_record('event', $record);
+                $record->timestart = $newtimestart;
+                $record->timesort = $newtimestart;
+                $record->name = $newname;
+                unset($record->id);
+                $DB->insert_record('event', $record);
+            }
         }
 
-        upgrade_mod_savepoint(true, 2018062601, 'organizer');
+        upgrade_mod_savepoint(true, 2018062602, 'organizer');
     }
 
         return true;
