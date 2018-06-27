@@ -123,6 +123,8 @@ define(
                             prefilltovalue -= 86400;
                             var adaptday = (valdayfrom + 1) % 6;
                             $("select[name='newslots\["+i+"\]\[dayto\]']").val(adaptday);
+                        } else {
+                            $("select[name='newslots\["+i+"\]\[dayto\]']").val(valdayfrom);
                         }
                     } else if (durationtimeunit == 86400) {
                         prefilltovalue = valfrom;
@@ -182,7 +184,7 @@ define(
                 var enddatemonth = $("select[name='enddate\[month\]']").val() - 1;
                 var enddateyear = $("select[name='enddate\[year\]']").val();
                 var enddatedate = new Date(enddateyear, enddatemonth, enddateday);
-                var enddate = enddatedate.getTime()/1000;
+                var enddate = enddatedate.getTime()/1000+86399;
                 var valday = parseInt($("select[name^='newslots\["+i+"\]\[day\]']").val());
                 if (valday == -1) {
                     return 0;
