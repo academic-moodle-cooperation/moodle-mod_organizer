@@ -113,27 +113,34 @@ define(
                 var valdayto = parseInt($("select[name='newslots\["+i+"\]\[dayto\]']").val());
                 var valfrom = parseInt($("select[name='newslots\["+i+"\]\[from\]']").val());
                 if (valdayfrom != -1 && valdayto == -1) {
-                    var adaptvalue;
-                    if (valfrom < 29700) {
-                        var durationnumber = parseInt($("input[name='duration\[number\]']").val());
-                        var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
-                        var duration = durationnumber * durationtimeunit;
-                        adaptvalue = valfrom + duration;
-                        $("select[name='newslots\["+i+"\]\[dayto\]']").val(valdayfrom);
-                        $("select[name='newslots\["+i+"\]\[to\]']").val(adaptvalue);
-                    } else {
-                        adaptvalue = 0;
-                        var adaptday = (valdayto + 1) % 6;
+                    var prefilltovalue;
+                    var durationnumber = parseInt($("input[name='duration\[number\]']").val());
+                    var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
+                    var duration = durationnumber * durationtimeunit;
+                    prefilltovalue = valfrom + duration;
+                    if (durationtimeunit == 3600) {
+                        if (prefilltovalue >= 86400) {
+                            prefilltovalue -= 86400;
+                            var adaptday = (valdayfrom + 1) % 6;
+                            $("select[name='newslots\["+i+"\]\[dayto\]']").val(adaptday);
+                        }
+                    } else if (durationtimeunit == 86400) {
+                        prefilltovalue = valfrom;
+                        var adaptday = (valdayfrom + durationnumber) % 7;
                         $("select[name='newslots\["+i+"\]\[dayto\]']").val(adaptday);
-                        $("select[name='newslots\["+i+"\]\[to\]']").val(adaptvalue);
+                    } else {
+                        $("select[name='newslots\["+i+"\]\[dayto\]']").val(valdayfrom);
                     }
+                    $("select[name='newslots\["+i+"\]\[to\]']").val(prefilltovalue);
                 }
                 valdayfrom = parseInt($("select[name='newslots\["+i+"\]\[day\]']").val());
                 valdayto = parseInt($("select[name='newslots\["+i+"\]\[dayto\]']").val());
                 if (valdayfrom != -1 && valdayto != -1) {
                     evaluaterow(i);
-                    writetotal();
+                } else {
+                    resetrowevaluation(i);
                 }
+                writetotal();
             }
 
             // Evaluate a certain row to make forecast.
@@ -141,6 +148,16 @@ define(
                 var slots = getslots(i);
                 var pax = getpax();
                 pax = pax * slots;
+                var forecaststring = instance.totalday.replace("xxx", slots.toString()).replace("yyy", pax.toString());
+                $("span[name='forecastday_"+i+"']").html(forecaststring);
+                $("span[name='newslots_"+i+"']").html(slots.toString());
+                $("span[name='newpax_"+i+"']").html(pax.toString());
+            }
+
+            // Set row evaluation to zero.
+            function resetrowevaluation(i) {
+                var slots = 0;
+                var pax = 0;
                 var forecaststring = instance.totalday.replace("xxx", slots.toString()).replace("yyy", pax.toString());
                 $("span[name='forecastday_"+i+"']").html(forecaststring);
                 $("span[name='newslots_"+i+"']").html(slots.toString());
@@ -156,7 +173,6 @@ define(
             }
 
             function getslots(i) {
-
                 var startdateday = $("select[name='startdate\[day\]']").val();
                 var startdatemonth = $("select[name='startdate\[month\]']").val() - 1;
                 var startdateyear = $("select[name='startdate\[year\]']").val();
