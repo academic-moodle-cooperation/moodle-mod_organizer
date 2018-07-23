@@ -128,17 +128,16 @@ class mod_organizer_mod_form extends moodleform_mod
         $mform->setDefault('relativedeadline', $organizerconfig->relativedeadline);
         $mform->addHelpButton('relativedeadline', 'relativedeadline', 'organizer');
 
-        $traineringroupgroup = array();
-        $traineringroupgroup[] = $mform->createElement(
-                'select', 'isgrouporganizer', '', $this->_get_groupmodes());
+        $mform->addElement('select', 'isgrouporganizer', get_string('isgrouporganizer', 'organizer'), $this->_get_groupmodes());
         $mform->setDefault('isgrouporganizer', 0);
-        $traineringroupgroup[] = $mform->createElement(
-                'advcheckbox', 'includetraineringroups', '&nbsp;', get_string('includetraineringroups', 'organizer'),
+        $mform->addHelpButton('isgrouporganizer', 'isgrouporganizer', 'organizer');
+        $mform->addElement(
+                'advcheckbox', 'includetraineringroups', get_string('includetraineringroups', 'organizer'), '',
                 null, array(0, 1)
         );
+        $mform->addHelpButton('includetraineringroups', 'includetraineringroups', 'organizer');
         $mform->setType('includetraineringroups', PARAM_INT);
         $mform->setDefault('includetraineringroups', 0);
-        $mform->addGroup($traineringroupgroup, 'traineringroupgroup', get_string('traineringroupgroup', 'organizer'), null, false);
         $mform->disabledif ('includetraineringroups', 'isgrouporganizer', 'eq', 0);
         $mform->disabledif ('includetraineringroups', 'isgrouporganizer', 'eq', 1);
 

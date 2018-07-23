@@ -37,14 +37,14 @@ $string['pluginadministration'] = 'Organizer administration';
 $string['pluginname'] = 'Organizer';
 $string['crontaskname'] = 'Organizer cron job';
 $string['search:activity'] = 'Organizer - activity information';
-$string['traineringroupgroup'] = 'Group appointments';
-$string['traineringroupgroup_help'] = 'Check this if you want this organizer to deal with groups instead of individual users.
-Modus \'Use existing groups\': A single groupmember books a slot for the group.
-Modus \'Group creation per empty slot\': A course group is created for every new slot.
-Modus \'Group creation per booked slot\': A course group is created for every booked slot.
-If you check the checkbox not only the slot\'s participants but also its trainers are included in the groups.
+$string['isgrouporganizer'] = 'Group appointments';
+$string['isgrouporganizer_help'] = 'Check this if you want this organizer to deal with groups instead of individual users.
+"Use existing groups": A single groupmember books a slot for the group.
+"Group creation per empty slot": A course group is created for every new slot.
+"Group creation per booked slot": A course group is created for every booked slot.
 ';
 $string['includetraineringroups'] = 'Include trainer in groups';
+$string['includetraineringroups_help'] = 'If you check the checkbox not only the slot\'s participants but also its trainers are included in the groups.';
 
 $string['groupmodenogroups'] = 'No group appointments';
 $string['groupmodeexistingcoursegroups'] = 'Use existing course groups';
