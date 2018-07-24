@@ -1112,3 +1112,25 @@ $string['created'] = 'Created';
 $string['nosingleslotprintfields'] = 'Printing is not possible. There are no user fields defined. See the organizer settings.';
 $string['dbid'] = 'DB ID';
 $string['auth'] = 'Authentification method';
+
+// Privacy strings...
+$string['privacy:metadata:showhiddenslots'] = 'User preference: Shall slot table display hidden slots.';
+$string['privacy:metadata:showmyslotsonly'] = 'User preference: Shall slot table display my slots only.';
+$string['privacy:metadata:showfreeslotsonly'] = 'User preference: Shall slot table display free slots only.';
+$string['privacy:metadata:showpasttimeslots'] = 'User preference: Shall slot table display past slots as well.';
+$string['privacy:metadata:organizerslotappointments'] = 'Table in which slot appointments are stored.';
+$string['privacy:metadata:organizerslotqueues'] = 'Table in which waiting queue entries for slots are stored.';
+$string['privacy:metadata:organizerslottrainer'] = 'Table in which the trainers of a slot are stored.';
+$string['privacy:metadata:useridappointment'] = 'Identifier of the user who booked this slot.';
+$string['privacy:metadata:groupidappointment'] = 'Identifier of the usergroup who booked this slot.';
+$string['privacy:metadata:applicantidappointment'] = 'Identifier of the user who booked this slot for the group.';
+$string['privacy:metadata:attended'] = 'Whether or not the user or group attended the slot.';
+$string['privacy:metadata:grade'] = 'The grade the user or group received for this slot.';
+$string['privacy:metadata:feedback'] = 'The trainers feedback when grading the slot.';
+$string['privacy:metadata:comments'] = 'The trainers comments for this slot.';
+$string['privacy:metadata:teacherapplicantid'] = 'Identifier of the trainer who assigned this slot to a participant or group.';
+$string['privacy:metadata:teacherapplicanttimemodified'] = 'Time when a trainer assigned this slot to a participant or group.';
+$string['privacy:metadata:useridqueue'] = 'Identifier of the user who made this entry in the waiting queue for a slot.';
+$string['privacy:metadata:groupidqueue'] = 'Identifier of the group who made this entry in the waiting queue for a slot.';
+$string['privacy:metadata:applicantidqueue'] = 'Identifier of the user who made this entry in the waiting queue for the group.';
+$string['privacy:metadata:trainerid'] = 'Identifier of a trainer of a slot.';
