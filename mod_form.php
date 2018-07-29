@@ -43,7 +43,7 @@ class mod_organizer_mod_form extends moodleform_mod
             $activateduedatecheckbox = false;
             // If mode of coursegroup creation is changed to 'slot creation' create groups from existing slots.
             $isgrouporganizer_db = $DB->get_field('organizer', 'isgrouporganizer', array('id' => $instance));
-            $isgrouporganizer_data = $mform->getElementValue('traineringroupgroup');
+            $isgrouporganizer_data = $mform->getElementValue('isgrouporganizer');
             $isgrouporganizer_data = reset($isgrouporganizer_data);
             if ($isgrouporganizer_data[0] != $isgrouporganizer_db &&
                 $isgrouporganizer_data[0] == ORGANIZER_GROUPMODE_NEWGROUPSLOT) {

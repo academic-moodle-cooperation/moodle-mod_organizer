@@ -34,6 +34,7 @@ use \core_privacy\local\request\plugin\provider as pluginprovider;
 use \core_privacy\local\request\user_preference_provider as preference_provider;
 use \core_privacy\local\request\writer;
 use \core_privacy\local\request\approved_contextlist;
+use \core_privacy\local\request\transform;
 use \core_privacy\local\request\helper;
 
 /**
@@ -99,29 +100,27 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
                 'applicantidappointment' => $userid,
                 'useridqueue' => $userid,
                 'applicantidqueue' => $userid,
-                'guserid' => $userid,
                 'tuserid' => $userid,
-                'teacherapplicantid' => $userid,
+                'teacherapplicantid' => $userid
         ];
 
-        $sql = "
-   SELECT ctx.id
-     FROM {course_modules} cm
-     JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
-     JOIN {organizer} o ON cm.instance = o.id
-     JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextlevel
-     JOIN {organizer_slots} s ON o.id = s.organizerid
-LEFT JOIN {organizer_slot_appointments} a ON s.id = a.slotid
-LEFT JOIN {organizer_slot_queues} q ON s.id = q.slotid
-LEFT JOIN {organizer_slot_trainer} t ON s.id = t.slotid
-LEFT JOIN {groups} g ON g.courseid = o.course
-LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
-    WHERE (
-          a.userid = :useridappointment OR a.groupid = g.id OR a.applicantid = :applicantidappointment
-          OR q.userid = :useridqueue OR q.groupid = g.id OR q.applicantid = :applicantidqueue
-          OR t.trainerid = :tuserid
-          OR a.teacherapplicantid = :teacherapplicantid
-          )";
+        $sql = "SELECT ctx.id
+                 FROM {course_modules} cm
+                 JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
+                 JOIN {organizer} o ON cm.instance = o.id
+                 JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextlevel
+                 JOIN {organizer_slots} s ON o.id = s.organizerid
+                 JOIN {organizer_slot_appointments} a ON s.id = a.slotid
+            LEFT JOIN {organizer_slot_queues} q ON s.id = q.slotid
+            LEFT JOIN {organizer_slot_trainer} t ON s.id = t.slotid
+                WHERE (
+                      a.userid = :useridappointment 
+                      OR a.applicantid = :applicantidappointment
+                      OR q.userid = :useridqueue 
+                      OR q.applicantid = :applicantidqueue
+                      OR t.trainerid = :tuserid
+                      OR a.teacherapplicantid = :teacherapplicantid
+                      )";
         $contextlist = new contextlist();
         $contextlist->add_from_sql($sql, $params);
 
@@ -147,14 +146,11 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
 
         list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
-        $sql = "SELECT c.id AS contextid, o.*, cm.id AS cmid
+        $sql = "SELECT c.id AS contextid, o.id AS organizerid, cm.id AS cmid
                   FROM {context} c
                   JOIN {course_modules} cm ON cm.id = c.instanceid
                   JOIN {organizer} o ON o.id = cm.instance
                  WHERE c.id {$contextsql}";
-
-        // Keep a mapping of organizerid to contextid.
-        $mappings = [];
 
         $organizers = $DB->get_records_sql($sql, $contextparams);
 
@@ -162,7 +158,6 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
 
         foreach ($organizers as $organizer) {
             $context = \context_module::instance($organizer->cmid);
-            $mappings[$organizer->id] = $organizer->contextid;
 
             // Check that the context is a module context.
             if ($context->contextlevel != CONTEXT_MODULE) {
@@ -173,11 +168,10 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
 
             writer::with_context($context)->export_data([], $organizerdata);
 
-            /* We don't differentiate between roles, if we have data about the user, we give it freely ;) - no sensible
-             * information here! */
+            static::export_appointments($context, $organizer, $user);
 
-            static::export_user_preferences($user->id);
         }
+        static::export_user_preferences($user->id);
     }
 
     /**
@@ -209,6 +203,192 @@ LEFT JOIN {groups_members} gm ON g.id = gm.groupid AND gm.userid = :guserid
             writer::with_context($context)->export_user_preference('mod_organizer', 'mod_organizer_showpasttimeslots', $value,
                     get_string('privacy:metadata:showpasttimeslots', 'mod_organizer'));
         }
+    }
+
+    /**
+     * Fetches all of the user's appointments and adds them to the export
+     *
+     * @param  \context $context
+     * @param  $organizer
+     * @param  \stdClass $user
+     * @param  array $path Current directory path that we are exporting to.
+     * @throws \dml_exception
+     */
+    protected static function export_appointments(\context $context, $organizer, \stdClass $user) {
+        global $DB;
+
+        // Fetch all appointments of participants or trainers.
+        $params = [
+                'guserid' => $user->id,
+                'organizer' => $organizer->organizerid,
+                'useridappointment' => $user->id,
+                'guserid2' => $user->id,
+                'organizer2' => $organizer->organizerid,
+                'useridqueue' => $user->id,
+                'organizer3' => $organizer->organizerid,
+                'teacherapplicantid' => $user->id,
+                'organizer4' => $organizer->organizerid,
+                'trainerid' => $user->id
+        ];
+
+        $sql = "
+                  SELECT 1 as participant, 0 as inqueue, 0 as teacherapplicant, 0 as teacher, a.id, a.attended, a.grade,
+                  a.comments, a.teacherapplicanttimemodified, a.teacherapplicantid, s.starttime,
+                  s.duration, s.location, gm.groupid, g.name as groupname, a.applicantid, a.allownewappointments, a.userid
+                  FROM {organizer_slot_appointments} a
+                  JOIN {organizer_slots} s ON s.id = a.slotid
+                  JOIN {organizer} o ON s.organizerid = o.id
+                  LEFT JOIN {groups_members} gm ON gm.userid = :guserid AND gm.groupid = a.groupid
+                  LEFT JOIN {groups} g ON gm.groupid = g.id
+                  WHERE
+                      o.id = :organizer 
+                      AND ( 
+                      a.userid = :useridappointment
+                      )
+                      
+                  UNION
+
+                  SELECT 0 as participant, 1 as inqueue, 0 as teacherapplicant, 0 as teacher, q.id, 0 as attended, 0 as grade,
+                  '' as comments, null as teacherapplicanttimemodified, 0 as teacherapplicantid, s.starttime,
+                  s.duration, s.location, gm.groupid, g.name as groupname, q.applicantid, 0 as allownewappointments, q.userid
+                  FROM {organizer_slot_queues} q
+                  JOIN {organizer_slots} s ON s.id = q.slotid
+                  JOIN {organizer} o ON s.organizerid = o.id
+                  LEFT JOIN {groups_members} gm ON gm.userid = :guserid2 AND gm.groupid = q.groupid
+                  LEFT JOIN {groups} g ON gm.groupid = g.id
+                  WHERE
+                      o.id = :organizer2 
+                      AND ( 
+                      q.userid = :useridqueue
+                      )
+                      
+                  UNION
+                  
+                  SELECT 0 as participant, 0 as inqueue, 1 as teacherapplicant, 0 as teacher, a.id, a.attended, a.grade,
+                  a.comments, a.teacherapplicanttimemodified, a.teacherapplicantid, s.starttime,
+                  s.duration, s.location, 0 as groupid, '' as groupname, a.applicantid, a.allownewappointments, a.userid
+                  FROM {organizer_slot_appointments} a
+                  JOIN {organizer_slots} s ON s.id = a.slotid
+                  JOIN {organizer} o ON s.organizerid = o.id
+                  WHERE
+                      o.id = :organizer3
+                      AND ( 
+                      a.teacherapplicantid = :teacherapplicantid
+                      )
+                  
+                  UNION    
+                  
+                  SELECT 0 as participant, 0 as inqueue, 0 as teacherapplicant, 1 as teacher, a.id, a.attended, a.grade,
+                  a.comments, a.teacherapplicanttimemodified, a.teacherapplicantid, s.starttime,
+                  s.duration, s.location, 0 as groupid, '' as groupname, a.applicantid, a.allownewappointments, a.userid
+                  FROM {organizer_slot_appointments} a
+                  JOIN {organizer_slots} s ON s.id = a.slotid
+                  JOIN {organizer} o ON s.organizerid = o.id
+                  JOIN {organizer_slot_trainer} t ON s.id = t.slotid
+                  WHERE
+                      o.id = :organizer4 
+                      AND ( 
+                      t.trainerid = :trainerid
+                      )
+              ";
+
+        $rs = $DB->get_recordset_sql($sql, $params);
+
+        foreach ($rs as $id => $cur) {
+            if ($cur->participant == "1") {
+                static::export_appointment_participant($context, $cur);
+            }elseif ($cur->inqueue == "1") {
+                    static::export_appointment_inqueue($context, $cur);
+            } elseif ($cur->teacherapplicant == "1") {
+                static::export_appointment_teacherapplicant($context, $cur);
+            } elseif ($cur->teacher == "1") {
+                static::export_appointment_teacher($context, $cur);
+            }
+        }
+
+        $rs->close();
+    }
+
+    /**
+     * Formats and then exports the appointment data for participants.
+     *
+     * @param  \context $context
+     * @param  \stdClass $appointment
+     */
+    protected static function export_appointment_participant(\context $context, \stdClass $appointment) {
+        $appointment->groupid = is_null($appointment->groupid) ? 0 : $appointment->groupid;
+        $appointment->teacherapplicantid = is_null($appointment->teacherapplicantid) ? 0 : $appointment->teacherapplicantid;
+        $appointmentdata = (object)[
+                'Appointment slot from' => transform::datetime($appointment->starttime),
+                'Appointment slot to' => transform::datetime($appointment->starttime + $appointment->duration),
+                'Appointment slot location' => $appointment->location,
+                'Assigned by a trainer' => transform::yesno($appointment->teacherapplicantid),
+                'Groupmember' => transform::yesno($appointment->groupid),
+                'Groupname' => $appointment->groupid ? $appointment->groupname : "",
+                'You booked the group' => $appointment->groupid ? transform::yesno($appointment->applicantid == $appointment->userid) : "No",
+                'attended' => transform::yesno($appointment->attended),
+                'grade' => $appointment->grade,
+                'comments' => $appointment->comments,
+                'allownewappointments' => transform::yesno($appointment->allownewappointments)
+        ];
+
+        writer::with_context($context)->export_data(['participant slot ' . $appointment->id], $appointmentdata);
+    }
+
+    /**
+     * Formats and then exports the appointment data for participants in waiting queue.
+     *
+     * @param  \context $context
+     * @param  \stdClass $inqueue
+     */
+    protected static function export_appointment_inqueue(\context $context, \stdClass $inqueue) {
+        $inqueue->groupid = is_null($inqueue->groupid) ? 0 : $inqueue->groupid;
+        $inqueue->teacherapplicantid = is_null($inqueue->teacherapplicantid) ? 0 : $inqueue->teacherapplicantid;
+        $inqueuedata = (object)[
+                'Waiting queue slot from' => transform::datetime($inqueue->starttime),
+                'Waiting queue slot to' => transform::datetime($inqueue->starttime + $inqueue->duration),
+                'Appointment slot location' => $inqueue->location,
+                'Groupmember' => transform::yesno($inqueue->groupid),
+                'Groupname' => $inqueue->groupid ? $inqueue->groupname : "",
+        ];
+
+        writer::with_context($context)->export_data(['participant queue ' . $inqueue->id], $inqueuedata);
+    }
+
+    /**
+     * Formats and then exports the appointment data for teachers which assigned a participant to a slot.
+     *
+     * @param  \context $context
+     * @param  \stdClass $appointment
+     */
+    protected static function export_appointment_teacherapplicant(\context $context, \stdClass $appointment) {
+        $appointmentdata = (object)[
+                'Appointment slot from' => transform::datetime($appointment->starttime),
+                'Appointment slot to' => transform::datetime($appointment->starttime + $appointment->duration),
+                'Appointment slot location' => $appointment->location,
+                'Participant' => $appointment->userid,
+                'Participant assigned by you' => "Yes",
+                'Assignment date' => transform::datetime($appointment->teacherapplicanttimemodified)
+        ];
+
+        writer::with_context($context)->export_data(['teacherapplicant slot ' . $appointment->id], $appointmentdata);
+    }
+
+    /**
+     * Formats and then exports the appointment data for teachers assigned to a slot.
+     *
+     * @param  \context $context
+     * @param  \stdClass $appointment
+     */
+    protected static function export_appointment_teacher(\context $context, \stdClass $appointment) {
+        $appointmentdata = (object)[
+                'Appointment slot from' => transform::datetime($appointment->starttime),
+                'Appointment slot to' => transform::datetime($appointment->starttime + $appointment->duration),
+                'Appointment slot location' => $appointment->location,
+                'You are trainer of this slot' => "Yes"
+        ];
+
+        writer::with_context($context)->export_data(['teacher slot ' . $appointment->id], $appointmentdata);
     }
 
     /**
