@@ -6,6 +6,7 @@ CHANGELOG
 
 * [FIXED] #5506: Add new slots: Change to-date time from 00:00:00 to 23:59:59
 * [FIXED] #5496: Counting the slots to be created does not work after adding additional empty slots
+* [FEATURE] #3260: Rebuild slot overview - helpicons in column headers
 * [FEATURE] #5383: Implement Privacy API (without deletion of data)
 * [FEATURE] #5118: Remove german langstring-File from master
 * [PULL REQUEST] Merge pull request #40 from edaktik
