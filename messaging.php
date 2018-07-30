@@ -39,7 +39,6 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
 
-
     $sender = is_int($sender) ? $DB->get_record('user', array('id' => $sender)) : $sender;
     $receiver = is_int($receiver) ? $DB->get_record('user', array('id' => $receiver)) : $receiver;
 
@@ -71,7 +70,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
             $trainers = organizer_get_slot_trainers($slot->id);
             $strings->slot_teacher = "";
             $conn = "";
-            foreach($trainers as $trainerid) {
+            foreach ($trainers as $trainerid) {
                 $strings->slot_teacher .= $conn . fullname($DB->get_record('user', array('id' => $trainerid)), true);
                 $conn = " ";
             }
@@ -88,7 +87,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
             $trainers = organizer_get_slot_trainers($slot->id);
             $strings->slot_teacher = "";
             $conn = "";
-            foreach($trainers as $trainerid) {
+            foreach ($trainers as $trainerid) {
                 $strings->slot_teacher .= $conn . fullname($DB->get_record('user', array('id' => $trainerid)), true);
                 $conn = " ";
             }
@@ -107,7 +106,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $courseurl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id));
     $strings->courselink = html_writer::link($courseurl, $course->fullname);
 
-    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         if ($group = organizer_fetch_user_group($receiver->id, $organizerid)) {
             $groupname = organizer_fetch_groupname($group->id);
             $strings->groupname = $groupname;
@@ -160,7 +159,8 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     }
 }
 
-function organizer_send_message_reminder($sender, $receiver, $organizerid, $type, $groupname = null, $digest = null, $customdata = array()) {
+function organizer_send_message_reminder($sender, $receiver, $organizerid, $type, $groupname = null, $digest = null,
+$customdata = array()) {
     global $DB;
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
@@ -298,7 +298,7 @@ function organizer_prepare_and_send_message($data, $type) {
             foreach ($data->slots as $slotid) {
                 $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
                 $trainers = organizer_get_slot_trainers($slot->id);
-                foreach($trainers as $trainerid) {
+                foreach ($trainers as $trainerid) {
                     if ($USER->id != $trainerid) {
                         $sentok = organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
                     }
@@ -329,7 +329,7 @@ function organizer_prepare_and_send_message($data, $type) {
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
             if ($organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
                 $trainers = organizer_get_slot_trainers($slot->id);
-                foreach($trainers as $trainerid) {
+                foreach ($trainers as $trainerid) {
                     $sentok = organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
                 }
             }
@@ -339,7 +339,7 @@ function organizer_prepare_and_send_message($data, $type) {
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
             if ($organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
                 $trainers = organizer_get_slot_trainers($slot->id);
-                foreach($trainers as $trainerid) {
+                foreach ($trainers as $trainerid) {
                     $sentok = organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
                 }
             }
@@ -350,7 +350,7 @@ function organizer_prepare_and_send_message($data, $type) {
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
             if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG || $organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
                 $trainers = organizer_get_slot_trainers($slot->id);
-                foreach($trainers as $trainerid) {
+                foreach ($trainers as $trainerid) {
                     $sentok = organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
                 }
             }
@@ -360,7 +360,7 @@ function organizer_prepare_and_send_message($data, $type) {
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
             if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG || $organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
                 $trainers = organizer_get_slot_trainers($slot->id);
-                foreach($trainers as $trainerid) {
+                foreach ($trainers as $trainerid) {
                     $sentok = organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
                 }
             }
@@ -404,7 +404,7 @@ function organizer_prepare_and_send_message($data, $type) {
                 $groupname = null;
             }
             return organizer_send_message_reminder(intval($USER->id), intval($data['user']),
-                $organizerid, $type, $groupname,null, array('custommessage' => $data['custommessage']));
+                $organizerid, $type, $groupname, null, array('custommessage' => $data['custommessage']));
         break;
         case 'assign_notify_student':
             $slot = $DB->get_record('organizer_slots', array('id' => $data->selectedslot));

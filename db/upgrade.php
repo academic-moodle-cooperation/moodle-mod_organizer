@@ -496,7 +496,8 @@ function xmldb_organizer_upgrade($oldversion) {
 
         // Define field nocalendareventslotcreation to be added to organizer.
         $table = new xmldb_table('organizer');
-        $field = new xmldb_field('includetraineringroups', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'nocalendareventslotcreation');
+        $field = new xmldb_field('includetraineringroups', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
+            'nocalendareventslotcreation');
 
         // Conditionally launch add field nocalendareventslotcreation.
         if (!$dbman->field_exists($table, $field)) {

@@ -42,15 +42,15 @@ class mod_organizer_mod_form extends moodleform_mod
         if ($instance) {
             $activateduedatecheckbox = false;
             // If mode of coursegroup creation is changed to 'slot creation' create groups from existing slots.
-            $isgrouporganizer_db = $DB->get_field('organizer', 'isgrouporganizer', array('id' => $instance));
-            $isgrouporganizer_data = $mform->getElementValue('isgrouporganizer');
-            $isgrouporganizer_data = reset($isgrouporganizer_data);
-            if ($isgrouporganizer_data[0] != $isgrouporganizer_db &&
-                $isgrouporganizer_data[0] == ORGANIZER_GROUPMODE_NEWGROUPSLOT) {
+            $isgrouporganizerdb = $DB->get_field('organizer', 'isgrouporganizer', array('id' => $instance));
+            $isgrouporganizerdata = $mform->getElementValue('isgrouporganizer');
+            $isgrouporganizerdata = reset($isgrouporganizerdata);
+            if ($isgrouporganizerdata[0] != $isgrouporganizerdb &&
+                $isgrouporganizerdata[0] == ORGANIZER_GROUPMODE_NEWGROUPSLOT) {
                 if ($slots = organizer_fetch_allslots($instance)) {
-                    foreach($slots as $slot) {
-                        if ($participants = organizer_fetch_slotparticipants($slot->id)){
-                            foreach($participants as $participantid){
+                    foreach ($slots as $slot) {
+                        if ($participants = organizer_fetch_slotparticipants($slot->id)) {
+                            foreach ($participants as $participantid) {
                                 organizer_groupsynchronization($slot->id, $participantid, 'add');
                             }
                         } else {
@@ -189,10 +189,10 @@ class mod_organizer_mod_form extends moodleform_mod
             } else {
                 $default = "";
             }
-            $mform->addElement('select', $fieldname, $i+1 . '. ' . get_string('singleslotprintfield', 'organizer'),
+            $mform->addElement('select', $fieldname, $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'),
                     $printslotuserfields);
             $mform->setType($fieldname, PARAM_TEXT);
-            $mform->setDefault($fieldname,$default);
+            $mform->setDefault($fieldname, $default);
         }
         $mform->addHelpButton('singleslotprintfield0', 'singleslotprintfield0', 'organizer');
 

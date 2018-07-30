@@ -162,7 +162,7 @@ function organizer_generate_registration_status_view($params, $instance) {
 
     $columns = array('status');
 
-    if ($instance->organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+    if ($instance->organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $columns[] = 'group';
         $columns[] = 'participants';
         $columns[] = 'appdetails';
@@ -192,7 +192,7 @@ function organizer_generate_registration_status_view($params, $instance) {
 
 function organizer_generate_assignment_view($params, $instance) {
 
-    if ($instance->organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+    if ($instance->organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $content = get_string('availableslotsfor', 'organizer') .' <strong>' .
                 organizer_fetch_groupname($params['assignid']) . '</strong>';
     } else {
@@ -547,7 +547,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
         $numshown = 0;
         foreach ($slots as $slot) {
             $slotx = new organizer_slot($slot);
-            if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                       $alreadyinqueue = $slotx->is_group_in_queue();
             } else {
                       $alreadyinqueue = $slotx->is_user_in_queue($USER->id);
@@ -820,7 +820,7 @@ function organizer_organizer_get_status_table_entries($params) {
 
     $studentids = array();
 
-    if ($organizer->isgrouporganizer!=ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+    if ($organizer->isgrouporganizer != ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $students = get_enrolled_users($context, 'mod/organizer:register');
         foreach ($students as $student) {
             $studentids[] = $student->id;
@@ -903,7 +903,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
 
     $cm = organizer_get_cm();
 
-    $groupmode = $organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS;
+    $groupmode = $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS;
 
     if ($groupmode) {
         $entries = organizer_organizer_organizer_get_status_table_entries_group($params);
@@ -1332,7 +1332,7 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
     } else if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW || $slot->teachervisible || $showteacher) {
         $output = "";
         $connector = "";
-        foreach($trainerids as $trainerid) {
+        foreach ($trainerids as $trainerid) {
             $output .= $connector . organizer_get_name_link($trainerid);
             $connector = "<br>";
         }
@@ -1413,7 +1413,7 @@ function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupmode)
         $trainerstr = "";
         if ($trainers = organizer_get_slot_trainers($slot->id, true)) {
             $conn = "";
-            foreach($trainers as $trainer) {
+            foreach ($trainers as $trainer) {
                 $trainerstr .= $conn . $trainer->firstname . " " . $trainer->lastname;
                 $conn = ", ";
             }
@@ -2201,7 +2201,7 @@ function organizer_student_action($params, $slot) {
     }
 
     $isalreadyinqueue = false;
-    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $isalreadyinqueue = $slotx->is_group_in_queue();
     } else {
         $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
@@ -2362,13 +2362,14 @@ function organizer_slot_is_free($slot, $userid, $assignmentview = null) {
     $slotx = new organizer_slot($slot);
     if ($assignmentview) {
         $organizerconfig = get_config('organizer');
-        if (isset($organizerconfig->allowcreationofpasttimeslots) && $organizerconfig->allowcreationofpasttimeslots!=1) {
+        if (isset($organizerconfig->allowcreationofpasttimeslots) &&
+            $organizerconfig->allowcreationofpasttimeslots != 1) {
             $ispastdue = $slotx->is_past_due();
         } else {
             $ispastdue = false;
         }
 
-        }
+    }
     if (!$ispastdue && !$slotx->is_full() && $slotx->is_available() ) {
 
         $apps = organizer_get_all_user_appointments($slotx->organizerid, $userid);

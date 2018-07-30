@@ -69,7 +69,7 @@ define(
                     var filter = target.val().toUpperCase();
                     if (filter) {
                         var tr = tablebody.find('tr:visible:not(.info)');
-                        // Loop through all table rows, and hide those who don't match the search query
+                        // Loop through all table rows, and hide those who don't match the search query.
                         var i, j, td, text, found;
                         for (i = 0; i < tr.length; i++) {
                             found = false;
@@ -140,7 +140,7 @@ define(
                 }
             }
 
-            // extract visible text from 'element' down thru DOM tree
+            // Extract visible text from 'element' down thru DOM tree.
             function extracttext(element) {
                 var text, last, img;
 
@@ -165,7 +165,6 @@ define(
             toggle_all_slots();
 
             function set_user_preference(name, value) {
-
 
                 $.get( config.wwwroot + '/lib/ajax/setuserpref.php', {
                     sesskey: config.sesskey,

@@ -98,7 +98,7 @@ class organizer_evaluate_slots_form extends moodleform
 
             // Get apps (persons).
             $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slotid));
-            if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS && count($apps) != 0) {
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && count($apps) != 0) {
                 $app = reset($apps);
                 $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
                 $mform->insertElementBefore(
@@ -170,7 +170,7 @@ class organizer_evaluate_slots_form extends moodleform
                     $appgroup[] = $mform->createElement('text', "feedback", '', array('size' => 24));
                     $appgroup[] = $mform->createElement('html', '</span>');
 
-                    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                         $appgroup[] = $mform->createElement(
                             'hidden', "allownewappointments", 0,
                             array('class' => "allow{$slotid}")

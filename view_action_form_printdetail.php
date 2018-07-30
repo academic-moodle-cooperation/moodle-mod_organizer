@@ -70,9 +70,9 @@ class organizer_print_slotdetail_form extends moodleform
 
         $params = array('slotid' => $data['slot']);
         $organizer = $DB->get_records_sql(
-                "SELECT o.* 
-                 FROM {organizer} o 
-                 INNER JOIN {organizer_slots} s ON o.id = s.organizerid 
+                "SELECT o.*
+                 FROM {organizer} o
+                 INNER JOIN {organizer_slots} s ON o.id = s.organizerid
                  WHERE s.id = :slotid", $params);
 
         $organizer = reset($organizer);
@@ -89,11 +89,7 @@ class organizer_print_slotdetail_form extends moodleform
 
         $exportformats = array(
                 'pdf' => get_string('format_pdf', 'organizer'),
-                'xlsx' => get_string('format_xlsx', 'organizer')/*,
-                'xls' => get_string('format_xls', 'organizer'),
-                'ods' => get_string('format_ods', 'organizer'),
-                'csv_tab' => get_string('format_csv_tab', 'organizer'),
-                'csv_comma' => get_string('format_csv_comma', 'organizer')*/);
+                'xlsx' => get_string('format_xlsx', 'organizer'));
         $mform->addElement('select', 'format', get_string('format', 'organizer'), $exportformats);
 
         $mform->addElement('static', 'pdf_settings', get_string('pdfsettings', 'organizer'));
@@ -195,12 +191,11 @@ class organizer_print_slotdetail_form extends moodleform
     private function _create_preview_table($columns) {
         global $cm, $CFG, $DB;
 
-
         $table = new html_table();
         $table->id = 'print_preview';
         $table->attributes['class'] = 'flexible generaltable generalbox';
 
-        If (!$columns) {
+        if (!$columns) {
             return "<strong> ==> " . get_string('nosingleslotprintfields', 'organizer') . "</strong>";
         }
 
@@ -242,7 +237,7 @@ class organizer_print_slotdetail_form extends moodleform
                     $cell = new html_table_cell(get_string('signature', 'organizer'));
                     break;
                 default:
-                    if (is_numeric($column)){ // custom user field
+                    if (is_numeric($column)) { // Custom user field.
                         if ($userinfofield = $DB->get_record_select('user_info_field', 'id = :id', array('id' => $column))) {
                             $userinfofields[$userinfofield->id] = $userinfofield->datatype;
                             $name = $userinfofield->name ? $userinfofield->name : $userinfofield->shortname;
@@ -412,9 +407,9 @@ class organizer_print_slotdetail_form extends moodleform
                     default:
                         if (is_numeric($column)) {
                             if ($userinfodata = $DB->get_field(
-                                    'user_info_data', 'data', array('fieldid' => $column, 'userid' => $entry->id)))
-                            {
-                                if (isset($userinfofields[$column]) && ($userinfofields[$column] == 'text' || $userinfofields[$column] == 'textarea')) {
+                                    'user_info_data', 'data', array('fieldid' => $column, 'userid' => $entry->id))) {
+                                if (isset($userinfofields[$column]) && ($userinfofields[$column] == 'text' ||
+                                        $userinfofields[$column] == 'textarea')) {
                                     $cell = new html_table_cell($userinfodata);
                                 } else {
                                     $cell = new html_table_cell("Unsupported column type: $column");

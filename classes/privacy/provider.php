@@ -73,14 +73,21 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
                 'trainerid' => 'privacy:metadata:trainerid',
         ];
 
-        $collection->add_database_table('organizer_slot_appointments', $organizerslotappointments, 'privacy:metadata:organizerslotappointments');
-        $collection->add_database_table('organizer_slot_queues', $organizerslotqueues, 'privacy:metadata:organizerslotqueues');
-        $collection->add_database_table('organizer_slot_trainer', $organizerslottrainer, 'privacy:metadata:organizerslottrainer');
+        $collection->add_database_table('organizer_slot_appointments', $organizerslotappointments,
+            'privacy:metadata:organizerslotappointments');
+        $collection->add_database_table('organizer_slot_queues', $organizerslotqueues,
+            'privacy:metadata:organizerslotqueues');
+        $collection->add_database_table('organizer_slot_trainer', $organizerslottrainer,
+            'privacy:metadata:organizerslottrainer');
 
-        $collection->add_user_preference('mod_organizer_showhiddenslots', 'privacy:metadata:showhiddenslots');
-        $collection->add_user_preference('mod_organizer_showmyslotsonly', 'privacy:metadata:showmyslotsonly');
-        $collection->add_user_preference('mod_organizer_showfreeslotsonly', 'privacy:metadata:showfreeslotsonly');
-        $collection->add_user_preference('mod_organizer_showpasttimeslots', 'privacy:metadata:showpasttimeslots');
+        $collection->add_user_preference('mod_organizer_showhiddenslots',
+            'privacy:metadata:showhiddenslots');
+        $collection->add_user_preference('mod_organizer_showmyslotsonly',
+            'privacy:metadata:showmyslotsonly');
+        $collection->add_user_preference('mod_organizer_showfreeslotsonly',
+            'privacy:metadata:showfreeslotsonly');
+        $collection->add_user_preference('mod_organizer_showpasttimeslots',
+            'privacy:metadata:showpasttimeslots');
 
         return $collection;
     }
@@ -114,9 +121,9 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
             LEFT JOIN {organizer_slot_queues} q ON s.id = q.slotid
             LEFT JOIN {organizer_slot_trainer} t ON s.id = t.slotid
                 WHERE (
-                      a.userid = :useridappointment 
+                      a.userid = :useridappointment
                       OR a.applicantid = :applicantidappointment
-                      OR q.userid = :useridqueue 
+                      OR q.userid = :useridqueue
                       OR q.applicantid = :applicantidqueue
                       OR t.trainerid = :tuserid
                       OR a.teacherapplicantid = :teacherapplicantid
@@ -241,11 +248,11 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
                   LEFT JOIN {groups_members} gm ON gm.userid = :guserid AND gm.groupid = a.groupid
                   LEFT JOIN {groups} g ON gm.groupid = g.id
                   WHERE
-                      o.id = :organizer 
-                      AND ( 
+                      o.id = :organizer
+                      AND (
                       a.userid = :useridappointment
                       )
-                      
+
                   UNION
 
                   SELECT 0 as participant, 1 as inqueue, 0 as teacherapplicant, 0 as teacher, q.id, 0 as attended, 0 as grade,
@@ -257,13 +264,13 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
                   LEFT JOIN {groups_members} gm ON gm.userid = :guserid2 AND gm.groupid = q.groupid
                   LEFT JOIN {groups} g ON gm.groupid = g.id
                   WHERE
-                      o.id = :organizer2 
-                      AND ( 
+                      o.id = :organizer2
+                      AND (
                       q.userid = :useridqueue
                       )
-                      
+
                   UNION
-                  
+
                   SELECT 0 as participant, 0 as inqueue, 1 as teacherapplicant, 0 as teacher, a.id, a.attended, a.grade,
                   a.comments, a.teacherapplicanttimemodified, a.teacherapplicantid, s.starttime,
                   s.duration, s.location, 0 as groupid, '' as groupname, a.applicantid, a.allownewappointments, a.userid
@@ -272,12 +279,12 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
                   JOIN {organizer} o ON s.organizerid = o.id
                   WHERE
                       o.id = :organizer3
-                      AND ( 
+                      AND (
                       a.teacherapplicantid = :teacherapplicantid
                       )
-                  
-                  UNION    
-                  
+
+                  UNION
+
                   SELECT 0 as participant, 0 as inqueue, 0 as teacherapplicant, 1 as teacher, a.id, a.attended, a.grade,
                   a.comments, a.teacherapplicanttimemodified, a.teacherapplicantid, s.starttime,
                   s.duration, s.location, 0 as groupid, '' as groupname, a.applicantid, a.allownewappointments, a.userid
@@ -286,8 +293,8 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
                   JOIN {organizer} o ON s.organizerid = o.id
                   JOIN {organizer_slot_trainer} t ON s.id = t.slotid
                   WHERE
-                      o.id = :organizer4 
-                      AND ( 
+                      o.id = :organizer4
+                      AND (
                       t.trainerid = :trainerid
                       )
               ";
@@ -297,11 +304,11 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
         foreach ($rs as $id => $cur) {
             if ($cur->participant == "1") {
                 static::export_appointment_participant($context, $cur);
-            }elseif ($cur->inqueue == "1") {
+            } else if ($cur->inqueue == "1") {
                     static::export_appointment_inqueue($context, $cur);
-            } elseif ($cur->teacherapplicant == "1") {
+            } else if ($cur->teacherapplicant == "1") {
                 static::export_appointment_teacherapplicant($context, $cur);
-            } elseif ($cur->teacher == "1") {
+            } else if ($cur->teacher == "1") {
                 static::export_appointment_teacher($context, $cur);
             }
         }
@@ -325,7 +332,8 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
                 'Assigned by a trainer' => transform::yesno($appointment->teacherapplicantid),
                 'Groupmember' => transform::yesno($appointment->groupid),
                 'Groupname' => $appointment->groupid ? $appointment->groupname : "",
-                'You booked the group' => $appointment->groupid ? transform::yesno($appointment->applicantid == $appointment->userid) : "No",
+                'You booked the group' => $appointment->groupid ? transform::yesno(
+                    $appointment->applicantid == $appointment->userid) : "No",
                 'attended' => transform::yesno($appointment->attended),
                 'grade' => $appointment->grade,
                 'comments' => $appointment->comments,
@@ -401,7 +409,8 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
 
         // TODO.
         return;
-  }
+
+    }
 
     /**
      * Delete all user data for the specified user, in the specified contexts.

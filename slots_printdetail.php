@@ -189,8 +189,7 @@ function organizer_organizer_student_action_allowed($action, $slot) {
 }
 
 function organizer_display_printable_slotdetail_table($columns, $slotid, $entriesperpage = false, $textsize = '10',
-        $orientation = 'L', $headerfooter = true)
-{
+        $orientation = 'L', $headerfooter = true) {
     global $DB;
 
     list(, $course, $organizer, ) = organizer_get_course_module_data();
@@ -251,7 +250,7 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;
             default:
-                if (is_numeric($column)){ // custom user field
+                if (is_numeric($column)) { // Custom user field.
                     $userinfofield = $DB->get_record_select('user_info_field', 'id = :id', array('id' => $column));
                     $userinfofields[$userinfofield->id] = $userinfofield->datatype;
                     $name = $userinfofield->name ? $userinfofield->name : $userinfofield->shortname;
@@ -379,7 +378,7 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
     $slotdatetime = str_replace("<br />", " ", $slotdatetime);
     $trainerstr = "";
     $conn = "";
-    foreach($trainers as $trainer) {
+    foreach ($trainers as $trainer) {
         $trainerstr .= $conn . $trainer->firstname . " " . $trainer->lastname;
         $conn = ", ";
     }

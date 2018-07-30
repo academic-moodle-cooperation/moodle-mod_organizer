@@ -221,9 +221,9 @@ class organizer_print_slots_form extends moodleform
 
         $param = new \stdClass();
         $param->iconminus = $OUTPUT->image_icon('t/switch_minus', get_string('hide'), 'moodle', array(
-            'id' => 'xxx', 'col' =>'yyy', 'style' => 'cursor:pointer;margin-left:2px;'));
+            'id' => 'xxx', 'col' => 'yyy', 'style' => 'cursor:pointer;margin-left:2px;'));
         $param->iconplus = $OUTPUT->image_icon('t/switch_plus', get_string('show'), 'moodle', array(
-            'id' => 'xxx', 'col' =>'yyy', 'style' => 'cursor:pointer;margin-left:2px;'));
+            'id' => 'xxx', 'col' => 'yyy', 'style' => 'cursor:pointer;margin-left:2px;'));
         $PAGE->requires->js_call_amd('mod_organizer/printform', 'init', array($param));
 
         $isgrouporganizer = organizer_is_group_mode();
@@ -378,7 +378,7 @@ class organizer_print_slots_form extends moodleform
                             $trainers = organizer_get_slot_trainers($entry->slotid, true);
                             $name = "";
                             $conn = "";
-                            foreach($trainers as $trainer) {
+                            foreach ($trainers as $trainer) {
                                 $a->firstname = $trainer->firstname;
                                 $a->lastname = $trainer->lastname;
                                 $name .= $conn . get_string('fullname_template', 'organizer', $a);

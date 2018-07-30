@@ -320,7 +320,7 @@ function organizer_organizer_student_action_allowed($action, $slot) {
         $slotdisabled || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
     $isalreadyinqueue = false;
-    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $isalreadyinqueue = $slotx->is_group_in_queue();
     } else {
         $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);

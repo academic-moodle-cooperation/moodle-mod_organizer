@@ -120,7 +120,7 @@ class organizer_add_slots_form extends moodleform
         global $DB;
         $cm = get_coursemodule_from_id('organizer', $data['id'], 0, false, MUST_EXIST);
         $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
-        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $mform->addElement('hidden', 'isgrouporganizer', '1');
             $mform->setType('isgrouporganizer', PARAM_BOOL);
 
@@ -216,7 +216,7 @@ class organizer_add_slots_form extends moodleform
         $params = new \stdClass();
         $params->totalslots = $totalslots;
         $params->displayallslots = $displayallslots;
-        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $params->totaltotal = get_string("totaltotal_groups", "organizer");
             $params->totalday = get_string("totalday_groups", "organizer");
         } else {
@@ -270,7 +270,7 @@ class organizer_add_slots_form extends moodleform
             $today = mktime(0, 0, 0, date("m", time()), date("d", time()), date("Y", time()));
             if ($data['startdate'] < $today) {
                 $organizerconfig = get_config('organizer');
-                if (isset($organizerconfig->allowcreationofpasttimeslots) && $organizerconfig->allowcreationofpasttimeslots!=1) {
+                if (isset($organizerconfig->allowcreationofpasttimeslots) && $organizerconfig->allowcreationofpasttimeslots != 1) {
                     $a = new stdClass();
                     $a->now = userdate($data['startdate'], get_string('datetemplate', 'organizer'));
                     $errors['startdate'] = get_string('err_startdate', 'organizer', $a) . ' (' . get_string("today") . ": "
@@ -291,7 +291,7 @@ class organizer_add_slots_form extends moodleform
 
             $slotcount = 0;
 
-            // Count used slots
+            // Count used slots.
             for ($i = 0; $i < count($slots); $i++) {
                 $slot = $slots[$i];
                 if ($slot['day'] != -1) {

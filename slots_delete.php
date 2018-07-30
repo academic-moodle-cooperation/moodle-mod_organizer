@@ -76,8 +76,8 @@ if ($data = $mform->get_data()) {
     if (isset($slots)) {
         $notified = 0;
         foreach ($slots as $slotid) {
-            if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_NEWGROUPSLOT ||
-                    $organizer->isgrouporganizer==ORGANIZER_GROUPMODE_NEWGROUPBOOKING) {
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPSLOT ||
+                    $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPBOOKING) {
                 organizer_delete_coursegroup(null, $slotid);
             }
             $notified += organizer_delete_appointment_slot($slotid);
@@ -104,7 +104,7 @@ if ($data = $mform->get_data()) {
            );
            $appointmentstotal = $appointmentstotal->total;
 
-        if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $redirecturl->param('messages[]', 'message_info_slots_deleted_group');
 
             $groups = groups_get_all_groups($course->id, 0, $cm->groupingid);
@@ -133,7 +133,7 @@ if ($data = $mform->get_data()) {
         $redirecturl->param('data[notregistered]', $notregistered); // Anzahl noch nicht angemeldeter studenten.
 
         $prefix = ($notregistered > $freetotal) ? 'warning' : 'info';
-        $suffix = ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) ? '_group' : '';
+        $suffix = ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) ? '_group' : '';
 
         $redirecturl->param('messages[1]', 'message_' . $prefix . '_available' . $suffix);
 

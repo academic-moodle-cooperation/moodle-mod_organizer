@@ -125,7 +125,7 @@ function organizer_make_description_section($organizer, $cmid) {
 
     $output = '<br>';
     $output .= format_module_intro('organizer', $organizer, $cmid);
-    if ($organizer->isgrouporganizer==ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $group = organizer_fetch_my_group();
         if ($group) {
             $a = new stdClass();

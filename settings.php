@@ -35,7 +35,7 @@ if ($ADMIN->fulltree) {
     // Introductory explanation that all the settings are defaults for the add quiz form.
     $settings->add(new admin_setting_heading('organizerintro', '', get_string('configintro', 'organizer')));
 
-    // Maximumgrade
+    // Maximumgrade.
     $settings->add(new admin_setting_configtext('organizer/maximumgrade',
             get_string('maximumgrade'),
             get_string('configmaximumgrade', 'organizer'), 0, PARAM_INT));
@@ -111,13 +111,14 @@ if ($ADMIN->fulltree) {
                     get_string('configallowcreationofpasttimeslots', 'organizer'), 0, $yesno));
 
     // User profile fields for printing single slots.
-    $settings->add(new admin_setting_heading('organizersingleslotprintfields', '', get_string('singleslotprintfields', 'organizer')));
+    $settings->add(new admin_setting_heading('organizersingleslotprintfields', '',
+        get_string('singleslotprintfields', 'organizer')));
 
     $profilefields = organizer_printslotuserfields();
 
     for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
         $settings->add(
                 new admin_setting_configselect('organizer/singleslotprintfield' . $i,
-                        $i+1 . '. ' . get_string('singleslotprintfield', 'organizer'), null, '', $profilefields));
+                        $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'), null, '', $profilefields));
     }
 }

@@ -49,7 +49,7 @@ define(
                     var iconminus = instance.iconminus.replace('xxx', col + '_thiconminus').replace('yyy', col);
                     var iconplus = instance.iconplus.replace('xxx', col + '_thiconplus').replace('yyy', col);
                     $(this).parent().append(iconminus).append(iconplus);
-                    $('#'+ col + '_thiconplus').hide();
+                    $('#' + col + '_thiconplus').hide();
                 });
             }
 
@@ -58,7 +58,7 @@ define(
                 printpreview.find('th').find('a[noprint*=1]').each(function() {
                     var name = $(this).attr("name");
                     var col = name.split("_")[0];
-                    $('#'+ col + '_thiconminus').trigger( "click" );
+                    $('#' + col + '_thiconminus').trigger( "click" );
                 });
             }
 
@@ -69,13 +69,13 @@ define(
                 var hide;
                 if (src.indexOf("minus") != -1) {
                     hide = true;
-                    $('#'+ col + '_thiconminus').hide();
-                    $('#'+ col + '_thiconplus').show();
+                    $('#' + col + '_thiconminus').hide();
+                    $('#' + col + '_thiconplus').show();
                     $('a[name=' + col + '_cell]').hide();
                 } else {
                     hide = false;
-                    $('#'+ col + '_thiconplus').hide();
-                    $('#'+ col + '_thiconminus').show();
+                    $('#' + col + '_thiconplus').hide();
+                    $('#' + col + '_thiconminus').show();
                     $('a[name=' + col + '_cell]').show();
                 }
                 var tdindex = target.parent().attr('class').replace('header ', '');
@@ -109,9 +109,9 @@ define(
                 var comma = "";
                 var col = "";
                 $("img[id$='_thiconplus']").not(':hidden').each(function() {
-                   col = $(this).attr("col");
-                   values += comma + col;
-                   comma = ",";
+                    col = $(this).attr("col");
+                    values += comma + col;
+                    comma = ",";
                 });
                 var cfg = {
                     method : 'get',

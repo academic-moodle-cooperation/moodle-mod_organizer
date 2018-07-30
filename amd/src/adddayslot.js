@@ -48,7 +48,7 @@ define(
             instance.totalslots = param.totalslots;  // Initial maximum of days (despite only one is displayed).
             instance.displayallslots = param.displayallslots;  // Whether to display all days so far generated.
             instance.totalday = param.totalday;  // String for new slots amount status message for a day.
-            instance.totaltotal = param.totaltotal;  //  String for new slots amount total status message.
+            instance.totaltotal = param.totaltotal;  // String for new slots amount total status message.
 
             if (instance.displayallslots == 0) {  // So the form is loaded initially.
 
@@ -61,7 +61,7 @@ define(
                         break;
                     }
                 }
-                //  As long as not all slots are visible hide the add day button.
+                // As long as not all slots are visible hide the add day button.
                 if (i < instance.totalslots - 1) {
                     $('#id_addday').hide();
                 }
@@ -109,9 +109,9 @@ define(
                 var target = $(e.target);
                 var name = target.attr("name");
                 var i = parseInt(name.replace('newslots[', ''));
-                var valdayfrom = parseInt($("select[name='newslots\["+i+"\]\[day\]']").val());
-                var valdayto = parseInt($("select[name='newslots\["+i+"\]\[dayto\]']").val());
-                var valfrom = parseInt($("select[name='newslots\["+i+"\]\[from\]']").val());
+                var valdayfrom = parseInt($("select[name='newslots\[" + i + "\]\[day\]']").val());
+                var valdayto = parseInt($("select[name='newslots\[" + i + "\]\[dayto\]']").val());
+                var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[from\]']").val());
                 if (valdayfrom != -1 && valdayto == -1) {
                     var prefilltovalue;
                     var durationnumber = parseInt($("input[name='duration\[number\]']").val());
@@ -122,21 +122,21 @@ define(
                         if (prefilltovalue >= 86400) {
                             prefilltovalue -= 86400;
                             var adaptday = (valdayfrom + 1) % 6;
-                            $("select[name='newslots\["+i+"\]\[dayto\]']").val(adaptday);
+                            $("select[name='newslots\[" + i + "\]\[dayto\]']").val(adaptday);
                         } else {
-                            $("select[name='newslots\["+i+"\]\[dayto\]']").val(valdayfrom);
+                            $("select[name='newslots\[" + i + "\]\[dayto\]']").val(valdayfrom);
                         }
                     } else if (durationtimeunit == 86400) {
                         prefilltovalue = valfrom;
                         var adaptday = (valdayfrom + durationnumber) % 7;
-                        $("select[name='newslots\["+i+"\]\[dayto\]']").val(adaptday);
+                        $("select[name='newslots\[" + i + "\]\[dayto\]']").val(adaptday);
                     } else {
-                        $("select[name='newslots\["+i+"\]\[dayto\]']").val(valdayfrom);
+                        $("select[name='newslots\[" + i + "\]\[dayto\]']").val(valdayfrom);
                     }
-                    $("select[name='newslots\["+i+"\]\[to\]']").val(prefilltovalue);
+                    $("select[name='newslots\[" + i + "\]\[to\]']").val(prefilltovalue);
                 }
-                valdayfrom = parseInt($("select[name='newslots\["+i+"\]\[day\]']").val());
-                valdayto = parseInt($("select[name='newslots\["+i+"\]\[dayto\]']").val());
+                valdayfrom = parseInt($("select[name='newslots\[" + i + "\]\[day\]']").val());
+                valdayto = parseInt($("select[name='newslots\[" + i + "\]\[dayto\]']").val());
                 if (valdayfrom != -1 && valdayto != -1) {
                     evaluaterow(i);
                 } else {
@@ -151,9 +151,9 @@ define(
                 var pax = getpax();
                 pax = pax * slots;
                 var forecaststring = instance.totalday.replace("xxx", slots.toString()).replace("yyy", pax.toString());
-                $("span[name='forecastday_"+i+"']").html(forecaststring);
-                $("span[name='newslots_"+i+"']").html(slots.toString());
-                $("span[name='newpax_"+i+"']").html(pax.toString());
+                $("span[name='forecastday_" + i + "']").html(forecaststring);
+                $("span[name='newslots_" + i + "']").html(slots.toString());
+                $("span[name='newpax_" + i + "']").html(pax.toString());
             }
 
             // Set row evaluation to zero.
@@ -161,14 +161,14 @@ define(
                 var slots = 0;
                 var pax = 0;
                 var forecaststring = instance.totalday.replace("xxx", slots.toString()).replace("yyy", pax.toString());
-                $("span[name='forecastday_"+i+"']").html(forecaststring);
-                $("span[name='newslots_"+i+"']").html(slots.toString());
-                $("span[name='newpax_"+i+"']").html(pax.toString());
+                $("span[name='forecastday_" + i + "']").html(forecaststring);
+                $("span[name='newslots_" + i + "']").html(slots.toString());
+                $("span[name='newpax_" + i + "']").html(pax.toString());
             }
 
             // Reevaluate all rows and write the totals.
             function evaluateallrows() {
-                for (var i = 0;i < instance.current;i++) {
+                for (var i = 0; i < instance.current; i++) {
                     evaluaterow(i);
                 }
                 writetotal();
@@ -179,22 +179,22 @@ define(
                 var startdatemonth = $("select[name='startdate\[month\]']").val() - 1;
                 var startdateyear = $("select[name='startdate\[year\]']").val();
                 var startdatedate = new Date(startdateyear, startdatemonth, startdateday);
-                var startdate = startdatedate.getTime()/1000;
+                var startdate = startdatedate.getTime() / 1000;
                 var enddateday = $("select[name='enddate\[day\]']").val();
                 var enddatemonth = $("select[name='enddate\[month\]']").val() - 1;
                 var enddateyear = $("select[name='enddate\[year\]']").val();
                 var enddatedate = new Date(enddateyear, enddatemonth, enddateday);
-                var enddate = enddatedate.getTime()/1000+86399;
-                var valday = parseInt($("select[name^='newslots\["+i+"\]\[day\]']").val());
+                var enddate = enddatedate.getTime() / 1000 + 86399;
+                var valday = parseInt($("select[name^='newslots\[" + i + "\]\[day\]']").val());
                 if (valday == -1) {
                     return 0;
                 }
-                var valdayto = parseInt($("select[name^='newslots\["+i+"\]\[dayto\]']").val());
+                var valdayto = parseInt($("select[name^='newslots\[" + i + "\]\[dayto\]']").val());
                 if (valdayto == -1) {
                     return 0;
                 }
-                var valfrom = parseInt($("select[name='newslots\["+i+"\]\[from\]']").val());
-                var valto = parseInt($("select[name='newslots\["+i+"\]\[to\]']").val());
+                var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[from\]']").val());
+                var valto = parseInt($("select[name='newslots\[" + i + "\]\[to\]']").val());
                 var durationnumber = parseInt($("input[name='duration\[number\]']").val());
                 var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
                 var gapnumber = parseInt($("input[name='gap\[number\]']").val());
@@ -211,14 +211,14 @@ define(
                 var iweekday, daydate, daydatedate, datefrom, dateto, itime;
                 var slots = 0;
                 for (daydate = startdate; daydate <= enddate; daydate += 86400) {
-                    daydatedate = new Date(daydate*1000);
+                    daydatedate = new Date(daydate * 1000);
                     iweekday = daydatedate.getDay() - 1;
                     iweekday = (iweekday == -1) ? 6 : iweekday;
                     if (valday != iweekday) {
                         continue;
                     }
                     datefrom = daydate + valfrom;
-                    dateto = daydate + ((valdayto-valday) * 86400) + valto;
+                    dateto = daydate + ((valdayto - valday) * 86400) + valto;
                     if (dateto < datefrom) {
                         dateto += (7 * 86400);
                     }

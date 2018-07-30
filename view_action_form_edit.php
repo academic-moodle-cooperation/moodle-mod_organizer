@@ -235,7 +235,8 @@ class organizer_edit_slots_form extends moodleform
 
         $trainers = $this->_load_trainers($defaults);
         $group = array();
-        $group[] = $mform->createElement('select', 'trainerid', get_string('teacher', 'organizer'), $trainers, array('multiple' => 'true'));
+        $group[] = $mform->createElement('select', 'trainerid', get_string('teacher', 'organizer'),
+            $trainers, array('multiple' => 'true'));
         $group[] = $mform->createElement('static', '', '', $this->_warning_icon('teacherid', isset($defaults['trainerids'])));
         $mform->setType('trainerid', PARAM_INT);
         $mform->addGroup($group, 'teachergrp', get_string('teacher', 'organizer'), ORGANIZER_SPACING, false);
