@@ -1,6 +1,17 @@
 CHANGELOG
 =========
 
+3.5.0 (2018-07-30)
+------------------
+
+* [FIXED] #5506: Add new slots: Change to-date time from 00:00:00 to 23:59:59
+* [FIXED] #5496: Counting the slots to be created does not work after adding additional empty slots
+* [FEATURE] #5383: Implement Privacy API (without deletion of data)
+* [FEATURE] #5118: Remove german langstring-File from master
+* [PULL REQUEST] Merge pull request #40 from edaktik
+* [FEATURE] #3777: Redesign table - tooltipps replace legend, filter slots, sort only sortable fields
+* [FEATURE] edaktik#3269 Adding past slots now possible
+
 3.4.24 (2018-04-26)
 ------------------
 
