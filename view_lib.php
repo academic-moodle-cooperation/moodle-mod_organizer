@@ -327,6 +327,7 @@ function organizer_generate_table_header($columns, $sortable, $params, $usersort
 
     $header = array();
     foreach ($columns as $column) {
+        $columnhelpicon = $OUTPUT->help_icon($column, 'organizer', '');
         if (in_array($column, $sortable)) {
             if ($params['sort'] != $column) {
                 $columnicon = '';
@@ -336,15 +337,13 @@ function organizer_generate_table_header($columns, $sortable, $params, $usersort
                 $columnicon = $params['dir'] == 'ASC' ? 'up' : 'down';
                 $columnicon = ' ' . $OUTPUT->pix_icon('t/' . $columnicon, get_string($columnicon));
             }
-
             $viewurl = new moodle_url(
                 '/mod/organizer/view.php',
                 array('id' => $params['id'], 'mode' => $params['mode'], 'sort' => $column, 'dir' => $columndir,
                 'psort' => $params['psort'], 'pdir' => $params['pdir'])
             );
             $cell = new html_table_cell(
-                html_writer::link($viewurl, get_string("th_{$column}", 'organizer')) . $columnicon
-            );
+                html_writer::link($viewurl, get_string("th_{$column}", 'organizer')) . $columnicon . $columnhelpicon);
         } else if ($column == 'select') {
             $cell = new html_table_cell(
                 html_writer::checkbox(
@@ -353,7 +352,7 @@ function organizer_generate_table_header($columns, $sortable, $params, $usersort
                 )
             );
         } else if ($column == 'singleslotcommands') {
-            $cell = new html_table_cell(get_string("th_actions", 'organizer'));
+            $cell = new html_table_cell(get_string("th_actions", 'organizer') . $columnhelpicon);
         } else if ($column == 'participants' && $usersort) {
             if ($params['psort'] == 'name') {
                 $namedir = $params['pdir'] == 'ASC' ? 'DESC' : 'ASC';
@@ -386,9 +385,9 @@ function organizer_generate_table_header($columns, $sortable, $params, $usersort
             $links = "(" . html_writer::link($urln, get_string('name')) . $nameicon . "/"
                     . html_writer::link($urli, get_string('id', 'organizer')) . $idicon . ")";
 
-            $cell = new html_table_cell(get_string("th_{$column}", 'organizer') . " " . $links . $input);
+            $cell = new html_table_cell(get_string("th_{$column}", 'organizer') . " " . $links . $columnhelpicon);
         } else {
-            $cell = new html_table_cell(get_string("th_{$column}", 'organizer'));
+            $cell = new html_table_cell(get_string("th_{$column}", 'organizer') . $columnhelpicon);
         }
         $cell->header = true;
         $header[] = $cell;

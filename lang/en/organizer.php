@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'Organizer';
 $string['modulenameplural'] = 'Organizers';
-$string['modulename_help'] = 'Organizers enable the teacher to make appointments with students by creating time slots which students can register to.';
+$string['modulename_help'] = 'Organizers enable teachers to make appointments with students by creating time slots which students can register to.';
 $string['organizername'] = 'Organizer name';
 $string['organizer'] = 'Organizer';
 $string['pluginadministration'] = 'Organizer administration';
@@ -121,7 +121,7 @@ $string['slotdetails'] = 'Slot details';
 $string['back'] = 'Back';
 $string['trainerid'] = 'Teacher';
 $string['trainerid_help'] = 'Select the teacher you want to lead the appointments';
-$string['teacher'] = 'Teacher';
+$string['teacher'] = 'Trainer';
 $string['otherheader'] = 'Other';
 $string['day_0'] = 'Monday';
 $string['day_1'] = 'Tuesday';
@@ -1134,3 +1134,17 @@ $string['privacy:metadata:useridqueue'] = 'Identifier of the user who made this 
 $string['privacy:metadata:groupidqueue'] = 'Identifier of the group who made this entry in the waiting queue for a slot.';
 $string['privacy:metadata:applicantidqueue'] = 'Identifier of the user who made this entry in the waiting queue for the group.';
 $string['privacy:metadata:trainerid'] = 'Identifier of a trainer of a slot.';
+
+// Column header helpicons.
+$string['select'] = 'Select slots';
+$string['select_help'] = 'Select one ore more slots you want to work with.';
+$string['singleslotcommands'] = 'Single slot action';
+$string['singleslotcommands_help'] = 'Click an action button to work directly on one slot.';
+$string['datetime'] = 'Datetime';
+$string['datetime_help'] = 'Date & time of slot.';
+$string['location_help'] = 'The location where the slot takes place.';
+$string['participants'] = 'Participant(s)';
+$string['participants_help'] = 'List of participant(s) who have booked this slot.';
+$string['teacher_help'] = 'List of trainers of this slot.';
+$string['details'] = 'Status details';
+$string['details_help'] = 'Current status of this slot.';
