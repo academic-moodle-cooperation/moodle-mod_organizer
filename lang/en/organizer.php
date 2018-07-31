@@ -1148,3 +1148,7 @@ $string['participants_help'] = 'List of participant(s) who have booked this slot
 $string['teacher_help'] = 'List of trainers of this slot.';
 $string['details'] = 'Status details';
 $string['details_help'] = 'Current status of this slot.';
+$string['status'] = 'Status details';
+$string['status_help'] = 'Current status of this slot.';
+$string['actions'] = 'Action';
+$string['actions_help'] = 'Action to take.';
