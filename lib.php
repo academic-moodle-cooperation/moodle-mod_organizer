@@ -700,227 +700,113 @@ function organizer_get_eventaction_instance_student($organizer) {
 }
 
 function organizer_get_eventaction_student($organizer) {
-    global $DB;
-
-    $app = organizer_get_next_user_appointment($organizer);
+    global $DB, $USER;
 
     $eventstr = "";
 
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $group = organizer_fetch_group($organizer);
-
-        if ($app && isset($app->attended) && (int) $app->attended === 1) {
-            $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
-            $a = new stdClass();
-            $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
-            $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-            $a->groupname = $group->name;
-            $completedapp = get_string('mymoodle_completed_app_group', 'organizer', $a) .
-                    ("<br />(" . get_string('grade') . ": " .
-                            organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
-            if ($app->allownewappointments) {
-                $completedapp .= "<br />" . get_string('can_reregister', 'organizer');
-            }
-
-            $eventstr .= " " . $completedapp;
-
-        } else if ($app && isset($app->attended) && (int) $app->attended === 0) {
-            $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
-
-            $a = new stdClass();
-            $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
-            $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-            $a->groupname = $group->name;
-
-            $missedapp = get_string('mymoodle_missed_app_group', 'organizer', $a) .
-                    ("<br />(" . get_string('grade') . ": " .
-                            organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
-            if ($app->allownewappointments) {
-                $missedapp .= "<br />" . get_string('can_reregister', 'organizer');
-            }
-
-            $eventstr .= " " . $missedapp;
-
-            if (isset($organizer->duedate)) {
-                $a = new stdClass();
-                $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
-                $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
-                if ($organizer->duedate > time()) {
-                    $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
-                } else {
-                    $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
-                }
-
-                $eventstr .= " " . $orgexpires;
-
-            }
-        } else if ($app && !isset($app->attended)) {
-            $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
-
-            $a = new stdClass();
-            $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
-            $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-            $a->groupname = $group->name;
-
-            if (isset($slot->locationlink) && $slot->locationlink != '') {
-                $a->location = html_writer::link($slot->locationlink, $slot->location, array('target' => '_blank'));
-            } else {
-                $a->location = $slot->location;
-            }
-
-            if ($slot->starttime > time()) {
-                $upcomingapp = get_string('mymoodle_upcoming_app_group', 'organizer', $a);
-
-                $eventstr .= " " . $upcomingapp;
-            } else {
-                $pending = get_string('mymoodle_pending_app_group', 'organizer', $a);
-
-                $eventstr .= " " . $pending;
-            }
+    if($app = organizer_get_last_user_appointment($organizer, $USER->id, false)) {
+        if (isset($app->attended) && (int) $app->attended === 1) {
+            $attended = "yes";
         } else {
-
-            if (!$app = organizer_get_last_user_appointment($organizer)) {
-                $noregslot = get_string('mymoodle_no_reg_slot', 'organizer');
-
-                $eventstr .= " " . $noregslot;
-
-                if (isset($organizer->duedate)) {
-                    $a = new stdClass();
-                    $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
-                    $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
-                    if ($organizer->duedate > time()) {
-                        $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
-                    } else {
-                        $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
-                    }
-
-                    $eventstr .= " " . $orgexpires;
-                }
+            if (isset($app->attended) && (int) $app->attended === 0) {
+                $attended = "no";
             } else {
-                $regslot = get_string('mymoodle_reg_slot', 'organizer');
-
-                $eventstr .= " " . $regslot;
-                if (isset($organizer->duedate)) {
-                    $a = new stdClass();
-                    $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
-                    $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
-                    if ($organizer->duedate > time()) {
-                        $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
-                    } else {
-                        $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
-                    }
-
-                    $eventstr .= " " . $orgexpires;
-
+                if (!isset($app->attended)) {
+                    $attended = "notyet";
                 }
-
             }
         }
-    } else {
-        if ($app && isset($app->attended) && (int) $app->attended === 1) {
-            $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
-            $a = new stdClass();
-            $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
-            $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-            $completedapp = get_string('mymoodle_completed_app', 'organizer', $a) .
-                ("<br />(" . get_string('grade') . ": " .
-                    organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
-            if ($app->allownewappointments) {
-                $completedapp .= "<br />" . get_string('can_reregister', 'organizer');
-            }
-
-            $eventstr .= " " . $completedapp;
-
-        } else if ($app && isset($app->attended) && (int) $app->attended === 0) {
-            $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
-            $a = new stdClass();
-            $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
-            $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-            $missedapp = get_string('mymoodle_missed_app', 'organizer', $a) .
-                ("<br />(" . get_string('grade') . ": " .
-                    organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
-            if ($app->allownewappointments) {
-                $missedapp .= "<br />" . get_string('can_reregister', 'organizer');
-            }
-
-            $eventstr .= " " . $missedapp;
-
-            if (isset($organizer->duedate)) {
-                $a = new stdClass();
-                $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
-                $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
-                if ($organizer->duedate > time()) {
-                    $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
-                } else {
-                    $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
-                }
-
-                $eventstr .= " " . $orgexpires;
-
-            }
-        } else if ($app && !isset($app->attended)) {
-            $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
-
-            $a = new stdClass();
-            $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
-            $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-
-            if (isset($slot->locationlink) && $slot->locationlink != '') {
-                $a->location = html_writer::link($slot->locationlink, $slot->location, array('target' => '_blank'));
-            } else {
-                $a->location = $slot->location;
-            }
-
-            if ($slot->starttime > time()) {
-                $upcomingapp = get_string('mymoodle_upcoming_app', 'organizer', $a);
-
-                $eventstr .= " " . $upcomingapp;
-
-            } else {
-                $pending = get_string('mymoodle_pending_app', 'organizer', $a);
-
-                $eventstr .= " " . $pending;
-
-            }
-        } else {
-            if (!$app = organizer_get_last_user_appointment($organizer)) {
-                $noregslot = get_string('mymoodle_no_reg_slot', 'organizer');
-
-                $eventstr .= " " . $noregslot;
-
-                if (isset($organizer->duedate)) {
-                    $a = new stdClass();
-                    $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
-                    $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
-                    if ($organizer->duedate > time()) {
-                        $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
-                    } else {
-                        $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
-                    }
-
-                    $eventstr .= " " . $orgexpires;
-                }
-            } else {
-                $regslot = get_string('mymoodle_reg_slot', 'organizer');
-
-                $eventstr .= " " . $regslot;
-                if (isset($organizer->duedate)) {
-                    $a = new stdClass();
-                    $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
-                    $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
-                    if ($organizer->duedate > time()) {
-                        $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
-                    } else {
-                        $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
-                    }
-
-                    $eventstr .= " " . $orgexpires;
-
-                }
-
-            }
+        $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
+        $a = new stdClass();
+        $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
+        $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
+        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+            $group = organizer_fetch_group($organizer);
+            $a->groupname = $group->name;
         }
-    }
+        switch ($attended) {
+            case "yes":
+                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                    $str = get_string('mymoodle_completed_app_group', 'organizer', $a);
+                } else {
+                    $str = get_string('mymoodle_completed_app', 'organizer', $a);
+                }
+                $eventstr = $str . ("<br />(" . get_string('grade') . ": " .
+                                organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+                if ($app->allownewappointments) {
+                    $eventstr .= "<br />" . get_string('can_reregister', 'organizer');
+                }
+                break;
+            case "no":
+                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                    $str = get_string('mymoodle_missed_app_group', 'organizer', $a);
+                } else {
+                    $str = get_string('mymoodle_missed_app', 'organizer', $a);
+                }
+                $eventstr = $str . ("<br />(" . get_string('grade') . ": " .
+                                organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+                if ($app->allownewappointments) {
+                    $eventstr .= "<br />" . get_string('can_reregister', 'organizer');
+                }
+                if (isset($organizer->duedate)) {
+                    $a = new stdClass();
+                    $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
+                    $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
+                    if ($organizer->duedate > time()) {
+                        $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
+                    } else {
+                        $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
+                    }
+                    $eventstr .= " " . $orgexpires;
+                }
+                break;
+            case "notyet":
+                if (isset($slot->locationlink) && $slot->locationlink != '') {
+                    $a->location = html_writer::link($slot->locationlink, $slot->location, array('target' => '_blank'));
+                } else {
+                    $a->location = $slot->location;
+                }
+                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                    if ($slot->starttime > time()) {
+                        $str = get_string('mymoodle_missed_app_group', 'organizer', $a);
+                    } else {
+                        $str = get_string('mymoodle_pending_app_group', 'organizer', $a);
+                    }
+                } else {
+                    if ($slot->starttime > time()) {
+                        $str = get_string('mymoodle_missed_app', 'organizer', $a);
+                    } else {
+                        $str = get_string('mymoodle_pending_app', 'organizer', $a);
+                    }
+                }
+                $eventstr = $str;
+                break;
+        }  // End switch.
+
+    } else {  // No app.
+
+        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+            $noregslot = get_string('mymoodle_no_reg_slot_group', 'organizer');
+        } else {
+            $noregslot = get_string('mymoodle_no_reg_slot', 'organizer');
+        }
+
+        $eventstr = " " . $noregslot;
+
+        if (isset($organizer->duedate)) {
+            $a = new stdClass();
+            $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
+            $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
+            if ($organizer->duedate > time()) {
+                $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
+            } else {
+                $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
+            }
+
+            $eventstr .= " " . $orgexpires;
+        }
+
+    }  // End if app.
 
     return $eventstr;
 
