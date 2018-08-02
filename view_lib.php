@@ -1406,9 +1406,9 @@ function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupmode)
         } else {
             $position = $slotx->is_user_in_queue($userid);
         }
-        $list = get_string('inwaitingqueue', 'organizer');
+        $list = "&nbsp;" . get_string('inwaitingqueue', 'organizer');
         $slotinfo = str_replace("<br />", " ", organizer_date_time($slot));
-        $slotinfo .= "\n" . get_string('teacherid', 'organizer') . ": ";
+        $slotinfo .= "/ " . get_string('teacherid', 'organizer') . ":";
         $trainerstr = "";
         if ($trainers = organizer_get_slot_trainers($slot->id, true)) {
             $conn = "";
@@ -1418,9 +1418,9 @@ function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupmode)
             }
         }
         $slotinfo .= $trainerstr ? $trainerstr : "-";
-        $slotinfo .= "\n" . get_string('location', 'organizer') . ": ";
+        $slotinfo .= "/ " . get_string('location', 'organizer') . ":";
         $slotinfo .= $slot->location ? $slot->location : "-";
-        $slotinfo .= "\n" . get_string('position', 'organizer') . ": ";
+        $slotinfo .= "/ " . get_string('position', 'organizer') . ":";
         $slotinfo .= $position;
         $list .= "<span style=\"cursor:help;\"> " . organizer_get_icon('docs', $slotinfo) . "</span>";
     }
