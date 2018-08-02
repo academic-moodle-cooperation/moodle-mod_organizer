@@ -738,13 +738,24 @@ function organizer_get_eventaction_student($organizer) {
                 }
                 break;
             case "no":
-                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                    $str = get_string('mymoodle_missed_app_group', 'organizer', $a);
+                if (isset($slot->locationlink) && $slot->locationlink != '') {
+                    $a->location = html_writer::link($slot->locationlink, $slot->location, array('target' => '_blank'));
                 } else {
-                    $str = get_string('mymoodle_missed_app', 'organizer', $a);
+                    $a->location = $slot->location;
                 }
-                $eventstr = $str . ("<br />(" . get_string('grade') . ": " .
-                                organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
+                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                    if ($slot->starttime > time()) {
+                        $str = get_string('mymoodle_missed_app_group', 'organizer', $a);
+                    } else {
+                        $str = get_string('mymoodle_pending_app_group', 'organizer', $a);
+                    }
+                } else {
+                    if ($slot->starttime > time()) {
+                        $str = get_string('mymoodle_missed_app', 'organizer', $a);
+                    } else {
+                        $str = get_string('mymoodle_pending_app', 'organizer', $a);
+                    }
+                }
                 if ($app->allownewappointments) {
                     $eventstr .= "<br />" . get_string('can_reregister', 'organizer');
                 }
