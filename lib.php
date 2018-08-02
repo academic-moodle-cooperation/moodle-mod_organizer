@@ -781,13 +781,13 @@ function organizer_get_eventaction_student($organizer) {
                     if ($slot->starttime <= time()) {
                         $str = get_string('mymoodle_missed_app_group', 'organizer', $a);
                     } else {
-                        $str = get_string('mymoodle_pending_app_group', 'organizer', $a);
+                        $str = get_string('mymoodle_reg_slot_group', 'organizer', $a);
                     }
                 } else {
                     if ($slot->starttime <= time()) {
                         $str = get_string('mymoodle_missed_app', 'organizer', $a);
                     } else {
-                        $str = get_string('mymoodle_pending_app', 'organizer', $a);
+                        $str = get_string('mymoodle_reg_slot', 'organizer', $a);
                     }
                 }
                 $eventstr = $str;
