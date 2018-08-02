@@ -744,13 +744,13 @@ function organizer_get_eventaction_student($organizer) {
                     $a->location = $slot->location;
                 }
                 if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                    if ($slot->starttime > time()) {
+                    if ($slot->starttime <= time()) {
                         $str = get_string('mymoodle_missed_app_group', 'organizer', $a);
                     } else {
                         $str = get_string('mymoodle_pending_app_group', 'organizer', $a);
                     }
                 } else {
-                    if ($slot->starttime > time()) {
+                    if ($slot->starttime <= time()) {
                         $str = get_string('mymoodle_missed_app', 'organizer', $a);
                     } else {
                         $str = get_string('mymoodle_pending_app', 'organizer', $a);
@@ -778,13 +778,13 @@ function organizer_get_eventaction_student($organizer) {
                     $a->location = $slot->location;
                 }
                 if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                    if ($slot->starttime > time()) {
+                    if ($slot->starttime <= time()) {
                         $str = get_string('mymoodle_missed_app_group', 'organizer', $a);
                     } else {
                         $str = get_string('mymoodle_pending_app_group', 'organizer', $a);
                     }
                 } else {
-                    if ($slot->starttime > time()) {
+                    if ($slot->starttime <= time()) {
                         $str = get_string('mymoodle_missed_app', 'organizer', $a);
                     } else {
                         $str = get_string('mymoodle_pending_app', 'organizer', $a);
