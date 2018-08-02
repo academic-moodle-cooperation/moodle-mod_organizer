@@ -1152,3 +1152,5 @@ $string['status'] = 'Status details';
 $string['status_help'] = 'Current status of this slot.';
 $string['actions'] = 'Action';
 $string['actions_help'] = 'Action to take.';
+$string['teacherid'] = 'Trainer';
+$string['teacherid_help'] = 'Select the trainer you want to lead the appointments';
