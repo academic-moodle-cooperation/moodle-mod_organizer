@@ -33,7 +33,7 @@ define('ORGANIZER_ENABLE_MESSAGING', 1);
 require_once(dirname(__FILE__) . '/locallib.php');
 
 function organizer_send_message($sender, $receiver, $slot, $type, $digest = null, $customdata = array()) {
-    global $DB;
+    global $DB, $CFG;
 
     $organizerid = $slot->organizerid;
 
@@ -151,6 +151,9 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     }
 
     $message->smallmessage = get_string("$type:smallmessage", 'organizer', $strings);
+
+    $message->contexturl        = $CFG->wwwroot . '/mod/organizer/view.php?id=' . $cm->id;
+    $message->contexturlname    = $organizer->name;
 
     if (ORGANIZER_ENABLE_MESSAGING) {
         return message_send($message);
