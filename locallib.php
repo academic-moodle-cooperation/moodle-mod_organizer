@@ -652,6 +652,7 @@ function organizer_delete_appointment_slot($id) {
         foreach ($appointments as $appointment) {
             $reciever = intval($appointment->userid);
             organizer_send_message($USER, $reciever, $slot, 'slotdeleted_notify_student');
+            $DB->delete_records('event', array('id' => $appointment->eventid));
             $notifiedusers++;
         }
     }
