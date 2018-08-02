@@ -797,7 +797,10 @@ function organizer_get_eventaction_student($organizer) {
     } else {  // No app.
 
         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-            $noregslot = get_string('mymoodle_no_reg_slot_group', 'organizer');
+            $a = new stdClass();
+            $group = organizer_fetch_group($organizer);
+            $a->groupname = $group->name;
+            $noregslot = get_string('mymoodle_no_reg_slot_group', 'organizer', $a);
         } else {
             $noregslot = get_string('mymoodle_no_reg_slot', 'organizer');
         }
