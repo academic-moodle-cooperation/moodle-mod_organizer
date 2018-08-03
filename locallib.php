@@ -123,7 +123,7 @@ function organizer_add_appointment_slots($data) {
 
     $collisionmessages = "";
     $startdate = $data->startdate;
-    $enddate = $data->enddate;
+    $enddate = $data->enddate + 86399;
 
     for ($daydate = $startdate; $daydate <= $enddate; $daydate += 86400) {
 
