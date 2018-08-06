@@ -107,11 +107,16 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     $strings->courselink = html_writer::link($courseurl, $course->fullname);
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        if ($group = organizer_fetch_user_group($receiver->id, $organizerid)) {
+        if ($namesplit[0] == 'register_notify_teacher') {
+            $groupuser = $sender->id;
+        } else {
+            $groupuser = $receiver->id;
+        }
+        if ($group = organizer_fetch_user_group($groupuser, $organizerid)) {
             $groupname = organizer_fetch_groupname($group->id);
             $strings->groupname = $groupname;
         } else {
-            $strings->groupname = "groupname";
+            $strings->groupname = "?";
         }
         $type .= ":group";
     }
