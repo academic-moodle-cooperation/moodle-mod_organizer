@@ -218,8 +218,9 @@ function organizer_add_appointment_slots($data) {
                                 $name = "<strong>" . get_string('event', 'organizer') . " '" . $collision->name . "'</strong>";
                             }
                             $collisionmessage .= $name .
-                                    ' from ' . userdate($collision->timestart, get_string('fulldatetimetemplate', 'organizer')) .
-                                    ' to '   . userdate($collision->timestart + $collision->timeduration,
+                                    ' ' . get_string('from') . ': ' . userdate($collision->timestart,
+                                            get_string('fulldatetimetemplate', 'organizer')) .
+                                    ' ' . get_string('to') . ': ' . userdate($collision->timestart + $collision->timeduration,
                                             get_string('fulldatetimetemplate', 'organizer')) .
                                 '<br />';
                         }
