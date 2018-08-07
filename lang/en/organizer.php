@@ -232,7 +232,7 @@ $string['assignsuccessnotsent'] = 'The slot has been assigned successfully BUT t
 
 $string['evaluate'] = 'Evaluate';
 $string['eval_header'] = 'Selected time slots';
-$string['collision'] = 'Warning! Collision detected with following event(s):';
+$string['collision'] = 'Warning! Collision detected with following event(s) and/or slot(s):';
 $string['nofreeslots'] = 'No free slots available.';
 $string['availableslotsfor'] = 'Available slots for';
 
@@ -1154,3 +1154,5 @@ $string['actions'] = 'Action';
 $string['actions_help'] = 'Action to take.';
 $string['teacherid'] = 'Trainer';
 $string['teacherid_help'] = 'Select the trainer you want to lead the appointments';
+
+$string['timeslot'] = 'Slot';

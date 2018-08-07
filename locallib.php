@@ -49,20 +49,39 @@ if (!function_exists('sem_get')) {
     }
 }
 
-function organizer_load_events($trainerids, $startdate, $enddate, $newsloteventids) {
+function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $enddate) {
     global $DB;
 
-    $params = array('startdate1' => $startdate, 'enddate1' => $enddate,
-            'startdate2' => $startdate, 'enddate2' => $enddate);
-    list($insql, $inparams) = $DB->get_in_or_equal($trainerids, SQL_PARAMS_NAMED);
-    $params = array_merge($params, $inparams);
-    list($insql2, $inparams2) = $DB->get_in_or_equal($newsloteventids, SQL_PARAMS_NAMED, null, false);
-    $params = array_merge($params, $inparams2);
-    $query = "SELECT {event}.id, {event}.name, {event}.timestart, {event}.timeduration FROM {event}
-            INNER JOIN {user} ON {user}.id = {event}.userid
-            WHERE {user}.id $insql AND {event}.id $insql2 AND ({event}.timestart >= :startdate1
-                AND {event}.timestart < :enddate1 OR ({event}.timestart + {event}.timeduration) >= :startdate2
-                AND ({event}.timestart + {event}.timeduration) < :enddate2)";
+    // Get all slots of this trainer and all non-organizer events in the given timeframe.
+    $params = array('trainerid' => $trainerid, 'modulename' => 'organizer', 'startdate1' => $startdate,
+        'enddate1' => $enddate, 'startdate2' => $startdate, 'enddate2' => $enddate, 'trainerid2' => $trainerid,
+        'startdate3' => $startdate, 'enddate3' => $enddate, 'startdate4' => $startdate, 'enddate4' => $enddate);
+    $query = "SELECT {event}.id as id, {event}.name, {event}.timestart, {event}.timeduration, 'event' as typ 
+              FROM {event}
+              INNER JOIN {user} ON {user}.id = {event}.userid
+              WHERE {event}.userid = :trainerid AND {event}.modulename <> :modulename
+              AND (
+                  {event}.timestart >= :startdate1 AND
+                  {event}.timestart < :enddate1
+                  OR 
+                  {event}.timestart + {event}.timeduration >= :startdate2 AND
+                  {event}.timestart + {event}.timeduration < :enddate2
+                  )
+              
+              UNION
+              
+              SELECT {organizer_slots}.id as id, 'noname' as name, {organizer_slots}.starttime as timestart,
+              {organizer_slots}.duration as timeduration, 'slot' as typ
+              FROM {organizer_slots}
+              INNER JOIN {organizer_slot_trainer} ON {organizer_slot_trainer}.slotid = {organizer_slots}.id
+              WHERE {organizer_slot_trainer}.trainerid = :trainerid2 
+              AND (
+                  {organizer_slots}.starttime >= :startdate3 AND
+                  {organizer_slots}.starttime < :enddate3 
+                  OR {organizer_slots}.starttime + {organizer_slots}.duration >= :startdate4 AND
+                  {organizer_slots}.starttime + {organizer_slots}.duration < :enddate4
+                  )
+              ";
 
     return $DB->get_records_sql($query, $params);
 }
@@ -89,9 +108,9 @@ function organizer_get_name_link($user = 0) {
  * @param  unixtime to
  * @return array an array of events
  */
-function organizer_check_collision($from, $to, $events) {
+function organizer_check_collision($from, $to, $eventsandslots) {
     $collidingevents = array();
-    foreach ($events as $event) {
+    foreach ($eventsandslots as $event) {
         $eventfrom = $event->timestart;
         $eventto = $eventfrom + $event->timeduration;
 
@@ -180,35 +199,34 @@ function organizer_add_appointment_slots($data) {
                         $DB->update_record('organizer_slot_trainer', $newtrainerslot);
                         $eventids[] = $newtrainerslot->eventid;
                     }
-                }
-                if (count($eventids) > 0) {
-                    if ($events = organizer_load_events(
-                            $trainerids, $newslot->starttime, $newslot->starttime + $newslot->duration, $eventids
-                    )) {
-                        if ($collisions = organizer_check_collision(
-                                $newslot->starttime, $newslot->starttime + $newslot->duration, $events
-                        )) {
-                            $head = true;
-                            $collisionmessage = "";
-                            foreach ($collisions as $event) {
-                                if ($head) {
-                                    $collisionmessage .= '<span class="error">' . get_string('collision',
-                                            'organizer') . '</span><br />';
-                                    $head = false;
-                                }
-                                $collisionmessage .= '<strong>' . $event->name . '</strong> from '
-                                        . userdate($event->timestart, get_string('fulldatetimetemplate',
-                                        'organizer')) . ' to ' . userdate($event->timestart + $event->timeduration,
-                                        get_string('fulldatetimetemplate', 'organizer')) .
-                                        '<br />';
+                    $eventsandslots = organizer_load_eventsandslots($trainerid, $newslot->id, $newslot->starttime,
+                        $newslot->starttime + $newslot->duration);
+                    if ($collisions = organizer_check_collision($newslot->starttime,
+                        $newslot->starttime + $newslot->duration, $eventsandslots))
+                    {
+                        $head = true;
+                        $collisionmessage = "";
+                        foreach ($collisions as $collision) {
+                            if ($head) {
+                                $collisionmessage .= '<span class="error">' . get_string('collision',
+                                        'organizer') . '</span><br />';
+                                $head = false;
                             }
-
-                            $collisionmessages .= $collisionmessage;
+                            if ($collision->name == 'noname') {
+                                $name = get_string('timeslot', 'organizer');
+                            } else {
+                                $name = get_string('event') . "'" . $collision->name . "'";
+                            }
+                            $collisionmessage .= '<strong>' . $name . '</strong> from '
+                                . userdate($collision->timestart, get_string('fulldatetimetemplate',
+                                    'organizer')) . ' to ' . userdate($collision->timestart + $collision->timeduration,
+                                    get_string('fulldatetimetemplate', 'organizer')) .
+                                '<br />';
                         }
 
+                        $collisionmessages .= $collisionmessage;
                     }
                 }
-
                 if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPSLOT) {
                     organizer_create_coursegroup($newslot);
                 }
