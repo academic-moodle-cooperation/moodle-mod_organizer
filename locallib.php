@@ -70,7 +70,7 @@ function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $endd
               
               UNION
               
-              SELECT {organizer_slots}.id as id, 'noname' as name, {organizer_slots}.starttime as timestart,
+              SELECT {organizer_slots}.id as id, {organizer_slots}.location as name, {organizer_slots}.starttime as timestart,
               {organizer_slots}.duration as timeduration, 'slot' as typ
               FROM {organizer_slots}
               INNER JOIN {organizer_slot_trainer} ON {organizer_slot_trainer}.slotid = {organizer_slots}.id
@@ -208,19 +208,19 @@ function organizer_add_appointment_slots($data) {
                         $collisionmessage = "";
                         foreach ($collisions as $collision) {
                             if ($head) {
-                                $collisionmessage .= '<span class="error">' . get_string('collision',
-                                        'organizer') . '</span><br />';
+                                $collisionmessage .= '<span class="error">' . get_string('collision', 'organizer') . '</span><br />';
                                 $head = false;
                             }
-                            if ($collision->name == 'noname') {
-                                $name = get_string('timeslot', 'organizer');
+                            if ($collision->typ == 'slot') {
+                                $name = "<strong>" . get_string('timeslot', 'organizer') . "</strong> " .
+                                        get_string('location', 'organizer') . ': ' . $collision->name;
                             } else {
-                                $name = get_string('event', 'organizer') . " '" . $collision->name . "'";
+                                $name = "<strong>" . get_string('event', 'organizer') . " '" . $collision->name . "'</strong>";
                             }
-                            $collisionmessage .= '<strong>' . $name . '</strong> from '
-                                . userdate($collision->timestart, get_string('fulldatetimetemplate',
-                                    'organizer')) . ' to ' . userdate($collision->timestart + $collision->timeduration,
-                                    get_string('fulldatetimetemplate', 'organizer')) .
+                            $collisionmessage .= $name .
+                                    ' from ' . userdate($collision->timestart, get_string('fulldatetimetemplate', 'organizer')) .
+                                    ' to '   . userdate($collision->timestart + $collision->timeduration,
+                                            get_string('fulldatetimetemplate', 'organizer')) .
                                 '<br />';
                         }
 
