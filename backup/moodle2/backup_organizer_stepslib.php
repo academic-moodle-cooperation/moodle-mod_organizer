@@ -44,7 +44,10 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
             'organizer', array('id'),
             array('course', 'name', 'intro', 'introformat', 'timemodified', 'isgrouporganizer', 'emailteachers',
             'allowregistrationsfromdate', 'duedate', 'alwaysshowdescription', 'relativedeadline', 'grade', 'visibility', 'queue',
-                    'hidecalendar', 'nocalendareventslotcreation', 'includetraineringroups')
+                    'hidecalendar', 'nocalendareventslotcreation', 'includetraineringroups', 'singleslotprintfield0',
+                    'singleslotprintfield1', 'singleslotprintfield2', 'singleslotprintfield3', 'singleslotprintfield4',
+                    'singleslotprintfield5', 'singleslotprintfield6', 'singleslotprintfield7', 'singleslotprintfield8',
+                    'singleslotprintfield9')
         );
 
         $slots = new backup_nested_element('slots');
@@ -52,7 +55,7 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
             'slot', array('id'),
             array('organizerid', 'starttime', 'gap', 'duration', 'location', 'locationlink', 'maxparticipants',
                         'visibility', 'availablefrom', 'timemodified', 'notificationtime', 'comments',
-            'teachervisible', 'eventid', 'notified', 'visible')
+            'teachervisible', 'eventid', 'notified', 'visible', 'coursegroup')
         );
 
         $appointments = new backup_nested_element('appointments');

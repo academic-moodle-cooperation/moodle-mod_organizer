@@ -57,13 +57,11 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
         global $DB;
 
         $data = (object) $data;
-        $oldid = $data->id;
         $data->course = $this->get_courseid();
 
-        $data->relativedeadline = $this->apply_date_offset($data->relativedeadline);
         $data->allowregistrationsfromdate = $this->apply_date_offset($data->allowregistrationsfromdate);
         $data->duedate = $this->apply_date_offset($data->duedate);
-        $data->timemodified = $this->apply_date_offset($data->timemodified);
+        $data->timemodified = time();
 
         if ($data->grade < 0) { // Scale found, get mapping.
             $data->grade = -($this->get_mappingid('scale', abs($data->grade)));
