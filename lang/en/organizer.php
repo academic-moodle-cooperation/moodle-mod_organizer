@@ -1155,4 +1155,5 @@ $string['actions_help'] = 'Action to take.';
 $string['teacherid'] = 'Trainer';
 $string['teacherid_help'] = 'Select the trainer you want to lead the appointments';
 
-$string['timeslot'] = 'Slot';
+$string['timeslot'] = 'Organizer Slot';
+$string['event'] = 'Calendar event';

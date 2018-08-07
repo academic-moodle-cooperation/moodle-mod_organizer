@@ -215,7 +215,7 @@ function organizer_add_appointment_slots($data) {
                             if ($collision->name == 'noname') {
                                 $name = get_string('timeslot', 'organizer');
                             } else {
-                                $name = get_string('event') . "'" . $collision->name . "'";
+                                $name = get_string('event', 'organizer') . " '" . $collision->name . "'";
                             }
                             $collisionmessage .= '<strong>' . $name . '</strong> from '
                                 . userdate($collision->timestart, get_string('fulldatetimetemplate',
