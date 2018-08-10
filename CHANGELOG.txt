@@ -1,9 +1,17 @@
 CHANGELOG
 =========
 
-3.5.0 (2018-07-30)
+3.5.0 (2018-08-10)
 ------------------
 
+* [FIXED] #5569: Wrong deadline and missing singleslotprintfields when importing organizer instance backup
+* [FIXED] #5561: Restore and update collision checking
+* [FIXED] #5567: Groupmember enrollment message for teacher does not contain the correct groupname
+* [FIXED] #5562: Clicking link of organizer system message leads to an error & Rewrite function organizer_get_eventaction_student
+* [FIXED] #5565: lang strings teacherid and teacherid_help missing in en
+* [FIXED] #5564: Event of deleted slot remains in student calendar AND event name improvements for students appointment events
+* [FIXED] #5558: slot evaluation - form elements in disorder
+* [FIXED] #5554: Debug Messages because of missing lang-strings
 * [FIXED] #5506: Add new slots: Change to-date time from 00:00:00 to 23:59:59
 * [FIXED] #5496: Counting the slots to be created does not work after adding additional empty slots
 * [FEATURE] #3260: Rebuild slot overview - helpicons in column headers
