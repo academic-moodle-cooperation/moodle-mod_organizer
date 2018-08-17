@@ -55,7 +55,8 @@ function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $endd
     // Get all slots of this trainer and all non-organizer events in the given timeframe.
     $params = array('trainerid' => $trainerid, 'modulename' => 'organizer', 'startdate1' => $startdate,
         'enddate1' => $enddate, 'startdate2' => $startdate, 'enddate2' => $enddate, 'trainerid2' => $trainerid,
-        'startdate3' => $startdate, 'enddate3' => $enddate, 'startdate4' => $startdate, 'enddate4' => $enddate);
+        'newslotid' => $newslotid, 'startdate3' => $startdate, 'enddate3' => $enddate, 'startdate4' => $startdate,
+        'enddate4' => $enddate);
     $query = "SELECT {event}.id as id, {event}.name, {event}.timestart, {event}.timeduration, 'event' as typ 
               FROM {event}
               INNER JOIN {user} ON {user}.id = {event}.userid
@@ -75,6 +76,7 @@ function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $endd
               FROM {organizer_slots}
               INNER JOIN {organizer_slot_trainer} ON {organizer_slot_trainer}.slotid = {organizer_slots}.id
               WHERE {organizer_slot_trainer}.trainerid = :trainerid2 
+              AND {organizer_slots}.id <> :newslotid
               AND (
                   {organizer_slots}.starttime >= :startdate3 AND
                   {organizer_slots}.starttime < :enddate3 
