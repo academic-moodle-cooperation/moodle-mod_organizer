@@ -106,34 +106,33 @@ define(
 
             // Get index of changed row and start evaluation.
             function startevaluation(e) {
-                var target = $(e.target);
-                var name = target.attr("name");
+                var name = $(e.target).attr("name");
                 var i = parseInt(name.replace('newslots[', ''));
                 var valdayfrom = parseInt($("select[name='newslots\[" + i + "\]\[day\]']").val());
                 var valdayto = parseInt($("select[name='newslots\[" + i + "\]\[dayto\]']").val());
                 var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[from\]']").val());
+                // Proposal for day-to only if day-from has a selected value and day-to has no selected value yet.
                 if (valdayfrom != -1 && valdayto == -1) {
-                    var prefilltovalue;
-                    var durationnumber = parseInt($("input[name='duration\[number\]']").val());
-                    var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
-                    var duration = durationnumber * durationtimeunit;
-                    prefilltovalue = valfrom + duration;
-                    if (durationtimeunit == 3600) {
-                        if (prefilltovalue >= 86400) {
-                            prefilltovalue -= 86400;
-                            var adaptday = (valdayfrom + 1) % 6;
-                            $("select[name='newslots\[" + i + "\]\[dayto\]']").val(adaptday);
-                        } else {
-                            $("select[name='newslots\[" + i + "\]\[dayto\]']").val(valdayfrom);
+                    var periodstartdate = getstartdate();
+                    var periodenddate = getenddate();
+                    for (var daydate = periodstartdate; daydate <= periodenddate; daydate = addDays(daydate * 1000, 1)) {
+                        var jsdaydate = new Date(daydate * 1000);
+                        var iday = jsdaydate.getDay();
+                        var iweekday = iday ? (iday - 1) : 6;
+                        if (valdayfrom == iweekday) {
+                            break;
                         }
-                    } else if (durationtimeunit == 86400) {
-                        prefilltovalue = valfrom;
-                        var adaptday = (valdayfrom + durationnumber) % 7;
-                        $("select[name='newslots\[" + i + "\]\[dayto\]']").val(adaptday);
-                    } else {
-                        $("select[name='newslots\[" + i + "\]\[dayto\]']").val(valdayfrom);
                     }
-                    $("select[name='newslots\[" + i + "\]\[to\]']").val(prefilltovalue);
+                    var pdate = (jsdaydate / 1000) + valfrom + getduration();
+                    var jspdate = new Date(pdate * 1000);
+                    var pday = jspdate.getDay();
+                    var pweekday = pday ? (pday - 1) : 6;
+                    $("select[name='newslots\[" + i + "\]\[dayto\]']").val(pweekday);
+                    var hours = jspdate.getHours();
+                    var minutes = jspdate.getMinutes() + (hours * 60);
+                    minutes = minutes % 5 ? minutes + (5 - (minutes % 5)) : minutes;
+                    var pseconds = minutes * 60;
+                    $("select[name='newslots\[" + i + "\]\[to\]']").val(pseconds);
                 }
                 valdayfrom = parseInt($("select[name='newslots\[" + i + "\]\[day\]']").val());
                 valdayto = parseInt($("select[name='newslots\[" + i + "\]\[dayto\]']").val());
@@ -174,55 +173,42 @@ define(
                 writetotal();
             }
 
+            // Get amount of slots of row i.
             function getslots(i) {
-                var startdateday = $("select[name='startdate\[day\]']").val();
-                var startdatemonth = $("select[name='startdate\[month\]']").val() - 1;
-                var startdateyear = $("select[name='startdate\[year\]']").val();
-                var startdatedate = new Date(startdateyear, startdatemonth, startdateday);
-                var startdate = startdatedate.getTime() / 1000;
-                var enddateday = $("select[name='enddate\[day\]']").val();
-                var enddatemonth = $("select[name='enddate\[month\]']").val() - 1;
-                var enddateyear = $("select[name='enddate\[year\]']").val();
-                var enddatedate = new Date(enddateyear, enddatemonth, enddateday);
-                var enddate = enddatedate.getTime() / 1000 + 86399;
-                var valday = parseInt($("select[name^='newslots\[" + i + "\]\[day\]']").val());
-                if (valday == -1) {
+                // No selected day-from: return 0.
+                var dayfromvalue = parseInt($("select[name^='newslots\[" + i + "\]\[day\]']").val());
+                if (dayfromvalue == -1) {
                     return 0;
                 }
-                var valdayto = parseInt($("select[name^='newslots\[" + i + "\]\[dayto\]']").val());
-                if (valdayto == -1) {
+                // No selected day to: return 0.
+                var daytovalue = parseInt($("select[name^='newslots\[" + i + "\]\[dayto\]']").val());
+                if (daytovalue == -1) {
                     return 0;
                 }
+                // Get period, time from, slot duration and gap between slots.
+                var periodstartdate = getstartdate();
+                var periodenddate = getenddate();
                 var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[from\]']").val());
                 var valto = parseInt($("select[name='newslots\[" + i + "\]\[to\]']").val());
-                var durationnumber = parseInt($("input[name='duration\[number\]']").val());
-                var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
-                var gapnumber = parseInt($("input[name='gap\[number\]']").val());
-                var gaptimeunit = parseInt($("select[name='gap\[timeunit\]']").val());
-                if ( isNaN(durationnumber) ) {
-                    return 0;
-                }
-                var duration = durationnumber * durationtimeunit;
-                if ( isNaN(gapnumber) ) {
-                    gapnumber = 0;
-                }
-                var gap = gapnumber * gaptimeunit;
-                var iteration = duration + gap;
-                var iweekday, daydate, daydatedate, datefrom, dateto, itime;
+                // Duration + gap in seconds.
+                var duration = getduration();
+                var iteration = duration + getgap();
+                var iweekday, daydate, jsdaydate, datefrom, dateto, itime;
                 var slots = 0;
-                for (daydate = startdate; daydate <= enddate; daydate += 86400) {
-                    daydatedate = new Date(daydate * 1000);
-                    iweekday = daydatedate.getDay() - 1;
-                    iweekday = (iweekday == -1) ? 6 : iweekday;
-                    if (valday != iweekday) {
+                // Iterate through days of period.
+                for (daydate = periodstartdate; daydate <= periodenddate; daydate = addDays(daydate * 1000, 1)) {
+                    jsdaydate = new Date(daydate * 1000);
+                    iweekday = jsdaydate.getDay() ? (jsdaydate.getDay() - 1) : 6;
+                    if (dayfromvalue != iweekday) {
                         continue;
                     }
                     datefrom = daydate + valfrom;
-                    dateto = daydate + ((valdayto - valday) * 86400) + valto;
-                    if (dateto < datefrom) {
+                    dateto = daydate + ((daytovalue - dayfromvalue) * 86400) + valto;
+                    while (dateto < datefrom) {
                         dateto += (7 * 86400);
                     }
-                    if (datefrom < startdate || datefrom > enddate || dateto > enddate) {
+                    // New: Slot overlapping period end date is allowed!
+                    if (datefrom < periodstartdate || datefrom > periodenddate) {
                         continue;
                     }
                     for (itime = datefrom; itime + duration <= dateto; itime += iteration) {
@@ -258,6 +244,50 @@ define(
                 });
                 var forecaststring = instance.totaltotal.replace("xxx", totalslots.toString()).replace("yyy", totalpax.toString());
                 $("div[name='organizer_newslots_forecasttotal']").html(forecaststring);
+            }
+
+            function getstartdate() {
+                var startdateday = $("select[name='startdate\[day\]']").val();
+                var startdatemonth = $("select[name='startdate\[month\]']").val() - 1;
+                var startdateyear = $("select[name='startdate\[year\]']").val();
+                var startdatedate = new Date(startdateyear, startdatemonth, startdateday);
+                return startdatedate.getTime() / 1000;
+            }
+
+            function getenddate() {
+                var enddateday = $("select[name='enddate\[day\]']").val();
+                var enddatemonth = $("select[name='enddate\[month\]']").val() - 1;
+                var enddateyear = $("select[name='enddate\[year\]']").val();
+                var enddatedate = new Date(enddateyear, enddatemonth, enddateday);
+                return enddatedate.getTime() / 1000 + 86399; // Include last day of period.
+            }
+
+            function getduration() {
+                var durationnumber = parseInt($("input[name='duration\[number\]']").val());
+                var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
+                if ( isNaN(durationnumber) ) {
+                    return 0;
+                }
+                // Duration in seconds.
+                var duration = durationnumber * durationtimeunit;
+                return duration;
+            }
+
+            function getgap() {
+                var gapnumber = parseInt($("input[name='gap\[number\]']").val());
+                var gaptimeunit = parseInt($("select[name='gap\[timeunit\]']").val());
+                if ( isNaN(gapnumber) ) {
+                    gapnumber = 0;
+                }
+                // Gap in seconds.
+                var gap = gapnumber * gaptimeunit;
+                return gap;
+            }
+
+            function addDays(date, days) {
+                var result = new Date(date);
+                result.setDate(result.getDate() + days);
+                return result.getTime() / 1000;
             }
         };
 

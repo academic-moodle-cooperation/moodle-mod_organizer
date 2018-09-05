@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.5.1 (2018-09-05)
+------------------
+
+* [FIXED] #5721: Slot-creation: Error with daylight saving time
+
 3.5.0 (2018-08-10)
 ------------------
 

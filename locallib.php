@@ -146,7 +146,7 @@ function organizer_add_appointment_slots($data) {
     $startdate = $data->startdate;
     $enddate = $data->enddate + 86399;
 
-    for ($daydate = $startdate; $daydate <= $enddate; $daydate += 86400) {
+    for ($daydate = $startdate; $daydate <= $enddate; $daydate = strtotime('+1 day', $daydate)) {
 
         $weekday = date('N', $daydate) - 1;
         foreach ($data->newslots as $slot) {
@@ -309,6 +309,10 @@ function organizer_get_dayto($dayto, $dateday) {
     }
 
     return $date;
+}
+
+function organizer_add_day_to_date($date, $days) {
+
 }
 
 function organizer_add_event_slot($cmid, $slot, $userid = null, $eventid = null) {
