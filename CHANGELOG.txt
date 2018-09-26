@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.5.2 (2018-09-26)
+------------------
+
+* [FIXED] #5732: Creating a new slot or register for a new slot with new groupmode ends up with an error
+
 3.5.1 (2018-09-05)
 ------------------
 

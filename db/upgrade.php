@@ -579,7 +579,20 @@ function xmldb_organizer_upgrade($oldversion) {
         }
 
         upgrade_mod_savepoint(true, 2018062602, 'organizer');
+
     }
 
-        return true;
+    if ($oldversion < 2018081002) {
+
+        // Changing precision of field coursegroup on table organizer_slots to (10).
+        $table = new xmldb_table('organizer_slots');
+        $field = new xmldb_field('coursegroup',  XMLDB_TYPE_INTEGER, '10');
+        // Launch change of precision.
+        $dbman->change_field_precision($table, $field);
+
+    }
+
+    upgrade_mod_savepoint(true, 2018081002, 'organizer');
+
+    return true;
 }
