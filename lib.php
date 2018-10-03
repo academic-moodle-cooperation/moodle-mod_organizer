@@ -1509,7 +1509,7 @@ function organizer_change_event_instance($organizerid, $eventids = array()) {
 
     $organizer = $DB->get_record('organizer', array('id' => $organizerid));
 
-    $eventtitle = $organizer->name;
+    $eventtitle = organizer_filter_text($organizer->name);
     $eventdescription = $organizer->intro;
 
     if ($eventids) {
@@ -1544,7 +1544,6 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
             'text' => $intro,
             'format' => $organizer->introformat
     );
-    $event->courseid = $organizer->course;
     $event->groupid = $group;
     $event->modulename = 'organizer';
     $event->instance = $organizer->id;
@@ -1556,6 +1555,7 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
         $event->timestart = $timestart;
         $event->timesort = $timestart;
         $event->timeduration = 0;
+        $event->courseid = $organizer->course;
         $event->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $eventtitle;
         calendar_event::create($event, false);
         unset($event->id);
@@ -1590,7 +1590,6 @@ function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eve
             'text' => $intro,
             'format' => $organizer->introformat
     );
-    $event->courseid = $organizer->course;
     $data->groupid = $group;
     $data->modulename = 'organizer';
     $data->instance = $organizer->id;
