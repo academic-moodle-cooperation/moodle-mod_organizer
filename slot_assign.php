@@ -74,6 +74,7 @@ if (organizer_is_group_mode()) {
     $data->participant = $participantid;
     $data->group = false;
 }
+
 $sent = organizer_prepare_and_send_message($data, 'assign_notify_student'); // Message.
 if ($sent) {  // If slot not in the past.
     $redirectmsg = get_string('assignsuccess', 'organizer');

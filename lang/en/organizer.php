@@ -1157,3 +1157,6 @@ $string['teacherid_help'] = 'Select the trainer you want to lead the appointment
 
 $string['timeslot'] = 'Organizer Slot';
 $string['event'] = 'Calendar event';
+
+$string['configlocationslist'] = 'Locations for autocomplete field';
+$string['configlocationslist_desc'] = 'Each location has to be inserted in a separate row!';
