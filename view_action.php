@@ -147,7 +147,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
             );
             organizer_prepare_and_send_message($slot, 'register_notify_teacher:queue'); // Message.
             if ($group) {
-                      organizer_prepare_and_send_message($slot, 'group_registration_notify:student:queue');
+                organizer_prepare_and_send_message($slot, 'group_registration_notify:student:queue');
             }
         } else {
             $event = \mod_organizer\event\appointment_added::create(
@@ -158,7 +158,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
             );
             organizer_prepare_and_send_message($slot, 'register_notify_teacher:register'); // Message.
             if ($group) {
-                      organizer_prepare_and_send_message($slot, 'group_registration_notify:student:register');
+                organizer_prepare_and_send_message($slot, 'group_registration_notify:student:register');
             }
         }
         $event->trigger();

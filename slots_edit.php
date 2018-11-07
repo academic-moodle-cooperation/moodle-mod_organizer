@@ -73,7 +73,7 @@ $mform = new organizer_edit_slots_form(
 );
 
 if ($data = $mform->get_data()) {
-    $slotids = organizer_update_appointment_slot($data);
+    $slotids = organizer_update_slot($data);
 
     organizer_prepare_and_send_message($data, 'edit_notify_teacher');
     organizer_prepare_and_send_message($data, 'edit_notify_student'); // Message.

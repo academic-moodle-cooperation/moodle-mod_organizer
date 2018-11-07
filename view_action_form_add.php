@@ -87,13 +87,17 @@ class organizer_add_slots_form extends moodleform
             $locations = [];
         } else {
             $locations = explode("\n", $locations);
+            $locations = array_combine($locations, $locations);
+            $firstItem = array(null => get_string("choose"));
+            $locations = $firstItem + $locations;
         }
         $options = array(
                 'multiple' => false,
                 'tags' => true,
+                'noselectionstring' => get_string('choose'),
         );
         $mform->addElement('autocomplete', 'location', get_string('location', 'organizer'),
-                array_combine($locations, $locations), $options);
+                $locations, $options);
         $mform->setDefault('location', null);
         $mform->addRule('location', get_string('err_location', 'organizer'), 'required');
         $mform->addHelpButton('location', 'location', 'organizer');

@@ -590,9 +590,78 @@ function xmldb_organizer_upgrade($oldversion) {
         // Launch change of precision.
         $dbman->change_field_precision($table, $field);
 
+        upgrade_mod_savepoint(true, 2018081002, 'organizer');
     }
 
-    upgrade_mod_savepoint(true, 2018081002, 'organizer');
+    if ($oldversion < 2018081003) {
+
+        // Delete instance events where the underlaying module instances had been deleted.
+        $select = "select distinct(e.id) as id from {event} e left join {organizer} o ON e.instance = o.id
+                    where e.modulename = :modulename and e.eventtype = :eventtype and o.id is null;";
+        $parms = array('modulename' => 'organizer', 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE);
+        if ($ids = $DB->get_fieldset_sql($select, $parms)) {
+            list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+            $select = "id $insql";
+            $DB->delete_records_select('event', $select);
+        }
+
+        // Delete instance events where the timestart is 0.
+        $select = 'modulename = :modulename AND eventtype = :eventtype AND timestart = 0';
+        $parms = array('modulename' => 'organizer', 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE);
+        $DB->delete_records_select('event', $select, $parms);
+
+        // Replace existing slot events and appointment events of future slots by new programmed events.
+
+        // Delete old slot and appointment events.
+        $select = 'modulename = :modulename AND (eventtype = :eventtype1 OR eventtype = :eventtype2)';
+        $parms = array('modulename' => 'organizer', 'eventtype1' => ORGANIZER_CALENDAR_EVENTTYPE_SLOT,
+            'eventtype2' => ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT);
+        $DB->delete_records_select('event', $select, $parms);
+        $DB->set_field('organizer_slot_appointments', 'eventid', null);
+        $DB->set_field('organizer_slot_trainer', 'eventid', null);
+
+        include_once(dirname(__FILE__) . '/../locallib.php');
+
+        $now = time();
+
+        $params = array('now' => $now);
+        $query = "SELECT s.id, cm.id as cmid, o.nocalendareventslotcreation 
+                  FROM {organizer_slots} s 
+                  INNER JOIN {organizer} o ON s.organizerid = o.id 
+                  INNER JOIN {course_modules} cm ON o.id = cm.instance
+                  INNER JOIN {modules} m ON cm.module = m.id
+                  WHERE m.name = 'organizer' 
+                  AND s.starttime > :now";
+
+        $slots = $DB->get_records_sql($query, $params);
+
+        foreach ($slots as $slot) {
+            if ($apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id))) {
+                $appointment = new stdClass();
+                foreach ($apps as $app) {
+                    $eventid = organizer_add_event_appointment($slot->cmid, $app->id);
+                    $app->eventid = $eventid;
+                    $appointment->eventid = $eventid;
+                    $appointment->id = $app->id;
+                    $DB->update_record('organizer_slot_appointments', $appointment);
+                }
+                organizer_add_event_appointment_trainer($slot->cmid, $app);
+            } else {
+                if (!$slot->nocalendareventslotcreation) {
+                    $trainerslot = new stdClass();
+                    $slottrainers = $DB->get_records_select(
+                        'organizer_slot_trainer', 'slotid = :slotid', array('slotid' => $slot->id));
+                    foreach ($slottrainers as $trainer) {
+                        $trainerslot->id = $trainer->id;
+                        $trainerslot->eventid = organizer_add_event_slot($slot->cmid, $slot->id, $trainer->trainerid);
+                        $DB->update_record('organizer_slot_trainer', $trainerslot);
+                    }
+                }
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2018081003, 'organizer');
+    }
 
     return true;
 }
