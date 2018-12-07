@@ -590,9 +590,9 @@ function xmldb_organizer_upgrade($oldversion) {
         // Launch change of precision.
         $dbman->change_field_precision($table, $field);
 
+        upgrade_mod_savepoint(true, 2018081002, 'organizer');
     }
 
-    upgrade_mod_savepoint(true, 2018081002, 'organizer');
 
     return true;
 }
