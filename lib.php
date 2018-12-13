@@ -77,7 +77,7 @@ function organizer_add_instance($organizer) {
 
     organizer_grade_item_update($organizer);
 
-    organizer_change_event_instance($organizer->id);
+    organizer_change_event_instance($organizer);
 
     $_SESSION["organizer_new_instance"] = $organizer->id;
 
@@ -106,28 +106,35 @@ function organizer_update_instance($organizer) {
         $organizer->duedate = null;
     }
 
+    $newname = $organizer->name;
+    $oldname = $DB->get_field('organizer', 'name', array('id' => $organizer->id));
+
+    organizer_grade_item_update($organizer);
+
+    $DB->update_record('organizer', $organizer);
+
     if (isset($organizer->queue) && $organizer->queue == 0) {
         organizer_remove_waitingqueueentries($organizer);
     }
-
-    organizer_grade_item_update($organizer);
 
     $params = array('modulename' => 'organizer', 'instance' => $organizer->id,
         'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE);
 
     $query = 'SELECT id
-                    FROM {event}
-                    WHERE modulename = :modulename
-                    AND instance = :instance
-                    AND eventtype = :eventtype';
+              FROM {event}
+              WHERE modulename = :modulename
+              AND instance = :instance
+              AND eventtype = :eventtype';
 
     $eventids = $DB->get_fieldset_sql($query, $params);
 
-    $ok = $DB->update_record('organizer', $organizer);
+    organizer_change_event_instance($organizer, $eventids);
 
-    organizer_change_event_instance($organizer->id, $eventids);
+    if ($oldname != $newname) {
+        organizer_change_eventnames($organizer->id, $oldname, $newname);
+    }
 
-    return $ok;
+    return true;
 }
 
 /**
@@ -146,22 +153,24 @@ function organizer_delete_instance($id) {
     }
 
     $slots = $DB->get_records('organizer_slots', array('organizerid' => $id));
-
     foreach ($slots as $slot) {
+        $DB->delete_records('organizer_slot_trainer', array('slotid' => $slot->id));
         $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
-
         foreach ($apps as $app) {
             if (ORGANIZER_DELETE_EVENTS) {
                 $DB->delete_records('event', array('id' => $app->eventid));
+                $DB->delete_records('event', array('uuid' => $app->id,
+                    'modulename' => 'organizer', 'instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT));
             }
             $DB->delete_records('organizer_slot_appointments', array('id' => $app->id));
-        }
+        } // Foreach app.
 
         if (ORGANIZER_DELETE_EVENTS) {
-            $DB->delete_records('event', array('id' => $slot->eventid));
+            $DB->delete_records('event', array('uuid' => $slot->id,
+                'modulename' => 'organizer', 'instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_SLOT));
         }
         $DB->delete_records('organizer_slots', array('id' => $slot->id));
-    }
+    } // Foreach slot.
 
     if (ORGANIZER_DELETE_EVENTS) {
         $DB->delete_records('event', array(
@@ -599,62 +608,25 @@ function organizer_get_counters($organizer) {
     return $a;
 }
 
-function organizer_get_eventaction_slot_trainer($eventid) {
-    global $DB;
-
-    $slotid = $DB->get_field("event", "uuid", array("id" => $eventid));
-
-    $now = time();
-    $displayeventto = $now + EIGHTDAYS;
-
-    $slot = $DB->get_records_sql(
-        'SELECT * FROM {organizer_slots} INNER JOIN {organizer_slot_appointments} ON
-        {organizer_slots}.id = {organizer_slot_appointments}.slotid
-        WHERE {organizer_slot_appointments}.slotid = :slotid AND
-        {organizer_slots}.starttime > :now AND {organizer_slots}.starttime < :displayeventto',
-        array('slotid' => $slotid, 'now' => $now, 'displayeventto' => $displayeventto)
-    );
-
-    $appslot = reset($slot);
-
-    $slotstr = "";
-
-    if ($appslot) {
-        $a = new stdClass();
-        $a->date = userdate($appslot->starttime, get_string('fulldatetemplate', 'organizer'));
-        $a->time = userdate($appslot->starttime, get_string('timetemplate', 'organizer'));
-        $slotstr = get_string('mymoodle_app_slot', 'organizer', $a);
-    }
-
-    return $slotstr;
-}
-
-
 function organizer_get_eventaction_instance_trainer($organizer) {
 
     $a = organizer_get_counters($organizer);
-
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         if ($a->attended == 0) {
-            $str = get_string('mymoodle_registered_group_short', 'organizer', $a);
+            return get_string('mymoodle_registered_group_short', 'organizer', $a);
         } else {
-            $str = get_string('mymoodle_attended_group_short', 'organizer', $a);
+            return get_string('mymoodle_attended_group_short', 'organizer', $a);
         }
     } else {
         if ($a->attended == 0) {
-            $str = get_string('mymoodle_registered_short', 'organizer', $a);
+            return get_string('mymoodle_registered_short', 'organizer', $a);
         } else {
-            $str = get_string('mymoodle_attended_short', 'organizer', $a);
+            return get_string('mymoodle_attended_short', 'organizer', $a);
         }
     }
-
-    return $str;
 }
 
-
 function organizer_get_eventaction_instance_student($organizer) {
-
-    $str = "";
 
     $app = organizer_get_next_user_appointment($organizer);
     if ($app) {
@@ -678,8 +650,7 @@ function organizer_get_eventaction_instance_student($organizer) {
             }
         } else {
             $regslot = get_string('mymoodle_reg_slot', 'organizer');
-
-            $str .= " " . $regslot;
+            $str = " " . $regslot;
             if (isset($organizer->duedate)) {
                 $a = new stdClass();
                 $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
@@ -689,141 +660,12 @@ function organizer_get_eventaction_instance_student($organizer) {
                 } else {
                     $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
                 }
-
                 $str .= " " . $orgexpires;
-
             }
         }
     }
 
     return $str;
-}
-
-function organizer_get_eventaction_student($organizer) {
-    global $DB, $USER;
-
-    $eventstr = "";
-
-    if($app = organizer_get_last_user_appointment($organizer, $USER->id, false)) {
-        if (isset($app->attended) && (int) $app->attended === 1) {
-            $attended = "yes";
-        } else {
-            if (isset($app->attended) && (int) $app->attended === 0) {
-                $attended = "no";
-            } else {
-                if (!isset($app->attended)) {
-                    $attended = "notyet";
-                }
-            }
-        }
-        $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
-        $a = new stdClass();
-        $a->date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
-        $a->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-            $group = organizer_fetch_group($organizer);
-            $a->groupname = $group->name;
-        }
-        switch ($attended) {
-            case "yes":
-                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                    $str = get_string('mymoodle_completed_app_group', 'organizer', $a);
-                } else {
-                    $str = get_string('mymoodle_completed_app', 'organizer', $a);
-                }
-                $eventstr = $str . ("<br />(" . get_string('grade') . ": " .
-                                organizer_display_grade($organizer, $app->grade, $app->userid) . ")");
-                if ($app->allownewappointments) {
-                    $eventstr .= "<br />" . get_string('can_reregister', 'organizer');
-                }
-                break;
-            case "no":
-                if (isset($slot->locationlink) && $slot->locationlink != '') {
-                    $a->location = html_writer::link($slot->locationlink, $slot->location, array('target' => '_blank'));
-                } else {
-                    $a->location = $slot->location;
-                }
-                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                    if ($slot->starttime <= time()) {
-                        $str = get_string('mymoodle_missed_app_group', 'organizer', $a);
-                    } else {
-                        $str = get_string('mymoodle_pending_app_group', 'organizer', $a);
-                    }
-                } else {
-                    if ($slot->starttime <= time()) {
-                        $str = get_string('mymoodle_missed_app', 'organizer', $a);
-                    } else {
-                        $str = get_string('mymoodle_pending_app', 'organizer', $a);
-                    }
-                }
-                if ($app->allownewappointments) {
-                    $eventstr .= "<br />" . get_string('can_reregister', 'organizer');
-                }
-                if (isset($organizer->duedate)) {
-                    $a = new stdClass();
-                    $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
-                    $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
-                    if ($organizer->duedate > time()) {
-                        $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
-                    } else {
-                        $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
-                    }
-                    $eventstr .= " " . $orgexpires;
-                }
-                break;
-            case "notyet":
-                if (isset($slot->locationlink) && $slot->locationlink != '') {
-                    $a->location = html_writer::link($slot->locationlink, $slot->location, array('target' => '_blank'));
-                } else {
-                    $a->location = $slot->location;
-                }
-                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                    if ($slot->starttime <= time()) {
-                        $str = get_string('mymoodle_missed_app_group', 'organizer', $a);
-                    } else {
-                        $str = get_string('mymoodle_reg_slot_group', 'organizer', $a);
-                    }
-                } else {
-                    if ($slot->starttime <= time()) {
-                        $str = get_string('mymoodle_missed_app', 'organizer', $a);
-                    } else {
-                        $str = get_string('mymoodle_reg_slot', 'organizer', $a);
-                    }
-                }
-                $eventstr = $str;
-                break;
-        }  // End switch.
-
-    } else {  // No app.
-
-        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-            $a = new stdClass();
-            $group = organizer_fetch_group($organizer);
-            $a->groupname = $group->name;
-            $noregslot = get_string('mymoodle_no_reg_slot_group', 'organizer', $a);
-        } else {
-            $noregslot = get_string('mymoodle_no_reg_slot', 'organizer');
-        }
-
-        $eventstr = " " . $noregslot;
-
-        if (isset($organizer->duedate)) {
-            $a = new stdClass();
-            $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
-            $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
-            if ($organizer->duedate > time()) {
-                $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
-            } else {
-                $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
-            }
-
-            $eventstr .= " " . $orgexpires;
-        }
-
-    }  // End if app.
-
-    return $eventstr;
-
 }
 
 function organizer_fetch_group($organizer, $userid = null) {
@@ -1394,25 +1236,12 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
     global $DB;
 
     $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
-
     $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
-
-    $props = $event->properties();
-    if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
-        $name = organizer_get_eventaction_student($organizer);
+    $context = context_module::instance($cm->id, MUST_EXIST);
+    if (has_capability('mod/organizer:viewallslots', $context)) {
+        $name = organizer_get_eventaction_instance_trainer($organizer);
     } else {
-        if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {
-            $context = context_module::instance($cm->id, MUST_EXIST);
-            if (has_capability('mod/organizer:viewallslots', $context)) {
-                $name = organizer_get_eventaction_instance_trainer($organizer);
-            } else {
-                $name = organizer_get_eventaction_instance_student($organizer);
-            }
-        } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT) {
-            $name = organizer_get_eventaction_slot_trainer($props->id);
-        } else {
-            return false;
-        }
+        $name = organizer_get_eventaction_instance_student($organizer);
     }
 
     if ($name) {
@@ -1447,8 +1276,6 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
 function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
     global $USER, $DB;
 
-    $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
-
     $props = $event->properties();
 
     $organizer = $DB->get_record('organizer', array('id' => $props->instance), '*', IGNORE_MISSING);
@@ -1456,21 +1283,23 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
     if ($organizer == false) {
         return false;
     }
-    if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) { // Uuid is Userid of participant.
+    if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
         $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid), IGNORE_MISSING);
         if (!(instance_is_visible('organizer', $organizer) && $courseisvisible)) {
             return false;
         }
         $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
         $isvisible = $userid == $USER->id ? true : false;
-    } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT) {  // Eventtype slot: uuid is userid of teacher.
+    } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT) {
+        $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
         $context = context_module::instance($cm->id, MUST_EXIST);
         if (has_capability('mod/organizer:viewallslots', $context)) {
             $isvisible = true;
         } else {
             $isvisible = false;
         }
-    } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {  // Eventtype instance: uuid is instance-id.
+    } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {
+        $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
         $context = context_module::instance($cm->id, MUST_EXIST);
         if (!is_enrolled($context)) {
             return false;
@@ -1504,27 +1333,25 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
     return $isvisible;
 }
 
-function organizer_change_event_instance($organizerid, $eventids = array()) {
-    global $DB, $USER;
-
-    $organizer = $DB->get_record('organizer', array('id' => $organizerid));
+function organizer_change_event_instance($organizer, $eventids = array()) {
+    global $USER;
 
     $eventtitle = organizer_filter_text($organizer->name);
     $eventdescription = $organizer->intro;
 
     if ($eventids) {
-        $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : time();
+        $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : 0;
         $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
         return organizer_change_calendarevent(
             $eventids, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
-            $USER->id, $startdate, $duration, 0, $organizerid
+            $USER->id, $startdate, $duration, 0, $organizer->id
         );
     } else {
         $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : 0;
         $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
         return organizer_create_calendarevent(
             $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
-            $USER->id, $startdate, $duration, 0, $organizerid
+            $USER->id, $startdate, $duration, 0, $organizer->id
         );
     }
 }
@@ -1532,45 +1359,63 @@ function organizer_change_event_instance($organizerid, $eventids = array()) {
 function organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, $eventtype, $userid,
     $timestart, $duration, $group, $uuid
 ) {
-    global $CFG;
+    global $CFG, $DB;
 
     include_once($CFG->dirroot.'/calendar/lib.php');
 
     $event = new stdClass();
     $event->eventtype = $eventtype;
-    $event->type = CALENDAR_EVENT_TYPE_ACTION;
     $intro = strip_pluginfile_content($eventdescription);
     $event->description = array(
             'text' => $intro,
             'format' => $organizer->introformat
     );
-    $event->groupid = $group;
     $event->modulename = 'organizer';
     $event->instance = $organizer->id;
     $event->visible = 1;
-    $event->uuid = $uuid;
-    $event->userid = $userid;
+    if ($uuid) {
+        $event->uuid = $uuid;
+    }
 
     if ($eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {   // If type is instance.
-        $event->timestart = $timestart;
-        $event->timesort = $timestart;
-        $event->timeduration = 0;
-        $event->courseid = $organizer->course;
-        $event->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $eventtitle;
-        calendar_event::create($event, false);
-        unset($event->id);
-        $event->timestart = $timestart + $duration;
-        $event->timesort = $timestart + $duration;
-        $event->timeduration = 0;
-        $event->name = get_string('allowsubmissionstodate', 'organizer') . ": " . $eventtitle;
-        calendar_event::create($event, false);
-    } else {
+        if ($timestart) {
+            $event->type = CALENDAR_EVENT_TYPE_STANDARD;
+            $event->timestart = $timestart;
+            $event->timesort = $timestart;
+            $event->timeduration = 0;
+            $event->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $eventtitle;
+            $event->courseid = $organizer->course;
+            calendar_event::create($event, false);
+            unset($event->id);
+        }
+        if ($duration) {
+            $event->type = CALENDAR_EVENT_TYPE_ACTION;
+            $event->timestart = $timestart + $duration;
+            $event->timesort = $timestart + $duration;
+            $event->timeduration = 0;
+            $event->name = get_string('allowsubmissionstodate', 'organizer') . ": " . $eventtitle;
+            $event->courseid = $organizer->course;
+            calendar_event::create($event, false);
+        }
+        return false;
+    } else {  // Appointments or slots.
+        $event->type = CALENDAR_EVENT_TYPE_STANDARD;
+        if ($group) {
+            $event->groupid = $group;
+        }
+        $event->userid = $userid;
         $event->timestart = $timestart;
         $event->timesort = $timestart;
         $event->timeduration = $duration;
         $event->name = $eventtitle;
         calendar_event::create($event, false);
     }
+
+    // If new appointment: Delete already existent slot event, if there is one.
+    if ($uuid && $eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
+        $DB->delete_records('event', array ('modulename' => 'organizer', 'eventtype' => 'Slot', 'uuid' => $uuid));
+    }
+
     return $event->id;
 }
 
@@ -1581,43 +1426,79 @@ function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eve
 
     include_once($CFG->dirroot.'/calendar/lib.php');
 
-    $event = calendar_event::load($eventids[0]);
     $data = new stdClass();
     $data->eventtype = $eventtype;
-    $data->type = CALENDAR_EVENT_TYPE_ACTION;
     $intro = strip_pluginfile_content($eventdescription);
     $data->description = array(
             'text' => $intro,
             'format' => $organizer->introformat
     );
-    $data->groupid = $group;
-    $data->modulename = 'organizer';
-    $data->instance = $organizer->id;
-    $data->visible = 1;
-    $data->uuid = $uuid;
-    $event->userid = $userid;
+    if ($uuid) {
+        $data->uuid = $uuid;
+    }
 
-    if ($eventtype != ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE && count($eventids) == 1) {   // If not type instance.
+    if ($eventtype == ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE) {   // If event is type instance.
+        $event = calendar_event::load($eventids[0]);
+        if ($timestart == 0) {
+            $event->delete();
+        } else {
+            $data->timestart = $timestart;
+            $data->timesort = $timestart;
+            $data->timeduration = 0;
+            $data->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $eventtitle;
+            $event->update($data, false);
+        }
+        if (isset($eventids[1])) {
+            $event2 = calendar_event::load($eventids[1]);
+            if ($duration == 0) {
+                $event2->delete();
+            } else {
+                $timedue = (int)$timestart + (int)$duration;
+                $data->timestart = $timedue;
+                $data->timesort = $timedue;
+                $data->timeduration = 0;
+                $data->name = get_string('allowsubmissionstodate', 'organizer') . ": " . $eventtitle;
+                $event2->update($data, false);
+            }
+        }
+    } else { // If eventtype appointment or slot.
+        $event = calendar_event::load($eventids[0]);
+        if ($group) {
+            $data->groupid = $group;
+        }
+        $data->userid = $userid;
         $data->timestart = $timestart;
         $data->timesort = $timestart;
         $data->timeduration = $duration;
         $data->name = $eventtitle;
         $event->update($data, false);
-    } else {
-        $data->timestart = $timestart;
-        $data->timesort = $timestart;
-        $data->timeduration = 0;
-        $data->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $eventtitle;
-        $event->update($data, false);
-        $event2 = calendar_event::load($eventids[1]);
-        $timedue = (int)$timestart + (int)$duration;
-        $data->timestart = $timedue;
-        $data->timesort = $timedue;
-        $data->timeduration = 0;
-        $data->name = get_string('allowsubmissionstodate', 'organizer') . ": " . $eventtitle;
-        $event2->userid = $userid;
-        $event2->update($data, false);
     }
 
     return true;
+}
+
+function organizer_change_eventnames($organizerid, $oldname, $newname)
+{
+    global $DB;
+
+    $record = new stdClass();
+    $params = array('organizerid' => $organizerid, 'modulename' => 'organizer',
+        'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE);
+    $query = 'SELECT e.id, e.name, e.description
+			  FROM {event} e
+			  WHERE e.instance = :organizerid AND e.modulename = :modulename
+			  AND e.eventtype <> :eventtype';
+
+    $rs = $DB->get_recordset_sql($query, $params);
+    foreach ($rs as $recordset) {
+        $record->id = $recordset->id;
+        $name = $recordset->name;
+        $name = str_replace('/ ' . $oldname . ':', '/ ' . $newname . ':', $name);
+        $record->name = $name;
+        $description = $recordset->description;
+        $description = str_replace('/ ' . $oldname . ':', '/ ' . $newname . ':', $description);
+        $record->description = $description;
+        $DB->update_record('event', $record);
+    }
+    $rs->close();
 }
