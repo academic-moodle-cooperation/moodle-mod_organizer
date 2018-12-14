@@ -1,15 +1,12 @@
 CHANGELOG
 =========
 
-3.5.2 (2018-09-26)
+3.5.1 (2018-09-26)
 ------------------
 
-* [FIXED] #5732: Creating a new slot or register for a new slot with new groupmode ends up with an error
-
-3.5.1 (2018-09-05)
-------------------
-
+* [FIXED] #5272: COrganizer-created calendar events are partially buggy
 * [FIXED] #5721: Slot-creation: Error with daylight saving time
+* [FIXED] #5732: Creating a new slot or register for a new slot with new groupmode ends up with an error
 
 3.5.0 (2018-08-10)
 ------------------
