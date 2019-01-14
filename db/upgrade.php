@@ -660,7 +660,15 @@ function xmldb_organizer_upgrade($oldversion) {
             }
         }
 
-        upgrade_mod_savepoint(true, 2018081003, 'organizer');
+        if ($oldversion < 20181207000) {
+
+            // Change wrong version number.
+            $DB->execute("UPDATE {config_plugins} set version = '2019011400'  where plugin = 'mod_organizer' ");
+
+        }
+
+
+        upgrade_mod_savepoint(true, 2019011400, 'organizer');
     }
 
     return true;
