@@ -194,6 +194,7 @@ class organizer_print_slotdetail_form extends moodleform
         $table = new html_table();
         $table->id = 'print_preview';
         $table->attributes['class'] = 'flexible generaltable generalbox';
+        $table->attributes['width'] = '100%';
 
         if (!$columns) {
             return "<strong> ==> " . get_string('nosingleslotprintfields', 'organizer') . "</strong>";

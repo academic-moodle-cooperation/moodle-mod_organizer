@@ -221,7 +221,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
         }
     }
 
-    $columnwitdh = array();
+    $columnwidth = array();
     $titles = array();
     $columnformats = array();
 
@@ -249,43 +249,43 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
 
             switch ($column) {
                 case 'datetime':
-                    $columnwitdh[] = array('value' => 64, 'mode' => 'Relativ');
+                    $columnwidth[] = array('value' => 64, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
                 break;
                 case 'location':
-                    $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
+                    $columnwidth[] = array('value' => 48, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
                 break;
                 case 'teacher':
-                    $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
+                    $columnwidth[] = array('value' => 32, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
                 break;
                 case 'groupname':
-                    $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
+                    $columnwidth[] = array('value' => 32, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
                 break;
                 case 'participant':
-                    $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
+                    $columnwidth[] = array('value' => 32, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
                 break;
                 case 'email':
-                    $columnwitdh[] = array('value' => 32, 'mode' => 'Relativ');
+                    $columnwidth[] = array('value' => 32, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
                 break;
                 case 'idnumber':
-                    $columnwitdh[] = array('value' => 24, 'mode' => 'Relativ');
+                    $columnwidth[] = array('value' => 24, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
                 break;
                 case 'attended':
-                    $columnwitdh[] = array('value' => 12, 'mode' => 'Relativ');
+                    $columnwidth[] = array('value' => 12, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
                 break;
                 case 'grade':
-                    $columnwitdh[] = array('value' => 18, 'mode' => 'Relativ');
+                    $columnwidth[] = array('value' => 18, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
                 break;
                 case 'feedback':
-                    $columnwitdh[] = array('value' => 64, 'mode' => 'Relativ');
+                    $columnwidth[] = array('value' => 64, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 1, 'align' => 'L');
                 break;
             }
@@ -339,7 +339,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
     $registrationsfromdate = $registrationsfromdate ? userdate($registrationsfromdate) : get_string('pdf_notactive', 'organizer');
     $timedue = $timedue ? userdate($timedue) : get_string('pdf_notactive', 'organizer');
 
-    $mpdftable = new \mod_organizer\MTablePDF($orientation, $columnwitdh);
+    $mpdftable = new \mod_organizer\MTablePDF($orientation, $columnwidth);
     $mpdftable->SetTitle(
         get_string('modulename', 'organizer') . " " .
         $organizername . "-" . get_string('printout', 'organizer')
@@ -397,7 +397,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                             $name .= $conn . get_string('fullname_template', 'organizer', $a);
                             $conn = ", ";
                         }
-                        $row[] = array('data' => $name, 'rowspan' => $rowspan - 1);
+                        $row[] = array('data' => $name, 'rowspan' => $rowspan - 1, 'name' => 'teacher');
                     }
                 break;
                 case 'groupname':
@@ -420,10 +420,10 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     if (!$organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                         $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                     }
-                    $row[] = array('data' => $name, 'rowspan' => 0);
+                    $row[] = array('data' => $name, 'rowspan' => 0, 'name' => 'participant');
                 break;
                 case 'email':
-                    $row[] = array('data' => $entry->email, 'rowspan' => 0);
+                    $row[] = array('data' => $entry->email, 'rowspan' => 0, 'name' => 'email');
                 break;
                 case 'idnumber':
                     $idnumber = (isset($entry->idnumber) && $entry->idnumber !== '') ? $entry->idnumber : '';

@@ -58,7 +58,7 @@
 /* Fix here sn. */
 #organizer_main_cointainer div.forced_scroll {
     border: solid 1px #ddd;
-    overflow-x: scroll;
+    overflow-x: hidden;
     margin-left:10px;
     margin-right:10px;
     padding-top:2em;
