@@ -435,9 +435,12 @@ function organizer_add_event_appointment($cmid, $appointment) {
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $a->appwith = get_string('eventappwith:group', 'organizer');
         $a->with = get_string('eventwith', 'organizer');
-        $group = groups_get_group($appointment->groupid);
-        $groupid = $group->id;
-        $users = groups_get_members($groupid);
+        $users = groups_get_members(0);
+        if ($group = groups_get_group($appointment->groupid)) {
+            $groupid = $group->id;
+            $users = groups_get_members($groupid);
+            $groupname = $group->name;
+        }
         $memberlist = "";
         if ($slot->teachervisible) {
             $conn = "";
@@ -446,9 +449,9 @@ function organizer_add_event_appointment($cmid, $appointment) {
                 $memberlist .= $conn . organizer_get_name_link($trainerid);
                 $conn = ", ";
             }
-            $memberlist .= " {$group->name} ";
+            $memberlist .= " {$groupname} ";
         } else {
-            $memberlist = get_string('eventteacheranonymous', 'organizer') . " {$group->name} ";
+            $memberlist = get_string('eventteacheranonymous', 'organizer') . " {$groupname} ";
         }
         $a->with = $memberlist;
         $memberlist = "";
