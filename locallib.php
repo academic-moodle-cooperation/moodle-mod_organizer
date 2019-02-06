@@ -662,22 +662,25 @@ function organizer_update_slot($data) {
         $organizer = organizer_get_organizer();
         $organizerid = $organizer->id;
         foreach ($data->slots as $slotid) {
-            $slotmodified = $modified;
             $slot->id = $slotid;
             $appcount = organizer_count_slotappointments(array($slotid));
             $maxparticipants = $DB->get_field('organizer_slots', 'maxparticipants', array('id' => $slotid));
+            $slotmodified = (int)$maxparticipants != (int)$data->maxparticipants;
             // Make shure that a new maxparticipant value is not higher than the amount of the slot's bookings.
-            if ($data->mod_maxparticipants == 1 && $appcount > $data->maxparticipants) {
+            if ($modified && $data->mod_maxparticipants == 1 && $appcount > $data->maxparticipants) {
                 $slot->maxparticipants = $maxparticipants;
+                $slotmodified = false;
             // Check if there are waiting list entries in case of increased places.
-            } else if ($data->mod_maxparticipants == 1  && $data->maxparticipants > $appcount) {
+            } else if ($modified && $data->mod_maxparticipants == 1  && $data->maxparticipants > $appcount) {
                 $freeslots = (int)$data->maxparticipants - (int)$appcount;
                 if (organizer_hasqueue($organizerid)) {
                     for( $i = 0; $i<$freeslots; $i++ ) {
                         $slotx = new organizer_slot($slotid);
                         if (organizer_is_group_mode()) {
                             if ($next = $slotx->get_next_in_queue_group()) {
-                                if(organizer_register_appointment($slotid, $next->groupid, 0, true)) {
+                                // The moodlegroup groupmode does not allow more than one group, so following code is..
+                                // Not Used At the moment.
+                                if(organizer_register_appointment($slotid, $next->groupid, 0, true, null, true)) {
                                     organizer_delete_from_queue($slotid, null, $next->groupid);
                                 }
                             } else {
@@ -686,7 +689,7 @@ function organizer_update_slot($data) {
                         } else {
                             $next = $slotx->get_next_in_queue();
                             if ($next) {
-                                if (organizer_register_appointment($slotid, 0, $next->userid, true)) {
+                                if (organizer_register_appointment($slotid, 0, $next->userid, true, null, true)) {
                                     organizer_delete_from_queue($slotid, $next->userid);
                                 }
                             } else {
@@ -917,17 +920,18 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
     return $ok;
 }
 
-function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sendmessage = false, $teacherapplicantid = null) {
+function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sendmessage = false, $teacherapplicantid = null, $slotnotfull = false) {
     global $DB, $USER, $CFG;
 
     if (!$userid) {
         $userid = $USER->id;
     }
     $slot = new organizer_slot($slotid);
-    if ($slot->is_full()) {
-        return organizer_add_to_queue($slot, $groupid, $userid);
+    if (!$slotnotfull) {
+        if ($slot->is_full()) {
+            return organizer_add_to_queue($slot, $groupid, $userid);
+        }
     }
-
     $semaphore = sem_get($slotid);
     sem_acquire($semaphore);
 
