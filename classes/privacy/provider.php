@@ -135,6 +135,40 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
     }
 
     /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if ($context->contextlevel != CONTEXT_MODULE) {
+            return;
+        }
+
+        $params = [
+            'modulename' => 'organizer',
+            'contextid' => $context->id,
+            'contextlevel' => CONTEXT_MODULE
+        ];
+
+        $sql = "SELECT oa.userid, oa.applicantid, oa.teacherapplicantid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {organizer} o ON o.id = cm.instance
+                  JOIN {organizer_slots} os ON o.id = os.organizerid
+                  JOIN {organizer_appointments} oa ON oa.slotid = os.id
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
+        // Get all trainers and participants who have an appointment!
+        $userlist->add_from_sql('userid', $sql, $params);
+        // Get all participants who have applied for an appointment!
+        $userlist->add_from_sql('applicantid', $sql, $params);
+        // Get all trainers who have assigned participant(s) for an appointment!
+        $userlist->add_from_sql('teacherapplicantid', $sql, $params);
+    }
+
+    /**
      * Write out the user data filtered by contexts.
      *
      *
@@ -425,4 +459,17 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
         return;
 
     }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param   approved_userlist       $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+
+        // TODO.
+        return;
+
+    }
 }
+
