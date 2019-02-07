@@ -1,6 +1,18 @@
 CHANGELOG
 =========
 
+3.6.2 (2019-02-07)
+------------------
+
+* [FIXED] #5899: Organizer debug message if group is missing
+* [FIXED] #5749: Waiting list entries does not move up when the slot's participants maximum is increased
+* [FIXED] #5886: slots_print.php: Columns Email and Participants not sortable for the moment
+* [FIXED] #5878: Double scrollbar in print preview table
+* [FIXED] #5869: Too many calendar events for bookings when moodle group is involved
+* [FIXED] #5830: cronjob throws error when global search is activated
+* [FIXED] #5727: Only instance calendar events as course level events, deploy filters on event name
+* [FEATURE] #5756: Privacy API: Implement new provider (mandatory)
+
 3.6.1 (2018-12-07)
 ------------------
 
