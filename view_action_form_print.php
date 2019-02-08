@@ -206,7 +206,7 @@ class organizer_print_slots_form extends moodleform
             }
         }
 
-        $notsortable = array('teacher');
+        $notsortable = array('teacher', 'email', 'participant');
         $output .= '<div style="float: left">';
         $output .= $this->_create_preview_table($printcols, $notsortable);
         $output .= '</div><div style="width: 1em; float: left;"> </div></div>';
