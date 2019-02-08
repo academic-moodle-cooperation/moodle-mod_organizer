@@ -952,7 +952,7 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     $appointment = new stdClass();
     $appointment->slotid = $slotid;
     $appointment->userid = $userid;
-    $appointment->groupid = $groupid;
+    $appointment->groupid = 0;  // Group members get single events.
     $appointment->applicantid = $applicantid ? $applicantid : $userid;
     $appointment->notified = 0;
     $appointment->attended = null;
@@ -967,6 +967,8 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
 
     $appointment->eventid = organizer_add_event_appointment($cm->id, $appointment);
 
+    $appointment->groupid = $groupid;
+    
     if ($trainerevents) {
         organizer_add_event_appointment_trainer($cm->id, $appointment, $trainerid);
     }
