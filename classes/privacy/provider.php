@@ -36,6 +36,7 @@ use \core_privacy\local\request\writer;
 use \core_privacy\local\request\approved_contextlist;
 use \core_privacy\local\request\transform;
 use \core_privacy\local\request\helper;
+use \core_privacy\local\request\core_userlist_provider;
 
 /**
  * Privacy class for requesting user data.
