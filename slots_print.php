@@ -397,7 +397,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                             $name .= $conn . get_string('fullname_template', 'organizer', $a);
                             $conn = ", ";
                         }
-                        $row[] = array('data' => $name, 'rowspan' => $rowspan - 1);
+                        $row[] = array('data' => $name, 'rowspan' => $rowspan - 1, 'name' => 'teacher');
                     }
                 break;
                 case 'groupname':
@@ -420,10 +420,10 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     if (!$organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                         $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                     }
-                    $row[] = array('data' => $name, 'rowspan' => 0);
+                    $row[] = array('data' => $name, 'rowspan' => 0, 'name' => 'participant');
                 break;
                 case 'email':
-                    $row[] = array('data' => $entry->email, 'rowspan' => 0);
+                    $row[] = array('data' => $entry->email, 'rowspan' => 0, 'name' => 'email');
                 break;
                 case 'idnumber':
                     $idnumber = (isset($entry->idnumber) && $entry->idnumber !== '') ? $entry->idnumber : '';
