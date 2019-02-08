@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-3.6.2 (2019-02-07)
+3.6.0 (2019-02-08)
 ------------------
 
 * [FIXED] #5899: Organizer debug message if group is missing
@@ -12,10 +12,6 @@ CHANGELOG
 * [FIXED] #5830: cronjob throws error when global search is activated
 * [FIXED] #5727: Only instance calendar events as course level events, deploy filters on event name
 * [FEATURE] #5756: Privacy API: Implement new provider (mandatory)
-
-3.6.1 (2018-12-07)
-------------------
-
 * Moodle 3.6.1 compatible version
 
 3.5.2 (2018-09-26)

@@ -45,7 +45,7 @@ use \core_privacy\local\request\helper;
  * @copyright  2018 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements metadataprovider, pluginprovider, preference_provider, user_preference_provider, core_userlist_provider {
+class provider implements metadataprovider, pluginprovider, preference_provider, core_userlist_provider {
     /**
      * Provides meta data that is stored about a user with mod_organizer
      *
