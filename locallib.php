@@ -437,6 +437,7 @@ function organizer_add_event_appointment($cmid, $appointment) {
         $a->with = get_string('eventwith', 'organizer');
         $users = groups_get_members(0);
         $groupname = "";
+        $groupid = 0;
         if ($group = groups_get_group($appointment->groupid)) {
             $groupid = $group->id;
             $users = groups_get_members($groupid);
