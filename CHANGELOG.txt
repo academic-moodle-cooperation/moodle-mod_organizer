@@ -1,6 +1,15 @@
 CHANGELOG
 =========
 
+3.5.5 (2019-02-11)
+------------------
+
+* [FIXED] #5869: Too many calendar events for bookings when moodle group is involved
+* [FIXED] #5878: Double scrollbar in print preview table
+* [FIXED] #5886: slots_print.php: Columns Email and Participants not sortable for the moment.
+* [FIXED] #5749: Waiting list entries does not move up when the slot's participants maximum is increased
+* [FIXED] #5899: Organizer debug message if group is missing
+
 3.5.4 (2019-01-21)
 ------------------
 
