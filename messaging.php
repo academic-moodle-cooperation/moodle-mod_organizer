@@ -251,7 +251,7 @@ function organizer_send_message_from_trainer($receiver, $slot, $type, $digest = 
 
     $success = false;
 
-    if ($trainer = $DB->get_field('organizer_slot_teacher', 'trainerid', array('slotid' => $slot->slotid))) {
+    if ($trainer = $DB->get_field('organizer_slot_trainer', 'trainerid', array('slotid' => $slot->slotid))) {
         $success = organizer_send_message($trainer, $receiver, $slot, $type, $digest, $customdata);
     }
 
