@@ -1606,7 +1606,7 @@ function organizer_sortout_hiddenslots($slots) {
 }
 
 function organizer_get_user_identity($user) {
-    global $CFG;
+    global $CFG, $DB;
 
     $identity = "";
     $identityfields = explode(',', $CFG->showuseridentity);
@@ -1621,7 +1621,7 @@ function organizer_get_user_identity($user) {
         }
     }
     if (in_array('idnumber', $identityfields)) {
-        $identity = organizer_get_user_idnumber($id);
+        $identity = $DB->get_field_select('user', 'idnumber', "id = {$id}");
     } else {
         if (in_array('email', $identityfields)) {
             $identity = organizer_get_user_email($id);
