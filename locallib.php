@@ -715,7 +715,7 @@ function organizer_update_slot($data) {
                 }
             }
 
-            if ($slotmodified) {
+            if ($slotmodified  || $modified) {
                 $DB->update_record('organizer_slots', $slot);
             }
 
@@ -940,22 +940,6 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
     $semaphore = sem_get($slotid);
     sem_acquire($semaphore);
 
-    $ok = true;
-    $recipents = array();
-    if (organizer_is_group_mode()) {
-        $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
-        $generatetrainerevents = true;
-        foreach ($memberids as $memberid) {
-            $ok = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid, $teacherapplicantid, $generatetrainerevents);
-            $recipents[] = $memberid;
-            $generatetrainerevents = false;
-        }
-    } else {
-        $ok = organizer_register_single_appointment($slotid, $userid, 0, 0, $teacherapplicantid, true);
-        $recipents[] = $userid;
-    }
-
-    $DB->delete_records('event', array('modulename' => 'organizer', 'eventtype' => 'Slot', 'uuid' => $slotid));
 
     if ($sendmessage) {
         $mail = get_mailer();
@@ -970,20 +954,46 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
         } else {
             $mail->From = $CFG->noreplyaddress;
         }
-        foreach ($recipents as $userid) {
+    }
+
+    $ok = true;
+    if (organizer_is_group_mode()) {
+        $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
+        $generatetrainerevents = true;
+        foreach ($memberids as $memberid) {
+            if ($ok = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid,
+                $teacherapplicantid, $generatetrainerevents)) {
+                $address = $DB->get_field('user', 'email', array('id' => $memberid));
+                $mail->addAddress($address);
+                $mail->send();
+                $generatetrainerevents = false;
+            }
+        }
+    } else {
+        if ($ok = organizer_register_single_appointment($slotid, $userid, 0, 0,
+            $teacherapplicantid, true)) {
             $address = $DB->get_field('user', 'email', array('id' => $userid));
             $mail->addAddress($address);
+            $mail->send();
         }
-        $mail->send();
     }
+
+    $DB->delete_records('event', array('modulename' => 'organizer', 'eventtype' => 'Slot', 'uuid' => $slotid));
+
 
     sem_release($semaphore);
 
     return $ok;
 }
 
-function organizer_register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0, $teacherapplicantid = null, $trainerevents = false, $trainerid = null) {
+function organizer_register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0,
+                                               $teacherapplicantid = null, $trainerevents = false, $trainerid = null) {
     global $DB;
+
+
+    if ($alreadyapps = $DB->count_records('organizer_slot_appointments', array('slotid' => $slotid, 'userid' => $userid))) {
+        return false;
+    }
 
     list($cm, , $organizer, ) = organizer_get_course_module_data();
 
@@ -1596,7 +1606,7 @@ function organizer_sortout_hiddenslots($slots) {
 }
 
 function organizer_get_user_identity($user) {
-    global $CFG;
+    global $CFG, $DB;
 
     $identity = "";
     $identityfields = explode(',', $CFG->showuseridentity);
@@ -1611,7 +1621,7 @@ function organizer_get_user_identity($user) {
         }
     }
     if (in_array('idnumber', $identityfields)) {
-        $identity = organizer_get_user_idnumber($id);
+        $identity = $DB->get_field_select('user', 'idnumber', "id = {$id}");
     } else {
         if (in_array('email', $identityfields)) {
             $identity = organizer_get_user_email($id);
