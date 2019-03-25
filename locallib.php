@@ -436,8 +436,8 @@ function organizer_add_event_appointment($cmid, $appointment) {
         $a->appwith = get_string('eventappwith:group', 'organizer');
         $a->with = get_string('eventwith', 'organizer');
         $users = groups_get_members(0);
-        $groupid = 0;
         $groupname = "";
+        $groupid = 0;
         if ($group = groups_get_group($appointment->groupid)) {
             $groupid = $group->id;
             $users = groups_get_members($groupid);
@@ -672,10 +672,9 @@ function organizer_update_slot($data) {
             $maxparticipants = $DB->get_field('organizer_slots', 'maxparticipants', array('id' => $slotid));
             $slotmodified = (int)$maxparticipants != (int)$data->maxparticipants;
             // Make shure that a new maxparticipant value is not higher than the amount of the slot's bookings.
-            if ($modified && $data->mod_maxparticipants == 1 && $appcount > $data->maxparticipants) {
+            if ($data->mod_maxparticipants == 1 && $appcount > $data->maxparticipants) {
                 $slot->maxparticipants = $maxparticipants;
-                $slotmodified = false;
-            // Check if there are waiting list entries in case of increased places.
+                // Check if there are waiting list entries in case of increased places.
             } else if ($modified && $data->mod_maxparticipants == 1  && $data->maxparticipants > $appcount) {
                 $freeslots = (int)$data->maxparticipants - (int)$appcount;
                 if (organizer_hasqueue($organizerid)) {
@@ -937,6 +936,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
             return organizer_add_to_queue($slot, $groupid, $userid);
         }
     }
+
     $semaphore = sem_get($slotid);
     sem_acquire($semaphore);
 
@@ -1006,7 +1006,7 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     $appointment->eventid = organizer_add_event_appointment($cm->id, $appointment);
 
     $appointment->groupid = $groupid;
-
+    
     if ($trainerevents) {
         organizer_add_event_appointment_trainer($cm->id, $appointment, $trainerid);
     }
@@ -1197,7 +1197,7 @@ function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
                     $record = new stdClass();
                     $record->trainerid = $trainer;
                     $record->slotid = $slotid;
-                    // $record->eventid = $neweventid.
+                    //$record->eventid = $neweventid;
                     $DB->insert_record('organizer_slot_trainer', $record);
                 }
             }

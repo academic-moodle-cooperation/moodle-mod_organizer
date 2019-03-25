@@ -131,7 +131,7 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
 }
 
 function organizer_get_next_user_appointment($organizer, $userid = null) {
-    global $DB, $USER;
+    global $DB, $USER, $CFG;
 
     if ($userid == null) {
         $userid = $USER->id;
@@ -144,7 +144,7 @@ function organizer_get_next_user_appointment($organizer, $userid = null) {
     $todaymidnight = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        require_once('locallib.php');
+        require_once($CFG->dirroot . '/mod/organizer/locallib.php');
         if ($group = organizer_fetch_user_group($userid, $organizer->id)) {
             $paramssql = array('organizerid' => $organizer->id, 'groupid' => $group->id, 'todaymidnight' => $todaymidnight);
             $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
