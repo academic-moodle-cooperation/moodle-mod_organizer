@@ -1,9 +1,13 @@
 CHANGELOG
 =========
 
-3.5.5 (2019-02-11)
+3.5.5 (2019-03-27)
 ------------------
 
+* [FIXED] #6066: Trainer is able to assign more than one slot to specific student
+* [PULL REQUEST] github #49: fix tablename in organizer_send_message_from_trainer()
+* [FIXED] #6064: Error when choosing groupmode "use existing course groups" for an organizer instance
+* [FIXED] #6063: Function "organizer_fetch_user_group" not found
 * [FIXED] #5869: Too many calendar events for bookings when moodle group is involved
 * [FIXED] #5878: Double scrollbar in print preview table
 * [FIXED] #5886: slots_print.php: Columns Email and Participants not sortable for the moment.

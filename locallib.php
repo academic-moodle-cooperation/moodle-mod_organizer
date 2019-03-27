@@ -964,8 +964,10 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
             if ($ok = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid,
                 $teacherapplicantid, $generatetrainerevents)) {
                 $address = $DB->get_field('user', 'email', array('id' => $memberid));
-                $mail->addAddress($address);
-                $mail->send();
+                if ($mail) {
+                    $mail->addAddress($address);
+                    $mail->send();
+                }
                 $generatetrainerevents = false;
             }
         }
@@ -973,8 +975,10 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
         if ($ok = organizer_register_single_appointment($slotid, $userid, 0, 0,
             $teacherapplicantid, true)) {
             $address = $DB->get_field('user', 'email', array('id' => $userid));
-            $mail->addAddress($address);
-            $mail->send();
+            if ($mail) {
+                $mail->addAddress($address);
+                $mail->send();
+            }
         }
     }
 
@@ -990,12 +994,16 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
                                                $teacherapplicantid = null, $trainerevents = false, $trainerid = null) {
     global $DB;
 
+    list($cm, , $organizer, ) = organizer_get_course_module_data();
 
-    if ($alreadyapps = $DB->count_records('organizer_slot_appointments', array('slotid' => $slotid, 'userid' => $userid))) {
+    $params = array('organizerid' => $organizer->id, 'userid' => $userid);
+    $query = "SELECT COUNT(*) FROM {organizer_slot_appointments}
+                    INNER JOIN {organizer_slots} ON {organizer_slot_appointments}.slotid = {organizer_slots}.id
+                    WHERE {organizer_slots}.organizerid = :organizerid
+                    AND {organizer_slot_appointments}.userid = :userid";
+    if ($alreadyapps = $DB->count_records_sql($query, $params)) {
         return false;
     }
-
-    list($cm, , $organizer, ) = organizer_get_course_module_data();
 
     $appointment = new stdClass();
     $appointment->slotid = $slotid;
