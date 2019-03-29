@@ -1,6 +1,15 @@
 CHANGELOG
 =========
 
+3.6.1 (2019-03-29)
+------------------
+
+* [FIXED] #5899: Organizer debug message if group is missing
+* [FIXED] #6064: Error when choosing groupmode "use existing course groups" for an organizer instance
+* [FIXED] #6063: Function "organizer_fetch_user_group" not found
+* [FIXED] #6066: Trainer is able to assign more than one slot to specific student
+* [PULL REQUEST] github #49: fix tablename in organizer_send_message_from_trainer()
+
 3.6.0 (2019-02-08)
 ------------------
 
