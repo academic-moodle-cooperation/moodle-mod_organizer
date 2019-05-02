@@ -49,6 +49,9 @@ define(
             instance.displayallslots = param.displayallslots;  // Whether to display all days so far generated.
             instance.totalday = param.totalday;  // String for new slots amount status message for a day.
             instance.totaltotal = param.totaltotal;  // String for new slots amount total status message.
+            instance.relativedeadline = param.relativedeadline;  // Relative deadline for slot registrations in seconds.
+            instance.relativedeadlinestring = param.relativedeadlinestring;  // String warning message if slots had
+            // not been created due to registration deadline. "xxx" is replaced by the number of not created slots.
 
             if (instance.displayallslots == 0) {  // So the form is loaded initially.
 
@@ -111,8 +114,8 @@ define(
                 var valdayfrom = parseInt($("select[name='newslots\[" + i + "\]\[day\]']").val());
                 var valdayto = parseInt($("select[name='newslots\[" + i + "\]\[dayto\]']").val());
                 var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[from\]']").val());
-                // Proposal for day-to only if day-from has a selected value and day-to has no selected value yet.
-                if (valdayfrom != -1 && valdayto == -1) {
+                // Proposal for to-date's time when from-date's time has been changed.
+                if ((valdayfrom != -1 && valdayto == -1) || name.indexOf("[from]") != -1) {
                     var periodstartdate = getstartdate();
                     var periodenddate = getenddate();
                     for (var daydate = periodstartdate; daydate <= periodenddate; daydate = addDays(daydate * 1000, 1)) {
@@ -146,10 +149,13 @@ define(
 
             // Evaluate a certain row to make forecast.
             function evaluaterow(i) {
-                var slots = getslots(i);
+                var howmanyslots = getslots(i);
+                var slots = howmanyslots[0];
+                var slotsnotcreatedduetodeadline = howmanyslots[1];
                 var pax = getpax();
                 pax = pax * slots;
                 var forecaststring = instance.totalday.replace("xxx", slots.toString()).replace("yyy", pax.toString());
+                forecaststring += " (" + instance.relativedeadlinestring.replace("xxx", slotsnotcreatedduetodeadline.toString()) + ")";
                 $("span[name='forecastday_" + i + "']").html(forecaststring);
                 $("span[name='newslots_" + i + "']").html(slots.toString());
                 $("span[name='newpax_" + i + "']").html(pax.toString());
@@ -195,6 +201,7 @@ define(
                 var iteration = duration + getgap();
                 var iweekday, daydate, jsdaydate, datefrom, dateto, itime;
                 var slots = 0;
+                var slotsnotcreatedduetodeadline = 0;
                 // Iterate through days of period.
                 for (daydate = periodstartdate; daydate <= periodenddate; daydate = addDays(daydate * 1000, 1)) {
                     jsdaydate = new Date(daydate * 1000);
@@ -211,11 +218,18 @@ define(
                     if (datefrom < periodstartdate || datefrom > periodenddate) {
                         continue;
                     }
+                    var now = new Date();
+                    var date = now.getTime() / 1000;
                     for (itime = datefrom; itime + duration <= dateto; itime += iteration) {
-                        slots++;
+                        if (itime - instance.relativedeadline - date > 0) {
+                            slots++;
+                        } else {
+                            slotsnotcreatedduetodeadline++;
+                        }
                     }
                 }
-                return slots;
+                var returnvalues = [slots, slotsnotcreatedduetodeadline]
+                return returnvalues;
             }
 
             function getpax() {

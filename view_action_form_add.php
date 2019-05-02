@@ -240,6 +240,9 @@ class organizer_add_slots_form extends moodleform
             $params->totaltotal = get_string("totaltotal", "organizer");
             $params->totalday = get_string("totalday", "organizer");
         }
+        $params->relativedeadline = $organizer->relativedeadline;
+        $params->relativedeadlinestring = get_string('infobox_deadline_passed_slot', 'organizer');
+
         $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', array($params));
     }
 
