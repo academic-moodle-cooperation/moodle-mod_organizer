@@ -1000,7 +1000,8 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     $query = "SELECT COUNT(*) FROM {organizer_slot_appointments}
                     INNER JOIN {organizer_slots} ON {organizer_slot_appointments}.slotid = {organizer_slots}.id
                     WHERE {organizer_slots}.organizerid = :organizerid
-                    AND {organizer_slot_appointments}.userid = :userid";
+                    AND {organizer_slot_appointments}.userid = :userid
+                    AND {organizer_slot_appointments}.allownewappointments <> 1";
     if ($alreadyapps = $DB->count_records_sql($query, $params)) {
         return false;
     }
