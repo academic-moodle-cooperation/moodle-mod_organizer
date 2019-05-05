@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.6.2 (2019-05-059)
+------------------
+
+* [HOTFIX] #6106: Re-assign student to other slot not possible
+
 3.6.1 (2019-03-29)
 ------------------
 
