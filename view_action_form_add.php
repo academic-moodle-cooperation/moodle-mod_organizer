@@ -84,22 +84,23 @@ class organizer_add_slots_form extends moodleform
 
         $locations = get_config('mod_organizer', 'locations');
         if (!$locations) {
-            $locations = [];
+            $mform->addElement('text', 'location', get_string('location', 'organizer'), array('size' => '64'));
+            $mform->setType('location', PARAM_TEXT);
         } else {
             $locations = explode("\n", $locations);
             $locations = array_combine($locations, $locations);
             $firstItem = array(null => get_string("choose"));
             $locations = $firstItem + $locations;
-        }
-        $options = array(
+            $options = array(
                 'multiple' => false,
                 'tags' => true,
                 'noselectionstring' => get_string('choose'),
-        );
-        $mform->addElement('autocomplete', 'location', get_string('location', 'organizer'),
+            );
+            $mform->addElement('autocomplete', 'location', get_string('location', 'organizer'),
                 $locations, $options);
-        $mform->setType('location', PARAM_RAW);
-        $mform->setDefault('location', null);
+            $mform->setType('location', PARAM_RAW);
+            $mform->setDefault('location', null);
+        }
         $mform->addRule('location', get_string('err_location', 'organizer'), 'required');
         $mform->addHelpButton('location', 'location', 'organizer');
 
