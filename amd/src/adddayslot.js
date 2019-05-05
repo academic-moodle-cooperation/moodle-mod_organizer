@@ -155,7 +155,10 @@ define(
                 var pax = getpax();
                 pax = pax * slots;
                 var forecaststring = instance.totalday.replace("xxx", slots.toString()).replace("yyy", pax.toString());
-                forecaststring += " (" + instance.relativedeadlinestring.replace("xxx", slotsnotcreatedduetodeadline.toString()) + ")";
+                if (slotsnotcreatedduetodeadline > 0 ) {
+                    forecaststring += " (" + instance.relativedeadlinestring.replace("xxx",
+                        slotsnotcreatedduetodeadline.toString()) + ")";
+                }
                 $("span[name='forecastday_" + i + "']").html(forecaststring);
                 $("span[name='newslots_" + i + "']").html(slots.toString());
                 $("span[name='newpax_" + i + "']").html(pax.toString());
