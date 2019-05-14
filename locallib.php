@@ -1126,7 +1126,7 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
         $course = $DB->get_record('course', array('id' => $organizer->course), 'id', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
         if (!$participants = organizer_fetch_slotparticipants($app->slotid)) {
-            $trainers = organizer_get_slot_trainers($slotid);
+            $trainers = organizer_get_slot_trainers($app->slotid);
             foreach ($trainers as $trainer) {
                 if ($eventid = $DB->get_field('organizer_slot_trainer', 'eventid',
                     array('slotid' => $app->slotid, 'trainerid' => $trainer))) {
@@ -1136,11 +1136,16 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
                 // Create slot event per trainer if instance config "empty slot events" is on.
                 if (!isset($organizer->nocalendareventslotcreation) || !$organizer->nocalendareventslotcreation) {
                     $neweventid = organizer_add_event_slot($cm->id, $app->slotid, $trainer);
-                    $record = new stdClass();
-                    $record->trainerid = $trainer;
-                    $record->slotid = $app->slotid;
-                    $record->eventid = $neweventid;
-                    $DB->insert_record('organizer_slot_trainer', $record);
+                    if ($record = $DB->get_record('organizer_slot_trainer', array("slotid" => $app->slotid, "trainerid" => $trainer))){
+                        $record->eventid = $neweventid;
+                        $DB->update_record('organizer_slot_trainer', $record);
+                    } else {
+                        $record = new stdClass();
+                        $record->trainerid = $trainer;
+                        $record->slotid = $app->slotid;
+                        $record->eventid = $neweventid;
+                        $DB->insert_record('organizer_slot_trainer', $record);
+                    }
                 }
             }
         }
