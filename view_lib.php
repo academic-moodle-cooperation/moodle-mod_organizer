@@ -173,7 +173,7 @@ function organizer_generate_registration_status_view($params, $instance) {
     $columns = array_merge($columns, array('datetime', 'location', 'teacher', 'actions'));
 
     $align = array('center', 'left', 'center', 'left', 'left', 'left', 'center');
-    $sortable = array('datetime', 'status', 'group');
+    $sortable = array('status', 'group');
 
     $table = new html_table();
     $table->id = 'slot_overview';
@@ -774,8 +774,6 @@ function organizer_organizer_get_status_table_entries($params) {
         $orderby = "ORDER BY u.lastname $dir, u.firstname $dir, status ASC, u.idnumber ASC";
     } else if ($params['sort'] == 'id') {
         $orderby = "ORDER BY u.idnumber $dir, status ASC, u.lastname ASC, u.firstname ASC";
-    } else if ($params['sort'] == 'datetime') {
-        $orderby = "ORDER BY a2.starttime $dir, status ASC, u.lastname ASC, u.firstname ASC";
     } else {
         $orderby = "ORDER BY u.lastname ASC, u.firstname ASC, status ASC, u.idnumber ASC";
     }

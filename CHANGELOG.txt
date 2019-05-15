@@ -1,7 +1,6 @@
 CHANGELOG
 =========
 
-
 3.7.1 (2019-10-30)
 ------------------
 
@@ -44,6 +43,8 @@ is empty
 
 3.6.2 (2019-05-14)
 ------------------
+
+* [HOTFIX] #6114: After reregistration the trainers of the newly booked slot are wrongly added to the slot booked before
 
 * [HOTFIX] #6114: After reregistration the trainers of the newly booked slot are wrongly added to the slot booked before
 * [HOTFIX] #6106: Re-assign student to other slot not possible
