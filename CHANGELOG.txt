@@ -1,10 +1,9 @@
 CHANGELOG
 =========
 
-3.6.2 (2019-05-15)
+3.6.2 (2019-05-14)
 ------------------
 
-* [FEATURE] #5784: Make registration view sortable by time/date
 * [HOTFIX] #6114: After reregistration the trainers of the newly booked slot are wrongly added to the slot booked before
 * [HOTFIX] #6106: Re-assign student to other slot not possible
 
