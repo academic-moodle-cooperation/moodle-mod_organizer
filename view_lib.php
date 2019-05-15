@@ -811,9 +811,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         $orderby";
 
     $rs = $DB->get_records_sql($query, $par);
-var_dump($par);
-var_dump($query);
-die();
+
     return $rs;
 }
 
