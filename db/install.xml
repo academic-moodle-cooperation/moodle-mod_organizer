@@ -16,14 +16,15 @@
         <FIELD NAME="emailteachers" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="isgrouporganizer" NEXT="allowregistrationsfromdate"/>
         <FIELD NAME="allowregistrationsfromdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="emailteachers" NEXT="duedate"/>
         <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="allowregistrationsfromdate" NEXT="alwaysshowdescription"/>
-        <FIELD NAME="alwaysshowdescription" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="duedate" NEXT="relativedeadline"/> 
+        <FIELD NAME="alwaysshowdescription" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="duedate" NEXT="relativedeadline"/>
         <FIELD NAME="relativedeadline" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="alwaysshowdescription" NEXT="grade"/>
         <FIELD NAME="grade" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="relativedeadline" NEXT="queue"/>
         <FIELD NAME="queue" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="grade" NEXT="visibility" COMMENT="Flag to trigger waiting queues for slot appointments."/>
         <FIELD NAME="visibility" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="queue" NEXT="hidecalendar"/>
         <FIELD NAME="hidecalendar" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="visibility" NEXT="nocalendareventslotcreation"/>
-        <FIELD NAME="nocalendareventslotcreation" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="hidecalendar" NEXT="includetraineringroups"/>
-        <FIELD NAME="includetraineringroups" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="nocalendareventslotcreation" NEXT="singleslotprintfield0"/>
+        <FIELD NAME="nocalendareventslotcreation" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="hidecalendar" NEXT="locationfieldmandatory"/>
+        <FIELD NAME="locationfieldmandatory" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="nocalendareventslotcreation" NEXT="includetraineringroups"/>
+        <FIELD NAME="includetraineringroups" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="locationfieldmandatory" NEXT="singleslotprintfield0"/>
         <FIELD NAME="singleslotprintfield0" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="includetraineringroups" NEXT="singleslotprintfield1"/>
         <FIELD NAME="singleslotprintfield1" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield0" NEXT="singleslotprintfield2"/>
         <FIELD NAME="singleslotprintfield2" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield1" NEXT="singleslotprintfield3"/>

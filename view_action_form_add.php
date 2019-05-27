@@ -102,6 +102,9 @@ class organizer_add_slots_form extends moodleform
             $mform->setDefault('location', null);
         }
         $mform->addHelpButton('location', 'location', 'organizer');
+        if ($locationmandatory = get_config('organizer', 'locationmandatory')) {
+            $mform->addRule('location', null, 'required');
+        }
 
         $mform->addElement('text', 'locationlink', get_string('locationlink', 'organizer'), array('size' => '64'));
         $mform->setType('locationlink', PARAM_URL);

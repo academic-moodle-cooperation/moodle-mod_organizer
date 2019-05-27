@@ -1161,3 +1161,5 @@ $string['event'] = 'Calendar event';
 
 $string['configlocationslist'] = 'Locations for autocomplete field';
 $string['configlocationslist_desc'] = 'Each location has to be inserted in a separate row!';
+$string['locationmandatory'] = 'Slot Location entry is mandatory';
+$string['locationsettings'] = 'Slot location settings';

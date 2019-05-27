@@ -267,21 +267,32 @@ class organizer_edit_slots_form extends moodleform
 
         $locations = get_config('mod_organizer', 'locations');
         if (!$locations) {
-            $locations = [];
+            $group = array();
+            $group[] = $mform->createElement('text', 'location', get_string('location', 'organizer'), array('size' => '64'));
+            $mform->setType('location', PARAM_TEXT);
+            $group[] = $mform->createElement('static', '', '',
+                $this->_warning_icon('location', isset($defaults['location'])));
+            $mform->addGroup($group, 'locationgroup', get_string('location', 'organizer'), ORGANIZER_SPACING, false);
+            if ($locationmandatory = get_config('organizer', 'locationmandatory')) {
+                $mform->addRule('locationgroup', null, 'required');
+            }
         } else {
             $locations = explode("\n", $locations);
-        }
-        $options = array(
+            $options = array(
                 'multiple' => false,
                 'tags' => true,
-        );
-
-        $group = array();
-        $group[] = $mform->createElement('autocomplete', 'location', null,
+            );
+            $group = array();
+            $group[] = $mform->createElement('autocomplete', 'location', null,
                 array_combine($locations, $locations), $options);
-        $group[] = $mform->createElement('static', '', '', $this->_warning_icon('location', isset($defaults['location'])));
+            $group[] = $mform->createElement('static', '', '', $this->_warning_icon('location', isset($defaults['location'])));
 
-        $mform->addGroup($group, 'locationgroup', get_string('location', 'organizer'), ORGANIZER_SPACING, false);
+            $mform->addGroup($group, 'locationgroup', get_string('location', 'organizer'), ORGANIZER_SPACING, false);
+            if ($locationmandatory = get_config('organizer', 'locationmandatory')) {
+                $mform->addRule('locationgroup', null, 'required');
+            }
+        }
+
         $mform->addElement('hidden', 'mod_location', 0);
         $mform->setType('mod_location', PARAM_BOOL);
 
@@ -411,7 +422,10 @@ class organizer_edit_slots_form extends moodleform
             $errors['notificationtimegroup'] = get_string('err_posint', 'organizer');
         }
 
-        if ($data['mod_location'] != 0 && (!isset($data['location']) || $data['location'] === '')) {
+       $locationmandatory = get_config('organizer', 'locationmandatory');
+
+        if ($data['mod_location'] != 0 && (!isset($data['location']) || $data['location'] === '')
+            && $locationmandatory) {
             $errors['locationgroup'] = get_string('err_location', 'organizer');
         }
 

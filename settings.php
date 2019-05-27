@@ -111,7 +111,16 @@ if ($ADMIN->fulltree) {
                     get_string('configallowcreationofpasttimeslots', 'organizer'), 0, $yesno));
 
 
-    // Predefine locations for slots.
+    // Predefine locations for slots, make location mandatory.
+
+    $settings->add(new admin_setting_heading('organizerlocationsettings', '',
+        get_string('locationsettings', 'organizer')));
+
+    $settings->add(
+        new admin_setting_configcheckbox('organizer/locationmandatory',
+            get_string('locationmandatory', 'organizer'),
+            null, 0));
+
     $settings->add(new admin_setting_configtextarea('mod_organizer/locations', get_string('configlocationslist', 'organizer'),
             get_string('configlocationslist_desc', 'organizer'), '', PARAM_TEXT, '60', '8'));
 

@@ -663,5 +663,20 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018081003, 'organizer');
     }
 
+    if ($oldversion < 2019052700) {
+
+        // Define field locationfieldmandatory to be added to organizer.
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('locationfieldmandatory', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
+            'nocalendareventslotcreation');
+
+        // Conditionally launch add field locationfieldmandatory.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2019052700, 'organizer');
+    }
+
     return true;
 }
