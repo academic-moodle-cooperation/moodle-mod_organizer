@@ -124,9 +124,14 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtextarea('mod_organizer/locations', get_string('configlocationslist', 'organizer'),
             get_string('configlocationslist_desc', 'organizer'), '', PARAM_TEXT, '60', '8'));
 
+
     // User profile fields for printing single slots.
     $settings->add(new admin_setting_heading('organizersingleslotprintfields', '',
         get_string('singleslotprintfields', 'organizer')));
+
+    $settings->add(
+        new admin_setting_configcheckbox('organizer/enableprintslotuserfields',
+            get_string('enableprintslotuserfields', 'organizer'), null, ''));
 
     $profilefields = organizer_printslotuserfields();
 
@@ -135,4 +140,17 @@ if ($ADMIN->fulltree) {
                 new admin_setting_configselect('organizer/singleslotprintfield' . $i,
                         $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'), null, '', $profilefields));
     }
+
+    // Allowed User profile fields for printing single slots.
+    $settings->add(new admin_setting_heading('allowedprofilefieldsprint', '',
+        get_string('allowedprofilefieldsprint', 'organizer')));
+
+    $selectedprofilefields = [];
+    $selectedprofilefields = organizer_selectedprofilefields($selectedprofilefields);
+
+    $settings->add(
+        new admin_setting_configmultiselect('organizer/allowedprofilefieldsprint',
+           get_string('allowedprofilefieldsprint', 'organizer'), get_string('allowedprofilefieldsprint2', 'organizer'),
+            '', $selectedprofilefields));
+
 }
