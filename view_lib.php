@@ -812,7 +812,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id
         WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON g.id = a2.groupid
-        WHERE g.id $insql AND a2.id is not null
+        WHERE g.id $insql
         $orderby";
 
     $rs = $DB->get_records_sql($query, $par);
