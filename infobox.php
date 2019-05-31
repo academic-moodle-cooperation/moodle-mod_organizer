@@ -20,6 +20,7 @@
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author        Andreas Windbichler
  * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -41,11 +42,14 @@ function organizer_make_infobox($params, $organizer, $context) {
         $output = organizer_make_description_section($organizer, $params['id']);
     }
 
+    $jsparams->studentview = 0;
+
     switch($params['mode']) {
         case ORGANIZER_TAB_APPOINTMENTS_VIEW:
         break;
         case ORGANIZER_TAB_STUDENT_VIEW:
             $output .= organizer_make_myapp_section($params, $organizer, organizer_get_last_user_appointment($organizer));
+            $jsparams->studentview = 1;
         break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             $output .= organizer_make_reminder_section($params, $context);
@@ -63,7 +67,7 @@ function organizer_make_infobox($params, $organizer, $context) {
     user_preference_allow_ajax_update('mod_organizer_showfreeslotsonly', PARAM_BOOL);
     user_preference_allow_ajax_update('mod_organizer_showhiddenslots', PARAM_BOOL);
 
-    $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array());
+    $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams->studentview));
 
     return $output;
 }

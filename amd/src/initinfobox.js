@@ -32,11 +32,15 @@ define(
      * @constructor
      * @alias module:mod_organizer/initinfobox
      */
-        var Initinfobox = function() {};
+        var Initinfobox = function() {
+            this.student = 0;
+        };
 
         var instance = new Initinfobox();
 
-        instance.init = function () {
+        instance.init = function (param) {
+
+            instance.student = param;  // Is user student or not.
 
             // What happens when a view option checkbox is clicked or the filter field has been changed.
             function toggle_all_slots() {
@@ -55,9 +59,10 @@ define(
                 if (!showpastslots) {
                     tablebody.find('tr.past_due').hide();
                 }
-
                 if (showmyslotsonly) {
-                    tablebody.find('tr.not_my_slot').hide();
+                    if (!instance.student) {
+                        tablebody.find('tr.not_my_slot').hide();
+                    }
                 }
 
                 if (showfreeslotsonly) {
@@ -97,7 +102,9 @@ define(
                 toggle_info();
 
                 set_user_preference('mod_organizer_showhiddenslots', (showhiddenslots));
-                set_user_preference('mod_organizer_showmyslotsonly', (showmyslotsonly));
+                if (!instance.student){
+                    set_user_preference('mod_organizer_showmyslotsonly', (showmyslotsonly));
+                }
                 set_user_preference('mod_organizer_showfreeslotsonly', (showfreeslotsonly));
                 set_user_preference('mod_organizer_showpasttimeslots', (showpastslots));
 
