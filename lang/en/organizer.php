@@ -334,7 +334,7 @@ $string['infobox_app_occured'] = 'The appointment has already occurred.';
 $string['infobox_feedback_title'] = 'Feedback';
 $string['infobox_group'] = 'My group: {$a->groupname}';
 $string['infobox_deadlines_title'] = 'Deadlines';
-$string['infobox_deadline_passed_slot'] = 'xxx slots could not be created because registration deadline had been passed.';
+$string['infobox_deadline_passed_slot'] = 'xxx slots could not be created because registration deadline has passed.';
 
 $string['fullname_template'] = '{$a->firstname} {$a->lastname}';
 
