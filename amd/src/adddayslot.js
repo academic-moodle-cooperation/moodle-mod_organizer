@@ -152,10 +152,9 @@ define(
                 var howmanyslots = getslots(i);
                 var slots = howmanyslots[0];
                 var slotsnotcreatedduetodeadline = howmanyslots[1];
-                var finalslots = slots - slotsnotcreatedduetodeadline;
                 var pax = getpax();
-                pax = pax * finalslots;
-                var forecaststring = instance.totalday.replace("xxx", finalslots.toString()).replace("yyy", pax.toString());
+                pax = pax * slots;
+                var forecaststring = instance.totalday.replace("xxx", slots.toString()).replace("yyy", pax.toString());
                 if (slotsnotcreatedduetodeadline > 0 ) {
                     forecaststring += " (" + instance.relativedeadlinestring.replace("xxx",
                         slotsnotcreatedduetodeadline.toString()) + ")";

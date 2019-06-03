@@ -138,6 +138,8 @@ function organizer_add_new_slots($data) {
     $cm = get_coursemodule_from_id('organizer', $data->id);
     $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
 
+    $relativedeadline = $organizer->relativedeadline;
+
     if (!isset($data->newslots)) {
         return $count;
     }
@@ -145,6 +147,8 @@ function organizer_add_new_slots($data) {
     $collisionmessages = "";
     $startdate = $data->startdate;
     $enddate = $data->enddate + 86399;
+    $date = time();
+    $slotsnotcreatedduetodeadline = 0;
 
     for ($daydate = $startdate; $daydate <= $enddate; $daydate = strtotime('+1 day', $daydate)) {
 
@@ -186,62 +190,66 @@ function organizer_add_new_slots($data) {
 
             for ($time = $slot['datefrom']; $time + $data->duration <= $slot['dateto']; $time += ($data->duration + $data->gap)) {
 
-                $newslot->starttime = $time;
-                // NEW SLOTS ARE MADE HERE!
-                $newslot->id = $DB->insert_record('organizer_slots', $newslot);
+                if ($time - $relativedeadline - $date > 0) {
+                    $newslot->starttime = $time;
+                    // NEW SLOTS ARE MADE HERE!
+                    $newslot->id = $DB->insert_record('organizer_slots', $newslot);
 
-                $newtrainerslot = new stdClass();
-                $eventids = array();
-                foreach ($trainerids as $trainerid) {
-                    $newtrainerslot->slotid = $newslot->id;
-                    $newtrainerslot->trainerid = $trainerid;
-                    $newtrainerslot->id = $DB->insert_record('organizer_slot_trainer', $newtrainerslot);
-                    // If empty slots generate events -> an event per trainer is created.
-                    // And eventid is stored in table organizer_slot_trainer.
-                    if (!isset($organizer->nocalendareventslotcreation) || !$organizer->nocalendareventslotcreation) {
-                        $newtrainerslot->eventid = organizer_add_event_slot($data->id, $newslot, $trainerid);
-                        $DB->update_record('organizer_slots', $newslot);
-                        $DB->update_record('organizer_slot_trainer', $newtrainerslot);
-                        $eventids[] = $newtrainerslot->eventid;
-                    }
-                    $eventsandslots = organizer_load_eventsandslots($trainerid, $newslot->id, $newslot->starttime,
-                        $newslot->starttime + $newslot->duration);
-                    if ($collisions = organizer_check_collision($newslot->starttime,
-                        $newslot->starttime + $newslot->duration, $eventsandslots))
-                    {
-                        $head = true;
-                        $collisionmessage = "";
-                        foreach ($collisions as $collision) {
-                            if ($head) {
-                                $collisionmessage .= '<span class="error">' . get_string('collision', 'organizer') . '</span><br />';
-                                $head = false;
-                            }
-                            if ($collision->typ == 'slot') {
-                                $name = "<strong>" . get_string('timeslot', 'organizer') . "</strong> " .
-                                        get_string('location', 'organizer') . ': ' . $collision->name;
-                            } else {
-                                $name = "<strong>" . get_string('event', 'organizer') . " '" . $collision->name . "'</strong>";
-                            }
-                            $collisionmessage .= $name .
-                                    ' ' . get_string('from') . ': ' . userdate($collision->timestart,
-                                            get_string('fulldatetimetemplate', 'organizer')) .
-                                    ' ' . get_string('to') . ': ' . userdate($collision->timestart + $collision->timeduration,
-                                            get_string('fulldatetimetemplate', 'organizer')) .
-                                '<br />';
+                    $newtrainerslot = new stdClass();
+                    $eventids = array();
+                    foreach ($trainerids as $trainerid) {
+                        $newtrainerslot->slotid = $newslot->id;
+                        $newtrainerslot->trainerid = $trainerid;
+                        $newtrainerslot->id = $DB->insert_record('organizer_slot_trainer', $newtrainerslot);
+                        // If empty slots generate events -> an event per trainer is created.
+                        // And eventid is stored in table organizer_slot_trainer.
+                        if (!isset($organizer->nocalendareventslotcreation) || !$organizer->nocalendareventslotcreation) {
+                            $newtrainerslot->eventid = organizer_add_event_slot($data->id, $newslot, $trainerid);
+                            $DB->update_record('organizer_slots', $newslot);
+                            $DB->update_record('organizer_slot_trainer', $newtrainerslot);
+                            $eventids[] = $newtrainerslot->eventid;
                         }
+                        $eventsandslots = organizer_load_eventsandslots($trainerid, $newslot->id, $newslot->starttime,
+                            $newslot->starttime + $newslot->duration);
+                        if ($collisions = organizer_check_collision($newslot->starttime,
+                            $newslot->starttime + $newslot->duration, $eventsandslots))
+                        {
+                            $head = true;
+                            $collisionmessage = "";
+                            foreach ($collisions as $collision) {
+                                if ($head) {
+                                    $collisionmessage .= '<span class="error">' . get_string('collision', 'organizer') . '</span><br />';
+                                    $head = false;
+                                }
+                                if ($collision->typ == 'slot') {
+                                    $name = "<strong>" . get_string('timeslot', 'organizer') . "</strong> " .
+                                        get_string('location', 'organizer') . ': ' . $collision->name;
+                                } else {
+                                    $name = "<strong>" . get_string('event', 'organizer') . " '" . $collision->name . "'</strong>";
+                                }
+                                $collisionmessage .= $name .
+                                    ' ' . get_string('from') . ': ' . userdate($collision->timestart,
+                                        get_string('fulldatetimetemplate', 'organizer')) .
+                                    ' ' . get_string('to') . ': ' . userdate($collision->timestart + $collision->timeduration,
+                                        get_string('fulldatetimetemplate', 'organizer')) .
+                                    '<br />';
+                            }
 
-                        $collisionmessages .= $collisionmessage;
+                            $collisionmessages .= $collisionmessage;
+                        }
                     }
+                    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPSLOT) {
+                        organizer_create_coursegroup($newslot);
+                    }
+                    $count[] = $newslot->id;
+                } else {
+                    $slotsnotcreatedduetodeadline++;
                 }
-                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPSLOT) {
-                    organizer_create_coursegroup($newslot);
-                }
-                $count[] = $newslot->id;
             }
         } // End foreach slot
     } // End for week
 
-    return array($count, $collisionmessages);
+    return array($count, $slotsnotcreatedduetodeadline, $collisionmessages);
 }
 
 function organizer_get_slotstarttime($slotdate, $time) {
@@ -1025,7 +1033,7 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     $appointment->eventid = organizer_add_event_appointment($cm->id, $appointment);
 
     $appointment->groupid = $groupid;
-    
+
     if ($trainerevents) {
         organizer_add_event_appointment_trainer($cm->id, $appointment, $trainerid);
     }
