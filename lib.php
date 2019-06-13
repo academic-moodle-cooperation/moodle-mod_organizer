@@ -994,68 +994,70 @@ function organizer_cron() {
     $DB->execute("UPDATE {organizer_slot_appointments} SET notified = 1 WHERE id $insql", $inparams);
 
     $organizerconfig = get_config('organizer');
-
+    if ($organizerconfig->digest == 'never') {
+         return $success;
+    }
     $time = $organizerconfig->digest + mktime(0, 0, 0, date("m"), date("d"), date("Y"));
+    if (abs(time() - $time) >= 300) {
+        return $success;
+    }
 
-    if ($organizerconfig->digest != 'never' && (abs(time() - $time) < 300)) {
-        $params['tomorrowstart'] = mktime(0, 0, 0, date("m"), date("d") + 1, date("Y"));
-        $params['tomorrowend'] = mktime(0, 0, 0, date("m"), date("d") + 2, date("Y"));
+    $params['tomorrowstart'] = mktime(0, 0, 0, date("m"), date("d") + 1, date("Y"));
+    $params['tomorrowend'] = mktime(0, 0, 0, date("m"), date("d") + 2, date("Y"));
 
-        $slotsquery = "SELECT DISTINCT t.teacherid FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
-                WHERE s.starttime >= :tomorrowstart AND
-                s.starttime < :tomorrowend AND
-                s.notified = 0";
-
-        $trainerids = $DB->get_fieldset_sql($slotsquery, $params);
-
-        if (empty($trainerids)) {
-            $trainerids = array(0);
-        }
-
-        list($insql, $inparams) = $DB->get_in_or_equal($trainerids, SQL_PARAMS_NAMED);
-
-        $slotsquery = "SELECT s.*, t.trainerid
-            FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
+    $slotsquery = "SELECT DISTINCT t.teacherid FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
             WHERE s.starttime >= :tomorrowstart AND
             s.starttime < :tomorrowend AND
-            s.notified = 0 AND
-            t.trainerid $insql";
+            s.notified = 0";
 
-        $params = array_merge($params, $inparams);
+    $trainerids = $DB->get_fieldset_sql($slotsquery, $params);
 
-        $slots = $DB->get_records_sql($slotsquery, $params);
+    if (empty($trainerids)) {
+        $trainerids = array(0);
+    }
 
-        foreach ($trainerids as $trainerid) {
-            $digest = '';
+    list($insql, $inparams) = $DB->get_in_or_equal($trainerids, SQL_PARAMS_NAMED);
 
-            $found = false;
-            foreach ($slots as $slot) {
-                if ($slot->trainerid == $trainerid) {
-                    $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
-                    $time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-                    $digest .= "$time @ $slot->location\n";
-                    $found = true;
-                }
+    $slotsquery = "SELECT s.*, t.trainerid
+        FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
+        WHERE s.starttime >= :tomorrowstart AND
+        s.starttime < :tomorrowend AND
+        s.notified = 0 AND
+        t.trainerid $insql";
+
+    $params = array_merge($params, $inparams);
+
+    $slots = $DB->get_records_sql($slotsquery, $params);
+
+    foreach ($trainerids as $trainerid) {
+        $digest = '';
+
+        $found = false;
+        foreach ($slots as $slot) {
+            if ($slot->trainerid == $trainerid) {
+                $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
+                $time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
+                $digest .= "$time @ $slot->location\n";
+                $found = true;
             }
+        }
 
-            if (empty($slots)) {
-                $ids = array(0);
-            } else {
-                $ids = array_keys($slots);
+        if (empty($slots)) {
+            $ids = array(0);
+        } else {
+            $ids = array_keys($slots);
+        }
+
+        if ($found) {
+            $success &= $thissuccess = organizer_send_message(
+                intval($trainerid), intval($trainerid), reset($slots),
+                'appointment_reminder_teacher', $digest
+            );
+
+            if ($thissuccess) {
+                list($insql, ) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+                $DB->execute("UPDATE {organizer_slots} SET notified = 1 WHERE id $insql");
             }
-
-            if ($found) {
-                $success &= $thissuccess = organizer_send_message(
-                    intval($trainerid), intval($trainerid), reset($slots),
-                    'appointment_reminder_teacher', $digest
-                );
-
-                if ($thissuccess) {
-                    list($insql, ) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
-                    $DB->execute("UPDATE {organizer_slots} SET notified = 1 WHERE id $insql");
-                }
-            }
-
         }
     }
 
