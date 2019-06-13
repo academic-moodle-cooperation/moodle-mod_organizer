@@ -242,17 +242,17 @@ function organizer_generate_tab_row($params, $context) {
         $tabrow[] = new tabobject(ORGANIZER_TAB_APPOINTMENTS_VIEW, $targeturl, get_string('taballapp', 'organizer'));
     }
 
-    if (has_capability('mod/organizer:viewstudentview', $context, null, true)) {
-        $targeturl = new moodle_url('/mod/organizer/view.php', array('id' => $params['id'], 'mode' => ORGANIZER_TAB_STUDENT_VIEW));
-        $tabrow[] = new tabobject(ORGANIZER_TAB_STUDENT_VIEW, $targeturl, get_string('tabstud', 'organizer'));
-    }
-
     if (has_capability('mod/organizer:viewregistrations', $context, null, true)) {
         $targeturl = new moodle_url(
             '/mod/organizer/view.php',
             array('id' => $params['id'], 'mode' => ORGANIZER_TAB_REGISTRATION_STATUS_VIEW)
         );
         $tabrow[] = new tabobject(ORGANIZER_TAB_REGISTRATION_STATUS_VIEW, $targeturl, get_string('tabstatus', 'organizer'));
+    }
+
+    if (has_capability('mod/organizer:viewstudentview', $context, null, true)) {
+        $targeturl = new moodle_url('/mod/organizer/view.php', array('id' => $params['id'], 'mode' => ORGANIZER_TAB_STUDENT_VIEW));
+        $tabrow[] = new tabobject(ORGANIZER_TAB_STUDENT_VIEW, $targeturl, get_string('tabstud', 'organizer'));
     }
 
     if (count($tabrow) > 1) {
