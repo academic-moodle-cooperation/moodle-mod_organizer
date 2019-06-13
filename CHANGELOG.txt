@@ -1,6 +1,17 @@
 CHANGELOG
 =========
 
+3.7.0(2019-06-13)
+------------------
+
+*  Moodle 3.7.1 compatible version
+
+3.6.2 (2019-05-14)
+------------------
+
+* [HOTFIX] #6114: After reregistration the trainers of the newly booked slot are wrongly added to the slot booked before
+* [HOTFIX] #6106: Re-assign student to other slot not possible
+
 3.6.1 (2019-03-29)
 ------------------
 
