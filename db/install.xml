@@ -20,7 +20,7 @@
         <FIELD NAME="relativedeadline" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="alwaysshowdescription" NEXT="grade"/>
         <FIELD NAME="grade" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="relativedeadline" NEXT="queue"/>
         <FIELD NAME="queue" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="grade" NEXT="visibility" COMMENT="Flag to trigger waiting queues for slot appointments."/>
-        <FIELD NAME="visibility" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="queue" NEXT="hidecalendar"/>
+        <FIELD NAME="visibility" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" PREVIOUS="queue" NEXT="hidecalendar"/>
         <FIELD NAME="hidecalendar" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="visibility" NEXT="nocalendareventslotcreation"/>
         <FIELD NAME="nocalendareventslotcreation" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="hidecalendar" NEXT="locationfieldmandatory"/>
         <FIELD NAME="locationfieldmandatory" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="nocalendareventslotcreation" NEXT="includetraineringroups"/>
