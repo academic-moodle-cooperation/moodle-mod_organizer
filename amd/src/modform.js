@@ -51,7 +51,7 @@ define(
                 var groupmodeselect = $(e.target);
 
                 if (groupmodeselect.val() == 1) {
-                    $('#id_groupmode').val('2');
+                    $('#id_groupmode').val('1');
                     $('#id_groupingid').prop('disabled', false);
                     warningdiv.show();
                 } else {

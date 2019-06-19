@@ -197,11 +197,13 @@ class mod_organizer_mod_form extends moodleform_mod
         $mform->addHelpButton('singleslotprintfield0', 'singleslotprintfield0', 'organizer');
 
         $this->standard_coursemodule_elements();
+
         $warning = $mform->createElement(
             'static', '', '',
             '<span id="groupingid_warning">' . get_string('warning_groupingid', 'organizer') . '</span>'
         );
         $mform->insertElementBefore($warning, 'groupingid');
+
         $this->add_action_buttons();
 
         // Add warning popup/noscript tag, if grades are changed by user.
