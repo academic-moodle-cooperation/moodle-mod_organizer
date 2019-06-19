@@ -42,6 +42,7 @@ function organizer_make_infobox($params, $organizer, $context) {
         $output = organizer_make_description_section($organizer, $params['id']);
     }
 
+    $jsparams = new stdClass();
     $jsparams->studentview = 0;
 
     switch($params['mode']) {
