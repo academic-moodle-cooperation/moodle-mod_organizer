@@ -972,7 +972,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
             if ($ok = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid,
                 $teacherapplicantid, $generatetrainerevents)) {
                 $address = $DB->get_field('user', 'email', array('id' => $memberid));
-                if ($mail) {
+                if (isset($mail) && $mail) {
                     $mail->addAddress($address);
                     $mail->send();
                 }
@@ -983,7 +983,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
         if ($ok = organizer_register_single_appointment($slotid, $userid, 0, 0,
             $teacherapplicantid, true)) {
             $address = $DB->get_field('user', 'email', array('id' => $userid));
-            if ($mail) {
+            if (isset($mail) && $mail) {
                 $mail->addAddress($address);
                 $mail->send();
             }

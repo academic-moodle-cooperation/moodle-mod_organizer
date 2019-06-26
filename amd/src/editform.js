@@ -48,6 +48,7 @@ define(
                 var element = $(e.target);
                 var name = element.attr('name').split("[")[0];
                 if ($("#mform1 input[name^=mod_" + name + "]").val() != "1") {
+                    alert("hier" + name);
                     $("#mform1 input[name^=mod_" + name + "]").val("1");
                     set_icon_changed(name);
                 }
