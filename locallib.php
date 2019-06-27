@@ -1101,19 +1101,17 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
         // Events for the trainers will only be generated with the first participants registration.
         $generatetrainerevents = true;
         foreach ($memberids as $memberid) {
-            $app = organizer_get_last_user_appointment($slot->organizerid, $memberid);
-            $okregister = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid, null, $generatetrainerevents);
-            if (isset($app)) {
+            if ($app = organizer_get_last_user_appointment($slot->organizerid, $memberid)) {
                 $okunregister = organizer_unregister_single_appointment($app->slotid, $memberid);
             }
+            $okregister = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid, null, $generatetrainerevents);
             $generatetrainerevents = false;
         }
     } else {
-        $app = organizer_get_last_user_appointment($slot->organizerid);
-        $okregister = organizer_register_single_appointment($slotid, $USER->id, 0, 0, null,true);
-        if (isset($app)) {
+        if ($app = organizer_get_last_user_appointment($slot->organizerid)) {
             $okunregister = organizer_unregister_single_appointment($app->slotid, $USER->id);
         }
+        $okregister = organizer_register_single_appointment($slotid, $USER->id, 0, 0, null,true);
     }
 
     if (organizer_hasqueue($slot->organizerid)) {
