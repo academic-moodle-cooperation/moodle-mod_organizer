@@ -53,13 +53,14 @@ define(
                 if (isgrouporganizer.val() == 1) {
                     $('#id_groupmode').val('1');
                     $('#fitem_id_groupingid').show();
+                    $('#fitem_id_groupingid').css('display', '');
                     $('#id_groupingid').prop('disabled', false);
                     warningdiv.show();
-                    alert("abcdef");
                 } else {
                     isgrouporganizer.val('0');
                     $('#id_groupmode').val('0');
                     $('#fitem_id_groupingid').hide();
+                    $('#fitem_id_groupingid').css('display', 'none');
                     $('#id_groupingid').prop('disabled', 'disabled');
                     warningdiv.hide();
                 }
