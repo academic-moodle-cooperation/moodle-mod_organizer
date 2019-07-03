@@ -137,7 +137,7 @@ function organizer_add_new_slots($data) {
 
     $cm = get_coursemodule_from_id('organizer', $data->id);
     $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
-
+    $organizerconfig = get_config('organizer');
     $relativedeadline = $organizer->relativedeadline;
 
     if (!isset($data->newslots)) {
@@ -190,7 +190,7 @@ function organizer_add_new_slots($data) {
 
             for ($time = $slot['datefrom']; $time + $data->duration <= $slot['dateto']; $time += ($data->duration + $data->gap)) {
 
-                if ($time - $relativedeadline - $date > 0) {
+                if ($time - $relativedeadline - $date > 0 || $organizerconfig->allowcreationofpasttimeslots) {
                     $newslot->starttime = $time;
                     // NEW SLOTS ARE MADE HERE!
                     $newslot->id = $DB->insert_record('organizer_slots', $newslot);

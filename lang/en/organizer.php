@@ -386,6 +386,7 @@ $string['configabsolutedeadline'] = 'The default offset of the date and time sel
 $string['configrelativedeadline'] = 'The default time ahead of an appointment when the participants should be notified of it.';
 $string['allowcreationofpasttimeslots'] = 'Past time slots creation';
 $string['configallowcreationofpasttimeslots'] = 'Is it allowed to create past time slots?';
+$string['pasttimeslotstring'] = 'xxx slots could not be created because the creation of past time slots is not allowed.';
 $string['configdigest'] = 'Send summary of the next day appointments to the teacher.';
 $string['configemailteachers'] = 'Send E-mail notifications to teachers about registration status changes.';
 $string['configlocationlink'] = 'The link to a search engine used to show the way to the location. Place $searchstring in the URL where the query goes.';

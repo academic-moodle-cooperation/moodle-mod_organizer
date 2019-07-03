@@ -46,13 +46,17 @@ class organizer_add_slots_form extends moodleform
     private $weekdays;
 
     protected function definition() {
-        global $USER, $PAGE;
+        global $USER, $PAGE, $DB;
 
         $this->_init_arrays();
         $this->_add_scroll_fix();
 
         $mform = &$this->_form;
         $data = &$this->_customdata;
+
+        $cm = get_coursemodule_from_id('organizer', $data['id'], 0, false, MUST_EXIST);
+        $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+        $organizerconfig = get_config('organizer');
 
         $mform->addElement('hidden', 'id', $data['id']);
         $mform->setType('id', PARAM_INT);
@@ -82,7 +86,7 @@ class organizer_add_slots_form extends moodleform
         $mform->addHelpButton('visibility', 'visibility', 'organizer');
 
 
-        $locations = get_config('mod_organizer', 'locations');
+        $locations = $organizerconfig->locations;
         if (!$locations) {
             $mform->addElement('text', 'location', get_string('location', 'organizer'), array('size' => '64'));
             $mform->setType('location', PARAM_TEXT);
@@ -102,7 +106,7 @@ class organizer_add_slots_form extends moodleform
             $mform->setDefault('location', null);
         }
         $mform->addHelpButton('location', 'location', 'organizer');
-        if ($locationmandatory = get_config('organizer', 'locationmandatory')) {
+        if ($organizerconfig->locationmandatory) {
             $mform->addRule('location', null, 'required');
         }
 
@@ -137,9 +141,6 @@ class organizer_add_slots_form extends moodleform
         $mform->setDefault('maxparticipants', 1);
         $mform->addHelpButton('maxparticipants', 'maxparticipants', 'organizer');
 
-        global $DB;
-        $cm = get_coursemodule_from_id('organizer', $data['id'], 0, false, MUST_EXIST);
-        $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $mform->addElement('hidden', 'isgrouporganizer', '1');
             $mform->setType('isgrouporganizer', PARAM_BOOL);
@@ -245,6 +246,8 @@ class organizer_add_slots_form extends moodleform
         }
         $params->relativedeadline = $organizer->relativedeadline;
         $params->relativedeadlinestring = get_string('infobox_deadline_passed_slot', 'organizer');
+        $params->allowcreationofpasttimeslots =  $organizerconfig->allowcreationofpasttimeslots;
+        $params->pasttimeslotsstring = get_string('pasttimeslotstring', 'organizer');
 
         $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', array($params));
     }
