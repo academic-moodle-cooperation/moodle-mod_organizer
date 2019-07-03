@@ -55,6 +55,7 @@ define(
                     $('#fitem_id_groupingid').show();
                     $('#id_groupingid').prop('disabled', false);
                     warningdiv.show();
+                    alert("abcdef");
                 } else {
                     isgrouporganizer.val('0');
                     $('#id_groupmode').val('0');
