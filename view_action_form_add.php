@@ -86,7 +86,7 @@ class organizer_add_slots_form extends moodleform
         $mform->addHelpButton('visibility', 'visibility', 'organizer');
 
 
-        $locations = $organizerconfig->locations;
+        $locations = get_config('mod_organizer', 'locations');
         if (!$locations) {
             $mform->addElement('text', 'location', get_string('location', 'organizer'), array('size' => '64'));
             $mform->setType('location', PARAM_TEXT);
@@ -106,7 +106,7 @@ class organizer_add_slots_form extends moodleform
             $mform->setDefault('location', null);
         }
         $mform->addHelpButton('location', 'location', 'organizer');
-        if ($organizerconfig->locationmandatory) {
+        if ($locationmandatory = get_config('organizer', 'locationmandatory')) {
             $mform->addRule('location', null, 'required');
         }
 
