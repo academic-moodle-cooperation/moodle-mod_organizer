@@ -48,20 +48,38 @@ define(
             warningdiv.hide();
 
             function check_group_members_only(e) {
-                var groupmodeselect = $(e.target);
+                var isgrouporganizer = $(e.target);
 
-                if (groupmodeselect.val() == 1) {
+                if (isgrouporganizer.val() == 1) {
                     $('#id_groupmode').val('1');
+                    $('#fitem_id_groupingid').show();
                     $('#id_groupingid').prop('disabled', false);
                     warningdiv.show();
                 } else {
+                    isgrouporganizer.val('0');
                     $('#id_groupmode').val('0');
-                    $('#id_groupingid').prop('disabled', true);
+                    $('#fitem_id_groupingid').hide();
+                    $('#id_groupingid').prop('disabled', 'disabled');
                     warningdiv.hide();
                 }
             }
 
+            function check_group_mode(e) {
+                var groupmodeselect = $(e.target);
+
+                if (groupmodeselect.val() == 0) {
+                    $('#id_isgrouporganizer').val('0');
+                    $('#fitem_id_groupingid').hide();
+                    $('#id_groupingid').prop('disabled', 'disabled');
+                    warningdiv.hide();
+                } else {
+                    $('#id_isgrouporganizer').val('1');
+                    warningdiv.show();
+                }
+            }
+
             $('#id_isgrouporganizer').on('change', check_group_members_only);
+            $('#id_groupmode').on('change', check_group_mode);
 
             if (this.activateduedatecheckbox && !$('.error')) {
                 $('#id_duedate_enabled').click();
