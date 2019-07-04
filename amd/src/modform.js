@@ -51,14 +51,14 @@ define(
                 var isgrouporganizer = $(e.target);
 
                 if (isgrouporganizer.val() == 1) {
-                    $('#id_groupmode').val('1').change();
+                    $('#id_groupmode').val('1').click();
                     $('#fitem_id_groupingid').show();
                     $('#fitem_id_groupingid').css('display', '');
                     $('#id_groupingid').prop('disabled', false);
                     warningdiv.show();
                 } else {
                     isgrouporganizer.val('0');
-                    $('#id_groupmode').val('0').change();
+                    $('#id_groupmode').val('0').click();
                     $('#fitem_id_groupingid').hide();
                     $('#fitem_id_groupingid').css('display', 'none');
                     $('#id_groupingid').prop('disabled', 'disabled');
