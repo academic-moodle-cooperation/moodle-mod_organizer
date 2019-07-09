@@ -98,9 +98,8 @@ function organizer_generate_appointments_view($params, $instance) {
     $organizerexpired = isset($instance->organizer->duedate) && $instance->organizer->duedate - time() < 0;
 
     $output = organizer_generate_tab_row($params, $instance->context);
-    $output .= organizer_make_infobox($params, $instance->organizer, $instance->context);
+    $output .= organizer_make_infobox($params, $instance->organizer, $instance->context, $organizerexpired);
     $output .= organizer_begin_form($params);
-    $output .= organizer_generate_addslotbutton($params, $organizerexpired);
 
     $columns = array('select', 'singleslotcommands', 'datetime', 'location', 'participants', 'teacher', 'details');
     $align = array('center', 'center', 'left', 'left', 'left', 'left', 'center');
@@ -263,32 +262,6 @@ function organizer_generate_tab_row($params, $context) {
     } else {
         return ''; // If only one tab is enabled, hide the tab row altogether.
     }
-}
-
-function organizer_generate_addslotbutton($params, $organizerexpired) {
-
-    $output = '<div id="organizer_addbutton_div">';
-
-    $slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
-    $output .= '<input class="btn btn-primary" type="submit" value="' . get_string('btn_add', 'organizer') .
-    '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsaddurl . '\');" ' .
-    ($organizerexpired ? 'disabled ' : '') . '/>';
-
-    $output .= '</div>';
-
-    return $output;
-}
-
-function organizer_generate_filterfield() {
-
-    $output = '<span id="organizer_filterfield">' . get_string('filter') . ": ";
-
-    $output .= html_writer::tag('input', null,
-        array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
-
-    $output .= '</span>';
-
-    return $output;
 }
 
 function organizer_generate_actionlink_bar($context, $organizerexpired) {
@@ -523,7 +496,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
                 $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)));
             } else {
                 $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)),
-                        $DB->get_record('organizer_slots', array('id' => $evaldapp->slotid)));
+                    $DB->get_record('organizer_slots', array('id' => $evaldapp->slotid)));
             }
         } else {
             $slots = array();
@@ -546,6 +519,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
     if (count($slots) != 0) {
         $numshown = 0;
         foreach ($slots as $slot) {
+
             $slotx = new organizer_slot($slot);
             if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                       $alreadyinqueue = $slotx->is_group_in_queue();
@@ -568,6 +542,10 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
                     $row->attributes['class'] = '';
                 }
 
+            }
+
+            if ($slotx->has_participants()) {
+                $row->attributes['class'] .= 'registered';
             }
 
             $slotpastdue = $slotx->is_past_due();
@@ -931,6 +909,9 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                 $groupswitch = $entry->id;
                 $row = new html_table_row();
 
+                if ($entry->starttime) {
+                    $row->attributes['class'] = 'registered';
+                }
                 foreach ($columns as $column) {
                     switch ($column) {
                         case 'group':
@@ -1063,6 +1044,9 @@ function organizer_organizer_generate_registration_table_content($columns, $para
             }
 
             $row = new html_table_row();
+            if ($entry->starttime) {
+                $row->attributes['class'] = 'registered';
+            }
 
             foreach ($columns as $column) {
                 switch ($column) {

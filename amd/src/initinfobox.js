@@ -49,8 +49,15 @@ define(
                 var showmyslotsonly = $('#show_my_slots_only').is(':checked');
                 var showfreeslotsonly = $('#show_free_slots_only').is(':checked');
                 var showhiddenslots = $('#show_hidden_slots').is(':checked');
+                var showregistrationsonly = $('#show_registrations_only').is(':checked');
 
                 tablebody.find('tr').show();
+
+                if (showregistrationsonly) {
+                    tablebody.find('tr:not(.registered)').hide();
+                } else {
+                    tablebody.find('tr.registered').show();
+                }
 
                 if (!showhiddenslots) {
                     tablebody.find('tr:not(.info).unavailable').hide();
@@ -107,6 +114,7 @@ define(
                 }
                 set_user_preference('mod_organizer_showfreeslotsonly', (showfreeslotsonly));
                 set_user_preference('mod_organizer_showpasttimeslots', (showpastslots));
+                set_user_preference('mod_organizer_showregistrationsonly', (showregistrationsonly));
 
             }
 
@@ -139,8 +147,6 @@ define(
                         tablebody.find('tr.no_slots').show();
                     } else if (showpastslots && showmyslotsonly) {
                         tablebody.find('tr.no_my_slots').show();
-                    } else if (!showpastslots && showmyslotsonly) {
-                        tablebody.find('tr.no_due_my_slots').show();
                     } else {
                         tablebody.find('tr.no_due_slots').show();
                     }
@@ -167,6 +173,7 @@ define(
             $('#show_my_slots_only').on('click', toggle_all_slots);
             $('#show_free_slots_only').on('click', toggle_all_slots);
             $('#show_hidden_slots').on('click', toggle_all_slots);
+            $('#show_registrations_only').on('click', toggle_all_slots);
             $('.organizer_filtertable').on('keyup', toggle_all_slots);
 
             toggle_all_slots();

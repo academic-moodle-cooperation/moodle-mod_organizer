@@ -253,6 +253,11 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
             writer::with_context($context)->export_user_preference('mod_organizer', 'mod_organizer_showpasttimeslots', $value,
                 get_string('privacy:metadata:showpasttimeslots', 'mod_organizer'));
         }
+        $value = get_user_preferences('mod_organizer_showregistrationsonly', null, $userid);
+        if ($value !== null) {
+            writer::with_context($context)->export_user_preference('mod_organizer', 'mod_organizer_showregistrationsonly', $value,
+                get_string('privacy:metadata:showpasttimeslots', 'mod_organizer'));
+        }
     }
 
     /**

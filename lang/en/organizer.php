@@ -259,7 +259,7 @@ $string['btn_remind'] = 'Send reminder';
 $string['btn_assign'] = 'Assign slot';
 $string['btn_save'] = 'Save comment';
 $string['btn_send'] = 'Send';
-
+$string['btn_sendall'] = 'Send reminders to all students without an appointment';
 $string['downloadfile'] = 'Download file';
 $string['teacherinvisible'] = 'Teacher invisible';
 
@@ -321,7 +321,7 @@ $string['mymoodle_no_reg_slot_group'] = 'Your group {$a->groupname} has not regi
 $string['infobox_title'] = 'Infobox';
 $string['infobox_myslot_title'] = 'My slot';
 $string['infobox_mycomments_title'] = 'My comments';
-$string['infobox_messaging_title'] = 'Messaging options';
+$string['infobox_messaging_title'] = '';
 $string['infobox_deadlines_title'] = 'Deadlines';
 $string['infobox_legend_title'] = 'Legend';
 $string['infobox_organizer_expires'] = 'This organizer will expire on {$a->date} at {$a->time}.';
@@ -340,6 +340,7 @@ $string['fullname_template'] = '{$a->firstname} {$a->lastname}';
 
 $string['infobox_showfreeslots'] = 'Show free slots only';
 $string['infobox_showslots'] = 'Show past time slots';
+$string['infobox_showregistrationsonly'] = 'Show registrations only';
 $string['infobox_showlegend'] = 'Show legend';
 $string['infobox_hidelegend'] = 'Hide legend';
 $string['infobox_slotoverview_title'] = 'Slot overview';
@@ -1120,6 +1121,7 @@ $string['privacy:metadata:showhiddenslots'] = 'User preference: Shall slot table
 $string['privacy:metadata:showmyslotsonly'] = 'User preference: Shall slot table display my slots only.';
 $string['privacy:metadata:showfreeslotsonly'] = 'User preference: Shall slot table display free slots only.';
 $string['privacy:metadata:showpasttimeslots'] = 'User preference: Shall slot table display past slots as well.';
+$string['privacy:metadata:showregistrationsonly'] = 'User preference: Shall slot table display only registrations.';
 $string['privacy:metadata:organizerslotappointments'] = 'Table in which slot appointments are stored.';
 $string['privacy:metadata:organizerslotqueues'] = 'Table in which waiting queue entries for slots are stored.';
 $string['privacy:metadata:organizerslottrainer'] = 'Table in which the trainers of a slot are stored.';
@@ -1164,3 +1166,6 @@ $string['configlocationslist'] = 'Locations for autocomplete field';
 $string['configlocationslist_desc'] = 'Each location has to be inserted in a separate row!';
 $string['locationmandatory'] = 'Slot Location entry is mandatory';
 $string['locationsettings'] = 'Slot location settings';
+
+$string['filtertable'] = '\'Searching this table\'';
+$string['filtertable_help'] = 'Search these slots for mutual strings here.';

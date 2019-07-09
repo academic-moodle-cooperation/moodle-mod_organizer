@@ -34,11 +34,12 @@ require_once(dirname(__FILE__) . '/legend.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/slotlib.php');
 
-function organizer_make_infobox($params, $organizer, $context) {
+function organizer_make_infobox($params, $organizer, $context, $organizerexpired = null) {
     global $PAGE;
 
     $output = '';
     if ($organizer->alwaysshowdescription ||  time() > $organizer->allowregistrationsfromdate) {
+        // Module description, group and duedate informations.
         $output = organizer_make_description_section($organizer, $params['id']);
     }
 
@@ -47,37 +48,48 @@ function organizer_make_infobox($params, $organizer, $context) {
 
     switch($params['mode']) {
         case ORGANIZER_TAB_APPOINTMENTS_VIEW:
+            $output .= organizer_make_addslotbutton_section($params, $organizerexpired);
         break;
         case ORGANIZER_TAB_STUDENT_VIEW:
-            $output .= organizer_make_myapp_section($params, $organizer, organizer_get_last_user_appointment($organizer));
+            // My own booking information section.
+            $output .= organizer_make_myapp_section($params, $organizer,
+                organizer_get_last_user_appointment($organizer));
             $jsparams->studentview = 1;
         break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
-            $output .= organizer_make_reminder_section($params, $context);
+            // Button for sending reminders to all participants without an appointment.
+            $output .= organizer_make_sendreminder_section($params, $context);
         break;
         case ORGANIZER_ASSIGNMENT_VIEW:
         break;
         default:
             print_error("Wrong view mode: {$params['mode']}");
     }
-    $output .= organizer_make_slotoptions_section($params);
+    // Display messages here.
     $output .= organizer_make_messages_section($params);
+    // Display section with predefined filter view options like "hidden slots only" etc..
+    $output .= organizer_make_slotoptions_section($params);
+    // Display search field for fulltext search.
+    $output .= organizer_make_filtersection();
 
     user_preference_allow_ajax_update('mod_organizer_showpasttimeslots', PARAM_BOOL);
     user_preference_allow_ajax_update('mod_organizer_showmyslotsonly', PARAM_BOOL);
     user_preference_allow_ajax_update('mod_organizer_showfreeslotsonly', PARAM_BOOL);
     user_preference_allow_ajax_update('mod_organizer_showhiddenslots', PARAM_BOOL);
+    user_preference_allow_ajax_update('mod_organizer_showregistrationsonly', PARAM_BOOL);
 
     $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams->studentview));
 
     return $output;
 }
 function organizer_make_section($name, $content, $hidden = false) {
-    $output = '<div id="' . $name . '_box" class="block_course_overview block"' . ($hidden ? ' style="display: none;"' : '') . '>';
     if ($name) {
-        $output .= '<div id="' . $name . '_header" class="header">';
-        $output .= '<div class="title"><h2>' . get_string("{$name}_title", 'organizer') . '</h2></div>';
-        $output .= '</div>';
+        if ($name != 'infobox_messages') {
+            $output = '<div id="' . $name . '_box" class="block_course_overview block"' .
+                ($hidden ? ' style="display: none;"' : '') . '>';
+            $output .= '<div id="' . $name . '_header" class="header">';
+            $output .= '<div class="title"><h2>' . get_string("{$name}_title", 'organizer') . '</h2></div></div>';
+        }
     }
     $output .= '<div id="' . $name . '_content" class="content">';
     $output .= $content;
@@ -112,13 +124,12 @@ function organizer_make_messages_section($params) {
         return '';
     }
 }
-function organizer_make_reminder_section($params, $context) {
+function organizer_make_sendreminder_section($params, $context) {
     global $OUTPUT;
     if (has_capability("mod/organizer:sendreminders", $context, null, true)) {
         $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id']));
-        $output = '<div name="button_bar" class="buttons mdl-align">';
-        $output .= get_string('remindall_desc', 'organizer') . '<br />';
-        $output .= $OUTPUT->single_button($sendurl, get_string("btn_send", 'organizer'), 'post');
+        $output = '<div name="button_bar" class="organizer_addbutton_div">';
+        $output .= $OUTPUT->single_button($sendurl, get_string("btn_sendall", 'organizer'), 'post');
         $output .= '</div>';
         return organizer_make_section('infobox_messaging', $output);
     } else {
@@ -194,10 +205,12 @@ function organizer_make_myapp_section($params, $organizer, $app) {
     return organizer_make_section('infobox_myslot', $output);
 }
 function organizer_make_slotoptions_section($params) {
+
     $output = '<div>';
 
     $displaymyslotsonly = $displayhiddenslots = $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW;
     $displayfreeslots = $displaypastslots = $params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW;
+    $displayregistrationsonly = true;
 
     $pref = get_user_preferences('mod_organizer_showmyslotsonly', false);
     $output .= '<span' . ($displaymyslotsonly ? '' : ' style="display: none;" ') . '>' .
@@ -225,10 +238,46 @@ function organizer_make_slotoptions_section($params) {
     $output .= '<span' . ($displaypastslots ? '' : ' style="display: none;" ') . '>' .
                 '<input type="checkbox" id="show_past_slots" ' .
                 ($pref ? 'checked="true" ' : '') . ' /> ' .
-                get_string('infobox_showslots', 'organizer') . '</span>';
+                get_string('infobox_showslots', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
 
-    $output .= organizer_generate_filterfield();
+    $pref = get_user_preferences('mod_organizer_showregistrationsonly', true);
+    $output .= '<span' . ($displayregistrationsonly ? '' : ' style="display: none;" ') . '>' .
+        '<input type="checkbox" id="show_registrations_only" ' .
+        ($pref ? 'checked="true" ' : '') . ' /> ' .
+        get_string('infobox_showregistrationsonly', 'organizer') . '</span>';
+
     $output .= '</div>';
-    $output .= '<div class="clearer">&nbsp;</div>';
+
     return organizer_make_section('infobox_slotoverview', $output);
 }
+
+function organizer_make_filtersection() {
+    global $OUTPUT;
+
+    $output = '<p class="organizer_filterblock">';
+    $output .= '<span id="organizer_filterfield">' . get_string('search') .
+        $OUTPUT->help_icon('filtertable', 'organizer', '');
+    $output .= html_writer::tag('input', null,
+        array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
+    $output .= '</span>';
+    $output .= '</p>';
+    $output .= '<div class="clearer">&nbsp;</div>';
+
+    return $output;
+}
+
+function organizer_make_addslotbutton_section($params, $organizerexpired) {
+
+    $output = '<div id="organizer_addbutton_div">';
+
+    $slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
+    $output .= '<input class="btn btn-primary" type="submit" value="' . get_string('btn_add', 'organizer') .
+        '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsaddurl . '\');" ' .
+        ($organizerexpired ? 'disabled ' : '') . '/>';
+
+    $output .= '</div>';
+
+    return $output;
+}
+
+

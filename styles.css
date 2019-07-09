@@ -154,10 +154,6 @@
     color: red;
 }
 
-#organizer_filterfield {
-    padding-left: 2em;
-}
-
 #organizer_addbutton_div{
     margin-top: 0.5em;
     margin-bottom: 0.7em;
@@ -165,4 +161,12 @@
 
 #slot_overview th {
     background-color: inherit;
+}
+
+.organizer_filterblock {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
 }
