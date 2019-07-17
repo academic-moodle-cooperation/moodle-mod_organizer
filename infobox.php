@@ -240,7 +240,7 @@ function organizer_make_slotoptions_section($params) {
                 ($pref ? 'checked="true" ' : '') . ' /> ' .
                 get_string('infobox_showslots', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
 
-    $pref = get_user_preferences('mod_organizer_showregistrationsonly', true);
+    $pref = get_user_preferences('mod_organizer_showregistrationsonly', false);
     $output .= '<span' . ($displayregistrationsonly ? '' : ' style="display: none;" ') . '>' .
         '<input type="checkbox" id="show_registrations_only" ' .
         ($pref ? 'checked="true" ' : '') . ' /> ' .
