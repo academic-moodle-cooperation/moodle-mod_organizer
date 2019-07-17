@@ -98,8 +98,8 @@ function organizer_generate_appointments_view($params, $instance) {
     $organizerexpired = isset($instance->organizer->duedate) && $instance->organizer->duedate - time() < 0;
 
     $output = organizer_generate_tab_row($params, $instance->context);
-    $output .= organizer_make_infobox($params, $instance->organizer, $instance->context, $organizerexpired);
     $output .= organizer_begin_form($params);
+    $output .= organizer_make_infobox($params, $instance->organizer, $instance->context, $organizerexpired);
 
     $columns = array('select', 'singleslotcommands', 'datetime', 'location', 'participants', 'teacher', 'details');
     $align = array('center', 'center', 'left', 'left', 'left', 'left', 'center');
