@@ -83,19 +83,22 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     return $output;
 }
 function organizer_make_section($name, $content, $hidden = false) {
+    $output = "";
     if ($name) {
         if ($name != 'infobox_messages') {
             $output = '<div id="' . $name . '_box" class="block_course_overview block"' .
                 ($hidden ? ' style="display: none;"' : '') . '>';
-            $output .= '<div id="' . $name . '_header" class="header">';
-            $output .= '<div class="title"><h2>' . get_string("{$name}_title", 'organizer') . '</h2></div></div>';
+            $output .= '<div id="' . $name . '_header" class="header"><div class="title"><h2>'
+                . get_string("{$name}_title", "organizer") . '</h2></div></div>';
+            $output .= '</div>';
         }
     }
     $output .= '<div id="' . $name . '_content" class="content">';
     $output .= $content;
-    $output .= '</div></div>';
+    $output .= '</div>';
     return $output;
 }
+
 function organizer_add_message_icon($message) {
     if (strpos($message, 'warning') !== false) {
         return organizer_get_icon('message_warning', get_string('Warning', 'organizer'));
