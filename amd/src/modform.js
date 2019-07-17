@@ -56,8 +56,7 @@ define(
                     $('#fitem_id_groupingid').css('display', '');
                     $('#id_groupingid').prop('disabled', false);
                     warningdiv.show();
-                } else {
-                    isgrouporganizer.val('0');
+                } else if(isgrouporganizer.val() == 0) {
                     $('#id_groupmode').val('0').click();
                     $('#fitem_id_groupingid').hide();
                     $('#fitem_id_groupingid').css('display', 'none');
@@ -74,7 +73,7 @@ define(
                     $('#fitem_id_groupingid').hide();
                     $('#id_groupingid').prop('disabled', 'disabled');
                     warningdiv.hide();
-                } else {
+                } else if(isgrouporganizer.val() == 1) {
                     $('#id_isgrouporganizer').val('1');
                     warningdiv.show();
                 }
