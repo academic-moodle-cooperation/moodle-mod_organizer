@@ -64,7 +64,7 @@ if ($data = $mform->get_data()) {  // When page is called the first time (=empty
     if (isset($data->addday)) {  // Additional slot fields are to be displayed.
         organizer_display_form($mform, get_string('title_add', 'organizer'));
     } else {  // Submit button was pressed and submitted form data has no errors.
-        list($slotids, $slotsnotcreatedduetodeadline, $messages) = organizer_add_new_slots($data);
+        list($slotids, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $messages) = organizer_add_new_slots($data);
         $finalslots = count($slotids);
         if ($finalslots == 0) {
             $redirecturl->param('messages[]', 'message_warning_no_slots_added');

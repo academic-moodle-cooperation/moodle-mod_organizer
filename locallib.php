@@ -149,6 +149,7 @@ function organizer_add_new_slots($data) {
     $enddate = $data->enddate + 86399;
     $date = time();
     $slotsnotcreatedduetodeadline = 0;
+    $slotsnotcreatedduetopasttime = 0;
 
     for ($daydate = $startdate; $daydate <= $enddate; $daydate = strtotime('+1 day', $daydate)) {
 
@@ -190,7 +191,11 @@ function organizer_add_new_slots($data) {
 
             for ($time = $slot['datefrom']; $time + $data->duration <= $slot['dateto']; $time += ($data->duration + $data->gap)) {
 
-                if ($time - $relativedeadline - $date > 0 || $organizerconfig->allowcreationofpasttimeslots) {
+                if ($time - $date < $relativedeadline && $time - $date > 0 ) {
+                    $slotsnotcreatedduetodeadline++;
+                } else if ($time - $date < 0 && $organizerconfig->allowcreationofpasttimeslots == false) {
+                    $slotsnotcreatedduetopasttime++;
+                } else {
                     $newslot->starttime = $time;
                     // NEW SLOTS ARE MADE HERE!
                     $newslot->id = $DB->insert_record('organizer_slots', $newslot);
@@ -242,14 +247,12 @@ function organizer_add_new_slots($data) {
                         organizer_create_coursegroup($newslot);
                     }
                     $count[] = $newslot->id;
-                } else {
-                    $slotsnotcreatedduetodeadline++;
                 }
             }
         } // End foreach slot
     } // End for week
 
-    return array($count, $slotsnotcreatedduetodeadline, $collisionmessages);
+    return array($count, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $collisionmessages);
 }
 
 function organizer_get_slotstarttime($slotdate, $time) {
