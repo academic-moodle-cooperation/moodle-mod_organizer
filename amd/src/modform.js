@@ -52,15 +52,22 @@ define(
 
                 if (isgrouporganizer.val() == 1) {
                     $('#id_groupmode').val('1').click();
+                    $('#fitem_id_groupingid').removeAttr('hidden');
                     $('#fitem_id_groupingid').show();
-                    $('#fitem_id_groupingid').css('display', '');
-                    $('#id_groupingid').prop('disabled', false);
+                    $('#fitem_id_groupingid').find().each(function () {
+                        $(this).css('display', 'block');
+                        $(this).removeAttr('hidden');
+                    });
+                    $('#id_groupingid').removeAttr('disabled');
                     warningdiv.show();
                 } else if(isgrouporganizer.val() == 0) {
                     $('#id_groupmode').val('0').click();
-                    $('#fitem_id_groupingid').hide();
-                    $('#fitem_id_groupingid').css('display', 'none');
-                    $('#id_groupingid').prop('disabled', 'disabled');
+                    $('#fitem_id_groupingid').prop('hidden', true);
+                    $('#fitem_id_groupingid').find().each(function () {
+                        $(this).css('display', 'none');
+                        $(this).prop('hidden', true);
+                    });
+                    $('#id_groupingid').prop( "disabled", true );
                     warningdiv.hide();
                 }
             }

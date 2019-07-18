@@ -757,7 +757,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
     $par = array_merge($par, $inparams);
 
     $query = "SELECT DISTINCT
-        a2.id AS appid, g.id, g.name,
+        g.id, g.name, a2.id AS appid,
         CASE
             WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 0
                 THEN " . ORGANIZER_APP_STATUS_ATTENDED . "
@@ -1031,7 +1031,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                     }
 
                     $cell->style .= ' vertical-align: middle;';
-                }
+                }  // Foreach column.
                 $rows[] = $row;
             } else {  // Groupswitch.
                continue;
