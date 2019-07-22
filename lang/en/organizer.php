@@ -175,8 +175,8 @@ $string['err_comments'] = 'You must enter a description!';
 $string['visibility'] = 'Visibility of members - presetting';
 $string['visibility_help'] = 'Definition of the default visibility option with which a new slot will be created.<br/><b>Anonymous:</b> The members of this slot are always invisible to all.<br/><b>Visible:</b> All members of this slot are always visible to all.<br/><b>Only visible to slot members:</b> Only slot members can see each other.';
 $string['remindall_desc'] = 'Send reminders to all students without an appointment';
-$string['infobox_showmyslotsonly'] = 'Show my slots only';
-$string['infobox_showhiddenslots'] = 'Show hidden slots';
+$string['infobox_showmyslotsonly'] = 'My slots';
+$string['infobox_showhiddenslots'] = 'Hidden slots';
 $string['th_datetime'] = 'Date & time';
 $string['th_duration'] = 'Duration';
 $string['th_location'] = 'Location';
@@ -338,9 +338,9 @@ $string['infobox_deadline_passed_slot'] = 'xxx slots could not be created becaus
 
 $string['fullname_template'] = '{$a->firstname} {$a->lastname}';
 
-$string['infobox_showfreeslots'] = 'Show free slots only';
-$string['infobox_showslots'] = 'Show past time slots';
-$string['infobox_showregistrationsonly'] = 'Show registrations only';
+$string['infobox_showfreeslots'] = 'Free slots';
+$string['infobox_showslots'] = 'Past time slots';
+$string['infobox_showregistrationsonly'] = 'Booked slots';
 $string['infobox_showlegend'] = 'Show legend';
 $string['infobox_hidelegend'] = 'Hide legend';
 $string['infobox_slotoverview_title'] = 'Slot overview';
