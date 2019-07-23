@@ -1,9 +1,12 @@
 CHANGELOG
 =========
 
-3.7.0 (2019-07-22)
+3.7.0 (2019-07-23)
 ------------------
 
+* [FIXED] #6186: Debug message registration view when first column not unique id
+* [FIXED] #6211: SLOTS PRINT Print Preview: Cell-lines not visible anymore, table does not scroll to the right i
+content is overflowing, table does not use the full width that is usable
 * [FIXED] #6210: Add slots: The "Required" icon at the trainer option should be removed
 * [FIXED] #6191: Adding/Editing a new organizer instance: new groupmodes are not selectable
 * [FIXED] #6190: Disarranged appointment view
