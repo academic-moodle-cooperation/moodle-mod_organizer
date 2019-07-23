@@ -756,7 +756,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
     $par = array('now1' => time(), 'now2' => time(), 'organizerid' => $organizer->id);
     $par = array_merge($par, $inparams);
 
-    $query = "SELECT DISTINCT CONCAT(g.id, COALESCE(gm.id, 0)) AS mainid,
+    $query = "SELECT DISTINCT CONCAT(COALESCE(gm.id, 0), g.id) AS mainid,
         g.id, g.name, a2.id AS appid,
         CASE
             WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 0
