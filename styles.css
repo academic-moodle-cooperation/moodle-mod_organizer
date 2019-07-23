@@ -46,7 +46,7 @@
 }
 
 #organizer_main_cointainer fieldset.preview {
-    width: 97.3%;
+    width: 100%;
 }
 
 #organizer_main_cointainer div.datapreviewtitle{
@@ -57,8 +57,6 @@
 
 /* Fix here sn. */
 #organizer_main_cointainer div.forced_scroll {
-    border: solid 1px #ddd;
-    overflow-x: hidden;
     margin-left:10px;
     margin-right:10px;
     padding-top:2em;
@@ -66,11 +64,14 @@
 
 #organizer_main_cointainer div.forced_scroll table {
     min-width: 1024px;
+    width: 97%;
     margin: 1em;
 }
 
 #organizer_main_cointainer div.forced_scroll td {
     white-space: nowrap;
+    border: 1px solid #BBB !important;
+    border-collapse: collapse;
 }
 
 #organizer_main_cointainer table.legend td {
@@ -112,6 +113,10 @@
 #organizer_main_cointainer table.print-preview td {
     border: 1px solid #BBB !important;
     border-collapse: collapse;
+}
+
+#organizer_main_cointainer table.print-preview {
+    width: 100%;
 }
 
 #organizer_main_cointainer table.coloredrows th {
