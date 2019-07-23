@@ -756,7 +756,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
     $par = array('now1' => time(), 'now2' => time(), 'organizerid' => $organizer->id);
     $par = array_merge($par, $inparams);
 
-    $query = "SELECT DISTINCT
+    $query = "SELECT DISTINCT CONCAT(g.id, COALESCE(gm.id, 0)) AS mainid,
         g.id, g.name, a2.id AS appid,
         CASE
             WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 0
@@ -779,6 +779,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         a2.slotid, a2.allownewappointments, a2.teacherapplicantid, a2.teacherapplicanttimemodified
 
         FROM {groups} g
+        INNER JOIN {groups_members} gm ON g.id = gm.groupid 
         LEFT JOIN
         (SELECT
         a.id, a.groupid, a.allownewappointments, s.id as slotid, s.starttime, s.location,
