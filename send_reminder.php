@@ -78,15 +78,18 @@ if ($recipient != null) {
 
     $entries = organizer_organizer_get_status_table_entries(array('sort' => ''));
 
-    // Filter all not registered and not attended.
-    foreach ($entries as $entry) {
-        if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED
-            || $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP
-        ) {
-            $counter++;
-            $recipients[] = $entry;
+    if ($entries->valid()) {
+        // Filter all not registered and not attended.
+        foreach ($entries as $entry) {
+            if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED
+                || $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP
+            ) {
+                $counter++;
+                $recipients[] = $entry;
+            }
         }
     }
+    $entries->close();
 }
 
 

@@ -513,7 +513,7 @@ function organizer_add_event_appointment($cmid, $appointment) {
 }
 
 function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid = null) {
-    global $DB;
+    global $DB, $USER;
 
     if (is_number($appointment)) {
         $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $appointment));
@@ -523,6 +523,8 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
     $course = $DB->get_record('course', array('id' => $cm->course));
     $slot = $DB->get_record('organizer_slots', array('id' => $appointment->slotid));
     $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
+
+    $stringman = get_string_manager();
 
     $a = new stdClass();
 
@@ -539,34 +541,34 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
     }
     $a->description = $slot->comments;
 
-    // Calendar events for trainers info fields.
-
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $a->appwith = get_string('eventappwith:group', 'organizer');
-        $a->with = get_string('eventwith', 'organizer');
-        $group = groups_get_group($appointment->groupid);
-        $groupid = $group->id;
-        $users = groups_get_members($groupid);
-        $memberlist = "";
-        foreach ($users as $user) {
-            $memberlist .= organizer_get_name_link($user->id) . ", ";
-        }
-        $memberlist = trim($memberlist, ", ");
-        $memberlist .= " {$group->name} ";
-        $a->participants = $memberlist;
-    } else {
-        $a->appwith = get_string('eventappwith:single', 'organizer');
-        $a->with = get_string('eventwith', 'organizer');
-        $a->participants = organizer_get_users_of_slot($slot->id);
-    }
-
-    $eventtitle = get_string('eventtitle', 'organizer', $a);
-    $eventdescription = get_string('eventtemplatewithoutlinks', 'organizer', $a);
 
     if (!$trainerid) {
         // Create or transform to appointment events for the slot for each trainer.
         $trainers = organizer_get_slot_trainers($slot->id);
         foreach ($trainers as $trainerid) {
+            // Use the trainer's language.
+            $trainerlang = $DB->get_field('user', 'lang', array('id' => $trainerid));
+            // Calendar events for trainers info fields.
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                $a->appwith = $stringman->get_string('eventappwith:group', 'organizer', null, $trainerlang);
+                $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
+                $group = groups_get_group($appointment->groupid);
+                $groupid = $group->id;
+                $users = groups_get_members($groupid);
+                $memberlist = "";
+                foreach ($users as $user) {
+                    $memberlist .= organizer_get_name_link($user->id) . ", ";
+                }
+                $memberlist = trim($memberlist, ", ");
+                $memberlist .= " {$group->name} ";
+                $a->participants = $memberlist;
+            } else {
+                $a->appwith = $stringman->get_string('eventappwith:single', 'organizer', null, $trainerlang);
+                $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
+                $a->participants = organizer_get_users_of_slot($slot->id);
+            }
+            $eventtitle = $stringman->get_string('eventtitle', 'organizer', $a, $trainerlang);
+            $eventdescription = $stringman->get_string('eventtemplatewithoutlinks', 'organizer', $a, $trainerlang);
             $params = array ('slotid' => $slot->id, 'trainerid' => $trainerid);
             $query = "SELECT e.id FROM {event} e
                   INNER JOIN {organizer_slot_trainer} t ON e.id = t.eventid
@@ -586,6 +588,29 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
             }
         }
     } else {
+        // Use the trainer's language.
+        $trainerlang = $DB->get_field('user', 'lang', array('id' => $trainerid));
+        // Calendar events for trainers info fields.
+        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+            $a->appwith = $stringman->get_string('eventappwith:group', 'organizer', null, $trainerlang);
+            $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
+            $group = groups_get_group($appointment->groupid);
+            $groupid = $group->id;
+            $users = groups_get_members($groupid);
+            $memberlist = "";
+            foreach ($users as $user) {
+                $memberlist .= organizer_get_name_link($user->id) . ", ";
+            }
+            $memberlist = trim($memberlist, ", ");
+            $memberlist .= " {$group->name} ";
+            $a->participants = $memberlist;
+        } else {
+            $a->appwith = $stringman->get_string('eventappwith:single', 'organizer', null, $trainerlang);
+            $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
+            $a->participants = organizer_get_users_of_slot($slot->id);
+        }
+        $eventtitle = $stringman->get_string('eventtitle', 'organizer', $a, $trainerlang);
+        $eventdescription = $stringman->get_string('eventtemplatewithoutlinks', 'organizer', $a, $trainerlang);
         // Create or transform to appointment events for the slot for this trainer.
         $params = array ('slotid' => $slot->id, 'trainerid' => $trainerid);
         $query = "SELECT e.id FROM {event} e
