@@ -20,6 +20,7 @@
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author        Andreas Windbichler
  * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -57,6 +58,7 @@
 
 /* Fix here sn. */
 #organizer_main_cointainer div.forced_scroll {
+    border: solid 1px #ddd;
     margin-left:10px;
     margin-right:10px;
     padding-top:2em;
@@ -70,7 +72,7 @@
 
 #organizer_main_cointainer div.forced_scroll td {
     white-space: nowrap;
-    border: 1px solid #BBB !important;
+    border: solid 1px #ddd;
     border-collapse: collapse;
 }
 
@@ -110,7 +112,7 @@
     width: 50% !important;
 }
 
-#organizer_main_cointainer table.print-preview td {
+#organizer_main_cointainer table.print_preview td {
     border: 1px solid #BBB !important;
     border-collapse: collapse;
 }
@@ -174,4 +176,8 @@
     margin-block-end: 1em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
+}
+
+#id_export_settings_header {
+    border-bottom: none !important;
 }
