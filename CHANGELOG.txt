@@ -1,9 +1,11 @@
 CHANGELOG
 =========
 
-3.7.0 (2019-07-23)
+3.7.0 (2019-07-24)
 ------------------
 
+* [FIXED] #6216: Calendar view: when organizer instance option "No calendar events for empty slots" is deactivated
+and a student books a slot, the calendar message changes the language
 * [FIXED] #6186: Debug message registration view when first column not unique id
 * [FIXED] #6211: SLOTS PRINT Print Preview: Cell-lines not visible anymore, table does not scroll to the right i
 content is overflowing, table does not use the full width that is usable
