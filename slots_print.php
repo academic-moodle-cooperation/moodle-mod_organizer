@@ -288,6 +288,14 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     $columnwidth[] = array('value' => 64, 'mode' => 'Relativ');
                     $columnformats[] = array('fill' => 1, 'align' => 'L');
                 break;
+                case 'comments':
+                    $columnwidth[] = array('value' => 64, 'mode' => 'Relativ');
+                    $columnformats[] = array('fill' => 1, 'align' => 'L');
+                    break;
+                case 'teachercomments':
+                    $columnwidth[] = array('value' => 64, 'mode' => 'Relativ');
+                    $columnformats[] = array('fill' => 1, 'align' => 'L');
+                    break;
             }
         }
     }
@@ -320,6 +328,12 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
         case "feedback":
             $sort = "a.feedback";
         break;
+        case "comments":
+            $sort = "a.commentsk";
+            break;
+        case "teachercomments":
+            $sort = "teachercomments";
+            break;
         default:
             $sort = null;
     }
@@ -441,6 +455,14 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     $feedback = isset($entry->feedback) && $entry->feedback !== '' ? $entry->feedback : '';
                     $row[] = array('data' => $feedback, 'rowspan' => 0);
                 break;
+                case 'comments':
+                    $comments = isset($entry->comments) && $entry->comments !== '' ? $entry->comments : '';
+                    $row[] = array('data' => $comments, 'rowspan' => 0);
+                    break;
+                case 'teachercomments':
+                    $teachercomments = isset($entry->teachercomments) && $entry->teachercomments !== '' ? $entry->teachercomments : '';
+                    $row[] = array('data' => $teachercomments, 'rowspan' => 0);
+                    break;
             }
         }
 
