@@ -1748,7 +1748,7 @@ function organizer_printslotuserfields($nochoiceoption=false) {
     $profilefields['feedback'] = organizer_filter_text(get_string('feedback'));
     $profilefields['signature'] = organizer_filter_text(get_string('signature', 'organizer'));
     foreach (profile_get_custom_fields() as $customfield) {
-        $profilefields[$customfield->id] = organizer_filter_text($customfield->shortname);
+        $profilefields[$customfield->id] = organizer_filter_text($customfield->name);
     }
 
     $selectedprofilefields = [];
@@ -1790,6 +1790,9 @@ function organizer_selectedprofilefields($profilefields) {
     $profilefields['firstnamephonetic'] = organizer_filter_text(get_string('firstnamephonetic', 'moodle'));
     $profilefields['middlename'] = organizer_filter_text(get_string('middlename', 'moodle'));
     $profilefields['alternatename'] = organizer_filter_text(get_string('alternatename', 'moodle'));
+    foreach (profile_get_custom_fields() as $customfield) {
+        $profilefields[$customfield->id] = organizer_filter_text($customfield->name);
+    }
 
     return $profilefields;
 }
