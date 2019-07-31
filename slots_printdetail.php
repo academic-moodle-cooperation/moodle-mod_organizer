@@ -190,18 +190,8 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                     $columnformats[] = array('fill' => 0, 'align' => 'C');
                 } else {  // Field of moodle user table.
                     switch ($column) {
-                        case 'id':
-                            $titles[] = organizer_filter_text(get_string('dbid', 'organizer'));
-                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                            $columnformats[] = array('fill' => 0, 'align' => 'C');
-                            break;
-                        case 'username':
-                            $titles[] = organizer_filter_text(get_string('username', 'moodle'));
-                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                            $columnformats[] = array('fill' => 0, 'align' => 'C');
-                            break;
-                        case 'auth':
-                            $titles[] = organizer_filter_text(get_string('auth', 'organizer'));
+                        case 'fullnameuser':
+                            $titles[] = organizer_filter_text(get_string('fullnameuser', 'moodle'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
@@ -280,26 +270,6 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
-                        case 'lastnamephonetic':
-                            $titles[] = organizer_filter_text(get_string('lastnamephonetic', 'moodle'));
-                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                            $columnformats[] = array('fill' => 0, 'align' => 'C');
-                            break;
-                        case 'firstnamephonetic':
-                            $titles[] = organizer_filter_text(get_string('firstnamephonetic', 'moodle'));
-                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                            $columnformats[] = array('fill' => 0, 'align' => 'C');
-                            break;
-                        case 'middlename':
-                            $titles[] = organizer_filter_text(get_string('middlename', 'moodle'));
-                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                            $columnformats[] = array('fill' => 0, 'align' => 'C');
-                            break;
-                        case 'alternatename':
-                            $titles[] = organizer_filter_text(get_string('alternatename', 'moodle'));
-                            $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
-                            $columnformats[] = array('fill' => 0, 'align' => 'C');
-                            break;
                     }
                 }
         }
@@ -337,6 +307,10 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
         foreach ($columns as $column) {
 
             switch ($column) {
+                case 'fullnameuser':
+                    $content = fullusername($entry->id);
+                    $row[] = array('data' => $content);
+                    break;
                 case 'lastname':
                     $content = $entry->lastname;
                     $row[] = array('data' => $content);
@@ -395,9 +369,6 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                         }
                     } else {  // Field of moodle user table.
                         switch ($column) {
-                            case 'id':
-                            case 'username':
-                            case 'auth':
                             case 'icq':
                             case 'skype':
                             case 'yahoo':
@@ -413,15 +384,10 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                             case 'lang':
                             case 'timezone':
                             case 'description':
-                            case 'lastnamephonetic':
-                            case 'firstnamephonetic':
-                            case 'middlename':
-                            case 'alternatename':
                                 $content = (isset($entry->{$column}) && $entry->{$column} !== '') ? $entry->{$column} : '';
                                 $row[] = array('data' => $content);
                         }
                     }
-
             }
 
         }

@@ -202,16 +202,8 @@ class organizer_print_slotdetail_form extends moodleform
                         $cell = new html_table_cell($name);
                     } else {  // Field of moodle user table.
                         switch ($column) {
-                            case 'id':
-                                $name = organizer_filter_text(get_string('dbid', 'organizer'));
-                                $cell = new html_table_cell($name);
-                                break;
-                            case 'username':
-                                $name = organizer_filter_text(get_string('username', 'moodle'));
-                                $cell = new html_table_cell($name);
-                                break;
-                            case 'auth':
-                                $name = organizer_filter_text(get_string('auth', 'organizer'));
+                            case 'fullnameuser':
+                                $name = organizer_filter_text(get_string('fullnameuser', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'icq':
@@ -274,25 +266,8 @@ class organizer_print_slotdetail_form extends moodleform
                                 $name = organizer_filter_text(get_string('userdescription', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
-                            case 'lastnamephonetic':
-                                $name = organizer_filter_text(get_string('lastnamephonetic', 'moodle'));
-                                $cell = new html_table_cell($name);
-                                break;
-                            case 'firstnamephonetic':
-                                $name = organizer_filter_text(get_string('firstnamephonetic', 'moodle'));
-                                $cell = new html_table_cell($name);
-                                break;
-                            case 'middlename':
-                                $name = organizer_filter_text(get_string('middlename', 'moodle'));
-                                $cell = new html_table_cell($name);
-                                break;
-                            case 'alternatename':
-                                $name = organizer_filter_text(get_string('alternatename', 'moodle'));
-                                $cell = new html_table_cell($name);
-                                break;
                         }
                     }
-
             }
             $cell->header = true;
             $header[] = $cell;
@@ -310,6 +285,11 @@ class organizer_print_slotdetail_form extends moodleform
             foreach ($columns as $column) {
 
                 switch ($column) {
+                    case 'fullnameuser':
+                        $content = "<span name='{$column}_cell'>" . fullname($entry->id) . '</span>';
+                        $cell = new html_table_cell($content);
+                        $row->cells[] = $cell;
+                        break;
                     case 'lastname':
                         $content = "<span name='{$column}_cell'>" . $entry->lastname . '</span>';
                         $cell = new html_table_cell($content);
@@ -355,7 +335,8 @@ class organizer_print_slotdetail_form extends moodleform
                         $row->cells[] = $cell;
                     break;
                     case 'signature':
-                        $content = "<span name='{$column}_cell'>" . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . '</span>';
+                        $content = "<span name='{$column}_cell'>" . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
+                            '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
                     break;
@@ -375,9 +356,6 @@ class organizer_print_slotdetail_form extends moodleform
                             }
                         } else {  // Field of moodle user table.
                             switch ($column) {
-                                case 'id':
-                                case 'username':
-                                case 'auth':
                                 case 'icq':
                                 case 'skype':
                                 case 'yahoo':
@@ -393,10 +371,6 @@ class organizer_print_slotdetail_form extends moodleform
                                 case 'lang':
                                 case 'timezone':
                                 case 'description':
-                                case 'lastnamephonetic':
-                                case 'firstnamephonetic':
-                                case 'middlename':
-                                case 'alternatename':
                                     $content = "<span name='{$column}_cell'>" .  $entry->{$column} . '</span>';
                                     $cell = new html_table_cell($content);
                                     $row->cells[] = $cell;

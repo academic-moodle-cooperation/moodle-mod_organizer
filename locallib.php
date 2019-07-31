@@ -1729,6 +1729,12 @@ function organizer_fetch_slotparticipants($slotid) {
     return $participants;
 }
 
+/**
+ * Collection of printable fields of choice.
+ * Used with organizer instance settings (mod_form) and as a sitewide default setting in organizer settings as well.
+ *
+ * @return array of strings
+ */
 function organizer_printslotuserfields($nochoiceoption=false) {
     global $CFG;
 
@@ -1768,9 +1774,7 @@ function organizer_printslotuserfields($nochoiceoption=false) {
 
 function organizer_selectedprofilefields($profilefields) {
 
-    $profilefields['id'] = organizer_filter_text(get_string('dbid', 'organizer'));
-    $profilefields['username'] = organizer_filter_text(get_string('username', 'moodle'));
-    $profilefields['auth'] = organizer_filter_text(get_string('auth', 'organizer'));
+    $profilefields['fullnameuser'] = organizer_filter_text(get_string('fullnameuser', 'moodle'));
     $profilefields['icq'] = organizer_filter_text(get_string('icqnumber', 'moodle'));
     $profilefields['skype'] = organizer_filter_text(get_string('skypeid', 'moodle'));
     $profilefields['yahoo'] = organizer_filter_text(get_string('yahooid', 'moodle'));
@@ -1786,10 +1790,6 @@ function organizer_selectedprofilefields($profilefields) {
     $profilefields['lang'] = organizer_filter_text(get_string('language', 'moodle'));
     $profilefields['timezone'] = organizer_filter_text(get_string('timezone', 'moodle'));
     $profilefields['description'] = organizer_filter_text(get_string('userdescription', 'moodle'));
-    $profilefields['lastnamephonetic'] = organizer_filter_text(get_string('lastnamephonetic', 'moodle'));
-    $profilefields['firstnamephonetic'] = organizer_filter_text(get_string('firstnamephonetic', 'moodle'));
-    $profilefields['middlename'] = organizer_filter_text(get_string('middlename', 'moodle'));
-    $profilefields['alternatename'] = organizer_filter_text(get_string('alternatename', 'moodle'));
     foreach (profile_get_custom_fields() as $customfield) {
         $profilefields[$customfield->id] = organizer_filter_text($customfield->name);
     }
@@ -1810,8 +1810,6 @@ function organizer_fetch_printdetail_entries($slot) {
                     a.grade,
                     a.feedback,
                     g.name AS groupname,
-                    u.username,
-                    u.auth,
                     u.icq,
                     u.skype,
                     u.yahoo,
@@ -1826,11 +1824,7 @@ function organizer_fetch_printdetail_entries($slot) {
                     u.country,
                     u.lang,
                     u.timezone,
-                    u.description,
-                    u.lastnamephonetic,
-                    u.firstnamephonetic,
-                    u.middlename,
-                    u.alternatename
+                    u.description
                     FROM {organizer_slots} s
                     LEFT JOIN {organizer_slot_appointments} a ON a.slotid = s.id
                     LEFT JOIN {user} u ON a.userid = u.id
