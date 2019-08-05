@@ -4,6 +4,7 @@ CHANGELOG
 3.7.0 (2019-08-05)
 ------------------
 
+* [FIXED] #6232: Debug message when booking slot that has no trainer
 * [FIXED] #6216: Calendar view: when organizer instance option "No calendar events for empty slots" is deactivated
 and a student books a slot, the calendar message changes the language
 * [FIXED] #6186: Debug message registration view when first column not unique id

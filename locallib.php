@@ -513,7 +513,7 @@ function organizer_add_event_appointment($cmid, $appointment) {
 }
 
 function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid = null) {
-    global $DB, $USER;
+    global $DB;
 
     if (is_number($appointment)) {
         $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $appointment));
@@ -631,7 +631,7 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
         }
     }
 
-    return $teventid;
+    return true;
 
 }
 
