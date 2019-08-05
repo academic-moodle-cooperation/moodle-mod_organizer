@@ -79,14 +79,13 @@ class organizer_print_slots_form extends moodleform
         );
 
         $identityfields = explode(',', $CFG->showuseridentity);
-        $selcols = array('datetime', 'location', 'teacher', 'teachercomments', 'participant');
+        $selcols = array('datetime', 'location', 'teacher', 'participant');
         if (in_array('idnumber', $identityfields)) {
             $selcols[] = 'idnumber';
         }
         if (in_array('email', $identityfields)) {
             $selcols[] = 'email';
         }
-        $selcols[] = 'comments';
         $selcols[] = 'attended';
         $selcols[] = 'grade';
         $selcols[] = 'feedback';
@@ -207,8 +206,7 @@ class organizer_print_slots_form extends moodleform
             }
         }
 
-        $notsortable = array('teacher', 'email', 'participant', 'comments');
-        $output .= '<div style="float: left">';
+        $notsortable = array('teacher', 'email', 'participant');
         $output .= $this->_create_preview_table($printcols, $notsortable);
         $output .= '</div><div style="width: 1em; float: left;"> </div>';
 
@@ -346,6 +344,8 @@ class organizer_print_slots_form extends moodleform
 
         $rows = array();
         $rowspan = 0;
+        $numcols = 0;
+        $evenodd = 0;
         foreach ($entries as $entry) {
             $row = $rows[] = new html_table_row();
             foreach ($columns as $column) {
@@ -389,14 +389,6 @@ class organizer_print_slots_form extends moodleform
                             $cell->style = 'vertical-align: middle;';
                             $row->cells[] = $cell;
                         break;
-                        case 'teachercomments':
-                            $teachercomments = $entry->teachercomments;
-                            $content = "<span name='{$column}_cell'>" . $teachercomments . '</span>';
-                            $cell = new html_table_cell($content);
-                            $cell->rowspan = $entry->rowspan;
-                            $cell->style = 'vertical-align: middle;';
-                            $row->cells[] = $cell;
-                            break;
                         case 'groupname':
                             $groupname = $entry->groupname;
                             $content = "<span name='{$column}_cell'>" . $groupname . '</span>';
@@ -462,25 +454,22 @@ class organizer_print_slots_form extends moodleform
                         $cell->style = 'vertical-align: middle;';
                         $row->cells[] = $cell;
                     break;
-                    case 'comments':
-                        $comments = isset($entry->comments) && $entry->comments !== '' ? $entry->comments : '';
-                        $content = "<span name='{$column}_cell'>" . $comments . '</span>';
-                        $cell = new html_table_cell($content);
-                        $cell->style = 'vertical-align: middle;';
-                        $row->cells[] = $cell;
-                        break;
                     case 'datetime':
                     case 'location':
                     case 'teacher':
                     case 'groupname':
-                    case 'teachercomments':
                     break;
                     default:
                         print_error("Unsupported column type: $column");
                 }
-            } // Each column.
-
+            }
+            $numcols++;
+            $row->attributes['class'] = " r{$evenodd}";
             $rowspan = ($rowspan + 1) % $entry->rowspan;
+
+            if ($rowspan == 0) {
+                $evenodd = $evenodd ? 0 : 1;
+            }
         }
 
         $table->data = $rows;
