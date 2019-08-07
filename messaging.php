@@ -448,20 +448,23 @@ function organizer_prepare_and_send_message($data, $type) {
                             'organizer_slot_appointments', array('slotid' => $data->selectedslot, 'groupid' => $data->group)
                     );
                 }
-                $app = reset($apps);
-                $trainers = organizer_get_slot_trainers($slot->id);
-                foreach ($trainers as $trainerid) {
-                    if ($app->teacherapplicantid != $trainerid) {
-                        $customdata = array();
-                        if ($data->participant) {
-                            $participant = $DB->get_record('user', array('id' => $data->participant));
-                            $customdata['participantname'] = fullname($participant, true);
-                        } else {
-                            $customdata['groupname'] = organizer_fetch_groupname($data->group);
-                        }
-                        $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($trainerid), $slot, $type, null,
+                if ($app = reset($apps)) {
+                    $trainers = organizer_get_slot_trainers($slot->id);
+                    foreach ($trainers as $trainerid) {
+                        if ($app->teacherapplicantid != $trainerid) {
+                            $customdata = array();
+                            if ($data->participant) {
+                                $participant = $DB->get_record('user', array('id' => $data->participant));
+                                $customdata['participantname'] = fullname($participant, true);
+                            } else {
+                                $customdata['groupname'] = organizer_fetch_groupname($data->group);
+                            }
+                            $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($trainerid), $slot, $type, null,
                                 $customdata);
+                        }
                     }
+                } else { // If no app was found there is no need to send messages.
+                    $sentok = true;
                 }
             }
         break;
