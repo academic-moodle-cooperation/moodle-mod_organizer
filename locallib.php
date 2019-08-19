@@ -1001,7 +1001,8 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
                     INNER JOIN {organizer_slots} ON {organizer_slot_appointments}.slotid = {organizer_slots}.id
                     WHERE {organizer_slots}.organizerid = :organizerid
                     AND {organizer_slot_appointments}.userid = :userid
-                    AND {organizer_slot_appointments}.allownewappointments <> 1";
+                    AND ( {organizer_slot_appointments}.allownewappointments IS NULL OR
+                    {organizer_slot_appointments}.allownewappointments = 0 )";
     if ($alreadyapps = $DB->count_records_sql($query, $params)) {
         return false;
     }
@@ -1025,7 +1026,7 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     $appointment->eventid = organizer_add_event_appointment($cm->id, $appointment);
 
     $appointment->groupid = $groupid;
-    
+
     if ($trainerevents) {
         organizer_add_event_appointment_trainer($cm->id, $appointment, $trainerid);
     }
