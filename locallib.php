@@ -1753,12 +1753,12 @@ function organizer_printslotuserfields($nochoiceoption=false) {
     $profilefields['grade'] = organizer_filter_text(get_string('grade'));
     $profilefields['feedback'] = organizer_filter_text(get_string('feedback'));
     $profilefields['signature'] = organizer_filter_text(get_string('signature', 'organizer'));
-    foreach (profile_get_custom_fields() as $customfield) {
-        $profilefields[$customfield->id] = organizer_filter_text($customfield->name);
-    }
 
     $selectedprofilefields = [];
     $selectedprofilefields = organizer_selectedprofilefields($selectedprofilefields);
+    foreach (profile_get_custom_fields() as $customfield) {
+        $selectedprofilefields[$customfield->id] = organizer_filter_text($customfield->name);
+    }
 
     $organizerconfig = get_config('organizer');
     $allowedprofilefields = $organizerconfig->allowedprofilefieldsprint;
@@ -1774,6 +1774,7 @@ function organizer_printslotuserfields($nochoiceoption=false) {
 
 function organizer_selectedprofilefields($profilefields) {
 
+    $profilefields = array('' => '--');
     $profilefields['fullnameuser'] = organizer_filter_text(get_string('fullnameuser', 'moodle'));
     $profilefields['icq'] = organizer_filter_text(get_string('icqnumber', 'moodle'));
     $profilefields['skype'] = organizer_filter_text(get_string('skypeid', 'moodle'));
