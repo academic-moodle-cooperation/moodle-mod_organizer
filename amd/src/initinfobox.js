@@ -38,9 +38,9 @@ define(
 
         var instance = new Initinfobox();
 
-        instance.init = function (param) {
+        instance.init = function(param) {
 
-            instance.student = param;  // Is user student or not.
+            instance.student = param; // Is user student or not.
 
             // What happens when a view option checkbox is clicked or the filter field has been changed.
             function toggle_all_slots() {
@@ -109,7 +109,7 @@ define(
                 toggle_info();
 
                 set_user_preference('mod_organizer_showhiddenslots', (showhiddenslots));
-                if (!instance.student){
+                if (!instance.student) {
                     set_user_preference('mod_organizer_showmyslotsonly', (showmyslotsonly));
                 }
                 set_user_preference('mod_organizer_showfreeslotsonly', (showfreeslotsonly));
@@ -125,11 +125,11 @@ define(
                 var anyvisible = false;
 
                 noninforows.each(
-                    function () {
+                    function() {
                         if (!(
-                                $( this ).css('offsetWidth') === 0 &&
-                                $( this ).css('offsetHeight') === 0) ||
-                                $( this ).css('display') === 'none'
+                                $(this).css('offsetWidth') === 0 &&
+                                $(this).css('offsetHeight') === 0) ||
+                                $(this).css('display') === 'none'
                         ) {
                             anyvisible = true;
                         }
@@ -180,11 +180,11 @@ define(
 
             function set_user_preference(name, value) {
 
-                $.get( config.wwwroot + '/lib/ajax/setuserpref.php', {
+                $.get(config.wwwroot + '/lib/ajax/setuserpref.php', {
                     sesskey: config.sesskey,
                     pref: encodeURI(name),
                     value: encodeURI(value)
-                } , 'json').done(function( data ) {
+                }, 'json').done(function(data) {
                     if (data != 'OK') {
                         log.error(data);
                     }
