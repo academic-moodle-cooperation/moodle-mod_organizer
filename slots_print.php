@@ -414,6 +414,14 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                         $row[] = array('data' => $name, 'rowspan' => $rowspan - 1, 'name' => 'teacher');
                     }
                 break;
+                case 'teachercomments':
+                    $teachercomments = isset($entry->teachercomments) && $entry->teachercomments !== '' ? $entry->teachercomments : '';
+                    if ($rowspan != $entry->rowspan) {
+                        $row[] = null;
+                    } else {
+                        $row[] = array('data' => $teachercomments, 'rowspan' => $rowspan - 1);
+                    }
+                break;
                 case 'groupname':
                     if ($rowspan != $entry->rowspan) {
                         $row[] = null;
@@ -458,10 +466,6 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                 case 'comments':
                     $comments = isset($entry->comments) && $entry->comments !== '' ? $entry->comments : '';
                     $row[] = array('data' => $comments, 'rowspan' => 0);
-                    break;
-                case 'teachercomments':
-                    $teachercomments = isset($entry->teachercomments) && $entry->teachercomments !== '' ? $entry->teachercomments : '';
-                    $row[] = array('data' => $teachercomments, 'rowspan' => 0);
                     break;
             }
         }
