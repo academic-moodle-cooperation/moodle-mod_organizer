@@ -33,7 +33,7 @@ require_once(dirname(__FILE__) . '/lib.php');
 
 if (!function_exists('sem_get')) {
     /**
-     * 
+     *
      * @param string $key
      * @return resource
      */
@@ -45,7 +45,7 @@ if (!function_exists('sem_get')) {
         return fopen($CFG->dataroot . '/temp/mod/organizer/organizer_' . $key . '.sem', 'w+');
     }
     /**
-     * 
+     *
      * @param int $semid
      * @return boolean
      */
@@ -53,7 +53,7 @@ if (!function_exists('sem_get')) {
         return flock($semid, LOCK_EX);
     }
     /**
-     * 
+     *
      * @param int $semid
      * @return boolean
      */
@@ -62,7 +62,7 @@ if (!function_exists('sem_get')) {
     }
 }
 /**
- * 
+ *
  * @param int $trainerid
  * @param int $newslotid
  * @param number $startdate
@@ -108,7 +108,7 @@ function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $endd
     return $DB->get_records_sql($query, $params);
 }
 /**
- * 
+ *
  * @param number $user
  * @return boolean|string
  */
@@ -150,7 +150,7 @@ function organizer_check_collision($from, $to, $eventsandslots) {
     return $collidingevents;
 }
 /**
- * 
+ *
  * @param number $num
  * @param number $lower
  * @param number $upper
@@ -160,7 +160,7 @@ function between($num, $lower, $upper) {
     return $num > $lower && $num < $upper;
 }
 /**
- * 
+ *
  * @param array $data
  * @return array|number[]|string[]|NULL[][]
  */
@@ -289,7 +289,7 @@ function organizer_add_new_slots($data) {
     return array($count, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $collisionmessages);
 }
 /**
- * 
+ *
  * @param int $slotdate
  * @param int $time
  * @return number
@@ -305,7 +305,7 @@ function organizer_get_slotstarttime($slotdate, $time) {
     return $starttime;
 }
 /**
- * 
+ *
  * @param int $dayto
  * @param number $dateday
  * @return NULL
@@ -471,20 +471,7 @@ function organizer_add_event_appointment($cmid, $appointment) {
     $slot = $DB->get_record('organizer_slots', array('id' => $appointment->slotid));
     $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
 
-    $a = new stdClass();
-
-    $courseurl = new moodle_url("/course/view.php?id={$course->id}");
-    $a->coursename = organizer_filter_text($course->fullname);
-    $a->courselink = html_writer::link($courseurl, $course->fullname);
-    $organizerurl = new moodle_url("/mod/organizer/view.php?id={$cm->id}");
-    $a->organizername = organizer_filter_text($organizer->name);
-    $a->organizerlink = html_writer::link($organizerurl, $organizer->name);
-    if ($slot->locationlink) {
-        $a->location = html_writer::link($slot->locationlink, $slot->location);
-    } else {
-        $a->location = $slot->location;
-    }
-    $a->description = $slot->comments;
+    $a = organizer_add_event_appointment_strings($course, $organizer, $cm, $slot);
 
     // Calendar events for participants info fields.
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
@@ -570,21 +557,7 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
 
     $stringman = get_string_manager();
 
-    $a = new stdClass();
-
-    $courseurl = new moodle_url("/course/view.php?id={$course->id}");
-    $a->coursename = organizer_filter_text($course->fullname);
-    $a->courselink = html_writer::link($courseurl, $course->fullname);
-    $organizerurl = new moodle_url("/mod/organizer/view.php?id={$cm->id}");
-    $a->organizername = organizer_filter_text($organizer->name);
-    $a->organizerlink = html_writer::link($organizerurl, $organizer->name);
-    if ($slot->locationlink) {
-        $a->location = html_writer::link($slot->locationlink, $slot->location);
-    } else {
-        $a->location = $slot->location;
-    }
-    $a->description = $slot->comments;
-
+    $a = organizer_add_event_appointment_strings($course, $organizer, $cm, $slot);
 
     if (!$trainerid) {
         // Create or transform to appointment events for the slot for each trainer.
@@ -1955,4 +1928,29 @@ function organizer_get_users_of_slot($slotid) {
     }
 
     return $usersofslot;
+}
+
+/**
+ * @param $course
+ * @param $organizer
+ * @param $cm
+ * @param $slot
+ * @return stdClass
+ * @throws moodle_exception
+ */
+function organizer_add_event_appointment_strings($course, $organizer, $cm, $slot) {
+
+    $a = new stdClass();
+    $a->coursename = organizer_filter_text($course->fullname);
+    $a->courselink = html_writer::link(new moodle_url("/course/view.php?id={$course->id}"), $course->fullname);
+    $a->organizername = organizer_filter_text($organizer->name);
+    $a->organizerlink = html_writer::link(new moodle_url("/mod/organizer/view.php?id={$cm->id}"), $organizer->name);
+    $a->description =  $slot->comments;
+    if ($slot->locationlink) {
+        $a->location = html_writer::link($slot->locationlink, $slot->location);
+    } else {
+        $a->location = $slot->location;
+    }
+
+    return $a;
 }
