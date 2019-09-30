@@ -32,6 +32,11 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__) . '/lib.php');
 
 if (!function_exists('sem_get')) {
+    /**
+     * 
+     * @param string $key
+     * @return resource
+     */
     function sem_get($key) {
         global $CFG;
         if (!is_dir($CFG->dataroot . '/temp/mod/organizer')) {
@@ -39,16 +44,31 @@ if (!function_exists('sem_get')) {
         }
         return fopen($CFG->dataroot . '/temp/mod/organizer/organizer_' . $key . '.sem', 'w+');
     }
-
+    /**
+     * 
+     * @param int $semid
+     * @return boolean
+     */
     function sem_acquire($semid) {
         return flock($semid, LOCK_EX);
     }
-
+    /**
+     * 
+     * @param int $semid
+     * @return boolean
+     */
     function sem_release($semid) {
         return flock($semid, LOCK_UN);
     }
 }
-
+/**
+ * 
+ * @param int $trainerid
+ * @param int $newslotid
+ * @param number $startdate
+ * @param number $enddate
+ * @return array
+ */
 function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $enddate) {
     global $DB;
 
@@ -87,7 +107,11 @@ function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $endd
 
     return $DB->get_records_sql($query, $params);
 }
-
+/**
+ * 
+ * @param number $user
+ * @return boolean|string
+ */
 function organizer_get_name_link($user = 0) {
     global $DB, $USER, $COURSE;
     if (!$user) {
@@ -106,8 +130,8 @@ function organizer_get_name_link($user = 0) {
 /**
  * Checks if the given events are in the given time frame.
  *
- * @param  unixtime    $from
- * @param  unixtime to
+ * @param  number    $from
+ * @param  number to
  * @return array an array of events
  */
 function organizer_check_collision($from, $to, $eventsandslots) {
@@ -125,11 +149,21 @@ function organizer_check_collision($from, $to, $eventsandslots) {
     }
     return $collidingevents;
 }
-
+/**
+ * 
+ * @param number $num
+ * @param number $lower
+ * @param number $upper
+ * @return boolean
+ */
 function between($num, $lower, $upper) {
     return $num > $lower && $num < $upper;
 }
-
+/**
+ * 
+ * @param array $data
+ * @return array|number[]|string[]|NULL[][]
+ */
 function organizer_add_new_slots($data) {
     global $DB;
 
@@ -254,7 +288,12 @@ function organizer_add_new_slots($data) {
 
     return array($count, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $collisionmessages);
 }
-
+/**
+ * 
+ * @param int $slotdate
+ * @param int $time
+ * @return number
+ */
 function organizer_get_slotstarttime($slotdate, $time) {
     $t = new DateTime();
     $t->setTimestamp($slotdate); // Sets the day.
@@ -265,7 +304,12 @@ function organizer_get_slotstarttime($slotdate, $time) {
     $starttime = $t->getTimestamp();
     return $starttime;
 }
-
+/**
+ * 
+ * @param int $dayto
+ * @param number $dateday
+ * @return NULL
+ */
 function organizer_get_dayto($dayto, $dateday) {
 
     switch($dayto) {
