@@ -2449,6 +2449,14 @@ function organizer_get_entries_queue_group($slot) {
     return $output;
 }
 
+/**
+ * Same codelines in the header for slots_print, slots_delete, slots_add, slots_eval.
+ *
+ * @return array
+ * @throws coding_exception
+ * @throws moodle_exception
+ * @throws require_login_exception
+ */
 function organizer_slotpages_header() {
     global $PAGE;
 
