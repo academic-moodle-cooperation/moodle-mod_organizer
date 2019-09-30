@@ -13,8 +13,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/mod/organizer/backup/moodle2/restore_organizer_stepslib.php');
+
 
 /**
+ * organizer restore task that provides all the settings and steps to perform one complete restore of the activity
  * backup/moodle2/restore_organizer_activity_task.class.php
  *
  * @package   mod_organizer
@@ -24,15 +29,6 @@
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->dirroot . '/mod/organizer/backup/moodle2/restore_organizer_stepslib.php'); // Because it exists (must).
-
-/**
- * organizer restore task that provides all the settings and steps to perform one
- * complete restore of the activity
  */
 class restore_organizer_activity_task extends restore_activity_task
 {
