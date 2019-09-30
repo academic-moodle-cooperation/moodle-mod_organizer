@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+
+defined('MOODLE_INTERNAL') || die();
+
+define('ORGANIZER_SPACING', '&nbsp;&nbsp;'); // TODO Remove this.
+
+// Required for the form rendering.
+
+require_once("$CFG->libdir/formslib.php");
+
 /**
  * view_action_form_edit.php
  *
@@ -25,18 +34,13 @@
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-define('ORGANIZER_SPACING', '&nbsp;&nbsp;'); // TODO Remove this.
-
-// Required for the form rendering.
-
-require_once("$CFG->libdir/formslib.php");
-
 class organizer_edit_slots_form extends moodleform
 {
-
+    /**
+     * 
+     * {@inheritDoc}
+     * @see moodleform::definition()
+     */
     protected function definition() {
         global $CFG, $PAGE;
 
@@ -55,7 +59,10 @@ class organizer_edit_slots_form extends moodleform
         $this->_addbuttons();
         $this->set_data($defaults);
     }
-
+    /**
+     * 
+     * @return number[]|NULL[]|array[]
+     */
     private function _get_defaults() {
         global $DB;
         $defaults = array();
@@ -170,7 +177,9 @@ class organizer_edit_slots_form extends moodleform
 
         return $defaults;
     }
-
+    /**
+     * add sumbit, reset and cancel buttons
+     */
     private function _addbuttons() {
         $mform = $this->_form;
 
@@ -182,7 +191,9 @@ class organizer_edit_slots_form extends moodleform
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
     }
-
+    /**
+     * set hidden fields in form
+     */
     private function _sethiddenfields() {
 
         $mform = $this->_form;
@@ -206,7 +217,10 @@ class organizer_edit_slots_form extends moodleform
             $mform->setType("slots[$i]", PARAM_INT);
         }
     }
-
+    /**
+     * 
+     * @param array $defaults
+     */
     private function _addfields($defaults) {
         $mform = $this->_form;
         $data = $this->_customdata;
@@ -397,7 +411,11 @@ class organizer_edit_slots_form extends moodleform
         $mform->addElement('hidden', 'mod_comments', 0);
         $mform->setType('mod_comments', PARAM_BOOL);
     }
-
+    /**
+     * 
+     * @param mixed $value
+     * @return boolean
+     */
     private function _converts_to_int($value) {
         if (is_numeric($value)) {
             if (intval($value) == floatval($value)) {
@@ -406,7 +424,11 @@ class organizer_edit_slots_form extends moodleform
         }
         return false;
     }
-
+    /**
+     * 
+     * {@inheritDoc}
+     * @see moodleform::validation()
+     */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
@@ -431,7 +453,10 @@ class organizer_edit_slots_form extends moodleform
 
         return $errors;
     }
-
+    /**
+     * 
+     * @return string[]
+     */
     private function _load_trainers() {
         $context = organizer_get_context();
 
@@ -448,7 +473,12 @@ class organizer_edit_slots_form extends moodleform
 
         return $trainers;
     }
-
+    /**
+     * 
+     * @param string $name
+     * @param boolean $noshow
+     * @return string
+     */
     private function _warning_icon($name, $noshow = false) {
         if (!$noshow) {
             $warningname = $name . '_warning';
@@ -459,7 +489,11 @@ class organizer_edit_slots_form extends moodleform
             return '';
         }
     }
-
+    /**
+     * 
+     * @param int $time
+     * @return number
+     */
     private function _organizer_figure_out_unit($time) {
         if ($time % 86400 == 0) {
             return 86400;
@@ -471,7 +505,10 @@ class organizer_edit_slots_form extends moodleform
             return 1;
         }
     }
-
+    /**
+     * 
+     * @return string[]
+     */
     private function _get_visibilities() {
 
         $visibilities = array();
@@ -481,7 +518,10 @@ class organizer_edit_slots_form extends moodleform
 
         return $visibilities;
     }
-
+    /**
+     * 
+     * @return mixed
+     */
     private function _get_instance_visibility() {
 
         $organizer = organizer_get_organizer();

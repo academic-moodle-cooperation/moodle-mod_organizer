@@ -285,7 +285,12 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 }
 
 die;
-
+/**
+ * 
+ * @param mixed $action
+ * @param mixed $slot
+ * @return boolean
+ */
 function organizer_organizer_student_action_allowed($action, $slot) {
     global $DB, $USER;
 
