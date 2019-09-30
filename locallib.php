@@ -1848,10 +1848,12 @@ function organizer_get_users_of_slot($slotid) {
 }
 
 /**
- * @param $course
- * @param $organizer
- * @param $cm
- * @param $slot
+ * Generate object with strings used for an appointment event.
+ *
+ * @param object $course
+ * @param object $organizer
+ * @param object $cm
+ * @param object $slot
  * @return stdClass
  * @throws moodle_exception
  */
@@ -1873,12 +1875,14 @@ function organizer_add_event_appointment_strings($course, $organizer, $cm, $slot
 }
 
 /**
- * @param $trainerid
- * @param $course
- * @param $cm
- * @param $organizer
- * @param $appointment
- * @param $slot
+ * Create or change an appointment event per trainer.
+ *
+ * @param int $trainerid
+ * @param object $course
+ * @param object $cm
+ * @param object $organizer
+ * @param object $appointment
+ * @param object $slot
  * @throws dml_exception
  * @throws moodle_exception
  */
@@ -1933,8 +1937,10 @@ function organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organ
 }
 
 /**
- * @param $mpdftable
- * @param $filename
+ * Define format and generate table for printing.
+ *
+ * @param object $mpdftable
+ * @param string $filename
  * @throws coding_exception
  */
 function organizer_format_and_print($mpdftable, $filename){
@@ -1966,6 +1972,15 @@ function organizer_format_and_print($mpdftable, $filename){
     die();
 }
 
+/**
+ * Checks if student is allowed to do this action with this slot.
+ *
+ * @param string $action
+ * @param int $slot
+ * @return bool
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_organizer_student_action_allowed($action, $slot) {
     global $DB;
 
@@ -2018,6 +2033,17 @@ function organizer_organizer_student_action_allowed($action, $slot) {
     return !$disabled && ($action == $allowedaction);
 }
 
+/**
+ * Sets userprefs for this user according to the form values transmitted and triggers a print event.
+ *
+ * @param object $data
+ * @param object $cm
+ * @param object $context
+ * @return bool
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws required_capability_exception
+ */
 function organizer_print_setuserprefs_and_triggerevent($data, $cm, $context) {
     global $DB, $PAGE;
 
