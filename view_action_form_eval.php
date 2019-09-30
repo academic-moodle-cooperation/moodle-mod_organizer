@@ -14,8 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once("$CFG->libdir/formslib.php");
+require_once(dirname(__FILE__) . '/lib.php');
 /**
- * view_action_form_eval.php
+ *
  *
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
@@ -25,15 +31,13 @@
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once("$CFG->libdir/formslib.php");
-require_once(dirname(__FILE__) . '/lib.php');
-
 class organizer_evaluate_slots_form extends moodleform
 {
-
+    /**
+     * 
+     * {@inheritDoc}
+     * @see moodleform::definition()
+     */
     protected function definition() {
         global $PAGE;
 
@@ -43,11 +47,17 @@ class organizer_evaluate_slots_form extends moodleform
         $this->_form->addElement('header', 'slots', get_string('eval_header', 'organizer'));
         $this->_addbuttons();
     }
-
+    /**
+     * 
+     * {@inheritDoc}
+     * @see moodleform::definition_after_data()
+     */
     public function definition_after_data() {
         $this->_addevalfields();
     }
-
+    /**
+     * set the hidden fields of the form
+     */
     private function _sethiddenfields() {
         $mform = $this->_form;
         $data = $this->_customdata;
@@ -59,7 +69,9 @@ class organizer_evaluate_slots_form extends moodleform
         $mform->addElement('hidden', 'action', 'eval');
         $mform->setType('action', PARAM_ACTION);
     }
-
+    /**
+     * add eval fields to the form
+     */
     private function _addevalfields() {
         global $DB;
 
@@ -217,7 +229,11 @@ class organizer_evaluate_slots_form extends moodleform
             $mform->insertElementBefore($mform->createElement('html', '<hr />'), 'buttonar');
         }
     }
-
+    /**
+     * 
+     * @param int $id
+     * @return string
+     */
     private function _organizer_get_name_link($id) {
         global $DB;
         $profileurl = new moodle_url('/user/profile.php', array('id' => $id));
@@ -230,7 +246,9 @@ class organizer_evaluate_slots_form extends moodleform
         $identity = $identity ? "&nbsp;(" . $identity . ")" : "";
         return html_writer::link($profileurl, $name) . $identity;
     }
-
+    /**
+     * add buttons to the form
+     */
     private function _addbuttons() {
         $mform = $this->_form;
 

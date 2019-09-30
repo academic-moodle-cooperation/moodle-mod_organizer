@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
 /**
  * backup/moodle2/restore_organizer_stepslib.php
+ * Structure step to restore one organizer activity
  *
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
@@ -24,20 +26,16 @@
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-defined('MOODLE_INTERNAL') || die();
-
-/**
- * Define all the restore steps that will be used by the restore_organizer_activity_task
- */
-
-/**
- * Structure step to restore one organizer activity
+ *
+ *
  */
 class restore_organizer_activity_structure_step extends restore_activity_structure_step
 {
-
+    /**
+     * 
+     * {@inheritDoc}
+     * @see restore_structure_step::define_structure()
+     */
     protected function define_structure() {
         $paths = array();
         $paths[] = new restore_path_element('organizer', '/activity/organizer');
@@ -52,7 +50,10 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
 
         return $this->prepare_activity_structure($paths);
     }
-
+    /**
+     * process organizer data for the stepslib
+     * @param mixed $data
+     */
     protected function process_organizer($data) {
         global $DB;
 
@@ -70,7 +71,10 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
         $newitemid = $DB->insert_record('organizer', $data);
         $this->apply_activity_instance($newitemid);
     }
-
+    /**
+     * process slotdata for restore
+     * @param  $data
+     */
     protected function process_slot($data) {
         global $DB;
 
@@ -88,7 +92,10 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
         $newitemid = $DB->insert_record('organizer_slots', $data);
         $this->set_mapping('slot', $oldid, $newitemid);
     }
-
+    /**
+     * process appointment data for restore
+     * @param mixed $data
+     */
     protected function process_appointment($data) {
         global $DB;
 
@@ -105,7 +112,11 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
 
         $this->set_mapping('appointment', $oldid, $newitemid);
     }
-
+    /**
+     * 
+     * {@inheritDoc}
+     * @see restore_structure_step::after_execute()
+     */
     protected function after_execute() {
         // Nothing yet.
     }

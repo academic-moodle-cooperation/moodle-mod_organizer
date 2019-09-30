@@ -14,6 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once("$CFG->libdir/formslib.php");
+require_once(dirname(__FILE__) . '/custom_table_renderer.php');
+
 /**
  * view_action_form_print.php
  *
@@ -25,22 +30,24 @@
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once("$CFG->libdir/formslib.php");
-require_once(dirname(__FILE__) . '/custom_table_renderer.php');
-
 class organizer_print_slotdetail_form extends moodleform
 {
-
+    /**
+     * @var string select of the colums
+     */
     private $_selcols;
-
+    /**
+     * 
+     * {@inheritDoc}
+     * @see moodleform::definition()
+     */
     protected function definition() {
         $this->_add_slot_info();
         $this->_add_column_select();
     }
-
+    /**
+     * adds the info of the slot to the form
+     */
     private function _add_slot_info() {
         $mform = &$this->_form;
         $data = &$this->_customdata;
@@ -61,7 +68,9 @@ class organizer_print_slotdetail_form extends moodleform
             print_error('This should not happen!');
         }
     }
-
+    /**
+     * adds information which colums to select for printing 
+     */
     private function _add_column_select() {
         global $DB, $CFG;
 
@@ -70,10 +79,10 @@ class organizer_print_slotdetail_form extends moodleform
 
         $params = array('slotid' => $data['slot']);
         $organizer = $DB->get_records_sql(
-                "SELECT o.*
+                'SELECT o.*
                  FROM {organizer} o
                  INNER JOIN {organizer_slots} s ON o.id = s.organizerid
-                 WHERE s.id = :slotid", $params);
+                 WHERE s.id = :slotid', $params);
 
         $organizer = reset($organizer);
         $identityfields = explode(',', $CFG->showuseridentity);
@@ -156,7 +165,11 @@ class organizer_print_slotdetail_form extends moodleform
             $mform->setType("cols[$key]", PARAM_ALPHANUMEXT);
         }
     }
-
+    /**
+     * 
+     * {@inheritDoc}
+     * @see moodleform::display()
+     */
     public function display() {
         global $OUTPUT, $CFG;
 
@@ -187,7 +200,12 @@ class organizer_print_slotdetail_form extends moodleform
 
         print $output;
     }
-
+    
+    /**
+     * 
+     * @param array $columns the columns of the table
+     * @return string the html of the table
+     */
     private function _create_preview_table($columns) {
         global $cm, $CFG, $DB;
 
