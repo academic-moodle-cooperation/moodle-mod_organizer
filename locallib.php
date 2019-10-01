@@ -33,7 +33,7 @@ require_once(dirname(__FILE__) . '/lib.php');
 
 if (!function_exists('sem_get')) {
     /**
-     * 
+     *
      * @param string $key
      * @return resource
      */
@@ -45,7 +45,7 @@ if (!function_exists('sem_get')) {
         return fopen($CFG->dataroot . '/temp/mod/organizer/organizer_' . $key . '.sem', 'w+');
     }
     /**
-     * 
+     *
      * @param int $semid
      * @return boolean
      */
@@ -53,7 +53,7 @@ if (!function_exists('sem_get')) {
         return flock($semid, LOCK_EX);
     }
     /**
-     * 
+     *
      * @param int $semid
      * @return boolean
      */
@@ -62,7 +62,7 @@ if (!function_exists('sem_get')) {
     }
 }
 /**
- * 
+ *
  * @param int $trainerid
  * @param int $newslotid
  * @param number $startdate
@@ -108,7 +108,7 @@ function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $endd
     return $DB->get_records_sql($query, $params);
 }
 /**
- * 
+ *
  * @param number $user
  * @return boolean|string
  */
@@ -150,7 +150,7 @@ function organizer_check_collision($from, $to, $eventsandslots) {
     return $collidingevents;
 }
 /**
- * 
+ *
  * @param number $num
  * @param number $lower
  * @param number $upper
@@ -160,7 +160,7 @@ function between($num, $lower, $upper) {
     return $num > $lower && $num < $upper;
 }
 /**
- * 
+ *
  * @param array $data
  * @return array|number[]|string[]|NULL[][]
  */
@@ -289,7 +289,7 @@ function organizer_add_new_slots($data) {
     return array($count, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $collisionmessages);
 }
 /**
- * 
+ *
  * @param int $slotdate
  * @param int $time
  * @return number
@@ -305,7 +305,7 @@ function organizer_get_slotstarttime($slotdate, $time) {
     return $starttime;
 }
 /**
- * 
+ *
  * @param int $dayto
  * @param number $dateday
  * @return NULL
@@ -471,20 +471,7 @@ function organizer_add_event_appointment($cmid, $appointment) {
     $slot = $DB->get_record('organizer_slots', array('id' => $appointment->slotid));
     $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
 
-    $a = new stdClass();
-
-    $courseurl = new moodle_url("/course/view.php?id={$course->id}");
-    $a->coursename = organizer_filter_text($course->fullname);
-    $a->courselink = html_writer::link($courseurl, $course->fullname);
-    $organizerurl = new moodle_url("/mod/organizer/view.php?id={$cm->id}");
-    $a->organizername = organizer_filter_text($organizer->name);
-    $a->organizerlink = html_writer::link($organizerurl, $organizer->name);
-    if ($slot->locationlink) {
-        $a->location = html_writer::link($slot->locationlink, $slot->location);
-    } else {
-        $a->location = $slot->location;
-    }
-    $a->description = $slot->comments;
+    $a = organizer_add_event_appointment_strings($course, $organizer, $cm, $slot);
 
     // Calendar events for participants info fields.
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
@@ -568,111 +555,14 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
     $slot = $DB->get_record('organizer_slots', array('id' => $appointment->slotid));
     $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
 
-    $stringman = get_string_manager();
-
-    $a = new stdClass();
-
-    $courseurl = new moodle_url("/course/view.php?id={$course->id}");
-    $a->coursename = organizer_filter_text($course->fullname);
-    $a->courselink = html_writer::link($courseurl, $course->fullname);
-    $organizerurl = new moodle_url("/mod/organizer/view.php?id={$cm->id}");
-    $a->organizername = organizer_filter_text($organizer->name);
-    $a->organizerlink = html_writer::link($organizerurl, $organizer->name);
-    if ($slot->locationlink) {
-        $a->location = html_writer::link($slot->locationlink, $slot->location);
-    } else {
-        $a->location = $slot->location;
-    }
-    $a->description = $slot->comments;
-
-
     if (!$trainerid) {
         // Create or transform to appointment events for the slot for each trainer.
         $trainers = organizer_get_slot_trainers($slot->id);
         foreach ($trainers as $trainerid) {
-            // Use the trainer's language.
-            $trainerlang = $DB->get_field('user', 'lang', array('id' => $trainerid));
-            // Calendar events for trainers info fields.
-            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                $a->appwith = $stringman->get_string('eventappwith:group', 'organizer', null, $trainerlang);
-                $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
-                $group = groups_get_group($appointment->groupid);
-                $groupid = $group->id;
-                $users = groups_get_members($groupid);
-                $memberlist = "";
-                foreach ($users as $user) {
-                    $memberlist .= organizer_get_name_link($user->id) . ", ";
-                }
-                $memberlist = trim($memberlist, ", ");
-                $memberlist .= " {$group->name} ";
-                $a->participants = $memberlist;
-            } else {
-                $a->appwith = $stringman->get_string('eventappwith:single', 'organizer', null, $trainerlang);
-                $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
-                $a->participants = organizer_get_users_of_slot($slot->id);
-            }
-            $eventtitle = $stringman->get_string('eventtitle', 'organizer', $a, $trainerlang);
-            $eventdescription = $stringman->get_string('eventtemplatewithoutlinks', 'organizer', $a, $trainerlang);
-            $params = array ('slotid' => $slot->id, 'trainerid' => $trainerid);
-            $query = "SELECT e.id FROM {event} e
-                  INNER JOIN {organizer_slot_trainer} t ON e.id = t.eventid
-                  WHERE t.slotid = :slotid AND t.trainerid = :trainerid";
-            // Create new appointment event or update existent appointment event for trainers.
-            if (!$teventid = $DB->get_field_sql($query, $params)) {
-                $teventid =  organizer_create_calendarevent(
-                    $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
-                    $trainerid, $slot->starttime, $slot->duration, 0, $appointment->id
-                );
-                $DB->set_field('organizer_slot_trainer', 'eventid', $teventid, array ('slotid' => $slot->id, 'trainerid' => $trainerid));
-            } else {
-                organizer_change_calendarevent(
-                    array($teventid), $organizer, $eventtitle, $eventdescription,
-                    ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT, $trainerid, $slot->starttime, $slot->duration, 0, $appointment->id
-                );
-            }
+            organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organizer, $appointment, $slot);
         }
     } else {
-        // Use the trainer's language.
-        $trainerlang = $DB->get_field('user', 'lang', array('id' => $trainerid));
-        // Calendar events for trainers info fields.
-        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-            $a->appwith = $stringman->get_string('eventappwith:group', 'organizer', null, $trainerlang);
-            $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
-            $group = groups_get_group($appointment->groupid);
-            $groupid = $group->id;
-            $users = groups_get_members($groupid);
-            $memberlist = "";
-            foreach ($users as $user) {
-                $memberlist .= organizer_get_name_link($user->id) . ", ";
-            }
-            $memberlist = trim($memberlist, ", ");
-            $memberlist .= " {$group->name} ";
-            $a->participants = $memberlist;
-        } else {
-            $a->appwith = $stringman->get_string('eventappwith:single', 'organizer', null, $trainerlang);
-            $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
-            $a->participants = organizer_get_users_of_slot($slot->id);
-        }
-        $eventtitle = $stringman->get_string('eventtitle', 'organizer', $a, $trainerlang);
-        $eventdescription = $stringman->get_string('eventtemplatewithoutlinks', 'organizer', $a, $trainerlang);
-        // Create or transform to appointment events for the slot for this trainer.
-        $params = array ('slotid' => $slot->id, 'trainerid' => $trainerid);
-        $query = "SELECT e.id FROM {event} e
-                  INNER JOIN {organizer_slot_trainer} t ON e.id = t.eventid
-                  WHERE t.slotid = :slotid AND t.trainerid = :trainerid";
-        // Create new appointment event or update existent appointment event for this trainer.
-        if (!$teventid = $DB->get_field_sql($query, $params)) {
-            $teventid =  organizer_create_calendarevent(
-                $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
-                $trainerid, $slot->starttime, $slot->duration, 0, $appointment->id
-            );
-            $DB->set_field('organizer_slot_trainer', 'eventid', $teventid, array ('slotid' => $slot->id, 'trainerid' => $trainerid));
-        } else {
-            organizer_change_calendarevent(
-                array($teventid), $organizer, $eventtitle, $eventdescription,
-                ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT, $trainerid, $slot->starttime, $slot->duration, 0, $appointment->id
-            );
-        }
+        organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organizer, $appointment, $slot);
     }
 
     return true;
@@ -1955,4 +1845,231 @@ function organizer_get_users_of_slot($slotid) {
     }
 
     return $usersofslot;
+}
+
+/**
+ * Generate object with strings used for an appointment event.
+ *
+ * @param object $course
+ * @param object $organizer
+ * @param object $cm
+ * @param object $slot
+ * @return stdClass
+ * @throws moodle_exception
+ */
+function organizer_add_event_appointment_strings($course, $organizer, $cm, $slot) {
+
+    $a = new stdClass();
+    $a->coursename = organizer_filter_text($course->fullname);
+    $a->courselink = html_writer::link(new moodle_url("/course/view.php?id={$course->id}"), $course->fullname);
+    $a->organizername = organizer_filter_text($organizer->name);
+    $a->organizerlink = html_writer::link(new moodle_url("/mod/organizer/view.php?id={$cm->id}"), $organizer->name);
+    $a->description =  $slot->comments;
+    if ($slot->locationlink) {
+        $a->location = html_writer::link($slot->locationlink, $slot->location);
+    } else {
+        $a->location = $slot->location;
+    }
+
+    return $a;
+}
+
+/**
+ * Create or change an appointment event per trainer.
+ *
+ * @param int $trainerid
+ * @param object $course
+ * @param object $cm
+ * @param object $organizer
+ * @param object $appointment
+ * @param object $slot
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
+function organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organizer, $appointment, $slot) {
+    global $DB;
+
+    $stringman = get_string_manager();
+
+    $a = organizer_add_event_appointment_strings($course, $organizer, $cm, $slot);
+    // Use the trainer's language.
+    $trainerlang = $DB->get_field('user', 'lang', array('id' => $trainerid));
+    // Calendar events for trainers info fields.
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $a->appwith = $stringman->get_string('eventappwith:group', 'organizer', null, $trainerlang);
+        $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
+        $group = groups_get_group($appointment->groupid);
+        $groupid = $group->id;
+        $users = groups_get_members($groupid);
+        $memberlist = "";
+        foreach ($users as $user) {
+            $memberlist .= organizer_get_name_link($user->id) . ", ";
+        }
+        $memberlist = trim($memberlist, ", ");
+        $memberlist .= " {$group->name} ";
+        $a->participants = $memberlist;
+    } else {
+        $a->appwith = $stringman->get_string('eventappwith:single', 'organizer', null, $trainerlang);
+        $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
+        $a->participants = organizer_get_users_of_slot($slot->id);
+    }
+    $eventtitle = $stringman->get_string('eventtitle', 'organizer', $a, $trainerlang);
+    $eventdescription = $stringman->get_string('eventtemplatewithoutlinks', 'organizer', $a, $trainerlang);
+
+    // Create or transform to appointment events for the slot for this trainer.
+    $params = array ('slotid' => $slot->id, 'trainerid' => $trainerid);
+    $query = "SELECT e.id FROM {event} e
+                  INNER JOIN {organizer_slot_trainer} t ON e.id = t.eventid
+                  WHERE t.slotid = :slotid AND t.trainerid = :trainerid";
+    // Create new appointment event or update existent appointment event for trainers.
+    if (!$teventid = $DB->get_field_sql($query, $params)) {
+        $teventid =  organizer_create_calendarevent(
+            $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
+            $trainerid, $slot->starttime, $slot->duration, 0, $appointment->id
+        );
+        $DB->set_field('organizer_slot_trainer', 'eventid', $teventid, array ('slotid' => $slot->id, 'trainerid' => $trainerid));
+    } else {
+        organizer_change_calendarevent(
+            array($teventid), $organizer, $eventtitle, $eventdescription,
+            ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT, $trainerid, $slot->starttime, $slot->duration, 0, $appointment->id
+        );
+    }
+}
+
+/**
+ * Define format and generate table for printing.
+ *
+ * @param object $mpdftable
+ * @param string $filename
+ * @throws coding_exception
+ */
+function organizer_format_and_print($mpdftable, $filename){
+
+    $format = optional_param('format', 'pdf', PARAM_TEXT);
+
+    switch($format) {
+        case 'xlsx':
+            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_XLSX);
+            break;
+        case 'xls':
+            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_XLS);
+            break;
+        case 'ods':
+            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_ODS);
+            break;
+        case 'csv_comma':
+            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_CSV_COMMA);
+            break;
+        case 'csv_tab':
+            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_CSV_TAB);
+            break;
+        default:
+            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_PDF);
+            break;
+    }
+
+    $mpdftable->generate($filename);
+    die();
+}
+
+/**
+ * Checks if student is allowed to do this action with this slot.
+ *
+ * @param string $action
+ * @param int $slot
+ * @return bool
+ * @throws coding_exception
+ * @throws dml_exception
+ */
+function organizer_organizer_student_action_allowed($action, $slot) {
+    global $DB;
+
+    if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
+        return false;
+    }
+
+    $slotx = new organizer_slot($slot);
+
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+
+    $canregister = has_capability('mod/organizer:register', $context, null, false);
+    $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
+    $canreregister = $canregister && $canunregister;
+
+    $myapp = organizer_get_last_user_appointment($organizer);
+    if ($myapp) {
+        $regslot = $DB->get_record('organizer_slots', array('id' => $myapp->slotid));
+        if (isset($regslot)) {
+            $regslotx = new organizer_slot($regslot);
+        }
+    }
+
+    $myslotexists = isset($regslot);
+    $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
+    $slotdisabled = $slotx->is_past_due() || $slotx->is_past_deadline();
+    $myslotpending = $myslotexists && $regslotx->is_past_deadline() && !$regslotx->is_evaluated();
+    $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
+    $slotfull = $slotx->is_full();
+
+    $disabled = $myslotpending || $organizerdisabled || $slotdisabled
+        || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
+
+    if ($myslotexists) {
+        if (!$slotdisabled) {
+            if ($ismyslot) {
+                $disabled |= !$canunregister
+                    || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
+            } else {
+                $disabled |= $slotfull || !$canreregister
+                    || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
+            }
+        }
+        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REREGISTER;
+    } else {
+        $disabled |= $slotfull || !$canregister || $ismyslot;
+        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REGISTER;
+    }
+
+    return !$disabled && ($action == $allowedaction);
+}
+
+/**
+ * Sets userprefs for this user according to the form values transmitted and triggers a print event.
+ *
+ * @param object $data
+ * @param object $cm
+ * @param object $context
+ * @return bool
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws required_capability_exception
+ */
+function organizer_print_setuserprefs_and_triggerevent($data, $cm, $context) {
+    global $DB, $PAGE;
+
+    set_user_preference('organizer_printperpage', $data->entriesperpage);
+    set_user_preference('organizer_printperpage_optimal', $data->printperpage_optimal);
+    set_user_preference('organizer_textsize', $data->textsize);
+    set_user_preference('organizer_pageorientation', $data->pageorientation);
+    set_user_preference('organizer_headerfooter', $data->headerfooter);
+
+    if ($data->printperpage_optimal == 1) {
+        $ppp = false;
+    } else {
+        $ppp = $data->entriesperpage;
+    }
+
+    $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
+
+    require_capability('mod/organizer:printslots', $context);
+
+    $event = \mod_organizer\event\appointment_list_printed::create(
+        array(
+            'objectid' => $PAGE->cm->id,
+            'context' => $PAGE->context
+        )
+    );
+    $event->trigger();
+
+    return $ppp;
 }

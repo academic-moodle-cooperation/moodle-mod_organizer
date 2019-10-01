@@ -2448,3 +2448,37 @@ function organizer_get_entries_queue_group($slot) {
 
     return $output;
 }
+
+/**
+ * Same codelines in the header for slots_print, slots_delete, slots_add, slots_eval.
+ *
+ * @return array
+ * @throws coding_exception
+ * @throws moodle_exception
+ * @throws require_login_exception
+ */
+function organizer_slotpages_header() {
+    global $PAGE;
+
+    $mode = optional_param('mode', null, PARAM_INT);
+    $action = optional_param('action', null, PARAM_ACTION);
+
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+
+    require_login($course, false, $cm);
+
+    $url = new moodle_url('/mod/organizer/view_action.php');
+    $url->param('id', $cm->id);
+    $url->param('mode', $mode);
+    $url->param('action', $action);
+    $url->param('sesskey', sesskey());
+
+    $PAGE->set_url($url);
+    $PAGE->set_pagelayout('standard');
+    $PAGE->set_title($organizer->name);
+    $PAGE->set_heading($course->fullname);
+
+    $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
+
+    return array($cm, $course, $organizer, $context, $redirecturl);
+}

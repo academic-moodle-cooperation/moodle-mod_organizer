@@ -29,30 +29,12 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/view_action_form_add.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
-
-require_login($course, false, $cm);
-
 $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ACTION);
-$user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = optional_param_array('slots', array(), PARAM_INT);
-$app = optional_param('app', null, PARAM_INT);
-$tsort = optional_param('tsort', null, PARAM_ALPHA);
 
-$url = new moodle_url('/mod/organizer/view_action.php');
-$url->param('id', $cm->id);
-$url->param('mode', $mode);
-$url->param('action', $action);
-$url->param('sesskey', sesskey());
-
-$PAGE->set_url($url);
-$PAGE->set_pagelayout('standard');
-$PAGE->set_title($organizer->name);
-$PAGE->set_heading($course->fullname);
-
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
+list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
