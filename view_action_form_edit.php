@@ -205,7 +205,7 @@ class organizer_edit_slots_form extends moodleform
         $mform->setType('mode', PARAM_INT);
         // TODO: might cause crashes!
         $mform->addElement('hidden', 'action', 'edit');
-        $mform->setType('action', PARAM_ACTION);
+        $mform->setType('action', PARAM_ALPHANUMEXT);
 
         $mform->addElement('hidden', 'warningtext1', get_string('warningtext1', 'organizer'));
         $mform->setType('warningtext1', PARAM_TEXT);

@@ -18,7 +18,7 @@
  * addslot.php
  *
  * @package   mod_organizer
- * @author    Andreas Windbichler
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -30,11 +30,13 @@ require_once(dirname(__FILE__) . '/view_action_form_add.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 
 $mode = optional_param('mode', null, PARAM_INT);
-$action = optional_param('action', null, PARAM_ACTION);
+$action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = optional_param_array('slots', array(), PARAM_INT);
 
 list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
+
+require_login($course, false, $cm);
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 

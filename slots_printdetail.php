@@ -38,7 +38,7 @@ list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 require_login($course, false, $cm);
 
 $mode = optional_param('mode', null, PARAM_INT);
-$action = optional_param('action', null, PARAM_ACTION);
+$action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
 $app = optional_param('app', null, PARAM_INT);

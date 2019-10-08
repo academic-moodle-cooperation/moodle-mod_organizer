@@ -61,7 +61,7 @@ class organizer_assign_slot_form extends moodleform
         $mform->addElement('hidden', 'mode', $data['mode']);
         $mform->setType('mode', PARAM_INT);
         $mform->addElement('hidden', 'action', 'assign');
-        $mform->setType('action', PARAM_ACTION);
+        $mform->setType('action', PARAM_ALPHANUMEXT);
         $mform->addElement('hidden', 'participant', $data['participant']);
         $mform->setType('participant', PARAM_INT);
         $mform->addElement('hidden', 'group', $data['group']);
