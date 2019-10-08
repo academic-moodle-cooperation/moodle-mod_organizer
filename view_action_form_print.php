@@ -52,7 +52,7 @@ class organizer_print_slots_form extends moodleform
 
         // TODO: might cause crashes!
         $mform->addElement('hidden', 'action', 'print');
-        $mform->setType('action', PARAM_ACTION);
+        $mform->setType('action', PARAM_ALPHANUMEXT);
 
         if (isset($data['slots'])) {
             foreach ($data['slots'] as $key => $slotid) {
@@ -106,60 +106,8 @@ class organizer_print_slots_form extends moodleform
                 'ods' => get_string('format_ods', 'organizer'),
                 'csv_tab' => get_string('format_csv_tab', 'organizer'),
                 'csv_comma' => get_string('format_csv_comma', 'organizer'));
-        $mform->addElement('select', 'format', get_string('format', 'organizer'), $exportformats);
 
-        $mform->addElement('static', 'pdf_settings', get_string('pdfsettings', 'organizer'));
-
-        $entriesperpage = get_user_preferences('organizer_printperpage', 20);
-        $printperpageoptimal = get_user_preferences('organizer_printperpage_optimal', 0);
-        $textsize = get_user_preferences('organizer_textsize', 10);
-        $pageorientation = get_user_preferences('organizer_pageorientation', 'P');
-        $headerfooter = get_user_preferences('organizer_headerfooter', 1);
-
-        // Submissions per page.
-        $pppgroup = array();
-        $pppgroup[] = &$mform->createElement('text', 'entriesperpage', get_string('numentries', 'organizer'), array('size' => '2'));
-        $pppgroup[] = &$mform->createElement(
-            'advcheckbox', 'printperpage_optimal',
-            '', get_string('stroptimal', 'organizer'), array("group" => 1)
-        );
-
-        $mform->addGroup($pppgroup, 'printperpagegrp', get_string('numentries', 'organizer'), array(' '), false);
-        $mform->setType('entriesperpage', PARAM_INT);
-
-        $mform->setDefault('entriesperpage', $entriesperpage);
-        $mform->setDefault('printperpage_optimal', $printperpageoptimal);
-
-        $mform->addHelpButton('printperpagegrp', 'numentries', 'organizer');
-
-        $mform->disabledif ('entriesperpage', 'printperpage_optimal', 'checked');
-        $mform->disabledif ('printperpagegrp', 'format', 'neq', 'pdf');
-
-        $mform->addElement(
-            'select', 'textsize', get_string('textsize', 'organizer'),
-            array('8' => get_string('font_small', 'organizer'), '10' => get_string('font_medium', 'organizer'),
-            '12' => get_string('font_large', 'organizer'))
-        );
-
-        $mform->setDefault('textsize', $textsize);
-        $mform->disabledif ('textsize', 'format', 'neq', 'pdf');
-
-        $mform->addElement(
-            'select', 'pageorientation', get_string('pageorientation', 'organizer'),
-            array('P' => get_string('orientationportrait', 'organizer'),
-            'L' => get_string('orientationlandscape', 'organizer'))
-        );
-
-        $mform->setDefault('pageorientation', $pageorientation);
-        $mform->disabledif ('pageorientation', 'format', 'neq', 'pdf');
-
-        $mform->addElement(
-            'advcheckbox', 'headerfooter', get_string('headerfooter', 'organizer'), null, null,
-            array(0, 1)
-        );
-        $mform->setType('headerfooter', PARAM_BOOL);
-        $mform->setDefault('headerfooter', $headerfooter);
-        $mform->addHelpButton('headerfooter', 'headerfooter', 'organizer');
+        $mform = organizer_build_printsettingsform($mform, $exportformats);
         $mform->disabledif ('headerfooter', 'format', 'neq', 'pdf');
 
         $buttonarray = array();
@@ -175,7 +123,7 @@ class organizer_print_slots_form extends moodleform
     }
 
     public function display() {
-        global $OUTPUT, $CFG;
+        global $CFG;
 
         // Finalize the form definition if not yet done.
         if (!$this->_definition_finalized) {
@@ -185,14 +133,7 @@ class organizer_print_slots_form extends moodleform
         $this->_form->getValidationScript();
         $output = $this->_form->toHtml();
 
-        $helpicon = new help_icon('datapreviewtitle', 'organizer');
-        $output .= html_writer::tag(
-            'div',
-            get_string('datapreviewtitle', 'organizer') . $OUTPUT->render($helpicon),
-            array('class' => 'datapreviewtitle')
-        );
-
-        $output .= '<div class="forced_scroll">';
+        $output = organizer_printtablepreview_icons($output);
 
         $printcols = $this->_selcols;
         $identityfields = explode(',', $CFG->showuseridentity);
@@ -207,6 +148,7 @@ class organizer_print_slots_form extends moodleform
             }
         }
 
+        $output .= '<div class="forced_scroll">';
         $notsortable = array('teacher', 'email', 'participant', 'comments');
         $output .= '<div style="float: left">';
         $output .= $this->_create_preview_table($printcols, $notsortable);

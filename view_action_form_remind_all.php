@@ -51,7 +51,7 @@ class organizer_remind_all_form extends moodleform
         $mform->addElement('hidden', 'mode', $data['mode']);
         $mform->setType('mode', PARAM_INT);
         $mform->addElement('hidden', 'action', 'remindall');
-        $mform->setType('action', PARAM_ACTION);
+        $mform->setType('action', PARAM_ALPHANUMEXT);
         $mform->addElement('hidden', 'user', $recipient);
         $mform->setType('user', PARAM_INT);
 

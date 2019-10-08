@@ -77,29 +77,29 @@ function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $endd
         'enddate1' => $enddate, 'startdate2' => $startdate, 'enddate2' => $enddate, 'trainerid2' => $trainerid,
         'newslotid' => $newslotid, 'startdate3' => $startdate, 'enddate3' => $enddate, 'startdate4' => $startdate,
         'enddate4' => $enddate);
-    $query = "SELECT {event}.id as id, {event}.name, {event}.timestart, {event}.timeduration, 'event' as typ 
+    $query = "SELECT {event}.id as id, {event}.name, {event}.timestart, {event}.timeduration, 'event' as typ
               FROM {event}
               INNER JOIN {user} ON {user}.id = {event}.userid
               WHERE {event}.userid = :trainerid AND {event}.modulename <> :modulename
               AND (
                   {event}.timestart >= :startdate1 AND
                   {event}.timestart < :enddate1
-                  OR 
+                  OR
                   {event}.timestart + {event}.timeduration >= :startdate2 AND
                   {event}.timestart + {event}.timeduration < :enddate2
                   )
-              
+
               UNION
-              
+
               SELECT {organizer_slots}.id as id, {organizer_slots}.location as name, {organizer_slots}.starttime as timestart,
               {organizer_slots}.duration as timeduration, 'slot' as typ
               FROM {organizer_slots}
               INNER JOIN {organizer_slot_trainer} ON {organizer_slot_trainer}.slotid = {organizer_slots}.id
-              WHERE {organizer_slot_trainer}.trainerid = :trainerid2 
+              WHERE {organizer_slot_trainer}.trainerid = :trainerid2
               AND {organizer_slots}.id <> :newslotid
               AND (
                   {organizer_slots}.starttime >= :startdate3 AND
-                  {organizer_slots}.starttime < :enddate3 
+                  {organizer_slots}.starttime < :enddate3
                   OR {organizer_slots}.starttime + {organizer_slots}.duration >= :startdate4 AND
                   {organizer_slots}.starttime + {organizer_slots}.duration < :enddate4
                   )
@@ -251,13 +251,13 @@ function organizer_add_new_slots($data) {
                         $eventsandslots = organizer_load_eventsandslots($trainerid, $newslot->id, $newslot->starttime,
                             $newslot->starttime + $newslot->duration);
                         if ($collisions = organizer_check_collision($newslot->starttime,
-                            $newslot->starttime + $newslot->duration, $eventsandslots))
-                        {
+                            $newslot->starttime + $newslot->duration, $eventsandslots)) {
                             $head = true;
                             $collisionmessage = "";
                             foreach ($collisions as $collision) {
                                 if ($head) {
-                                    $collisionmessage .= '<span class="error">' . get_string('collision', 'organizer') . '</span><br />';
+                                    $collisionmessage .= '<span class="error">' .
+                                        get_string('collision', 'organizer') . '</span><br />';
                                     $head = false;
                                 }
                                 if ($collision->typ == 'slot') {
@@ -648,13 +648,13 @@ function organizer_update_slot($data) {
             } else if ($modified && $data->mod_maxparticipants == 1  && $data->maxparticipants > $appcount) {
                 $freeslots = (int)$data->maxparticipants - (int)$appcount;
                 if (organizer_hasqueue($organizerid)) {
-                    for( $i = 0; $i<$freeslots; $i++ ) {
+                    for ( $i = 0; $i<$freeslots; $i++ ) {
                         $slotx = new organizer_slot($slotid);
                         if (organizer_is_group_mode()) {
                             if ($next = $slotx->get_next_in_queue_group()) {
                                 // The moodlegroup groupmode does not allow more than one group, so following code is..
                                 // Not Used At the moment.
-                                if(organizer_register_appointment($slotid, $next->groupid, 0, true, null, true)) {
+                                if (organizer_register_appointment($slotid, $next->groupid, 0, true, null, true)) {
                                     organizer_delete_from_queue($slotid, null, $next->groupid);
                                 }
                             } else {
@@ -713,7 +713,7 @@ function organizer_update_slot($data) {
                         $record->trainerid = $trainerid;
                         $DB->insert_record('organizer_slot_trainer', $record);
                         if ($apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slotid))) {
-                            list($cm, , , ,) = organizer_get_course_module_data();
+                            list($cm, , , , ) = organizer_get_course_module_data();
                             foreach ($apps as $app) {
                                 organizer_add_event_appointment_trainer($cm->id, $app, $trainerid);
                             }
@@ -730,7 +730,8 @@ function organizer_update_slot($data) {
             } else {
                 // If empty slots events are activated create them now for this slot.
                 $updatedslot = $DB->get_record('organizer_slots', array('id' => $slotid));
-                if (!$nocalendareventslotcreation = $DB->get_field('organizer', 'nocalendareventslotcreation', array('id' => $updatedslot->organizerid))) {
+                if (!$nocalendareventslotcreation = $DB->get_field('organizer', 'nocalendareventslotcreation',
+                    array('id' => $updatedslot->organizerid))) {
                     $trainers = $DB->get_records('organizer_slot_trainer', array('slotid' => $slotid));
                     foreach ($trainers as $trainer) {
                         organizer_add_event_slot($data->id, $updatedslot, $trainer->trainerid, $trainer->eventid);
@@ -894,7 +895,8 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
     return $ok;
 }
 
-function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sendmessage = false, $teacherapplicantid = null, $slotnotfull = false) {
+function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
+                                        $sendmessage = false, $teacherapplicantid = null, $slotnotfull = false) {
     global $DB, $USER, $CFG;
 
     if (!$userid) {
@@ -1029,10 +1031,6 @@ function organizer_queue_single_appointment($slotid, $userid, $applicantid = 0, 
     $appointment->feedback = '';
     $appointment->comments = '';
 
-    // Hell, what for?!
-    // $cm = organizer_get_cm();
-    // $appointment->eventid = organizer_add_event_appointment($cm->id, $appointment);
-
     $appointment->id = $DB->insert_record('organizer_slot_queues', $appointment);
 
     return $appointment->id;
@@ -1066,14 +1064,15 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
             if ($app = organizer_get_last_user_appointment($slot->organizerid, $memberid)) {
                 $okunregister = organizer_unregister_single_appointment($app->slotid, $memberid);
             }
-            $okregister = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid, null, $generatetrainerevents);
+            $okregister = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid,
+                null, $generatetrainerevents);
             $generatetrainerevents = false;
         }
     } else {
         if ($app = organizer_get_last_user_appointment($slot->organizerid)) {
             $okunregister = organizer_unregister_single_appointment($app->slotid, $USER->id);
         }
-        $okregister = organizer_register_single_appointment($slotid, $USER->id, 0, 0, null,true);
+        $okregister = organizer_register_single_appointment($slotid, $USER->id, 0, 0, null, true);
     }
 
     if (organizer_hasqueue($slot->organizerid)) {
@@ -1105,7 +1104,8 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
                 // Create slot event per trainer if instance config "empty slot events" is on.
                 if (!isset($organizer->nocalendareventslotcreation) || !$organizer->nocalendareventslotcreation) {
                     $neweventid = organizer_add_event_slot($cm->id, $app->slotid, $trainer);
-                    if ($record = $DB->get_record('organizer_slot_trainer', array("slotid" => $app->slotid, "trainerid" => $trainer))){
+                    if ($record = $DB->get_record('organizer_slot_trainer', array("slotid" => $app->slotid,
+                        "trainerid" => $trainer))) {
                         $record->eventid = $neweventid;
                         $DB->update_record('organizer_slot_trainer', $record);
                     } else {
@@ -1190,7 +1190,6 @@ function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
                     $record = new stdClass();
                     $record->trainerid = $trainer;
                     $record->slotid = $slotid;
-                    //$record->eventid = $neweventid;
                     $DB->insert_record('organizer_slot_trainer', $record);
                 }
             }
@@ -1209,10 +1208,11 @@ function organizer_unregister_single_appointment($slotid, $userid) {
         $DB->delete_records('event', array('id' => $appointment->eventid));
         $ok = $DB->delete_records('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid));
         if (!$apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slotid))) {
-            $DB->delete_records('event', array('modulename' => 'organizer', 'eventtype' => 'Appointment', 'uuid' => $appointment->id));
+            $DB->delete_records('event', array('modulename' => 'organizer', 'eventtype' => 'Appointment',
+                'uuid' => $appointment->id));
         } else {
             // To refresh description text of trainer's appointment events.
-            foreach($apps as $app) {
+            foreach ($apps as $app) {
                 $course = $DB->get_record('course', array('id' => $organizer->course), 'id', MUST_EXIST);
                 $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
                 organizer_add_event_appointment_trainer($cm->id, $app);
@@ -1970,67 +1970,6 @@ function organizer_format_and_print($mpdftable, $filename){
 
     $mpdftable->generate($filename);
     die();
-}
-
-/**
- * Checks if student is allowed to do this action with this slot.
- *
- * @param string $action
- * @param int $slot
- * @return bool
- * @throws coding_exception
- * @throws dml_exception
- */
-function organizer_organizer_student_action_allowed($action, $slot) {
-    global $DB;
-
-    if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
-        return false;
-    }
-
-    $slotx = new organizer_slot($slot);
-
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
-
-    $canregister = has_capability('mod/organizer:register', $context, null, false);
-    $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
-    $canreregister = $canregister && $canunregister;
-
-    $myapp = organizer_get_last_user_appointment($organizer);
-    if ($myapp) {
-        $regslot = $DB->get_record('organizer_slots', array('id' => $myapp->slotid));
-        if (isset($regslot)) {
-            $regslotx = new organizer_slot($regslot);
-        }
-    }
-
-    $myslotexists = isset($regslot);
-    $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
-    $slotdisabled = $slotx->is_past_due() || $slotx->is_past_deadline();
-    $myslotpending = $myslotexists && $regslotx->is_past_deadline() && !$regslotx->is_evaluated();
-    $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
-    $slotfull = $slotx->is_full();
-
-    $disabled = $myslotpending || $organizerdisabled || $slotdisabled
-        || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
-
-    if ($myslotexists) {
-        if (!$slotdisabled) {
-            if ($ismyslot) {
-                $disabled |= !$canunregister
-                    || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
-            } else {
-                $disabled |= $slotfull || !$canreregister
-                    || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
-            }
-        }
-        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REREGISTER;
-    } else {
-        $disabled |= $slotfull || !$canregister || $ismyslot;
-        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REGISTER;
-    }
-
-    return !$disabled && ($action == $allowedaction);
 }
 
 /**

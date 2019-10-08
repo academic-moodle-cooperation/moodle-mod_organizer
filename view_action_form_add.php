@@ -45,7 +45,7 @@ class organizer_add_slots_form extends moodleform
 
     private $weekdays;
     /**
-     * 
+     *
      * {@inheritDoc}
      * @see moodleform::definition()
      */
@@ -67,7 +67,7 @@ class organizer_add_slots_form extends moodleform
         $mform->addElement('hidden', 'mode', $data['mode']);
         $mform->setType('mode', PARAM_INT);
         $mform->addElement('hidden', 'action', 'add');
-        $mform->setType('action', PARAM_ACTION);
+        $mform->setType('action', PARAM_ALPHANUMEXT);
 
         $mform->addElement('header', 'slotdetails', get_string('slotdetails', 'organizer'));
 
@@ -95,8 +95,8 @@ class organizer_add_slots_form extends moodleform
         } else {
             $locations = explode("\n", $locations);
             $locations = array_combine($locations, $locations);
-            $firstItem = array(null => get_string("choose"));
-            $locations = $firstItem + $locations;
+            $firstitem = array(null => get_string("choose"));
+            $locations = $firstitem + $locations;
             $options = array(
                 'multiple' => false,
                 'tags' => true,
@@ -254,7 +254,7 @@ class organizer_add_slots_form extends moodleform
         $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', array($params));
     }
     /**
-     * 
+     *
      * {@inheritDoc}
      * @see moodleform::definition_after_data()
      */
@@ -267,7 +267,7 @@ class organizer_add_slots_form extends moodleform
         }
     }
     /**
-     * 
+     *
      * {@inheritDoc}
      * @see moodleform::validation()
      */
@@ -362,7 +362,7 @@ class organizer_add_slots_form extends moodleform
         return $errors;
     }
     /**
-     * 
+     *
      * @param array $data
      * @return boolean
      */
@@ -432,7 +432,7 @@ class organizer_add_slots_form extends moodleform
         return true;
     }
     /**
-     * 
+     *
      * @param mixed $value
      * @return boolean
      */
@@ -451,10 +451,10 @@ class organizer_add_slots_form extends moodleform
      * called from definition if adday-button was submitted
      */
     /**
-     * 
+     *
      * @param number $newslotnext
      * @return number
-     */    
+     */
     private function _add_slot_fields($newslotnext) {
         $mform = &$this->_form;
 
@@ -473,7 +473,7 @@ class organizer_add_slots_form extends moodleform
         return $totalslots;
     }
     /**
-     * 
+     *
      * @param int $newslotindex
      * @return NULL[]|object[]|object[]
      */
@@ -512,7 +512,7 @@ class organizer_add_slots_form extends moodleform
 
 
     /**
-     * 
+     *
      * @return string[]
      */
     private function _get_visibilities() {
@@ -525,7 +525,7 @@ class organizer_add_slots_form extends moodleform
         return $visibilities;
     }
     /**
-     * 
+     *
      * @return string[]
      */
     private function _get_trainer_list() {
@@ -545,7 +545,7 @@ class organizer_add_slots_form extends moodleform
         return $trainers;
     }
     /**
-     * 
+     *
      * @param number $num
      * @param number $lower
      * @param number $upper
@@ -600,7 +600,7 @@ class organizer_add_slots_form extends moodleform
         $mform->setType('scrolly', PARAM_BOOL);
     }
     /**
-     * 
+     *
      * @return mixed
      */
     private function _get_instance_visibility() {
