@@ -1607,7 +1607,7 @@ function organizer_get_user_identity($user) {
         $identity = $DB->get_field_select('user', 'idnumber', "id = {$id}");
     } else {
         if (in_array('email', $identityfields)) {
-            $identity = organizer_get_user_email($id);
+            $identity = $DB->get_field_select('user', 'email', "id = {$id}");
         }
     }
 
