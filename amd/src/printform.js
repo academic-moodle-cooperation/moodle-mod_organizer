@@ -39,8 +39,11 @@ define(
 
         var instance = new Printform();
 
-        instance.init = function (param) {
+        instance.init = function(param) {
 
+            /**
+             * Writes expand icon (+) and hide icon (-) in every header cell. Every expand icon is set to hidden.
+             */
             function init_header() {
                 var printpreview = $('#print_preview');
                 printpreview.find('th').find('a[name$=_cell]').each(function() {
@@ -53,69 +56,31 @@ define(
                 });
             }
 
+            /**
+             * During initialization of the table every column which is set to hidden in the user preferences
+             * will be hidden here.
+             */
             function init_noprints() {
                 var printpreview = $('#print_preview');
                 printpreview.find('th').find('a[noprint*=1]').each(function() {
                     var name = $(this).attr("name");
                     var col = name.split("_")[0];
-                    $('#' + col + '_thiconminus').trigger( "click" );
+                    $('#' + col + '_thiconminus').trigger("click");
                 });
             }
 
-            function toggle_column(e) {
-                var target = $(e.target);
-                var col = target.attr('col');
-                var src = target.attr('src');
-                var hide;
-                if (src.indexOf("minus") != -1) {
-                    hide = true;
-                    $('#' + col + '_thiconminus').hide();
-                    $('#' + col + '_thiconplus').show();
-                    $('a[name=' + col + '_cell]').hide();
-                } else {
-                    hide = false;
-                    $('#' + col + '_thiconplus').hide();
-                    $('#' + col + '_thiconminus').show();
-                    $('a[name=' + col + '_cell]').show();
-                }
-                var tdindex = target.parent().attr('class').replace('header ', '');
-                var printpreview = $('#print_preview');
-                printpreview.find(".cell." + tdindex).each(
-                    function() {
-                        var td = $(this);
-                        if (hide) {
-                            td.find("*").hide();
-                        } else {
-                            td.find("*").show();
-                        }
-                    }
-                );
-                set_user_preference();
-            }
-
-            instance.iconminus = param.iconminus;
-            instance.iconplus = param.iconplus;
-
-            init_header();
-
-            var printpreview = $('#print_preview');
-            printpreview.find('th').find('img[id*=_thicon]').on('click', toggle_column);
-
-            init_noprints();
-
+            /**
+             * Stores the invisible columms of the print preview table in the moodle user preferences table.
+             */
             function set_user_preference() {
                 var name = "mod_organizer_noprintfields";
                 var values = "";
-                var comma = "";
-                var col = "";
                 $("img[id$='_thiconplus']").not(':hidden').each(function() {
-                    col = $(this).attr("col");
-                    values += comma + col;
-                    comma = ",";
+                    values += $(this).attr("col") + ',';
                 });
                 var cfg = {
-                    method : 'get',
-                    url : config.wwwroot + '/lib/ajax/setuserpref.php',
+                    method: 'get',
+                    url: config.wwwroot + '/lib/ajax/setuserpref.php',
                     data: {
                         'sesskey': config.sesskey,
                         'pref': encodeURI(name),
@@ -134,8 +99,50 @@ define(
                 };
                 $.ajax(cfg);
             }
-        };
 
+            /**
+             * Hide a former visible column or show a former hidden column here.
+             * @param e the click event of the + or - icon
+             */
+            function toggle_column(e) {
+                var target = $(e.target);
+                var col = target.attr('col');
+                var src = target.attr('src');
+                var hide;
+                if (src.indexOf("minus") != -1) {
+                    hide = true;
+                    $('#' + col + '_thiconminus').hide();
+                    $('#' + col + '_thiconplus').show();
+                    $('a[name=' + col + '_cell]').hide();
+                } else {
+                    hide = false;
+                    $('#' + col + '_thiconplus').hide();
+                    $('#' + col + '_thiconminus').show();
+                    $('a[name=' + col + '_cell]').show();
+                }
+                var printpreview = $('#print_preview');
+                printpreview.find('span[name=' + col + '_cell]').each(
+                    function() {
+                        if (hide) {
+                            $(this).hide();
+                        } else {
+                            $(this).show();
+                        }
+                    }
+                );
+                set_user_preference();
+            }
+
+            instance.iconminus = param.iconminus;
+            instance.iconplus = param.iconplus;
+
+            init_header();
+
+            var printpreview = $('#print_preview');
+            printpreview.find('th').find('img[id*=_thicon]').on('click', toggle_column);
+
+            init_noprints();
+        };
         return instance;
 
     }

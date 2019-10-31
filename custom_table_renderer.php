@@ -20,7 +20,7 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author    Andreas Windbichler
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -257,7 +257,7 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                     if ($cell->header === true) {
                         $tagtype = 'th';
                     }
-                    $output .= html_writer::tag($tagtype, $cell->text, $tdattributes) . "\n";
+                    $output .= html_writer::tag($tagtype, organizer_filter_text($cell->text), $tdattributes) . "\n";
                 }
             }
             $output .= html_writer::end_tag('tr') . "\n";

@@ -17,6 +17,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
+require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
 /**
