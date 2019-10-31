@@ -1127,19 +1127,6 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
     return $rows;
 }
 
-function organizer_get_participant_entry($entry) {
-    if (isset($entry->comments) && $entry->comments != '' ) {
-        $icon = ' ' . organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments);
-    } else {
-        $icon = ' ' . organizer_get_icon('transparent', '');
-    }
-    $identity = organizer_get_user_identity($entry);
-    $identity = $identity != "" ? "({$identity})" : "";
-    $participantentry = organizer_get_name_link($entry->id) . " {$icon}<br/>" . $identity .
-            organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified);
-    return $participantentry;
-}
-
 function organizer_app_details($appointment) {
 
     if (!isset($appointment)) {
@@ -1148,7 +1135,7 @@ function organizer_app_details($appointment) {
 
     $list = '<span style="display:table-cell">';
     if ($appointment->comments) {
-        $list .= organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, s($appointment->comments));
+        $list .= organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, organizer_filter_text($appointment->comments));
     } else {
         $list .= "&nbsp;";
     }

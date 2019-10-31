@@ -29,6 +29,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
+require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
 class organizer_print_slots_form extends moodleform
@@ -149,15 +150,14 @@ class organizer_print_slots_form extends moodleform
         }
 
         $output .= '<div class="forced_scroll">';
-        $notsortable = array('teacher', 'email', 'participant', 'comments');
         $output .= '<div style="float: left">';
-        $output .= $this->_create_preview_table($printcols, $notsortable);
+        $output .= $this->_create_preview_table($printcols);
         $output .= '</div><div style="width: 1em; float: left;"> </div>';
 
-        print $output;
+        echo $output;
     }
 
-    private function _create_preview_table($columns, $notsortable) {
+    private function _create_preview_table($columns) {
         global $PAGE, $OUTPUT, $cm, $CFG;
 
         user_preference_allow_ajax_update('mod_organizer_noprintfields', PARAM_TEXT);
@@ -176,10 +176,8 @@ class organizer_print_slots_form extends moodleform
         $table->attributes['class'] = 'boxaligncenter';
 
         $tsort = isset($_SESSION['organizer_tsort']) ? $_SESSION['organizer_tsort'] : "";
-
         if ($tsort != "") {
             $order = "ASC";
-
             if (substr($tsort, strlen($tsort) - strlen("DESC")) == "DESC") {
                 $tsort = substr($tsort, 0, strlen($tsort) - strlen("DESC"));
                 $order = "DESC";
@@ -231,11 +229,7 @@ class organizer_print_slots_form extends moodleform
                 }
             }
 
-            if (!in_array($column, $notsortable)) {
-                $cell = new html_table_cell(html_writer::link($url, get_string("th_{$column}", 'organizer') . $icon, $linkarray));
-            } else {
-                $cell = new html_table_cell(get_string("th_{$column}", 'organizer'));
-            }
+            $cell = new html_table_cell(html_writer::link($url, get_string("th_{$column}", 'organizer') . $icon, $linkarray));
             $cell->header = true;
             $header[] = $cell;
         }
@@ -291,6 +285,7 @@ class organizer_print_slots_form extends moodleform
         foreach ($entries as $entry) {
             $row = $rows[] = new html_table_row();
             foreach ($columns as $column) {
+                // Rows with rowspan = slot rows.
                 if ($rowspan == 0) {
                     switch ($column) {
                         case 'datetime':
@@ -332,8 +327,7 @@ class organizer_print_slots_form extends moodleform
                             $row->cells[] = $cell;
                         break;
                         case 'teachercomments':
-                            $teachercomments = $entry->teachercomments;
-                            $content = "<span name='{$column}_cell'>" . $teachercomments . '</span>';
+                            $content = "<span name='{$column}_cell'>" . organizer_filter_text($entry->teachercomments) . '</span>';
                             $cell = new html_table_cell($content);
                             $cell->rowspan = $entry->rowspan;
                             $cell->style = 'vertical-align: middle;';
@@ -355,7 +349,7 @@ class organizer_print_slots_form extends moodleform
                     }
                 }
 
-                // Columns without rowspan.
+                // Columns without rowspan = participant's rows.
                 switch ($column) {
                     case 'participant':
                         $a = new stdClass();
@@ -406,7 +400,7 @@ class organizer_print_slots_form extends moodleform
                     break;
                     case 'comments':
                         $comments = isset($entry->comments) && $entry->comments !== '' ? $entry->comments : '';
-                        $content = "<span name='{$column}_cell'>" . $comments . '</span>';
+                        $content = "<span name='{$column}_cell'>" . organizer_filter_text($comments) . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->style = 'vertical-align: middle;';
                         $row->cells[] = $cell;

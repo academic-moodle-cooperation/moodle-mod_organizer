@@ -5,6 +5,8 @@ CHANGELOG
 ------------------
 
 * [FIXED] #6366: Fatal error when creating an organizer instance with groups and a student in multiple groups
+* [FEATURE] #6083: Print slots infos: Print participants slot comments as well
+
 
 3.7.0 (2019-08-05)
 ------------------
