@@ -38,7 +38,7 @@ list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 require_login($course, false, $cm);
 
 $mode = optional_param('mode', null, PARAM_INT);
-$action = optional_param('action', null, PARAM_ACTION);
+$action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
 $app = optional_param('app', null, PARAM_INT);
@@ -82,29 +82,7 @@ if ($data = $mform->get_data()) {
         print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
     }
 
-    set_user_preference('organizer_printperpage', $data->entriesperpage);
-    set_user_preference('organizer_printperpage_optimal', $data->printperpage_optimal);
-    set_user_preference('organizer_textsize', $data->textsize);
-    set_user_preference('organizer_pageorientation', $data->pageorientation);
-    set_user_preference('organizer_headerfooter', $data->headerfooter);
-
-    if ($data->printperpage_optimal == 1) {
-        $ppp = false;
-    } else {
-        $ppp = $data->entriesperpage;
-    }
-
-    $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
-
-    require_capability('mod/organizer:printslots', $context);
-
-    $event = \mod_organizer\event\appointment_list_printed::create(
-        array(
-            'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
-        )
-    );
-    $event->trigger();
+    $ppp = organizer_print_setuserprefs_and_triggerevent($data, $cm, $context);
 
     if (!isset($data->cols)) {
         redirect($redirecturl, get_string('nosingleslotprintfields', 'organizer'), null, \core\output\notification::NOTIFY_ERROR);
@@ -135,58 +113,6 @@ if ($data = $mform->get_data()) {
 }
 
 die;
-
-function organizer_organizer_student_action_allowed($action, $slot) {
-    global $DB;
-
-    if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
-        return false;
-    }
-
-    $slotx = new organizer_slot($slot);
-
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
-
-    $canregister = has_capability('mod/organizer:register', $context, null, false);
-    $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
-    $canreregister = $canregister && $canunregister;
-
-    $myapp = organizer_get_last_user_appointment($organizer);
-    if ($myapp) {
-        $regslot = $DB->get_record('organizer_slots', array('id' => $myapp->slotid));
-        if (isset($regslot)) {
-            $regslotx = new organizer_slot($regslot);
-        }
-    }
-
-    $myslotexists = isset($regslot);
-    $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
-    $slotdisabled = $slotx->is_past_due() || $slotx->is_past_deadline();
-    $myslotpending = $myslotexists && $regslotx->is_past_deadline() && !$regslotx->is_evaluated();
-    $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
-    $slotfull = $slotx->is_full();
-
-    $disabled = $myslotpending || $organizerdisabled || $slotdisabled
-        || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
-
-    if ($myslotexists) {
-        if (!$slotdisabled) {
-            if ($ismyslot) {
-                $disabled |= !$canunregister
-                || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
-            } else {
-                $disabled |= $slotfull || !$canreregister
-                || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
-            }
-        }
-        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REREGISTER;
-    } else {
-        $disabled |= $slotfull || !$canregister || $ismyslot;
-        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REGISTER;
-    }
-
-    return !$disabled && ($action == $allowedaction);
-}
 
 function organizer_display_printable_slotdetail_table($columns, $slotid, $entriesperpage = false, $textsize = '10',
         $orientation = 'L', $headerfooter = true) {
@@ -497,29 +423,5 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
         $mpdftable->addRow($row);
     }
 
-    $format = optional_param('format', 'pdf', PARAM_TEXT);
-
-    switch($format) {
-        case 'xlsx':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_XLSX);
-        break;
-        case 'xls':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_XLS);
-        break;
-        case 'ods':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_ODS);
-        break;
-        case 'csv_comma':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_CSV_COMMA);
-        break;
-        case 'csv_tab':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_CSV_TAB);
-        break;
-        default:
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_PDF);
-        break;
-    }
-
-    $mpdftable->generate($filename);
-    die();
+    organizer_format_and_print($mpdftable, $filename);
 }

@@ -38,9 +38,9 @@ define(
 
         var instance = new Initinfobox();
 
-        instance.init = function (param) {
+        instance.init = function(param) {
 
-            instance.student = param;  // Is user student or not.
+            instance.student = param; // Is user student or not.
 
             // What happens when a view option checkbox is clicked or the filter field has been changed.
             function toggle_all_slots() {
@@ -49,8 +49,15 @@ define(
                 var showmyslotsonly = $('#show_my_slots_only').is(':checked');
                 var showfreeslotsonly = $('#show_free_slots_only').is(':checked');
                 var showhiddenslots = $('#show_hidden_slots').is(':checked');
+                var showregistrationsonly = $('#show_registrations_only').is(':checked');
 
                 tablebody.find('tr').show();
+
+                if (showregistrationsonly) {
+                    tablebody.find('tr:not(.registered)').hide();
+                } else {
+                    tablebody.find('tr.registered').show();
+                }
 
                 if (!showhiddenslots) {
                     tablebody.find('tr:not(.info).unavailable').hide();
@@ -102,11 +109,12 @@ define(
                 toggle_info();
 
                 set_user_preference('mod_organizer_showhiddenslots', (showhiddenslots));
-                if (!instance.student){
+                if (!instance.student) {
                     set_user_preference('mod_organizer_showmyslotsonly', (showmyslotsonly));
                 }
                 set_user_preference('mod_organizer_showfreeslotsonly', (showfreeslotsonly));
                 set_user_preference('mod_organizer_showpasttimeslots', (showpastslots));
+                set_user_preference('mod_organizer_showregistrationsonly', (showregistrationsonly));
 
             }
 
@@ -117,11 +125,11 @@ define(
                 var anyvisible = false;
 
                 noninforows.each(
-                    function () {
+                    function() {
                         if (!(
-                                $( this ).css('offsetWidth') === 0 &&
-                                $( this ).css('offsetHeight') === 0) ||
-                                $( this ).css('display') === 'none'
+                                $(this).css('offsetWidth') === 0 &&
+                                $(this).css('offsetHeight') === 0) ||
+                                $(this).css('display') === 'none'
                         ) {
                             anyvisible = true;
                         }
@@ -139,8 +147,6 @@ define(
                         tablebody.find('tr.no_slots').show();
                     } else if (showpastslots && showmyslotsonly) {
                         tablebody.find('tr.no_my_slots').show();
-                    } else if (!showpastslots && showmyslotsonly) {
-                        tablebody.find('tr.no_due_my_slots').show();
                     } else {
                         tablebody.find('tr.no_due_slots').show();
                     }
@@ -167,17 +173,18 @@ define(
             $('#show_my_slots_only').on('click', toggle_all_slots);
             $('#show_free_slots_only').on('click', toggle_all_slots);
             $('#show_hidden_slots').on('click', toggle_all_slots);
+            $('#show_registrations_only').on('click', toggle_all_slots);
             $('.organizer_filtertable').on('keyup', toggle_all_slots);
 
             toggle_all_slots();
 
             function set_user_preference(name, value) {
 
-                $.get( config.wwwroot + '/lib/ajax/setuserpref.php', {
+                $.get(config.wwwroot + '/lib/ajax/setuserpref.php', {
                     sesskey: config.sesskey,
                     pref: encodeURI(name),
                     value: encodeURI(value)
-                } , 'json').done(function( data ) {
+                }, 'json').done(function(data) {
                     if (data != 'OK') {
                         log.error(data);
                     }

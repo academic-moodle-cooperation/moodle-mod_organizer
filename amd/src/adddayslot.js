@@ -15,13 +15,13 @@
 
 /**
  * @package mod
- * @subpackage datalynx
+ * @subpackage organizer
  * @copyright 2017 Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * Create new dayslots as duplicates of the seven original day slots
+ * Create new dayslots
  */
 
 
@@ -52,6 +52,8 @@ define(
             instance.relativedeadline = param.relativedeadline;  // Relative deadline for slot registrations in seconds.
             instance.relativedeadlinestring = param.relativedeadlinestring;  // String warning message if slots had
             // not been created due to registration deadline. "xxx" is replaced by the number of not created slots.
+            instance.allowcreationofpasttimeslots = param.allowcreationofpasttimeslots;  // Relative deadline for slot registrations in seconds.
+            instance.pasttimeslotsstring = param.pasttimeslotsstring;  // String warning message if slots had
 
             if (instance.displayallslots == 0) {  // So the form is loaded initially.
 
@@ -152,12 +154,17 @@ define(
                 var howmanyslots = getslots(i);
                 var slots = howmanyslots[0];
                 var slotsnotcreatedduetodeadline = howmanyslots[1];
+                var slotsnotcreatedduetopasttime = howmanyslots[2];
                 var pax = getpax();
                 pax = pax * slots;
                 var forecaststring = instance.totalday.replace("xxx", slots.toString()).replace("yyy", pax.toString());
                 if (slotsnotcreatedduetodeadline > 0 ) {
                     forecaststring += " (" + instance.relativedeadlinestring.replace("xxx",
                         slotsnotcreatedduetodeadline.toString()) + ")";
+                }
+                if (slotsnotcreatedduetopasttime > 0 ) {
+                    forecaststring += " (" + instance.pasttimeslotsstring.replace("xxx",
+                        slotsnotcreatedduetopasttime.toString()) + ")";
                 }
                 $("span[name='forecastday_" + i + "']").html(forecaststring);
                 $("span[name='newslots_" + i + "']").html(slots.toString());
@@ -205,6 +212,7 @@ define(
                 var iweekday, daydate, jsdaydate, datefrom, dateto, itime;
                 var slots = 0;
                 var slotsnotcreatedduetodeadline = 0;
+                var slotsnotcreatedduetopasttime = 0;
                 // Iterate through days of period.
                 for (daydate = periodstartdate; daydate <= periodenddate; daydate = addDays(daydate * 1000, 1)) {
                     jsdaydate = new Date(daydate * 1000);
@@ -224,14 +232,16 @@ define(
                     var now = new Date();
                     var date = now.getTime() / 1000;
                     for (itime = datefrom; itime + duration <= dateto; itime += iteration) {
-                        if (itime - instance.relativedeadline - date > 0) {
-                            slots++;
-                        } else {
+                        if (itime - date < instance.relativedeadline && itime - date > 0) {
                             slotsnotcreatedduetodeadline++;
+                        } else if (itime - date < 0 && instance.allowcreationofpasttimeslots == 0) {
+                            slotsnotcreatedduetopasttime++;
+                        } else {
+                            slots++;
                         }
                     }
                 }
-                var returnvalues = [slots, slotsnotcreatedduetodeadline]
+                var returnvalues = [slots, slotsnotcreatedduetodeadline, slotsnotcreatedduetopasttime];
                 return returnvalues;
             }
 

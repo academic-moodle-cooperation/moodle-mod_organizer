@@ -20,6 +20,7 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -32,30 +33,17 @@ require_once(dirname(__FILE__) . '/view_action_form_remind_all.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
-
-require_login($course, false, $cm);
-
 $mode = optional_param('mode', null, PARAM_INT);
-$action = optional_param('action', null, PARAM_ACTION);
+$action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $recipient = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = optional_param_array('slots', array(), PARAM_INT);
 $app = optional_param('app', null, PARAM_INT);
 $tsort = optional_param('tsort', null, PARAM_ALPHA);
 
-$url = new moodle_url('/mod/organizer/view_action.php');
-$url->param('id', $cm->id);
-$url->param('mode', $mode);
-$url->param('action', $action);
-$url->param('sesskey', sesskey());
+require_login($course, false, $cm);
 
-$PAGE->set_url($url);
-$PAGE->set_pagelayout('standard');
-$PAGE->set_title($organizer->name);
-$PAGE->set_heading($course->fullname);
-
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
+list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
@@ -78,15 +66,18 @@ if ($recipient != null) {
 
     $entries = organizer_organizer_get_status_table_entries(array('sort' => ''));
 
-    // Filter all not registered and not attended.
-    foreach ($entries as $entry) {
-        if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED
-            || $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP
-        ) {
-            $counter++;
-            $recipients[] = $entry;
+    if ($entries->valid()) {
+        // Filter all not registered and not attended.
+        foreach ($entries as $entry) {
+            if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED
+                || $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP
+            ) {
+                $counter++;
+                $recipients[] = $entry;
+            }
         }
     }
+    $entries->close();
 }
 
 

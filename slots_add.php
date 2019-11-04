@@ -18,7 +18,7 @@
  * addslot.php
  *
  * @package   mod_organizer
- * @author    Andreas Windbichler
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -29,30 +29,14 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/view_action_form_add.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
-
-require_login($course, false, $cm);
-
 $mode = optional_param('mode', null, PARAM_INT);
-$action = optional_param('action', null, PARAM_ACTION);
-$user = optional_param('user', null, PARAM_INT);
+$action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = optional_param_array('slots', array(), PARAM_INT);
-$app = optional_param('app', null, PARAM_INT);
-$tsort = optional_param('tsort', null, PARAM_ALPHA);
 
-$url = new moodle_url('/mod/organizer/view_action.php');
-$url->param('id', $cm->id);
-$url->param('mode', $mode);
-$url->param('action', $action);
-$url->param('sesskey', sesskey());
+list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
-$PAGE->set_url($url);
-$PAGE->set_pagelayout('standard');
-$PAGE->set_title($organizer->name);
-$PAGE->set_heading($course->fullname);
-
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
+require_login($course, false, $cm);
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
@@ -64,7 +48,7 @@ if ($data = $mform->get_data()) {  // When page is called the first time (=empty
     if (isset($data->addday)) {  // Additional slot fields are to be displayed.
         organizer_display_form($mform, get_string('title_add', 'organizer'));
     } else {  // Submit button was pressed and submitted form data has no errors.
-        list($slotids, $slotsnotcreatedduetodeadline, $messages) = organizer_add_new_slots($data);
+        list($slotids, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $messages) = organizer_add_new_slots($data);
         $finalslots = count($slotids);
         if ($finalslots == 0) {
             $redirecturl->param('messages[]', 'message_warning_no_slots_added');

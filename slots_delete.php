@@ -18,9 +18,9 @@
  * view_action.php
  *
  * @package   mod_organizer
- * @author    Andreas Windbichler
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,33 +31,18 @@ require_once(dirname(__FILE__) . '/view_action_form_delete.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+$mode = optional_param('mode', null, PARAM_INT);
+$action = optional_param('action', null, PARAM_ALPHANUMEXT);
+$slot = optional_param('slot', null, PARAM_INT);
+$slots = optional_param_array('slots', array(), PARAM_INT);
 
 require_login($course, false, $cm);
 
-$mode = optional_param('mode', null, PARAM_INT);
-$action = optional_param('action', null, PARAM_ACTION);
-$user = optional_param('user', null, PARAM_INT);
-$slot = optional_param('slot', null, PARAM_INT);
-$slots = optional_param_array('slots', array(), PARAM_INT);
-$app = optional_param('app', null, PARAM_INT);
-$tsort = optional_param('tsort', null, PARAM_ALPHA);
+list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
-$url = new moodle_url('/mod/organizer/view_action.php');
-$url->param('id', $cm->id);
-$url->param('mode', $mode);
-$url->param('action', $action);
-$url->param('sesskey', sesskey());
-
-$PAGE->set_url($url);
-$PAGE->set_pagelayout('standard');
-$PAGE->set_title($organizer->name);
-$PAGE->set_heading($course->fullname);
-
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
+require_login($course, false, $cm);
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
-
 
 require_capability('mod/organizer:deleteslots', $context);
 

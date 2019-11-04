@@ -285,7 +285,12 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 }
 
 die;
-
+/**
+ * 
+ * @param mixed $action
+ * @param mixed $slot
+ * @return boolean
+ */
 function organizer_organizer_student_action_allowed($action, $slot) {
     global $DB, $USER;
 
@@ -295,39 +300,11 @@ function organizer_organizer_student_action_allowed($action, $slot) {
 
     $slotx = new organizer_slot($slot);
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    list(, , $organizer, $context) = organizer_get_course_module_data();
 
-    $canregister = has_capability('mod/organizer:register', $context, null, false);
-    $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
-    $canreregister = $canregister && $canunregister;
-
-    $myapp = organizer_get_last_user_appointment($organizer);
-    if ($myapp) {
-        $regslot = $DB->get_record('organizer_slots', array('id' => $myapp->slotid));
-        if (isset($regslot)) {
-            $regslotx = new organizer_slot($regslot);
-        }
-    }
-
-    $myslotexists = isset($regslot);
-    $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
-    $slotdisabled = $slotx->is_past_due() || $slotx->is_past_deadline();
-    $myslotpending = $myslotexists && $regslotx->is_past_deadline() && !$regslotx->is_evaluated();
-    $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
-    $slotfull = $slotx->is_full();
-
-    $disabled = $myslotpending || $organizerdisabled ||
-        $slotdisabled || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
-
-    $isalreadyinqueue = false;
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $isalreadyinqueue = $slotx->is_group_in_queue();
-    } else {
-        $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
-    }
-
-    $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
-                 && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
+    list($canregister, $canunregister, $canreregister, $myapp, $regslotx, $myslotexists, , $slotdisabled,
+            $ismyslot, $slotfull, $disabled, $isalreadyinqueue, $isqueueable)
+                = organizer_get_studentrights($slotx, $organizer, $context);
 
     if ($myslotexists) {
         if (!$slotdisabled) {

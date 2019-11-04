@@ -20,6 +20,7 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -39,31 +40,15 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
 
-    $sender = is_int($sender) ? $DB->get_record('user', array('id' => $sender)) : $sender;
-    $receiver = is_int($receiver) ? $DB->get_record('user', array('id' => $receiver)) : $receiver;
-
-    $roles = get_user_roles($context, $receiver->id);
-
-    $now = time();
-    if (!$cm->visible || (isset($cm->availablefrom) && $cm->availablefrom && $cm->availablefrom > $now)
-        || (isset($cm->availableuntil) && $cm->availableuntil && $cm->availableuntil < $now) || count($roles) == 0
-    ) {
+    $strings = organizer_check_messagerights($sender, $receiver, $cm, $course, $organizer, $context);
+    if (!$strings) {
         return false;
     }
-
-    $namesplit = explode(':', $type);
-
-    $strings = new stdClass();
-    $strings->sendername = fullname($sender, true);
-    $strings->receivername = fullname($receiver, true);
-
     $strings->date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
     $strings->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
     $strings->location = $slot->location;
-    $strings->organizername = organizer_filter_text($organizer->name);
-    $strings->coursefullname = organizer_filter_text($course->fullname);
-    $strings->courseshortname = organizer_filter_text($course->shortname);
-    $strings->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
+
+    $namesplit = explode(':', $type);
 
     if ($namesplit[0] == "edit_notify_student" || $namesplit[0] == "edit_notify_teacher") {
         if ($slot->teachervisible == 1 || $namesplit[0] == "edit_notify_teacher") {
@@ -125,37 +110,8 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
         $namesplit[0] = "eval_notify";
     }
 
-    if (count($namesplit) == 1) {
-        $messagename = "$namesplit[0]";
-    } else {
-        $messagename = "$namesplit[0]_$namesplit[1]";
-    }
-    $message = new \core\message\message();
-    $message->component = 'mod_organizer';
-    $message->name = $messagename;
-    $message->courseid = $cm->course;
-    $message->notification = 1;
-    $message->fullmessageformat = FORMAT_PLAIN;
-    $message->userfrom = $sender;
-    $message->userto = $receiver;
-
-    if (isset($digest)) {
-        $strings->digest = $digest;
-        $type .= ":digest";
-    }
-
-    $message->subject = get_string("$type:subject", 'organizer', $strings);
-    $message->fullmessage = get_string("$type:fullmessage", 'organizer', $strings);
-    $message->fullmessagehtml = organizer_make_html(
-        get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm, $course
-    );
-
-    if (isset($customdata['custommessage'])) {
-        $message->fullmessage = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessage);
-        $message->fullmessagehtml = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessagehtml);
-    }
-
-    $message->smallmessage = get_string("$type:smallmessage", 'organizer', $strings);
+    $message = organizer_build_message($namesplit, $cm, $course, $organizer, $sender, $receiver, $digest,
+        $type, $strings, $customdata);
 
     $message->contexturl        = $CFG->wwwroot . '/mod/organizer/view.php?id=' . $cm->id;
     $message->contexturlname    = $organizer->name;
@@ -169,32 +125,15 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
 
 function organizer_send_message_reminder($sender, $receiver, $organizerid, $type, $groupname = null, $digest = null,
 $customdata = array()) {
-    global $DB;
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
 
-    $sender = is_int($sender) ? $DB->get_record('user', array('id' => $sender)) : $sender;
-    $receiver = is_int($receiver) ? $DB->get_record('user', array('id' => $receiver)) : $receiver;
-
-    $roles = get_user_roles($context, $receiver->id);
-
-    $now = time();
-    if (!$cm->visible || (isset($cm->availablefrom) && $cm->availablefrom && $cm->availablefrom > $now)
-        || (isset($cm->availableuntil) && $cm->availableuntil && $cm->availableuntil < $now) || count($roles) == 0
-    ) {
+    $strings = organizer_check_messagerights($sender, $receiver, $cm, $course, $organizer, $context);
+    if (!$strings) {
         return false;
     }
 
     $namesplit = explode(':', $type);
-
-    $strings = new stdClass();
-    $strings->sendername = fullname($sender, true);
-    $strings->receivername = fullname($receiver, true);
-
-    $strings->organizername = organizer_filter_text($organizer->name);
-    $strings->coursefullname = organizer_filter_text($course->fullname);
-    $strings->courseshortname = organizer_filter_text($course->shortname);
-    $strings->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
 
     $courseurl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id));
     $strings->courselink = html_writer::link($courseurl, $strings->coursefullname);
@@ -206,38 +145,8 @@ $customdata = array()) {
         $strings->groupname = "";
     }
 
-    if (count($namesplit) == 1) {
-        $messagename = "$namesplit[0]";
-    } else {
-        $messagename = "$namesplit[0]_$namesplit[1]";
-    }
-    $message = new \core\message\message();
-    $message->component = 'mod_organizer';
-    $message->name = $messagename;
-    $message->courseid = $cm->course;
-    $message->notification = 1;
-    $message->fullmessageformat = FORMAT_PLAIN;
-    $message->userfrom = $sender;
-    $message->userto = $receiver;
-
-    if (isset($digest)) {
-        $strings->digest = $digest;
-        $type .= ":digest";
-    }
-
-    $message->subject = get_string("$type:subject", 'organizer', $strings);
-    $message->fullmessage = get_string("$type:fullmessage", 'organizer', $strings);
-    $message->fullmessagehtml = organizer_make_html(
-        get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm,
-        $course
-    );
-
-    if (isset($customdata['custommessage'])) {
-        $message->fullmessage = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessage);
-        $message->fullmessagehtml = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessagehtml);
-    }
-
-    $message->smallmessage = get_string("$type:smallmessage", 'organizer', $strings);
+    $message = organizer_build_message($namesplit, $cm, $course, $organizer, $sender, $receiver, $digest,
+        $type, $strings, $customdata);
 
     if (ORGANIZER_ENABLE_MESSAGING) {
         return message_send($message);
@@ -448,20 +357,23 @@ function organizer_prepare_and_send_message($data, $type) {
                             'organizer_slot_appointments', array('slotid' => $data->selectedslot, 'groupid' => $data->group)
                     );
                 }
-                $app = reset($apps);
-                $trainers = organizer_get_slot_trainers($slot->id);
-                foreach ($trainers as $trainerid) {
-                    if ($app->teacherapplicantid != $trainerid) {
-                        $customdata = array();
-                        if ($data->participant) {
-                            $participant = $DB->get_record('user', array('id' => $data->participant));
-                            $customdata['participantname'] = fullname($participant, true);
-                        } else {
-                            $customdata['groupname'] = organizer_fetch_groupname($data->group);
+                if ($app = reset($apps)) {
+                    $trainers = organizer_get_slot_trainers($slot->id);
+                    foreach ($trainers as $trainerid) {
+                        if ($app->teacherapplicantid != $trainerid) {
+                            $customdata = array();
+                            if ($data->participant) {
+                                $participant = $DB->get_record('user', array('id' => $data->participant));
+                                $customdata['participantname'] = fullname($participant, true);
+                            } else {
+                                $customdata['groupname'] = organizer_fetch_groupname($data->group);
+                            }
+                            $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($trainerid),
+                                $slot, $type, null, $customdata);
                         }
-                        $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($trainerid), $slot, $type, null,
-                                $customdata);
                     }
+                } else { // If no app was found there is no need to send messages.
+                    $sentok = true;
                 }
             }
         break;
@@ -469,4 +381,98 @@ function organizer_prepare_and_send_message($data, $type) {
             print_error('Not debugged yet!');
     }
     return $sentok;
+}
+
+/**
+ * Checks if organizer instance is available and receiver posseses enough rights and returns message strings
+ *
+ * @param user record or id $sender
+ * @param user record or id $receiver
+ * @param string $type of message
+ * @param record $cm organizer coursemodule
+ * @param record $course
+ * @param record $organizer instance
+ * @param object $context
+ * @return bool|stdClass
+ * @throws dml_exception
+ */
+function organizer_check_messagerights($sender, $receiver, $cm, $course, $organizer, $context) {
+    global $DB;
+
+    $sender = is_int($sender) ? $DB->get_record('user', array('id' => $sender)) : $sender;
+    $receiver = is_int($receiver) ? $DB->get_record('user', array('id' => $receiver)) : $receiver;
+
+    $roles = get_user_roles($context, $receiver->id);
+
+    $now = time();
+    if (!$cm->visible || (isset($cm->availablefrom) && $cm->availablefrom && $cm->availablefrom > $now)
+        || (isset($cm->availableuntil) && $cm->availableuntil && $cm->availableuntil < $now) || count($roles) == 0
+    ) {
+        return false;
+    }
+
+    $strings = new stdClass();
+    $strings->sendername = fullname($sender, true);
+    $strings->receivername = fullname($receiver, true);
+
+    $strings->organizername = organizer_filter_text($organizer->name);
+    $strings->coursefullname = organizer_filter_text($course->fullname);
+    $strings->courseshortname = organizer_filter_text($course->shortname);
+    $strings->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
+
+    return $strings;
+}
+
+/**
+ * Builds a part of the message to send
+ *
+ * @param $namesplit
+ * @param $cm
+ * @param $course
+ * @param $organizer
+ * @param $sender
+ * @param $receiver
+ * @param $digest
+ * @param $type
+ * @param $strings
+ * @param $customdata
+ * @return \core\message\message
+ * @throws coding_exception
+ */
+function organizer_build_message($namesplit, $cm, $course, $organizer, $sender, $receiver, $digest,
+                                 $type, $strings, $customdata) {
+
+    if (count($namesplit) == 1) {
+        $messagename = "$namesplit[0]";
+    } else {
+        $messagename = "$namesplit[0]_$namesplit[1]";
+    }
+    $message = new \core\message\message();
+    $message->component = 'mod_organizer';
+    $message->name = $messagename;
+    $message->courseid = $cm->course;
+    $message->notification = 1;
+    $message->fullmessageformat = FORMAT_PLAIN;
+    $message->userfrom = $sender;
+    $message->userto = $receiver;
+
+    if (isset($digest)) {
+        $strings->digest = $digest;
+        $type .= ":digest";
+    }
+
+    $message->subject = get_string("$type:subject", 'organizer', $strings);
+    $message->fullmessage = get_string("$type:fullmessage", 'organizer', $strings);
+    $message->fullmessagehtml = organizer_make_html(
+        get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm, $course
+    );
+
+    if (isset($customdata['custommessage'])) {
+        $message->fullmessage = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessage);
+        $message->fullmessagehtml = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessagehtml);
+    }
+
+    $message->smallmessage = get_string("$type:smallmessage", 'organizer', $strings);
+
+    return $message;
 }

@@ -29,6 +29,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
+require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
 class organizer_print_slots_form extends moodleform
@@ -52,7 +53,7 @@ class organizer_print_slots_form extends moodleform
 
         // TODO: might cause crashes!
         $mform->addElement('hidden', 'action', 'print');
-        $mform->setType('action', PARAM_ACTION);
+        $mform->setType('action', PARAM_ALPHANUMEXT);
 
         if (isset($data['slots'])) {
             foreach ($data['slots'] as $key => $slotid) {
@@ -79,13 +80,14 @@ class organizer_print_slots_form extends moodleform
         );
 
         $identityfields = explode(',', $CFG->showuseridentity);
-        $selcols = array('datetime', 'location', 'teacher', 'participant');
+        $selcols = array('datetime', 'location', 'teacher', 'teachercomments', 'participant');
         if (in_array('idnumber', $identityfields)) {
             $selcols[] = 'idnumber';
         }
         if (in_array('email', $identityfields)) {
             $selcols[] = 'email';
         }
+        $selcols[] = 'comments';
         $selcols[] = 'attended';
         $selcols[] = 'grade';
         $selcols[] = 'feedback';
@@ -105,60 +107,8 @@ class organizer_print_slots_form extends moodleform
                 'ods' => get_string('format_ods', 'organizer'),
                 'csv_tab' => get_string('format_csv_tab', 'organizer'),
                 'csv_comma' => get_string('format_csv_comma', 'organizer'));
-        $mform->addElement('select', 'format', get_string('format', 'organizer'), $exportformats);
 
-        $mform->addElement('static', 'pdf_settings', get_string('pdfsettings', 'organizer'));
-
-        $entriesperpage = get_user_preferences('organizer_printperpage', 20);
-        $printperpageoptimal = get_user_preferences('organizer_printperpage_optimal', 0);
-        $textsize = get_user_preferences('organizer_textsize', 10);
-        $pageorientation = get_user_preferences('organizer_pageorientation', 'P');
-        $headerfooter = get_user_preferences('organizer_headerfooter', 1);
-
-        // Submissions per page.
-        $pppgroup = array();
-        $pppgroup[] = &$mform->createElement('text', 'entriesperpage', get_string('numentries', 'organizer'), array('size' => '2'));
-        $pppgroup[] = &$mform->createElement(
-            'advcheckbox', 'printperpage_optimal',
-            '', get_string('stroptimal', 'organizer'), array("group" => 1)
-        );
-
-        $mform->addGroup($pppgroup, 'printperpagegrp', get_string('numentries', 'organizer'), array(' '), false);
-        $mform->setType('entriesperpage', PARAM_INT);
-
-        $mform->setDefault('entriesperpage', $entriesperpage);
-        $mform->setDefault('printperpage_optimal', $printperpageoptimal);
-
-        $mform->addHelpButton('printperpagegrp', 'numentries', 'organizer');
-
-        $mform->disabledif ('entriesperpage', 'printperpage_optimal', 'checked');
-        $mform->disabledif ('printperpagegrp', 'format', 'neq', 'pdf');
-
-        $mform->addElement(
-            'select', 'textsize', get_string('textsize', 'organizer'),
-            array('8' => get_string('font_small', 'organizer'), '10' => get_string('font_medium', 'organizer'),
-            '12' => get_string('font_large', 'organizer'))
-        );
-
-        $mform->setDefault('textsize', $textsize);
-        $mform->disabledif ('textsize', 'format', 'neq', 'pdf');
-
-        $mform->addElement(
-            'select', 'pageorientation', get_string('pageorientation', 'organizer'),
-            array('P' => get_string('orientationportrait', 'organizer'),
-            'L' => get_string('orientationlandscape', 'organizer'))
-        );
-
-        $mform->setDefault('pageorientation', $pageorientation);
-        $mform->disabledif ('pageorientation', 'format', 'neq', 'pdf');
-
-        $mform->addElement(
-            'advcheckbox', 'headerfooter', get_string('headerfooter', 'organizer'), null, null,
-            array(0, 1)
-        );
-        $mform->setType('headerfooter', PARAM_BOOL);
-        $mform->setDefault('headerfooter', $headerfooter);
-        $mform->addHelpButton('headerfooter', 'headerfooter', 'organizer');
+        $mform = organizer_build_printsettingsform($mform, $exportformats);
         $mform->disabledif ('headerfooter', 'format', 'neq', 'pdf');
 
         $buttonarray = array();
@@ -174,7 +124,7 @@ class organizer_print_slots_form extends moodleform
     }
 
     public function display() {
-        global $OUTPUT, $CFG;
+        global $CFG;
 
         // Finalize the form definition if not yet done.
         if (!$this->_definition_finalized) {
@@ -184,14 +134,7 @@ class organizer_print_slots_form extends moodleform
         $this->_form->getValidationScript();
         $output = $this->_form->toHtml();
 
-        $helpicon = new help_icon('datapreviewtitle', 'organizer');
-        $output .= html_writer::tag(
-            'div',
-            get_string('datapreviewtitle', 'organizer') . $OUTPUT->render($helpicon),
-            array('class' => 'datapreviewtitle')
-        );
-
-        $output .= '<div class="forced_scroll">';
+        $output = organizer_printtablepreview_icons($output);
 
         $printcols = $this->_selcols;
         $identityfields = explode(',', $CFG->showuseridentity);
@@ -206,15 +149,15 @@ class organizer_print_slots_form extends moodleform
             }
         }
 
-        $notsortable = array('teacher', 'email', 'participant');
+        $output .= '<div class="forced_scroll">';
         $output .= '<div style="float: left">';
-        $output .= $this->_create_preview_table($printcols, $notsortable);
-        $output .= '</div><div style="width: 1em; float: left;"> </div></div>';
+        $output .= $this->_create_preview_table($printcols);
+        $output .= '</div><div style="width: 1em; float: left;"> </div>';
 
-        print $output;
+        echo $output;
     }
 
-    private function _create_preview_table($columns, $notsortable) {
+    private function _create_preview_table($columns) {
         global $PAGE, $OUTPUT, $cm, $CFG;
 
         user_preference_allow_ajax_update('mod_organizer_noprintfields', PARAM_TEXT);
@@ -233,10 +176,8 @@ class organizer_print_slots_form extends moodleform
         $table->attributes['class'] = 'boxaligncenter';
 
         $tsort = isset($_SESSION['organizer_tsort']) ? $_SESSION['organizer_tsort'] : "";
-
         if ($tsort != "") {
             $order = "ASC";
-
             if (substr($tsort, strlen($tsort) - strlen("DESC")) == "DESC") {
                 $tsort = substr($tsort, 0, strlen($tsort) - strlen("DESC"));
                 $order = "DESC";
@@ -288,11 +229,7 @@ class organizer_print_slots_form extends moodleform
                 }
             }
 
-            if (!in_array($column, $notsortable)) {
-                $cell = new html_table_cell(html_writer::link($url, get_string("th_{$column}", 'organizer') . $icon, $linkarray));
-            } else {
-                $cell = new html_table_cell(get_string("th_{$column}", 'organizer'));
-            }
+            $cell = new html_table_cell(html_writer::link($url, get_string("th_{$column}", 'organizer') . $icon, $linkarray));
             $cell->header = true;
             $header[] = $cell;
         }
@@ -345,11 +282,10 @@ class organizer_print_slots_form extends moodleform
 
         $rows = array();
         $rowspan = 0;
-        $numcols = 0;
-        $evenodd = 0;
         foreach ($entries as $entry) {
             $row = $rows[] = new html_table_row();
             foreach ($columns as $column) {
+                // Rows with rowspan = slot rows.
                 if ($rowspan == 0) {
                     switch ($column) {
                         case 'datetime':
@@ -390,6 +326,13 @@ class organizer_print_slots_form extends moodleform
                             $cell->style = 'vertical-align: middle;';
                             $row->cells[] = $cell;
                         break;
+                        case 'teachercomments':
+                            $content = "<span name='{$column}_cell'>" . organizer_filter_text($entry->teachercomments) . '</span>';
+                            $cell = new html_table_cell($content);
+                            $cell->rowspan = $entry->rowspan;
+                            $cell->style = 'vertical-align: middle;';
+                            $row->cells[] = $cell;
+                            break;
                         case 'groupname':
                             $groupname = $entry->groupname;
                             $content = "<span name='{$column}_cell'>" . $groupname . '</span>';
@@ -406,6 +349,7 @@ class organizer_print_slots_form extends moodleform
                     }
                 }
 
+                // Columns without rowspan = participant's rows.
                 switch ($column) {
                     case 'participant':
                         $a = new stdClass();
@@ -454,22 +398,24 @@ class organizer_print_slots_form extends moodleform
                         $cell->style = 'vertical-align: middle;';
                         $row->cells[] = $cell;
                     break;
+                    case 'comments':
+                        $comments = isset($entry->comments) && $entry->comments !== '' ? $entry->comments : '';
+                        $content = "<span name='{$column}_cell'>" . organizer_filter_text($comments) . '</span>';
+                        $cell = new html_table_cell($content);
+                        $cell->style = 'vertical-align: middle;';
+                        $row->cells[] = $cell;
+                        break;
                     case 'datetime':
                     case 'location':
                     case 'teacher':
                     case 'groupname':
+                    case 'teachercomments':
                     break;
                     default:
                         print_error("Unsupported column type: $column");
                 }
-            }
-            $numcols++;
-            $row->attributes['class'] = " r{$evenodd}";
-            $rowspan = ($rowspan + 1) % $entry->rowspan;
-
-            if ($rowspan == 0) {
-                $evenodd = $evenodd ? 0 : 1;
-            }
+            } // Each column.
+        $rowspan = ($rowspan + 1) % $entry->rowspan;
         }
 
         $table->data = $rows;

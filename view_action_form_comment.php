@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+
+
+defined('MOODLE_INTERNAL') || die();
+
+// Required for the form rendering.
+
+require_once("$CFG->libdir/formslib.php");
+require_once(dirname(__FILE__) . '/slotlib.php');
 /**
  * view_action_form_comment.php
  *
@@ -25,16 +33,13 @@
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-// Required for the form rendering.
-
-require_once("$CFG->libdir/formslib.php");
-require_once(dirname(__FILE__) . '/slotlib.php');
-
 class organizer_comment_slot_form extends moodleform
 {
+    /**
+     * 
+     * {@inheritDoc}
+     * @see moodleform::definition()
+     */
     protected function definition() {
         global $DB, $USER;
 
