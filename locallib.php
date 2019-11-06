@@ -1025,7 +1025,7 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     $appointment->eventid = organizer_add_event_appointment($cm->id, $appointment);
 
     $appointment->groupid = $groupid;
-    
+
     if ($trainerevents) {
         organizer_add_event_appointment_trainer($cm->id, $appointment, $trainerid);
     }
@@ -1638,7 +1638,7 @@ function organizer_get_user_identity($user) {
         $identity = $DB->get_field_select('user', 'idnumber', "id = {$id}");
     } else {
         if (in_array('email', $identityfields)) {
-            $identity = organizer_get_user_email($id);
+            $identity = $DB->get_field_select('user', 'email', "id = {$id}");
         }
     }
 

@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+3.6.3 (2019-11-06)
+------------------
+
+* [HOTFIX] #6366: Fatal error when creating an organizer instance with groups and a student is in multiple groups
+
+
 3.6.2 (2019-05-14)
 ------------------
 
