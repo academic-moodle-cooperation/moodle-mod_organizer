@@ -1733,7 +1733,10 @@ function organizer_fetch_slotparticipants($slotid) {
  * Collection of printable fields of choice.
  * Used with organizer instance settings (mod_form) and as a sitewide default setting in organizer settings as well.
  *
- * @return array of strings
+ * @param bool $nochoiceoption ... whether there should be a no-choice option at the top of the list, default false
+ * @return array ... all the choosable print options
+ * @throws coding_exception
+ * @throws dml_exception
  */
 function organizer_printslotuserfields($nochoiceoption=false) {
     global $CFG;
@@ -1745,6 +1748,7 @@ function organizer_printslotuserfields($nochoiceoption=false) {
     } else {
         $profilefields = array('' => '--');
     }
+
     $profilefields['lastname'] = organizer_filter_text(get_string('lastname'));
     $profilefields['firstname'] = organizer_filter_text(get_string('firstname'));
     $profilefields['email'] = organizer_filter_text(get_string('email'));
@@ -1753,28 +1757,6 @@ function organizer_printslotuserfields($nochoiceoption=false) {
     $profilefields['grade'] = organizer_filter_text(get_string('grade'));
     $profilefields['feedback'] = organizer_filter_text(get_string('feedback'));
     $profilefields['signature'] = organizer_filter_text(get_string('signature', 'organizer'));
-
-    $selectedprofilefields = [];
-    $selectedprofilefields = organizer_selectedprofilefields($selectedprofilefields);
-    foreach (profile_get_custom_fields() as $customfield) {
-        $selectedprofilefields[$customfield->id] = organizer_filter_text($customfield->name);
-    }
-
-    $organizerconfig = get_config('organizer');
-    $allowedprofilefields = $organizerconfig->allowedprofilefieldsprint;
-    $allowedprofilefields_array = explode(",", $allowedprofilefields);
-    foreach ($selectedprofilefields as $key => $value) {
-        if (in_array ( $key, $allowedprofilefields_array )) {
-            $profilefields[$key] = organizer_filter_text($value);
-        }
-    }
-
-    return $profilefields;
-}
-
-function organizer_selectedprofilefields($profilefields) {
-
-    $profilefields = array('' => '--');
     $profilefields['fullnameuser'] = organizer_filter_text(get_string('fullnameuser', 'moodle'));
     $profilefields['icq'] = organizer_filter_text(get_string('icqnumber', 'moodle'));
     $profilefields['skype'] = organizer_filter_text(get_string('skypeid', 'moodle'));
@@ -1793,6 +1775,15 @@ function organizer_selectedprofilefields($profilefields) {
     $profilefields['description'] = organizer_filter_text(get_string('userdescription', 'moodle'));
     foreach (profile_get_custom_fields() as $customfield) {
         $profilefields[$customfield->id] = organizer_filter_text($customfield->name);
+    }
+
+    $organizerconfig = get_config('organizer');
+    $allowedprofilefields = $organizerconfig->allowedprofilefieldsprint;
+    $allowedprofilefields_array = explode(",", $allowedprofilefields);
+    foreach ($profilefields as $key => $value) {
+        if (in_array ( $key, $allowedprofilefields_array )) {
+            $profilefields[$key] = organizer_filter_text($value);
+        }
     }
 
     return $profilefields;
