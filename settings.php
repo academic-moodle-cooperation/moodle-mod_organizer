@@ -20,14 +20,13 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author    Andreas Windbichler
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
-
 
 if ($ADMIN->fulltree) {
     require_once($CFG->dirroot . '/mod/organizer/locallib.php');
@@ -133,25 +132,29 @@ if ($ADMIN->fulltree) {
         new admin_setting_configcheckbox('organizer/enableprintslotuserfields',
             get_string('enableprintslotuserfields', 'organizer'), null, ''));
 
-    $selectableprofilefields = organizer_printslotuserfields();
+    $selectableprofilefields = organizer_printslotuserfields(true);
+    $selectedprofilefields = array();
 
     $organizerconfig = get_config('organizer');
 
-    $allowedprofilefieldsprint = get_config('organizer/allowedprofilefieldsprint');
+    if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
+        foreach ($selectableprofilefields as $key => $value) {
+            if (in_array($key, $allowedprofilefieldsprint)){
+                $selectedprofilefields[$key] = $value;
+            }
+        }
+    }
 
     for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
         $settings->add(
                 new admin_setting_configselect('organizer/singleslotprintfield' . $i,
-                        $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'), null, '', $selectableprofilefields));
+                        $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'), null, '', $selectedprofilefields));
     }
 
     // Allowed User profile fields for printing single slots.
     $settings->add(new admin_setting_heading('allowedprofilefieldsprint', '',
         get_string('allowedprofilefieldsprint', 'organizer')));
-
-
     $settings->add(
         new admin_setting_configmultiselect('organizer/allowedprofilefieldsprint',
            get_string('allowedprofilefieldsprint', 'organizer'), get_string('allowedprofilefieldsprint2', 'organizer'), null, $selectableprofilefields));
-
 }
