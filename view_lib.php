@@ -2335,16 +2335,6 @@ function organizer_get_countdown($time) {
     return array($days, $hrs, $min, $sec);
 }
 
-function organizer_get_user_idnumber($userid) {
-    global $DB;
-    return $DB->get_field_select('user', 'idnumber', "id = {$userid}");
-}
-
-function organizer_get_user_email($userid) {
-    global $DB;
-    return $DB->get_field_select('user', 'email', "id = {$userid}");
-}
-
 function organizer_popup_icon($type, $content) {
     $icons = array(
             ORGANIZER_ICON_STUDENT_COMMENT => 'feedback2',
