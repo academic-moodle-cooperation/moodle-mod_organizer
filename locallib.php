@@ -744,10 +744,26 @@ function organizer_update_slot($data) {
     return $data->slots;
 }
 
+/**
+ * Checks if the slots to be evaluated are part of the actual organizer instance.
+ *
+ * @param $slots   given slots to evaluate
+ * @return bool    Are (all) the given slots part of the actual organizer instance?
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_security_check_slots($slots) {
     global $DB;
 
-    if (!isset($slots)) {
+    if (isset($slots)) {
+        if (is_array($slots) || $slots instanceof Countable) {
+            $countslots = count($slots);
+        } else if (is_number($slots)) {
+            $countslots = 1;
+        } else {
+            return true;
+        }
+    } else {
         return true;
     }
 
@@ -755,32 +771,12 @@ function organizer_security_check_slots($slots) {
     list($insql, $inparams) = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
 
     $params = array_merge(array('organizerid' => $organizer->id), $inparams);
-    $query = "SELECT * FROM {organizer_slots}
-            WHERE {organizer_slots}.organizerid = :organizerid AND {organizer_slots}.id $insql";
+    $query = "SELECT COUNT(*) AS slots FROM {organizer_slots}
+            WHERE organizerid = :organizerid AND id $insql";
 
-    $records = $DB->get_records_sql($query, $params);
+    $records = $DB->count_records_sql($query, $params);
 
-    return count($slots) == count($records);
-}
-
-function organizer_security_check_apps($apps) {
-    global $DB;
-
-    if (!isset($apps)) {
-        return true;
-    }
-
-    $organizer = organizer_get_organizer();
-    list($insql, $inparams) = $DB->get_in_or_equal($apps, SQL_PARAMS_NAMED);
-
-    $params = array_merge(array('organizerid' => $organizer->id), $inparams);
-    $query = "SELECT {organizer_slot_appointments}.* FROM {organizer_slot_appointments}
-            INNER JOIN {organizer_slots} ON {organizer_slots}.id = {organizer_slot_appointments}.slotid
-            WHERE {organizer_slots}.organizerid = :organizerid AND {organizer_slot_appointments}.id $insql";
-
-    $records = $DB->get_records_sql($query, $params);
-
-    return count($apps) == count($records);
+    return $countslots == $records;
 }
 
 function organizer_delete_appointment_slot($id) {
@@ -2011,4 +2007,22 @@ function organizer_print_setuserprefs_and_triggerevent($data, $cm, $context) {
     $event->trigger();
 
     return $ppp;
+}
+
+/**
+ * Returns the entries for the registration view.
+ *
+ * @param $groupmode ... whether organizer instance is group mode or single mode
+ * @param $params
+ * @return array|moodle_recordset  ... the entries
+ * @throws coding_exception
+ * @throws dml_exception
+ */
+function organizer_get_registrationview_entries($groupmode, $params) {
+    if ($groupmode) {
+        $entries = organizer_organizer_organizer_get_status_table_entries_group($params);
+    } else {
+        $entries = organizer_organizer_get_status_table_entries($params);
+    }
+    return $entries;
 }

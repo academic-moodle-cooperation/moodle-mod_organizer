@@ -41,9 +41,9 @@ $slots = optional_param_array('slots', array(), PARAM_INT);
 $app = optional_param('app', null, PARAM_INT);
 $tsort = optional_param('tsort', null, PARAM_ALPHA);
 
-require_login($course, false, $cm);
-
 list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
+
+require_login($course, false, $cm);
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 

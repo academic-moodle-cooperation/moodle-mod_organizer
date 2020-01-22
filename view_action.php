@@ -129,7 +129,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
     }
 
-    if (!organizer_organizer_student_action_allowed($action, $slot)) {
+    if (!organizer_organizer_student_action_allowed($action, $slot, $organizer, $context)) {
         print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
     }
 
@@ -180,7 +180,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
     }
 
-    if (!organizer_organizer_student_action_allowed($action, $slot)) {
+    if (!organizer_organizer_student_action_allowed($action, $slot, $organizer, $context)) {
         print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
     }
 
@@ -238,7 +238,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
         print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
     }
 
-    if (!organizer_organizer_student_action_allowed($action, $slot)) {
+    if (!organizer_organizer_student_action_allowed($action, $slot, $organizer, $context)) {
         print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
     }
 
@@ -285,14 +285,19 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 }
 
 die;
+
 /**
- * 
- * @param mixed $action
- * @param mixed $slot
- * @return boolean
+ * Checks if the participant is allowed and able to process the given action on the given slot.
+ *
+ * @param mixed $action   Participant's action like register, unregister, etc...
+ * @param mixed $slot     The slot to which the action is applied.
+ * @param $organizer
+ * @param $context
+ * @return boolean        Whether this action is allowed or possible for the participant or not
+ * @throws dml_exception
  */
-function organizer_organizer_student_action_allowed($action, $slot) {
-    global $DB, $USER;
+function organizer_organizer_student_action_allowed($action, $slot, $organizer, $context) {
+    global $DB;
 
     if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
         return false;
@@ -300,11 +305,23 @@ function organizer_organizer_student_action_allowed($action, $slot) {
 
     $slotx = new organizer_slot($slot);
 
-    list(, , $organizer, $context) = organizer_get_course_module_data();
-
-    list($canregister, $canunregister, $canreregister, $myapp, $regslotx, $myslotexists, , $slotdisabled,
-            $ismyslot, $slotfull, $disabled, $isalreadyinqueue, $isqueueable)
-                = organizer_get_studentrights($slotx, $organizer, $context);
+    list(
+        $canregister,
+        $canunregister,
+        $canreregister,
+        $myapp,
+        $regslotx,
+        $myslotexists,
+        $organizerdisabled,
+        $slotdisabled,
+        $myslotpending,
+        $ismyslot,
+        $slotfull,
+        $disabled,
+        $isalreadyinqueue,
+        $isqueueable
+        )
+        = organizer_get_studentrights($slotx, $organizer, $context);
 
     if ($myslotexists) {
         if (!$slotdisabled) {

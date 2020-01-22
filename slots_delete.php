@@ -36,8 +36,6 @@ $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = optional_param_array('slots', array(), PARAM_INT);
 
-require_login($course, false, $cm);
-
 list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
 require_login($course, false, $cm);
