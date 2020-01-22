@@ -680,8 +680,9 @@ function organizer_fetch_group($organizer, $userid = null) {
  * This function searches for things that need to be done, such
  * as sending out mail, toggling flags etc ...
  *
- * @return boolean
- * @todo   Finish documenting this function
+ * @return bool|mixed
+ * @throws coding_exception
+ * @throws dml_exception
  **/
 function organizer_cron() {
     include_once(dirname(__FILE__) . '/messaging.php');

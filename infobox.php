@@ -58,7 +58,10 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
         break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             // Button for sending reminders to all participants without an appointment.
-            $output .= organizer_make_sendreminder_section($params, $context);
+            if ($entries = organizer_get_registrationview_entries(
+                $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS, $params)) {
+                $output .= organizer_make_sendreminder_section($params, $context);
+            }
         break;
         case ORGANIZER_ASSIGNMENT_VIEW:
         break;

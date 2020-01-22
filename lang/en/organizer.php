@@ -957,6 +957,7 @@ $string['relative_deadline_now'] = 'Starting now';
 
 $string['nogroup'] = 'No group';
 $string['noparticipants'] = 'No participants';
+$string['novalidparticipants'] = 'No valid participants';
 $string['unavailableslot'] = 'This slot is available from';
 $string['applicant'] = 'This is the person that registered the group';
 
