@@ -286,8 +286,16 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 
 die;
 
+/**
+ * Checks if student is allowed to do given action on a given slot.
+ *
+ * @param string $action ... the action to check against
+ * @param organizer_slotornumber $slot ... the slot to check against
+ * @return bool
+ * @throws dml_exception
+ */
 function organizer_organizer_student_action_allowed($action, $slot) {
-    global $DB, $USER;
+    global $DB;
 
     if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
         return false;
@@ -295,7 +303,54 @@ function organizer_organizer_student_action_allowed($action, $slot) {
 
     $slotx = new organizer_slot($slot);
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    list(, , $organizer, $context) = organizer_get_course_module_data();
+
+    list(
+        $canregister,
+        $canunregister,
+        $canreregister,
+        $myapp,
+        $regslotx,
+        $myslotexists,
+        ,
+        $slotdisabled,
+        ,
+        $ismyslot,
+        $slotfull,
+        $disabled,
+        $isalreadyinqueue,
+        $isqueueable
+        ) = organizer_get_studentrights($slotx, $organizer, $context);
+
+    if ($myslotexists) {
+        if (!$slotdisabled) {
+            if ($ismyslot) {
+                $disabled |= !$canunregister
+                    || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
+            } else {
+                $disabled |= $slotfull || !$canreregister
+                    || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
+            }
+        }
+        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REREGISTER;
+    } else {
+        $disabled |= $slotfull || !$canregister || $ismyslot;
+        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REGISTER;
+    }
+
+    $result = !$disabled && ($action == $allowedaction);
+    if (!$result && $isqueueable &&  $action == ORGANIZER_ACTION_QUEUE) {
+        $result = true;
+    }
+    if (!$result && $isalreadyinqueue && $action == ORGANIZER_ACTION_UNQUEUE) {
+        $result = true;
+    }
+
+    return $result;
+}
+
+function organizer_get_studentrights($slotx, $organizer, $context) {
+    global $DB, $USER;
 
     $canregister = has_capability('mod/organizer:register', $context, null, false);
     $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
@@ -316,10 +371,9 @@ function organizer_organizer_student_action_allowed($action, $slot) {
     $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
     $slotfull = $slotx->is_full();
 
-    $disabled = $myslotpending || $organizerdisabled ||
-        $slotdisabled || !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
+    $disabled = $myslotpending || $organizerdisabled || $slotdisabled ||
+        !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
-    $isalreadyinqueue = false;
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $isalreadyinqueue = $slotx->is_group_in_queue();
     } else {
@@ -327,31 +381,23 @@ function organizer_organizer_student_action_allowed($action, $slot) {
     }
 
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
-                 && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
+        && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
 
-    if ($myslotexists) {
-        if (!$slotdisabled) {
-            if ($ismyslot) {
-                $disabled |= !$canunregister
-                || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
-            } else {
-                $disabled |= $slotfull || !$canreregister
-                || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
-            }
-        }
-        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REREGISTER;
-    } else {
-        $disabled |= $slotfull || !$canregister || $ismyslot;
-        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REGISTER;
-    }
 
-    $result = !$disabled && ($action == $allowedaction);
-    if (!$result && $isqueueable &&  $action == ORGANIZER_ACTION_QUEUE) {
-        $result = true;
-    }
-    if (!$result && $isalreadyinqueue && $action == ORGANIZER_ACTION_UNQUEUE) {
-        $result = true;
-    }
-
-    return $result;
+    return array(
+        $canregister,
+        $canunregister,
+        $canreregister,
+        $myapp,
+        $regslotx,
+        $myslotexists,
+        $organizerdisabled,
+        $slotdisabled,
+        $myslotpending,
+        $ismyslot,
+        $slotfull,
+        $disabled,
+        $isalreadyinqueue,
+        $isqueueable
+    );
 }
