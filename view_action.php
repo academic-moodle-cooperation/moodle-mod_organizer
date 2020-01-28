@@ -285,14 +285,17 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 }
 
 die;
+
 /**
- * 
- * @param mixed $action
- * @param mixed $slot
- * @return boolean
+ * Checks if student is allowed to do given action on a given slot.
+ *
+ * @param string $action ... the action to check against
+ * @param organizer_slotornumber $slot ... the slot to check against
+ * @return bool
+ * @throws dml_exception
  */
 function organizer_organizer_student_action_allowed($action, $slot) {
-    global $DB, $USER;
+    global $DB;
 
     if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
         return false;
@@ -302,18 +305,31 @@ function organizer_organizer_student_action_allowed($action, $slot) {
 
     list(, , $organizer, $context) = organizer_get_course_module_data();
 
-    list($canregister, $canunregister, $canreregister, $myapp, $regslotx, $myslotexists, , $slotdisabled,
-            $ismyslot, $slotfull, $disabled, $isalreadyinqueue, $isqueueable)
-                = organizer_get_studentrights($slotx, $organizer, $context);
+    list(
+        $canregister,
+        $canunregister,
+        $canreregister,
+        $myapp,
+        $regslotx,
+        $myslotexists,
+        ,
+        $slotdisabled,
+        ,
+        $ismyslot,
+        $slotfull,
+        $disabled,
+        $isalreadyinqueue,
+        $isqueueable
+        ) = organizer_get_studentrights($slotx, $organizer, $context);
 
     if ($myslotexists) {
         if (!$slotdisabled) {
             if ($ismyslot) {
                 $disabled |= !$canunregister
-                || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
+                    || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
             } else {
                 $disabled |= $slotfull || !$canreregister
-                || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
+                    || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
             }
         }
         $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REREGISTER;

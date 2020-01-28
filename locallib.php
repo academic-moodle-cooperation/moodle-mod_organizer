@@ -763,26 +763,6 @@ function organizer_security_check_slots($slots) {
     return count($slots) == count($records);
 }
 
-function organizer_security_check_apps($apps) {
-    global $DB;
-
-    if (!isset($apps)) {
-        return true;
-    }
-
-    $organizer = organizer_get_organizer();
-    list($insql, $inparams) = $DB->get_in_or_equal($apps, SQL_PARAMS_NAMED);
-
-    $params = array_merge(array('organizerid' => $organizer->id), $inparams);
-    $query = "SELECT {organizer_slot_appointments}.* FROM {organizer_slot_appointments}
-            INNER JOIN {organizer_slots} ON {organizer_slots}.id = {organizer_slot_appointments}.slotid
-            WHERE {organizer_slots}.organizerid = :organizerid AND {organizer_slot_appointments}.id $insql";
-
-    $records = $DB->get_records_sql($query, $params);
-
-    return count($apps) == count($records);
-}
-
 function organizer_delete_appointment_slot($id) {
     global $DB, $USER;
 
