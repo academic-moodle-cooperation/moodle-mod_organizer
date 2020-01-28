@@ -356,6 +356,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
     $canreregister = $canregister && $canunregister;
 
+    $regslotx = null;
     $myapp = organizer_get_last_user_appointment($organizer);
     if ($myapp) {
         $regslot = $DB->get_record('organizer_slots', array('id' => $myapp->slotid));
