@@ -1,10 +1,45 @@
 CHANGELOG
 =========
 
-3.7.0(2019-06-13)
+3.7.0 (2019-08-05)
 ------------------
 
-*  Moodle 3.7.1 compatible version
+* [FIXED] #6232: Debug message when booking slot that has no trainer
+* [FIXED] #6216: Calendar view: when organizer instance option "No calendar events for empty slots" is deactivated
+and a student books a slot, the calendar message changes the language
+* [FIXED] #6186: Debug message registration view when first column not unique id
+* [FIXED] #6211: SLOTS PRINT Print Preview: Cell-lines not visible anymore, table does not scroll to the right i
+content is overflowing, table does not use the full width that is usable
+* [FIXED] #6210: Add slots: The "Required" icon at the trainer option should be removed
+* [FIXED] #6191: Adding/Editing a new organizer instance: new groupmodes are not selectable
+* [FIXED] #6190: Disarranged appointment view
+* [FIXED] #6189: "Add new slot" button does not work anymore
+* [FEATURE] #6112: Registration view: Changes to the infobox
+* [FEATURE] #6111: Student view: Changes to the infobox
+* [FEATURE] #6110: Appointments view: Changes to the infobox
+* [FIXED] #6174: [github #55/pull request #56] PHP warning when running cronjob
+* [FIXED] #6157: Creation of past time slots not possible because of newly programmed consideration of the
+booking deadline
+* [FIXED] #6172: Reregister is not possible anymore
+* [FIXED] #6156: Debug message undefined mail variable
+* [FIXED] #6158: Edit a single slot: changes are not saved
+* [FEATURE] #6152: Instance settings: Selectfield "grouping" does not appear when choosing organizer groupmode
+"use existing groups"
+* [FEATURE] #5937: Privacy API - implement deletion
+* [FEATURE] #6137: Change settings: "Hide calendar" default, move grade section over the Print slot user fields section
+* [FEATURE] #3779: Move student view to the third place in the tab row
+* [FIXED] #6127: a teacher's  userpreference "show my slots only" hides all slots in a different organizer instance
+where the same user is student.
+* [FEATURE] #5784: Make registration view sortable by time/date
+* [FEATURE] #6107: LOCATION: Edit a slot - location field not mandatory any more and an input field if suggestion list
+is empty
+
+
+3.6.2 (2019-05-14)
+------------------
+
+* [HOTFIX] #6114: After reregistration the trainers of the newly booked slot are wrongly added to the slot booked before
+* [HOTFIX] #6106: Re-assign student to other slot not possible
 
 3.6.2 (2019-05-14)
 ------------------
@@ -49,9 +84,11 @@ CHANGELOG
 * [FIXED] #5569: Wrong deadline and missing singleslotprintfields when importing organizer instance backup
 * [FIXED] #5561: Restore and update collision checking
 * [FIXED] #5567: Groupmember enrollment message for teacher does not contain the correct groupname
-* [FIXED] #5562: Clicking link of organizer system message leads to an error & Rewrite function organizer_get_eventaction_student
+* [FIXED] #5562: Clicking link of organizer system message leads to an error & Rewrite function
+organizer_get_eventaction_student
 * [FIXED] #5565: lang strings teacherid and teacherid_help missing in en
-* [FIXED] #5564: Event of deleted slot remains in student calendar AND event name improvements for students appointment events
+* [FIXED] #5564: Event of deleted slot remains in student calendar AND event name improvements for students
+appointment events
 * [FIXED] #5558: slot evaluation - form elements in disorder
 * [FIXED] #5554: Debug Messages because of missing lang-strings
 * [FIXED] #5506: Add new slots: Change to-date time from 00:00:00 to 23:59:59

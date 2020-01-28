@@ -48,20 +48,46 @@ define(
             warningdiv.hide();
 
             function check_group_members_only(e) {
-                var groupmodeselect = $(e.target);
+                var isgrouporganizer = $(e.target);
 
-                if (groupmodeselect.val() == 1) {
-                    $('#id_groupmode').val('2');
-                    $('#id_groupingid').prop('disabled', false);
+                if (isgrouporganizer.val() == 1) {
+                    $('#id_groupmode').val('1').click();
+                    $('#fitem_id_groupingid').removeAttr('hidden');
+                    $('#fitem_id_groupingid').show();
+                    $('#fitem_id_groupingid').find().each(function () {
+                        $(this).css('display', 'block');
+                        $(this).removeAttr('hidden');
+                    });
+                    $('#id_groupingid').removeAttr('disabled');
                     warningdiv.show();
-                } else {
-                    $('#id_groupmode').val('0');
-                    $('#id_groupingid').prop('disabled', true);
+                } else if(isgrouporganizer.val() == 0) {
+                    $('#id_groupmode').val('0').click();
+                    $('#fitem_id_groupingid').prop('hidden', true);
+                    $('#fitem_id_groupingid').find().each(function () {
+                        $(this).css('display', 'none');
+                        $(this).prop('hidden', true);
+                    });
+                    $('#id_groupingid').prop( "disabled", true );
                     warningdiv.hide();
                 }
             }
 
+            function check_group_mode(e) {
+                var groupmodeselect = $(e.target);
+
+                if (groupmodeselect.val() == 0) {
+                    $('#id_isgrouporganizer').val('0');
+                    $('#fitem_id_groupingid').hide();
+                    $('#id_groupingid').prop('disabled', 'disabled');
+                    warningdiv.hide();
+                } else if(isgrouporganizer.val() == 1) {
+                    $('#id_isgrouporganizer').val('1');
+                    warningdiv.show();
+                }
+            }
+
             $('#id_isgrouporganizer').on('change', check_group_members_only);
+            $('#id_groupmode').on('change', check_group_mode);
 
             if (this.activateduedatecheckbox && !$('.error')) {
                 $('#id_duedate_enabled').click();

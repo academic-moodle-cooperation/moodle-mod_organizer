@@ -116,11 +116,6 @@ class mod_organizer_mod_form extends moodleform_mod
 
         $mform->setExpanded('availability');
 
-        $this->standard_grading_coursemodule_elements();
-
-        if (isset($organizerconfig->maximumgrade)) {
-            $mform->setDefault('grade', $organizerconfig->maximumgrade);
-        }
         $mform->addElement('header', 'organizercommon', get_string('organizercommon', 'organizer'));
 
         $mform->addElement('duration', 'relativedeadline', get_string('relativedeadline', 'organizer'));
@@ -163,7 +158,7 @@ class mod_organizer_mod_form extends moodleform_mod
                 'advcheckbox', 'hidecalendar', get_string('hidecalendar', 'organizer'), null, null, array(0, 1)
         );
         $mform->setType('hidecalendar', PARAM_INT);
-        $mform->setDefault('hidecalendar', 0);
+        $mform->setDefault('hidecalendar', 1);
         $mform->addHelpButton('hidecalendar', 'hidecalendar', 'organizer');
 
         $mform->addElement(
@@ -177,6 +172,11 @@ class mod_organizer_mod_form extends moodleform_mod
         if ($organizerconfig->absolutedeadline != 'never') {
             $absdefault = strtotime($organizerconfig->absolutedeadline);
             $mform->setDefault('duedate', $absdefault);
+        }
+
+        $this->standard_grading_coursemodule_elements();
+        if (isset($organizerconfig->maximumgrade)) {
+            $mform->setDefault('grade', $organizerconfig->maximumgrade);
         }
 
         $mform->addElement('header', 'printslotuserfields', get_string('singleslotprintfields', 'organizer'));
@@ -197,11 +197,13 @@ class mod_organizer_mod_form extends moodleform_mod
         $mform->addHelpButton('singleslotprintfield0', 'singleslotprintfield0', 'organizer');
 
         $this->standard_coursemodule_elements();
+
         $warning = $mform->createElement(
             'static', '', '',
             '<span id="groupingid_warning">' . get_string('warning_groupingid', 'organizer') . '</span>'
         );
         $mform->insertElementBefore($warning, 'groupingid');
+
         $this->add_action_buttons();
 
         // Add warning popup/noscript tag, if grades are changed by user.

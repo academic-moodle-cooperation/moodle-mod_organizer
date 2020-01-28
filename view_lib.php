@@ -98,9 +98,8 @@ function organizer_generate_appointments_view($params, $instance) {
     $organizerexpired = isset($instance->organizer->duedate) && $instance->organizer->duedate - time() < 0;
 
     $output = organizer_generate_tab_row($params, $instance->context);
-    $output .= organizer_make_infobox($params, $instance->organizer, $instance->context);
     $output .= organizer_begin_form($params);
-    $output .= organizer_generate_addslotbutton($params, $organizerexpired);
+    $output .= organizer_make_infobox($params, $instance->organizer, $instance->context, $organizerexpired);
 
     $columns = array('select', 'singleslotcommands', 'datetime', 'location', 'participants', 'teacher', 'details');
     $align = array('center', 'center', 'left', 'left', 'left', 'left', 'center');
@@ -242,17 +241,17 @@ function organizer_generate_tab_row($params, $context) {
         $tabrow[] = new tabobject(ORGANIZER_TAB_APPOINTMENTS_VIEW, $targeturl, get_string('taballapp', 'organizer'));
     }
 
-    if (has_capability('mod/organizer:viewstudentview', $context, null, true)) {
-        $targeturl = new moodle_url('/mod/organizer/view.php', array('id' => $params['id'], 'mode' => ORGANIZER_TAB_STUDENT_VIEW));
-        $tabrow[] = new tabobject(ORGANIZER_TAB_STUDENT_VIEW, $targeturl, get_string('tabstud', 'organizer'));
-    }
-
     if (has_capability('mod/organizer:viewregistrations', $context, null, true)) {
         $targeturl = new moodle_url(
             '/mod/organizer/view.php',
             array('id' => $params['id'], 'mode' => ORGANIZER_TAB_REGISTRATION_STATUS_VIEW)
         );
         $tabrow[] = new tabobject(ORGANIZER_TAB_REGISTRATION_STATUS_VIEW, $targeturl, get_string('tabstatus', 'organizer'));
+    }
+
+    if (has_capability('mod/organizer:viewstudentview', $context, null, true)) {
+        $targeturl = new moodle_url('/mod/organizer/view.php', array('id' => $params['id'], 'mode' => ORGANIZER_TAB_STUDENT_VIEW));
+        $tabrow[] = new tabobject(ORGANIZER_TAB_STUDENT_VIEW, $targeturl, get_string('tabstud', 'organizer'));
     }
 
     if (count($tabrow) > 1) {
@@ -263,32 +262,6 @@ function organizer_generate_tab_row($params, $context) {
     } else {
         return ''; // If only one tab is enabled, hide the tab row altogether.
     }
-}
-
-function organizer_generate_addslotbutton($params, $organizerexpired) {
-
-    $output = '<div id="organizer_addbutton_div">';
-
-    $slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
-    $output .= '<input class="btn btn-primary" type="submit" value="' . get_string('btn_add', 'organizer') .
-    '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsaddurl . '\');" ' .
-    ($organizerexpired ? 'disabled ' : '') . '/>';
-
-    $output .= '</div>';
-
-    return $output;
-}
-
-function organizer_generate_filterfield() {
-
-    $output = '<span id="organizer_filterfield">' . get_string('filter') . ": ";
-
-    $output .= html_writer::tag('input', null,
-        array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
-
-    $output .= '</span>';
-
-    return $output;
 }
 
 function organizer_generate_actionlink_bar($context, $organizerexpired) {
@@ -523,7 +496,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
                 $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)));
             } else {
                 $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)),
-                        $DB->get_record('organizer_slots', array('id' => $evaldapp->slotid)));
+                    $DB->get_record('organizer_slots', array('id' => $evaldapp->slotid)));
             }
         } else {
             $slots = array();
@@ -546,6 +519,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
     if (count($slots) != 0) {
         $numshown = 0;
         foreach ($slots as $slot) {
+
             $slotx = new organizer_slot($slot);
             if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                       $alreadyinqueue = $slotx->is_group_in_queue();
@@ -568,6 +542,10 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
                     $row->attributes['class'] = '';
                 }
 
+            }
+
+            if ($slotx->has_participants()) {
+                $row->attributes['class'] .= 'registered';
             }
 
             $slotpastdue = $slotx->is_past_due();
@@ -778,8 +756,8 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
     $par = array('now1' => time(), 'now2' => time(), 'organizerid' => $organizer->id);
     $par = array_merge($par, $inparams);
 
-    $query = "SELECT DISTINCT
-        a2.id AS appid, g.id, g.name,
+    $query = "SELECT DISTINCT 
+        g.id, g.name, a2.id AS appid,
         CASE
             WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 0
                 THEN " . ORGANIZER_APP_STATUS_ATTENDED . "
@@ -815,7 +793,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         WHERE g.id $insql
         $orderby";
 
-    $rs = $DB->get_records_sql($query, $par);
+    $rs = $DB->get_recordset_sql($query, $par);
 
     return $rs;
 }
@@ -903,7 +881,9 @@ function organizer_organizer_get_status_table_entries($params) {
         a2.teacherapplicantid, a2.teacherapplicanttimemodified
         $orderby";
 
-    return $DB->get_records_sql($query, $par);
+    $rs = $DB->get_recordset_sql($query, $par);
+
+    return $rs;
 }
 
 function organizer_organizer_generate_registration_table_content($columns, $params, $organizer, $context) {
@@ -917,134 +897,212 @@ function organizer_organizer_generate_registration_table_content($columns, $para
         $entries = organizer_organizer_get_status_table_entries($params);
     }
 
-    $rows = array();
+    if ($entries->valid()) {
 
-    $queueable = organizer_is_queueable();
+        $rows = array();
 
-    if ($groupmode) {
-        $groupswitch = "";
-        foreach ($entries as $entry) {
-            if ($entry->status == ORGANIZER_APP_STATUS_INVALID) {
-                continue;
-            }
-            if ($groupswitch != $entry->id) {
-                $groupswitch = $entry->id;
+        $queueable = organizer_is_queueable();
+
+        if ($groupmode) {
+            $groupswitch = "";
+            foreach ($entries as $entry) {
+                if ($entry->status == ORGANIZER_APP_STATUS_INVALID) {
+                    continue;
+                }
+                if ($groupswitch != $entry->id) {
+                    $groupswitch = $entry->id;
+                    $row = new html_table_row();
+
+                    if ($entry->starttime) {
+                        $row->attributes['class'] = 'registered';
+                    }
+                    foreach ($columns as $column) {
+                        switch ($column) {
+                            case 'group':
+                                $list = $entry->name;
+                                if ($entry->starttime) {
+                                    $list .= organizer_get_teacherapplicant_output(
+                                        $entry->teacherapplicantid,
+                                        $entry->teacherapplicanttimemodified
+                                    );
+                                }
+                                $cell = $row->cells[] = new html_table_cell($list);
+                                break;
+                            case 'participants':
+                                if ($params['psort'] == 'id') {
+                                    $orderby = "ORDER BY idnumber {$params['pdir']}, lastname ASC, firstname ASC";
+                                } else {
+                                    $orderby = "ORDER BY lastname {$params['pdir']}, firstname {$params['pdir']}, idnumber ASC";
+                                }
+                                $members = $DB->get_fieldset_sql(
+                                    'SELECT userid FROM {groups_members} gm
+                                    INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
+                                    $orderby, array('groupid' => $entry->id)
+                                );
+                                $list = "<span style='display:table'>";
+                                foreach ($members as $member) {
+                                    $list .= "<span style='display:table-row'>";
+                                    $identity = organizer_get_user_identity($member);
+                                    $identity = $identity != "" ? " ({$identity})" : "";
+                                    $list .= "<span style='display:table-cell'>" . organizer_get_name_link($member) . $identity;
+                                    if ($entry->starttime) {
+                                        if ($member == $entry->applicantid) {
+                                            $list .= organizer_get_img(
+                                                'pix/applicant.gif', 'applicant',
+                                                get_string('applicant', 'organizer')
+                                            );
+                                        } else {
+                                            $list .= " ";
+                                        }
+                                    }
+                                    $list .= "</span>";
+                                    if ($queueable) {
+                                        $list .= "<span style='display:table-cell'>" .
+                                            organizer_reg_waitinglist_status($organizer->id, $member, $groupmode)
+                                            . "</span>";
+                                    }
+                                    $list .= "<span style='display:table-cell'>" .
+                                        organizer_reg_organizer_app_details($organizer, $member, $groupmode)
+                                        . "</span>";
+                                    $list .= "</span>";
+                                }
+                                $list .= "</span>";
+                                $cell = $row->cells[] = new html_table_cell($list);
+                                $cell->style .= " text-align: left;";
+                                break;
+                            case 'status':
+                                if ($entry->starttime) {
+                                    $cell = $row->cells[] = new html_table_cell(organizer_get_status_icon_new($entry->status));
+                                } else {
+                                    $cell = $row->cells[] = new html_table_cell(
+                                        organizer_get_status_icon_new(ORGANIZER_APP_STATUS_NOT_REGISTERED));
+                                }
+                                $cell->style .= " text-align: center;";
+                                break;
+                            case 'datetime':
+                                if ($entry->starttime) {
+                                    $cell = $row->cells[] = new html_table_cell(organizer_date_time($entry));
+                                    $cell->style .= " text-align: left;";
+                                } else {
+                                    $cell = $row->cells[] = new html_table_cell('-');
+                                    $cell->style .= " text-align: center;";
+                                }
+                                break;
+                            case 'appdetails':
+                                $cell = $row->cells[] = new html_table_cell('-');
+                                $cell->style .= " text-align: center;";
+                                break;
+                            case 'location':
+                                if ($entry->starttime) {
+                                    $cell = $row->cells[] = new html_table_cell(organizer_location_link($entry));
+                                    $cell->style .= " text-align: left;";
+                                } else {
+                                    $cell = $row->cells[] = new html_table_cell('-');
+                                    $cell->style .= " text-align: center;";
+                                }
+                                break;
+                            case 'teacher':
+                                if ($entry->starttime) {
+                                    $cell = $row->cells[] = new html_table_cell(
+                                        organizer_trainer_data($params, $entry, organizer_get_slot_trainers($entry->slotid)));
+                                    $cell->style .= " text-align: left;";
+                                } else {
+                                    $cell = $row->cells[] = new html_table_cell('-');
+                                    $cell->style .= " text-align: center;";
+                                }
+                                break;
+                            case 'actions':
+                                if ($entry->starttime) {
+                                    $cell = $row->cells[] = new html_table_cell(
+                                        organizer_teacher_action_new($params, $entry, $context)
+                                    );
+                                } else {
+                                    $cell = $row->cells[] = new html_table_cell(
+                                        organizer_teacher_action_new_noentries($params, $entry->id, $context)
+                                    );
+                                }
+                                $cell->style .= " text-align: center;";
+                                break;
+                        }
+
+                        $cell->style .= ' vertical-align: middle;';
+                    }  // Foreach column.
+                    $rows[] = $row;
+                } else {  // Groupswitch.
+                    continue;
+                }// Groupswitch.
+            }  // Foreach entry.
+        } else {  // No groupmode.
+            foreach ($entries as $entry) {
+                if ($entry->status == ORGANIZER_APP_STATUS_INVALID) {
+                    continue;
+                }
+
                 $row = new html_table_row();
+                if ($entry->starttime) {
+                    $row->attributes['class'] = 'registered';
+                }
 
                 foreach ($columns as $column) {
                     switch ($column) {
                         case 'group':
-                            $list = $entry->name;
-                            if ($entry->starttime) {
-                                $list .= organizer_get_teacherapplicant_output(
-                                    $entry->teacherapplicantid,
-                                    $entry->teacherapplicanttimemodified
-                                );
-                            }
-                            $cell = $row->cells[] = new html_table_cell($list);
-                            break;
                         case 'participants':
-                            if ($params['psort'] == 'id') {
-                                $orderby = "ORDER BY idnumber {$params['pdir']}, lastname ASC, firstname ASC";
-                            } else {
-                                $orderby = "ORDER BY lastname {$params['pdir']}, firstname {$params['pdir']}, idnumber ASC";
-                            }
-                            $members = $DB->get_fieldset_sql(
-                                'SELECT userid FROM {groups_members} gm
-                            INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
-                                $orderby, array('groupid' => $entry->id)
-                            );
-                            $list = "<span style='display:table'>";
-                            foreach ($members as $member) {
-                                $list .= "<span style='display:table-row'>";
-                                $identity = organizer_get_user_identity($member);
-                                $identity = $identity != "" ? " ({$identity})" : "";
-                                $list .= "<span style='display:table-cell'>" . organizer_get_name_link($member) . $identity;
-                                if ($entry->starttime) {
-                                    if ($member == $entry->applicantid) {
-                                        $list .= organizer_get_img(
-                                            'pix/applicant.gif', 'applicant',
-                                            get_string('applicant', 'organizer')
-                                        );
-                                    } else {
-                                        $list .= " ";
-                                    }
-                                }
-                                $list .= "</span>";
-                                if ($entry->starttime) {
-                                    if ($entry->comments != '') {
-                                        $list .= "<span style='display:table-cell'>" .
-                                            organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $entry->comments)
-                                            . "</span>";
-                                    } else {
-                                        $list .= "<span style='display:table-cell'> </span>";
-                                    }
-                                }
-                                if ($queueable) {
-                                    $list .= "<span style='display:table-cell'>" .
-                                        organizer_reg_waitinglist_status($organizer->id, $member, $groupmode)
-                                        . "</span>";
-                                }
-                                $list .= "<span style='display:table-cell'>" .
-                                    organizer_reg_organizer_app_details($organizer, $member, $groupmode)
-                                    . "</span>";
-                                $list .= "</span>";
-                            }
-                            $list .= "</span>";
-                            $cell = $row->cells[] = new html_table_cell($list);
-                            $cell->style .= " text-align: left;";
+                            $identity = organizer_get_user_identity($entry);
+                            $identity = $identity != "" ? " ({$identity})" : "";
+                            $cell = $row->cells[] = new html_table_cell(
+                                organizer_get_name_link($entry->id) . $identity .
+                                organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified));
                             break;
                         case 'status':
-                            if ($entry->starttime) {
-                                $cell = $row->cells[] = new html_table_cell(organizer_get_status_icon_new($entry->status));
-                            } else {
-                                $cell = $row->cells[] = new html_table_cell(
-                                    organizer_get_status_icon_new(ORGANIZER_APP_STATUS_NOT_REGISTERED));
-                            }
-                            $cell->style .= " text-align: center;";
+                            $cell = $row->cells[] = new html_table_cell(organizer_get_status_icon_new($entry->status));
                             break;
                         case 'datetime':
-                            if ($entry->starttime) {
-                                $cell = $row->cells[] = new html_table_cell(organizer_date_time($entry));
+                            $text = organizer_date_time($entry);
+                            if ($text != "-") {
+                                $cell = $row->cells[] = new html_table_cell($text);
                                 $cell->style .= " text-align: left;";
                             } else {
-                                $cell = $row->cells[] = new html_table_cell('-');
-                                $cell->style .= " text-align: center;";
+                                $cell = $row->cells[] = new html_table_cell("-");
+                                $cell->style = " text-align: center;";
                             }
                             break;
                         case 'appdetails':
-                            $cell = $row->cells[] = new html_table_cell('-');
-                            $cell->style .= " text-align: center;";
+                            if ($queueable) {
+                                $outcell = organizer_reg_waitinglist_status($organizer->id, 0, $groupmode);
+                            } else {
+                                $outcell = '';
+                            }
+                            $outcell .= organizer_reg_organizer_app_details($organizer, $entry->id, $groupmode);
+                            if ($outcell != "-") {
+                                $cell = $row->cells[] = new html_table_cell($outcell);
+                                $cell->style = " text-align: left;";
+                            } else {
+                                $cell = $row->cells[] = new html_table_cell("-");
+                                $cell->style = " text-align: center;";
+                            }
                             break;
                         case 'location':
-                            if ($entry->starttime) {
-                                $cell = $row->cells[] = new html_table_cell(organizer_location_link($entry));
-                                $cell->style .= " text-align: left;";
+                            $text = organizer_location_link($entry);
+                            if ($text != "-") {
+                                $cell = $row->cells[] = new html_table_cell($text);
+                                $cell->style = " text-align: left;";
                             } else {
-                                $cell = $row->cells[] = new html_table_cell('-');
-                                $cell->style .= " text-align: center;";
+                                $cell = $row->cells[] = new html_table_cell("-");
+                                $cell->style = " text-align: center;";
                             }
                             break;
                         case 'teacher':
-                            if ($entry->starttime) {
+                            if ($entry->slotid) {
                                 $cell = $row->cells[] = new html_table_cell(
                                     organizer_trainer_data($params, $entry, organizer_get_slot_trainers($entry->slotid)));
-                                $cell->style .= " text-align: left;";
+                                $cell->style = " text-align: left;";
                             } else {
-                                $cell = $row->cells[] = new html_table_cell('-');
-                                $cell->style .= " text-align: center;";
+                                $cell = $row->cells[] = new html_table_cell("-");
+                                $cell->style = " text-align: center;";
                             }
                             break;
                         case 'actions':
-                            if ($entry->starttime) {
-                                $cell = $row->cells[] = new html_table_cell(
-                                    organizer_teacher_action_new($params, $entry, $context)
-                                );
-                            } else {
-                                $cell = $row->cells[] = new html_table_cell(
-                                    organizer_teacher_action_new_noentries($params, $entry->id, $context)
-                                );
-                            }
+                            $cell = $row->cells[] = new html_table_cell(organizer_teacher_action_new($params, $entry, $context));
                             $cell->style .= " text-align: center;";
                             break;
                     }
@@ -1052,88 +1110,11 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                     $cell->style .= ' vertical-align: middle;';
                 }
                 $rows[] = $row;
-            } else {  // Groupswitch.
-               continue;
-            }// Groupswitch.
-        }  // Foreach entry.
-    } else {  // No groupmode.
-        foreach ($entries as $entry) {
-            if ($entry->status == ORGANIZER_APP_STATUS_INVALID) {
-                continue;
-            }
+            }  // Foreach entry.
+        } // Groupmode or not.
 
-            $row = new html_table_row();
-
-            foreach ($columns as $column) {
-                switch ($column) {
-                    case 'group':
-                    case 'participants':
-                        $identity = organizer_get_user_identity($entry);
-                        $identity = $identity != "" ? " ({$identity})" : "";
-                        $cell = $row->cells[] = new html_table_cell(
-                        organizer_get_name_link($entry->id) . $identity .
-                        organizer_get_teacherapplicant_output($entry->teacherapplicantid, $entry->teacherapplicanttimemodified));
-                    break;
-                    case 'status':
-                        $cell = $row->cells[] = new html_table_cell(organizer_get_status_icon_new($entry->status));
-                    break;
-                    case 'datetime':
-                        $text = organizer_date_time($entry);
-                        if ($text != "-") {
-                            $cell = $row->cells[] = new html_table_cell($text);
-                            $cell->style .= " text-align: left;";
-                        } else {
-                            $cell = $row->cells[] = new html_table_cell("-");
-                            $cell->style = " text-align: center;";
-                        }
-                    break;
-                    case 'appdetails':
-                        if ($queueable) {
-                            $outcell = organizer_reg_waitinglist_status($organizer->id, 0, $groupmode);
-                        } else {
-                            $outcell = '';
-                        }
-                        $outcell .= organizer_reg_organizer_app_details($organizer, $entry->id, $groupmode);
-                        if ($outcell != "-") {
-                            $cell = $row->cells[] = new html_table_cell($outcell);
-                            $cell->style = " text-align: left;";
-                        } else {
-                            $cell = $row->cells[] = new html_table_cell("-");
-                            $cell->style = " text-align: center;";
-                        }
-                    break;
-                    case 'location':
-                        $text = organizer_location_link($entry);
-                        if ($text != "-") {
-                            $cell = $row->cells[] = new html_table_cell($text);
-                            $cell->style = " text-align: left;";
-                        } else {
-                            $cell = $row->cells[] = new html_table_cell("-");
-                            $cell->style = " text-align: center;";
-                        }
-                    break;
-                    case 'teacher':
-                        if ($entry->slotid) {
-                            $cell = $row->cells[] = new html_table_cell(
-                                    organizer_trainer_data($params, $entry, organizer_get_slot_trainers($entry->slotid)));
-                            $cell->style = " text-align: left;";
-                        } else {
-                            $cell = $row->cells[] = new html_table_cell("-");
-                            $cell->style = " text-align: center;";
-                        }
-                    break;
-                    case 'actions':
-                        $cell = $row->cells[] = new html_table_cell(organizer_teacher_action_new($params, $entry, $context));
-                        $cell->style .= " text-align: center;";
-                    break;
-                }
-
-                $cell->style .= ' vertical-align: middle;';
-            }
-            $rows[] = $row;
-        }  // Foreach entry.
-    } // Groupmode or not.
-
+        $entries->close();
+    }
     return $rows;
 }
 
@@ -1371,6 +1352,9 @@ function organizer_reg_organizer_app_details($organizer, $userid, $groupmode) {
             $list .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback);
         } else {
             $list .= ' ';
+        }
+        if (isset($appointment->comments) && $appointment->comments != '') {
+            $list .= ' ' . organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $appointment->comments);
         }
     } else {
         $list = '-';

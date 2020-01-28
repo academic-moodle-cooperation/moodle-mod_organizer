@@ -46,13 +46,17 @@ class organizer_add_slots_form extends moodleform
     private $weekdays;
 
     protected function definition() {
-        global $USER, $PAGE;
+        global $USER, $PAGE, $DB;
 
         $this->_init_arrays();
         $this->_add_scroll_fix();
 
         $mform = &$this->_form;
         $data = &$this->_customdata;
+
+        $cm = get_coursemodule_from_id('organizer', $data['id'], 0, false, MUST_EXIST);
+        $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+        $organizerconfig = get_config('organizer');
 
         $mform->addElement('hidden', 'id', $data['id']);
         $mform->setType('id', PARAM_INT);
@@ -67,9 +71,7 @@ class organizer_add_slots_form extends moodleform
         $select = $mform->addElement('select', 'trainerid', get_string('trainerid', 'organizer'), $menu);
         $select->setMultiple(true);
         $mform->setType('trainerid', PARAM_INT);
-        $mform->setDefault('trainerid', $USER->id);
         $mform->addHelpButton('trainerid', 'trainerid', 'organizer');
-        $mform->addRule('trainerid', null, 'required');
 
         $mform->addElement('checkbox', 'teachervisible', get_string('teachervisible', 'organizer'));
         $mform->setType('teachervisible', PARAM_BOOL);
@@ -137,9 +139,6 @@ class organizer_add_slots_form extends moodleform
         $mform->setDefault('maxparticipants', 1);
         $mform->addHelpButton('maxparticipants', 'maxparticipants', 'organizer');
 
-        global $DB;
-        $cm = get_coursemodule_from_id('organizer', $data['id'], 0, false, MUST_EXIST);
-        $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $mform->addElement('hidden', 'isgrouporganizer', '1');
             $mform->setType('isgrouporganizer', PARAM_BOOL);
@@ -245,6 +244,8 @@ class organizer_add_slots_form extends moodleform
         }
         $params->relativedeadline = $organizer->relativedeadline;
         $params->relativedeadlinestring = get_string('infobox_deadline_passed_slot', 'organizer');
+        $params->allowcreationofpasttimeslots =  $organizerconfig->allowcreationofpasttimeslots;
+        $params->pasttimeslotsstring = get_string('pasttimeslotstring', 'organizer');
 
         $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', array($params));
     }

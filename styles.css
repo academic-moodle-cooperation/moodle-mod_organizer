@@ -20,6 +20,7 @@
  * @package       mod_organizer
  * @author        Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author        Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author        Andreas Windbichler
  * @author        Ivan Šakić
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -46,7 +47,7 @@
 }
 
 #organizer_main_cointainer fieldset.preview {
-    width: 97.3%;
+    width: 100%;
 }
 
 #organizer_main_cointainer div.datapreviewtitle{
@@ -58,7 +59,6 @@
 /* Fix here sn. */
 #organizer_main_cointainer div.forced_scroll {
     border: solid 1px #ddd;
-    overflow-x: hidden;
     margin-left:10px;
     margin-right:10px;
     padding-top:2em;
@@ -66,11 +66,14 @@
 
 #organizer_main_cointainer div.forced_scroll table {
     min-width: 1024px;
+    width: 97%;
     margin: 1em;
 }
 
 #organizer_main_cointainer div.forced_scroll td {
     white-space: nowrap;
+    border: solid 1px #ddd;
+    border-collapse: collapse;
 }
 
 #organizer_main_cointainer table.legend td {
@@ -109,9 +112,13 @@
     width: 50% !important;
 }
 
-#organizer_main_cointainer table.print-preview td {
+#organizer_main_cointainer table.print_preview td {
     border: 1px solid #BBB !important;
     border-collapse: collapse;
+}
+
+#organizer_main_cointainer table.print-preview {
+    width: 100%;
 }
 
 #organizer_main_cointainer table.coloredrows th {
@@ -154,10 +161,6 @@
     color: red;
 }
 
-#organizer_filterfield {
-    padding-left: 2em;
-}
-
 #organizer_addbutton_div{
     margin-top: 0.5em;
     margin-bottom: 0.7em;
@@ -165,4 +168,16 @@
 
 #slot_overview th {
     background-color: inherit;
+}
+
+.organizer_filterblock {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+#id_export_settings_header {
+    border-bottom: none !important;
 }

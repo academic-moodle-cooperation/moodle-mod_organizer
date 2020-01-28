@@ -137,7 +137,7 @@ function organizer_add_new_slots($data) {
 
     $cm = get_coursemodule_from_id('organizer', $data->id);
     $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
-
+    $organizerconfig = get_config('organizer');
     $relativedeadline = $organizer->relativedeadline;
 
     if (!isset($data->newslots)) {
@@ -149,6 +149,7 @@ function organizer_add_new_slots($data) {
     $enddate = $data->enddate + 86399;
     $date = time();
     $slotsnotcreatedduetodeadline = 0;
+    $slotsnotcreatedduetopasttime = 0;
 
     for ($daydate = $startdate; $daydate <= $enddate; $daydate = strtotime('+1 day', $daydate)) {
 
@@ -190,7 +191,11 @@ function organizer_add_new_slots($data) {
 
             for ($time = $slot['datefrom']; $time + $data->duration <= $slot['dateto']; $time += ($data->duration + $data->gap)) {
 
-                if ($time - $relativedeadline - $date > 0) {
+                if ($time - $date < $relativedeadline && $time - $date > 0 ) {
+                    $slotsnotcreatedduetodeadline++;
+                } else if ($time - $date < 0 && $organizerconfig->allowcreationofpasttimeslots == false) {
+                    $slotsnotcreatedduetopasttime++;
+                } else {
                     $newslot->starttime = $time;
                     // NEW SLOTS ARE MADE HERE!
                     $newslot->id = $DB->insert_record('organizer_slots', $newslot);
@@ -242,14 +247,12 @@ function organizer_add_new_slots($data) {
                         organizer_create_coursegroup($newslot);
                     }
                     $count[] = $newslot->id;
-                } else {
-                    $slotsnotcreatedduetodeadline++;
                 }
             }
         } // End foreach slot
     } // End for week
 
-    return array($count, $slotsnotcreatedduetodeadline, $collisionmessages);
+    return array($count, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $collisionmessages);
 }
 
 function organizer_get_slotstarttime($slotdate, $time) {
@@ -521,6 +524,8 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
     $slot = $DB->get_record('organizer_slots', array('id' => $appointment->slotid));
     $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
 
+    $stringman = get_string_manager();
+
     $a = new stdClass();
 
     $courseurl = new moodle_url("/course/view.php?id={$course->id}");
@@ -536,34 +541,34 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
     }
     $a->description = $slot->comments;
 
-    // Calendar events for trainers info fields.
-
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $a->appwith = get_string('eventappwith:group', 'organizer');
-        $a->with = get_string('eventwith', 'organizer');
-        $group = groups_get_group($appointment->groupid);
-        $groupid = $group->id;
-        $users = groups_get_members($groupid);
-        $memberlist = "";
-        foreach ($users as $user) {
-            $memberlist .= organizer_get_name_link($user->id) . ", ";
-        }
-        $memberlist = trim($memberlist, ", ");
-        $memberlist .= " {$group->name} ";
-        $a->participants = $memberlist;
-    } else {
-        $a->appwith = get_string('eventappwith:single', 'organizer');
-        $a->with = get_string('eventwith', 'organizer');
-        $a->participants = organizer_get_users_of_slot($slot->id);
-    }
-
-    $eventtitle = get_string('eventtitle', 'organizer', $a);
-    $eventdescription = get_string('eventtemplatewithoutlinks', 'organizer', $a);
 
     if (!$trainerid) {
         // Create or transform to appointment events for the slot for each trainer.
         $trainers = organizer_get_slot_trainers($slot->id);
         foreach ($trainers as $trainerid) {
+            // Use the trainer's language.
+            $trainerlang = $DB->get_field('user', 'lang', array('id' => $trainerid));
+            // Calendar events for trainers info fields.
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                $a->appwith = $stringman->get_string('eventappwith:group', 'organizer', null, $trainerlang);
+                $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
+                $group = groups_get_group($appointment->groupid);
+                $groupid = $group->id;
+                $users = groups_get_members($groupid);
+                $memberlist = "";
+                foreach ($users as $user) {
+                    $memberlist .= organizer_get_name_link($user->id) . ", ";
+                }
+                $memberlist = trim($memberlist, ", ");
+                $memberlist .= " {$group->name} ";
+                $a->participants = $memberlist;
+            } else {
+                $a->appwith = $stringman->get_string('eventappwith:single', 'organizer', null, $trainerlang);
+                $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
+                $a->participants = organizer_get_users_of_slot($slot->id);
+            }
+            $eventtitle = $stringman->get_string('eventtitle', 'organizer', $a, $trainerlang);
+            $eventdescription = $stringman->get_string('eventtemplatewithoutlinks', 'organizer', $a, $trainerlang);
             $params = array ('slotid' => $slot->id, 'trainerid' => $trainerid);
             $query = "SELECT e.id FROM {event} e
                   INNER JOIN {organizer_slot_trainer} t ON e.id = t.eventid
@@ -583,6 +588,29 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
             }
         }
     } else {
+        // Use the trainer's language.
+        $trainerlang = $DB->get_field('user', 'lang', array('id' => $trainerid));
+        // Calendar events for trainers info fields.
+        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+            $a->appwith = $stringman->get_string('eventappwith:group', 'organizer', null, $trainerlang);
+            $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
+            $group = groups_get_group($appointment->groupid);
+            $groupid = $group->id;
+            $users = groups_get_members($groupid);
+            $memberlist = "";
+            foreach ($users as $user) {
+                $memberlist .= organizer_get_name_link($user->id) . ", ";
+            }
+            $memberlist = trim($memberlist, ", ");
+            $memberlist .= " {$group->name} ";
+            $a->participants = $memberlist;
+        } else {
+            $a->appwith = $stringman->get_string('eventappwith:single', 'organizer', null, $trainerlang);
+            $a->with = $stringman->get_string('eventwith', 'organizer', null, $trainerlang);
+            $a->participants = organizer_get_users_of_slot($slot->id);
+        }
+        $eventtitle = $stringman->get_string('eventtitle', 'organizer', $a, $trainerlang);
+        $eventdescription = $stringman->get_string('eventtemplatewithoutlinks', 'organizer', $a, $trainerlang);
         // Create or transform to appointment events for the slot for this trainer.
         $params = array ('slotid' => $slot->id, 'trainerid' => $trainerid);
         $query = "SELECT e.id FROM {event} e
@@ -603,7 +631,7 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
         }
     }
 
-    return $teventid;
+    return true;
 
 }
 
@@ -972,7 +1000,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
             if ($ok = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid,
                 $teacherapplicantid, $generatetrainerevents)) {
                 $address = $DB->get_field('user', 'email', array('id' => $memberid));
-                if ($mail) {
+                if (isset($mail) && $mail) {
                     $mail->addAddress($address);
                     $mail->send();
                 }
@@ -983,7 +1011,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
         if ($ok = organizer_register_single_appointment($slotid, $userid, 0, 0,
             $teacherapplicantid, true)) {
             $address = $DB->get_field('user', 'email', array('id' => $userid));
-            if ($mail) {
+            if (isset($mail) && $mail) {
                 $mail->addAddress($address);
                 $mail->send();
             }
@@ -1101,19 +1129,17 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
         // Events for the trainers will only be generated with the first participants registration.
         $generatetrainerevents = true;
         foreach ($memberids as $memberid) {
-            $app = organizer_get_last_user_appointment($slot->organizerid, $memberid);
-            $okregister = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid, null, $generatetrainerevents);
-            if (isset($app)) {
+            if ($app = organizer_get_last_user_appointment($slot->organizerid, $memberid)) {
                 $okunregister = organizer_unregister_single_appointment($app->slotid, $memberid);
             }
+            $okregister = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid, null, $generatetrainerevents);
             $generatetrainerevents = false;
         }
     } else {
-        $app = organizer_get_last_user_appointment($slot->organizerid);
-        $okregister = organizer_register_single_appointment($slotid, $USER->id, 0, 0, null,true);
-        if (isset($app)) {
+        if ($app = organizer_get_last_user_appointment($slot->organizerid)) {
             $okunregister = organizer_unregister_single_appointment($app->slotid, $USER->id);
         }
+        $okregister = organizer_register_single_appointment($slotid, $USER->id, 0, 0, null,true);
     }
 
     if (organizer_hasqueue($slot->organizerid)) {

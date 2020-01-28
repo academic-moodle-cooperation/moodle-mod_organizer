@@ -1,0 +1,14 @@
+diff a/slots_print.php b/slots_print.php	(rejected hunks)
+@@ -328,6 +328,12 @@
+         case "feedback":
+             $sort = "a.feedback";
+         break;
++        case "comments":
++            $sort = "a.commentsk";
++            break;
++        case "teachercomments":
++            $sort = "teachercomments";
++            break;
+         default:
+             $sort = null;
+     }
