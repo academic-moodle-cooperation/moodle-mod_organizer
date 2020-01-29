@@ -78,10 +78,6 @@ if ($data = $mform->get_data()) {
         redirect($redirecturl);
     }
 
-    if (!organizer_security_check_slots(array($slot))) {
-        print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
-    }
-
     $ppp = organizer_print_setuserprefs_and_triggerevent($data, $cm, $context);
 
     if (!isset($data->cols)) {
@@ -103,10 +99,6 @@ if ($data = $mform->get_data()) {
     if (!$slot) {
         $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
         redirect($redirecturl);
-    }
-
-    if (!organizer_security_check_slots(array($slot))) {
-        print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
     }
 
     organizer_display_form($mform, get_string('title_print', 'organizer'));

@@ -51,10 +51,6 @@ $logurl = new moodle_url('/mod/organizer/comment_edit.php', array('id' => $cm->i
 
 require_capability('mod/organizer:comment', $context);
 
-if (!organizer_security_check_slots($slot)) {
-    print_error('Security failure: Selected slot doesn\'t belong to this organizer!');
-}
-
 $mform = new organizer_comment_slot_form(null, array('id' => $cm->id, 'slot' => $slot));
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
