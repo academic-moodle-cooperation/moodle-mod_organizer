@@ -1520,7 +1520,11 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
         $identity = $identity != "" ? " ({$identity})" : "";
         if ($app->userid == $userid) {
             $output .= '<span style="display:table-cell">';
-            $output .= $name . $identity;
+            if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW) {
+                $output .= $name . $identity;
+            } else {
+                $output .= $name;
+            }
             if ($isgroupmode && $app->userid == $app->applicantid) {
                 $output .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
             }
@@ -1534,7 +1538,11 @@ function organizer_organizer_get_participant_list_infobox($params, $slot, $useri
         } else if ($slot->visibility != ORGANIZER_VISIBILITY_ANONYMOUS && (organizer_is_my_slot($slot) ||
                         $slot->visibility == ORGANIZER_VISIBILITY_ALL) ) {
             $output .= '<span style="display:table-cell">';
-            $output .= $name . $identity;
+            if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW) {
+                $output .= $name . $identity;
+            } else {
+                $output .= $name;
+            }
             if ($isgroupmode && $app->userid == $app->applicantid) {
                 $output .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
             }
