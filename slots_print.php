@@ -272,14 +272,19 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
     $mpdftable->setRowsperPage($entriesperpage);
     $mpdftable->ShowHeaderFooter($headerfooter);
     $mpdftable->SetFontSize($textsize);
-    $mpdftable->setHeaderText(
+
+    $format = optional_param('format', 'pdf', PARAM_TEXT);
+    if ($format != "csv_comma") {
+        $mpdftable->setHeaderText(
             get_string('course') . ':', $coursename,
             get_string('modulename', 'organizer') . ':', $organizername,
             get_string('availablefrom', 'organizer').':', $registrationsfromdate,
             get_string('duedate', 'organizer').':', $timedue,
             '', get_string('created', 'organizer') . " " . userdate(time()),
             '', ''
-    );
+        );
+    }
+
     $mpdftable->setTitles($titles);
     $mpdftable->setColumnFormat($columnformats);
     $entries = organizer_fetch_table_entries($slots, $dosort);
