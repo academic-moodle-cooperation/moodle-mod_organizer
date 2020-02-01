@@ -66,7 +66,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
 
     if ($namesplit[0] == "edit_notify_student" || $namesplit[0] == "edit_notify_teacher") {
         if ($slot->teachervisible == 1 || $namesplit[0] == "edit_notify_teacher") {
-            $trainers = organizer_get_slot_trainers($slot->id);
+            $trainers = organizer_get_slot_trainers($slot->slotid);
             $strings->slot_teacher = "";
             $conn = "";
             foreach ($trainers as $trainerid) {
@@ -83,7 +83,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
 
     if ($namesplit[0] == "assign_notify_student" || $namesplit[0] == "assign_notify_teacher") {
         if ($slot->teachervisible == 1 || $namesplit[0] == "assign_notify_teacher") {
-            $trainers = organizer_get_slot_trainers($slot->id);
+            $trainers = organizer_get_slot_trainers($slot->slotid);
             $strings->slot_teacher = "";
             $conn = "";
             foreach ($trainers as $trainerid) {
@@ -103,7 +103,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     }
 
     if ($namesplit[0] == "appointment_reminder_student") {
-        $trainers = organizer_get_slot_trainers($slot->id);
+        $trainers = organizer_get_slot_trainers($slot->slotid);
         $strings->sendername = "";
         $conn = "";
         foreach ($trainers as $trainerid) {
