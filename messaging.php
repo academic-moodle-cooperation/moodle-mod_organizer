@@ -111,7 +111,11 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     }
 
     if ($namesplit[0] == "appointment_reminder_student") {
-        $trainers = organizer_get_slot_trainers($slot->slotid);
+        if (isset($slot->slotid)) {
+            $trainers = organizer_get_slot_trainers($slot->slotid);
+        } else {
+            $trainers = organizer_get_slot_trainers($slot->id);
+        }
         $strings->sendername = "";
         $conn = "";
         foreach ($trainers as $trainerid) {
