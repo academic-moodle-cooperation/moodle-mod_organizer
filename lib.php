@@ -1127,6 +1127,7 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
         $event->timesort = $timestart;
         $event->timeduration = $duration;
         $event->name = $eventtitle;
+        $event->courseid = $organizer->course;
         calendar_event::create($event, false);
     }
 

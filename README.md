@@ -83,7 +83,7 @@ Documentation
 -------------
 
 You can find a cheat sheet for the plugin on the [AMC
-website](http://www.academic-moodle-cooperation.org/en/modules/organizer/) and a video tutorial in
+website](https://www.academic-moodle-cooperation.org/en/module/organizer/) and a video tutorial in
 german only in the [AMC YouTube Channel](https://www.youtube.com/c/AMCAcademicMoodleCooperation).
 
 
