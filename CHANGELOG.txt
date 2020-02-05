@@ -1,10 +1,16 @@
 CHANGELOG
 =========
 
-3.8.0 (2020-01-07)
+3.8.0 (2020-02-05)
 ------------------
 
 * Moodle 3.8.0 compatible version
+* [FIXED] #6382: Undefined variable: regslotx in view_lib.php on line 2459
+* [FIXED] #6423: Remove header in csv export file
+* [FIXED] #6489: Student can see identity field
+* [FIXED] #6499: Fix slot ID error when fetching trainers
+* [FIXED] #6502: Readme.md wrong_URL
+* [FIXED] #6373: Make all events organizer events
 
 3.7.1 (2019-10-30)
 ------------------
