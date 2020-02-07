@@ -38,7 +38,7 @@ define(
 
         var instance = new Editform();
 
-        instance.init = function (param) {
+        instance.init = function(param) {
 
             if (param.imagepaths) {
                 this.imagepaths = param.imagepaths;
@@ -55,8 +55,8 @@ define(
 
             function set_icon_changed(name) {
                 var icon = $("[id^=mform1] img[id$=" + name + "_warning]");
-                if (icon.attr('src') != instance.imagepaths['changed']) {
-                    icon.attr('src', instance.imagepaths['changed']);
+                if (icon.attr('src') != instance.imagepaths.changed) {
+                    icon.attr('src', instance.imagepaths.changed);
                     icon.attr('title', $("[id^=mform1] [name=warningtext2]").val());
                 }
             }
@@ -91,7 +91,7 @@ define(
 
             function reset_icons_warning() {
                 var icons = $("[id^=mform1] img[name$=_warning]");
-                icons.attr('src', instance.imagepaths['warning']);
+                icons.attr('src', instance.imagepaths.warning);
                 icons.attr('title', $("[id^=mform1] [name=warningtext1]").val());
             }
 

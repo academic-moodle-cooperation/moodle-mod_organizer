@@ -318,8 +318,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     }
                 break;
                 case 'teachercomments':
-                    $teachercomments = (isset($entry->teachercomments) && $entry->teachercomments !== '')
-                        ? $entry->teachercomments : '';
+                    $teachercomments = !empty($entry->teachercomments) ? $entry->teachercomments : '';
                     if ($rowspan != $entry->rowspan) {
                         $row[] = null;
                     } else {

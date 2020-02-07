@@ -80,9 +80,6 @@ define(
                     $('#fitem_id_groupingid').hide();
                     $('#id_groupingid').prop('disabled', 'disabled');
                     warningdiv.hide();
-                } else if (isgrouporganizer.val() == 1) {
-                    $('#id_isgrouporganizer').val('1');
-                    warningdiv.show();
                 }
             }
 

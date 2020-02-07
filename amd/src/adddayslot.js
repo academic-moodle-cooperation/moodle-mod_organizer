@@ -32,7 +32,7 @@ define(
          * @constructor
          * @alias module:mod_organizer/adddayslot
          */
-        var Adddayslot = function () {
+        var Adddayslot = function() {
 
             this.totalslots = 0;
             this.displayallslots = 0;
@@ -43,19 +43,19 @@ define(
 
         var instance = new Adddayslot();
 
-        instance.init = function (param) {
+        instance.init = function(param) {
 
-            instance.totalslots = param.totalslots;  // Initial maximum of days (despite only one is displayed).
-            instance.displayallslots = param.displayallslots;  // Whether to display all days so far generated.
-            instance.totalday = param.totalday;  // String for new slots amount status message for a day.
-            instance.totaltotal = param.totaltotal;  // String for new slots amount total status message.
-            instance.relativedeadline = param.relativedeadline;  // Relative deadline for slot registrations in seconds.
-            instance.relativedeadlinestring = param.relativedeadlinestring;  // String warning message if slots had
+            instance.totalslots = param.totalslots; // Initial maximum of days (despite only one is displayed).
+            instance.displayallslots = param.displayallslots; // Whether to display all days so far generated.
+            instance.totalday = param.totalday; // String for new slots amount status message for a day.
+            instance.totaltotal = param.totaltotal; // String for new slots amount total status message.
+            instance.relativedeadline = param.relativedeadline; // Relative deadline for slot registrations in seconds.
+            instance.relativedeadlinestring = param.relativedeadlinestring; // String warning message if slots had
             // not been created due to registration deadline. "xxx" is replaced by the number of not created slots.
-            instance.allowcreationofpasttimeslots = param.allowcreationofpasttimeslots;  // Relative deadline for slot registrations in seconds.
-            instance.pasttimeslotsstring = param.pasttimeslotsstring;  // String warning message if slots had
+            instance.allowcreationofpasttimeslots = param.allowcreationofpasttimeslots;// Deadline for registrations(s).
+            instance.pasttimeslotsstring = param.pasttimeslotsstring; // String warning message if slots had
 
-            if (instance.displayallslots == 0) {  // So the form is loaded initially.
+            if (instance.displayallslots == 0) { // So the form is loaded initially.
 
                 // Hide all days except the first one.
                 for (var i = instance.totalslots - 1; i > 0; i--) {
@@ -73,7 +73,7 @@ define(
 
                 // As soon as a to time is edited, display the next day.
                 $('[id^=id_newslots_]').change(
-                    function () {
+                    function() {
                         var id = $(this).attr("id");
                         var nextindex = parseInt(id.split("_")[2]) + 1;
                         if (nextindex > instance.current) {
@@ -158,11 +158,11 @@ define(
                 var pax = getpax();
                 pax = pax * slots;
                 var forecaststring = instance.totalday.replace("xxx", slots.toString()).replace("yyy", pax.toString());
-                if (slotsnotcreatedduetodeadline > 0 ) {
+                if (slotsnotcreatedduetodeadline > 0) {
                     forecaststring += " (" + instance.relativedeadlinestring.replace("xxx",
                         slotsnotcreatedduetodeadline.toString()) + ")";
                 }
-                if (slotsnotcreatedduetopasttime > 0 ) {
+                if (slotsnotcreatedduetopasttime > 0) {
                     forecaststring += " (" + instance.pasttimeslotsstring.replace("xxx",
                         slotsnotcreatedduetopasttime.toString()) + ")";
                 }
@@ -257,14 +257,14 @@ define(
             function writetotal() {
                 var totalslots = 0;
                 var totalpax = 0;
-                $("span[name^='newslots_']").each (function() {
-                    var slots = parseInt($( this ).html());
+                $("span[name^='newslots_']").each(function() {
+                    var slots = parseInt($(this).html());
                     if (isNaN(slots) == false) {
                         totalslots += slots;
                     }
                 });
-                $("span[name^='newpax_']").each (function() {
-                    var pax = parseInt($( this ).html());
+                $("span[name^='newpax_']").each(function() {
+                    var pax = parseInt($(this).html());
                     if (isNaN(pax) == false) {
                         totalpax += pax;
                     }
@@ -292,7 +292,7 @@ define(
             function getduration() {
                 var durationnumber = parseInt($("input[name='duration\[number\]']").val());
                 var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
-                if ( isNaN(durationnumber) ) {
+                if (isNaN(durationnumber)) {
                     return 0;
                 }
                 // Duration in seconds.
@@ -303,7 +303,7 @@ define(
             function getgap() {
                 var gapnumber = parseInt($("input[name='gap\[number\]']").val());
                 var gaptimeunit = parseInt($("select[name='gap\[timeunit\]']").val());
-                if ( isNaN(gapnumber) ) {
+                if (isNaN(gapnumber)) {
                     gapnumber = 0;
                 }
                 // Gap in seconds.
