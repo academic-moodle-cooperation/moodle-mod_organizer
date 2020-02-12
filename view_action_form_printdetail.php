@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once("$CFG->libdir/formslib.php");
+require_once(dirname(__FILE__) . '/locallib.php');
+require_once(dirname(__FILE__) . '/custom_table_renderer.php');
+
 /**
  * view_action_form_print.php
  *
@@ -25,22 +31,24 @@
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once("$CFG->libdir/formslib.php");
-require_once(dirname(__FILE__) . '/custom_table_renderer.php');
-
 class organizer_print_slotdetail_form extends moodleform
 {
-
+    /**
+     * @var string select of the colums
+     */
     private $_selcols;
-
+    /**
+     *
+     * {@inheritDoc}
+     * @see moodleform::definition()
+     */
     protected function definition() {
         $this->_add_slot_info();
         $this->_add_column_select();
     }
-
+    /**
+     * adds the info of the slot to the form
+     */
     private function _add_slot_info() {
         $mform = &$this->_form;
         $data = &$this->_customdata;
@@ -52,7 +60,7 @@ class organizer_print_slotdetail_form extends moodleform
 
         // TODO: might cause crashes!
         $mform->addElement('hidden', 'action', 'print');
-        $mform->setType('action', PARAM_ACTION);
+        $mform->setType('action', PARAM_ALPHANUMEXT);
 
         if (isset($data['slot'])) {
             $mform->addElement('hidden', 'slot', $data['slot']);
@@ -61,7 +69,9 @@ class organizer_print_slotdetail_form extends moodleform
             print_error('This should not happen!');
         }
     }
-
+    /**
+     * adds information which colums to select for printing
+     */
     private function _add_column_select() {
         global $DB, $CFG;
 
@@ -70,13 +80,12 @@ class organizer_print_slotdetail_form extends moodleform
 
         $params = array('slotid' => $data['slot']);
         $organizer = $DB->get_records_sql(
-                "SELECT o.*
+                'SELECT o.*
                  FROM {organizer} o
                  INNER JOIN {organizer_slots} s ON o.id = s.organizerid
-                 WHERE s.id = :slotid", $params);
+                 WHERE s.id = :slotid', $params);
 
         $organizer = reset($organizer);
-        $identityfields = explode(',', $CFG->showuseridentity);
         $selcols = array();
         for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
             if ($organizer->{'singleslotprintfield'.$i}) {
@@ -90,60 +99,8 @@ class organizer_print_slotdetail_form extends moodleform
         $exportformats = array(
                 'pdf' => get_string('format_pdf', 'organizer'),
                 'xlsx' => get_string('format_xlsx', 'organizer'));
-        $mform->addElement('select', 'format', get_string('format', 'organizer'), $exportformats);
 
-        $mform->addElement('static', 'pdf_settings', get_string('pdfsettings', 'organizer'));
-
-        $entriesperpage = get_user_preferences('organizer_printperpage', 20);
-        $printperpageoptimal = get_user_preferences('organizer_printperpage_optimal', 0);
-        $textsize = get_user_preferences('organizer_textsize', 10);
-        $pageorientation = get_user_preferences('organizer_pageorientation', 'P');
-        $headerfooter = get_user_preferences('organizer_headerfooter', 1);
-
-        // Submissions per page.
-        $pppgroup = array();
-        $pppgroup[] = &$mform->createElement('text', 'entriesperpage', get_string('numentries', 'organizer'), array('size' => '2'));
-        $pppgroup[] = &$mform->createElement(
-            'advcheckbox', 'printperpage_optimal',
-            '', get_string('stroptimal', 'organizer'), array("group" => 1)
-        );
-
-        $mform->addGroup($pppgroup, 'printperpagegrp', get_string('numentries', 'organizer'), array(' '), false);
-        $mform->setType('entriesperpage', PARAM_INT);
-
-        $mform->setDefault('entriesperpage', $entriesperpage);
-        $mform->setDefault('printperpage_optimal', $printperpageoptimal);
-
-        $mform->addHelpButton('printperpagegrp', 'numentries', 'organizer');
-
-        $mform->disabledif ('entriesperpage', 'printperpage_optimal', 'checked');
-        $mform->disabledif ('printperpagegrp', 'format', 'neq', 'pdf');
-
-        $mform->addElement(
-            'select', 'textsize', get_string('textsize', 'organizer'),
-            array('8' => get_string('font_small', 'organizer'), '10' => get_string('font_medium', 'organizer'),
-            '12' => get_string('font_large', 'organizer'))
-        );
-
-        $mform->setDefault('textsize', $textsize);
-        $mform->disabledif ('textsize', 'format', 'neq', 'pdf');
-
-        $mform->addElement(
-            'select', 'pageorientation', get_string('pageorientation', 'organizer'),
-            array('P' => get_string('orientationportrait', 'organizer'),
-            'L' => get_string('orientationlandscape', 'organizer'))
-        );
-
-        $mform->setDefault('pageorientation', $pageorientation);
-        $mform->disabledif ('pageorientation', 'format', 'neq', 'pdf');
-
-        $mform->addElement(
-            'advcheckbox', 'headerfooter', get_string('headerfooter', 'organizer'), null, null,
-            array(0, 1)
-        );
-        $mform->setType('headerfooter', PARAM_BOOL);
-        $mform->setDefault('headerfooter', $headerfooter);
-        $mform->addHelpButton('headerfooter', 'headerfooter', 'organizer');
+        $mform = organizer_build_printsettingsform($mform, $exportformats);
 
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'downloadfile', get_string('downloadfile', 'organizer'));
@@ -156,9 +113,12 @@ class organizer_print_slotdetail_form extends moodleform
             $mform->setType("cols[$key]", PARAM_ALPHANUMEXT);
         }
     }
-
+    /**
+     *
+     * {@inheritDoc}
+     * @see moodleform::display()
+     */
     public function display() {
-        global $OUTPUT, $CFG;
 
         // Finalize the form definition if not yet done.
         if (!$this->_definition_finalized) {
@@ -168,28 +128,23 @@ class organizer_print_slotdetail_form extends moodleform
         $this->_form->getValidationScript();
         $output = $this->_form->toHtml();
 
-        $helpicon = new help_icon('datapreviewtitle', 'organizer');
-        $output .= html_writer::tag(
-            'div',
-            get_string('datapreviewtitle', 'organizer') . $OUTPUT->render($helpicon),
-            array('class' => 'datapreviewtitle')
-        );
+        $output = organizer_printtablepreview_icons($output);
 
         $output .= '<div class="forced_scroll">';
-
-        $printcols = $this->_selcols;
-        $identityfields = explode(',', $CFG->showuseridentity);
-
-        $notsortable = array();
         $output .= '<div style="float: left">';
-        $output .= $this->_create_preview_table($printcols, $notsortable);
+        $output .= $this->_create_preview_table($this->_selcols, array());
         $output .= '</div><div style="width: 1em; float: left;"> </div></div>';
 
         print $output;
     }
 
+    /**
+     *
+     * @param array $columns the columns of the table
+     * @return string the html of the table
+     */
     private function _create_preview_table($columns) {
-        global $cm, $CFG, $DB;
+        global $OUTPUT, $CFG, $DB;
 
         $table = new html_table();
         $table->id = 'print_preview';
@@ -202,12 +157,6 @@ class organizer_print_slotdetail_form extends moodleform
 
         $header = array();
         $data = &$this->_customdata;
-
-        $url  = $CFG->wwwroot . '/mod/organizer/slots_printdetail.php?';
-        $url .= 'id=' . $cm->id;
-        $url .= '&sesskey=' . sesskey();
-        $url .= '&action=print';
-        $url .= '&slot=' . $data['slot'];
 
         $userinfofields = array();
         foreach ($columns as $column) {

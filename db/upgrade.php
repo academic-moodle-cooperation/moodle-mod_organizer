@@ -625,12 +625,12 @@ function xmldb_organizer_upgrade($oldversion) {
         $now = time();
 
         $params = array('now' => $now);
-        $query = "SELECT s.id, cm.id as cmid, o.nocalendareventslotcreation 
-                  FROM {organizer_slots} s 
-                  INNER JOIN {organizer} o ON s.organizerid = o.id 
+        $query = "SELECT s.id, cm.id as cmid, o.nocalendareventslotcreation
+                  FROM {organizer_slots} s
+                  INNER JOIN {organizer} o ON s.organizerid = o.id
                   INNER JOIN {course_modules} cm ON o.id = cm.instance
                   INNER JOIN {modules} m ON cm.module = m.id
-                  WHERE m.name = 'organizer' 
+                  WHERE m.name = 'organizer'
                   AND s.starttime > :now";
 
         $slots = $DB->get_records_sql($query, $params);

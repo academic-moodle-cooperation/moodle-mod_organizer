@@ -18,9 +18,9 @@
  * view_action.php
  *
  * @package   mod_organizer
- * @author    Andreas Windbichler
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -32,30 +32,14 @@ require_once(dirname(__FILE__) . '/view_action_form_eval.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+$mode = optional_param('mode', null, PARAM_INT);
+$action = optional_param('action', null, PARAM_ALPHANUMEXT);
+$slot = optional_param('slot', null, PARAM_INT);
+$slots = optional_param_array('slots', array(), PARAM_INT);
 
 require_login($course, false, $cm);
 
-$mode = optional_param('mode', null, PARAM_INT);
-$action = optional_param('action', null, PARAM_ACTION);
-$user = optional_param('user', null, PARAM_INT);
-$slot = optional_param('slot', null, PARAM_INT);
-$slots = optional_param_array('slots', array(), PARAM_INT);
-$app = optional_param('app', null, PARAM_INT);
-$tsort = optional_param('tsort', null, PARAM_ALPHA);
-
-$url = new moodle_url('/mod/organizer/view_action.php');
-$url->param('id', $cm->id);
-$url->param('mode', $mode);
-$url->param('action', $action);
-$url->param('sesskey', sesskey());
-
-$PAGE->set_url($url);
-$PAGE->set_pagelayout('standard');
-$PAGE->set_title($organizer->name);
-$PAGE->set_heading($course->fullname);
-
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
+list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
@@ -75,10 +59,6 @@ $slots = organizer_sortout_hiddenslots($slots);
 if (count($slots) == 0) {
     $redirecturl->param('messages[]', 'message_warning_no_visible_slots_selected');
     redirect($redirecturl);
-}
-
-if (!organizer_security_check_slots($slots)) {
-    print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
 }
 
 $mform = new organizer_evaluate_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
