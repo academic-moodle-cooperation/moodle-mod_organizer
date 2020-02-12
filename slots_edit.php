@@ -36,7 +36,7 @@ list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 require_login($course, false, $cm);
 
 $mode = optional_param('mode', null, PARAM_INT);
-$action = optional_param('action', null, PARAM_ACTION);
+$action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = optional_param_array('slots', null, PARAM_INT);
@@ -62,10 +62,6 @@ require_capability('mod/organizer:editslots', $context);
 if (!$slots) {
     $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
     redirect($redirecturl);
-}
-
-if (!organizer_security_check_slots($slots)) {
-    print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
 }
 
 $mform = new organizer_edit_slots_form(

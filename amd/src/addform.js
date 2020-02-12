@@ -36,12 +36,12 @@ define(
 
         var instance = new Addform();
 
-        instance.init = function () {
+        instance.init = function() {
 
             var togglebox = $('#id_now');
 
             if (togglebox) {
-                togglebox.on('change', function(){
+                togglebox.on('change', function() {
                     $("select[name^=availablefrom]").attr('disabled', togglebox.is(':checked'));
                     $("input[type=text][name^=availablefrom]").attr('disabled', togglebox.is(':checked'));
                 });

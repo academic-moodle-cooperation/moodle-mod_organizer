@@ -39,7 +39,11 @@ define('ORGANIZER_APP_STATUS_REGISTERED', ORGANIZER_APP_STATUS_PENDING);
 define('ORGANIZER_APP_STATUS_NOT_ATTENDED', 4);
 define('ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP', 5);
 define('ORGANIZER_APP_STATUS_NOT_REGISTERED', 6);
-
+/**
+ * 
+ * @param mixed $app
+ * @return number|boolean
+ */
 function organizer_get_appointment_status($app) {
     global $DB;
 
@@ -59,7 +63,12 @@ function organizer_get_appointment_status($app) {
 
     return ($evaluated) & ($attended << 1) & ($pending << 2) & ($reapp << 3);
 }
-
+/**
+ * 
+ * @param mixed $app
+ * @param string $status
+ * @return boolean
+ */
 function organizer_check_appointment_status($app, $status) {
     return $status & organizer_get_appointment_status($app);
 }
