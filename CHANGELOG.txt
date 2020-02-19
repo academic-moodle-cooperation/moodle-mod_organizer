@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+3.8.1 (2020-02-17)
+------------------
+
+* [FEATURE] #6109: github #44 Multi language processing of custom user profile fields is missing
+* [FEATURE] #6067: github #43 Data leak with feature "Print slot user fields"
+
 3.8.0 (2020-02-05)
 ------------------
 
@@ -17,7 +23,6 @@ CHANGELOG
 
 * [FIXED] #6366: Fatal error when creating an organizer instance with groups and a student in multiple groups
 * [FEATURE] #6083: Print slots infos: Print participants slot comments as well
-
 
 3.7.0 (2019-08-05)
 ------------------
@@ -85,6 +90,25 @@ is empty
 * [FIXED] #5727: Only instance calendar events as course level events, deploy filters on event name
 * [FEATURE] #5756: Privacy API: Implement new provider (mandatory)
 * Moodle 3.6.1 compatible version
+
+3.5.6 (2019-05-14)
+------------------
+
+* [HOTFIX] #6114: After reregistration the trainers of the newly booked slot are wrongly added to the slot booked before
+* [HOTFIX] #6106: Re-assign student to other slot not possible
+
+3.5.5 (2019-03-27)
+------------------
+
+* [FIXED] #6066: Trainer is able to assign more than one slot to specific student
+* [PULL REQUEST] github #49: fix tablename in organizer_send_message_from_trainer()
+* [FIXED] #6064: Error when choosing groupmode "use existing course groups" for an organizer instance
+* [FIXED] #6063: Function "organizer_fetch_user_group" not found
+* [FIXED] #5869: Too many calendar events for bookings when moodle group is involved
+* [FIXED] #5878: Double scrollbar in print preview table
+* [FIXED] #5886: slots_print.php: Columns Email and Participants not sortable for the moment.
+* [FIXED] #5749: Waiting list entries does not move up when the slot's participants maximum is increased
+* [FIXED] #5899: Organizer debug message if group is missing
 
 3.5.2 (2018-09-26)
 ------------------

@@ -661,6 +661,27 @@ function xmldb_organizer_upgrade($oldversion) {
         }
 
         upgrade_mod_savepoint(true, 2018081003, 'organizer');
+
+    }
+
+    if ($oldversion < 2018081007) {
+
+        $table = new xmldb_table('organizer');
+        $field = new xmldb_field('allowedprofilefieldsprint', XMLDB_TYPE_TEXT, null,
+            null, null, null, null, 'singleslotprintfield9');
+        // Conditionally launch add field allowedprofilefieldsprint. Giuthub-issue #43.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('enableprintslotuserfields', XMLDB_TYPE_INTEGER, '4', null,
+            null, null, null, 'allowedprofilefieldsprint');
+        // Conditionally launch add field enableprintslotuserfields. Giuthub-issue #43.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2018081007, 'organizer');
     }
 
     if ($oldversion < 2019052700) {

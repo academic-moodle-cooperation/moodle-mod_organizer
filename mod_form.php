@@ -179,22 +179,34 @@ class mod_organizer_mod_form extends moodleform_mod
             $mform->setDefault('grade', $organizerconfig->maximumgrade);
         }
 
-        $mform->addElement('header', 'printslotuserfields', get_string('singleslotprintfields', 'organizer'));
+        if (isset($organizerconfig->enableprintslotuserfields) && $organizerconfig->enableprintslotuserfields) {
 
-        $printslotuserfields = organizer_printslotuserfields();
-        for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
-            $fieldname = 'singleslotprintfield' . $i;
-            if (isset($organizerconfig->{'singleslotprintfield' . $i})) {
-                $default = $organizerconfig->{'singleslotprintfield' . $i};
-            } else {
-                $default = "";
+            $mform->addElement('header', 'printslotuserfields', get_string('singleslotprintfields', 'organizer'));
+
+            $selectableprofilefields = organizer_printslotuserfields(true);
+            $printslotuserfields = array();
+            if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
+                foreach ($selectableprofilefields as $key => $value) {
+                    if (in_array($key, $allowedprofilefieldsprint)){
+                        $printslotuserfields[$key] = $value;
+                    }
+                }
             }
-            $mform->addElement('select', $fieldname, $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'),
+
+            for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
+                $fieldname = 'singleslotprintfield' . $i;
+                if (isset($organizerconfig->{'singleslotprintfield' . $i})) {
+                    $default = $organizerconfig->{'singleslotprintfield' . $i};
+                } else {
+                    $default = "";
+                }
+                $mform->addElement('select', $fieldname, $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'),
                     $printslotuserfields);
-            $mform->setType($fieldname, PARAM_TEXT);
-            $mform->setDefault($fieldname, $default);
+                $mform->setType($fieldname, PARAM_TEXT);
+                $mform->setDefault($fieldname, $default);
+            }
+            $mform->addHelpButton('singleslotprintfield0', 'singleslotprintfield0', 'organizer');
         }
-        $mform->addHelpButton('singleslotprintfield0', 'singleslotprintfield0', 'organizer');
 
         $this->standard_coursemodule_elements();
 
@@ -270,7 +282,7 @@ class mod_organizer_mod_form extends moodleform_mod
                     $a = new stdClass();
                     $user = $DB->get_record('user', array('id' => $userid));
                     $a->username = fullname($user);
-                    $identity = organizer_get_user_identity($user);
+                    $identity = $DB->get_field_select('user', 'idnumber', "id = {$userid}");
                     $a->idnumber = $identity != "" ? "({$identity})" : "";
                     $grouplist = "";
                     $first = true;
