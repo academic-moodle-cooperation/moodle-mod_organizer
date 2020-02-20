@@ -136,15 +136,15 @@ if ($ADMIN->fulltree) {
     $selectedprofilefields = array();
 
     $organizerconfig = get_config('organizer');
-
-    if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
-        foreach ($selectableprofilefields as $key => $value) {
-            if (in_array($key, $allowedprofilefieldsprint)){
-                $selectedprofilefields[$key] = $value;
+    if (isset($organizerconfig->allowedprofilefieldsprint)) {
+        if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
+            foreach ($selectableprofilefields as $key => $value) {
+                if (in_array($key, $allowedprofilefieldsprint)) {
+                    $selectedprofilefields[$key] = $value;
+                }
             }
         }
     }
-
     for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
         $settings->add(
                 new admin_setting_configselect('organizer/singleslotprintfield' . $i,

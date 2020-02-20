@@ -1774,11 +1774,13 @@ function organizer_printslotuserfields($nochoiceoption=false) {
     }
 
     $organizerconfig = get_config('organizer');
-    $allowedprofilefields = $organizerconfig->allowedprofilefieldsprint;
-    $allowedprofilefields_array = explode(",", $allowedprofilefields);
-    foreach ($profilefields as $key => $value) {
-        if (in_array ( $key, $allowedprofilefields_array )) {
-            $profilefields[$key] = organizer_filter_text($value);
+    if (isset($organizerconfig->allowedprofilefieldsprint)) {
+        $allowedprofilefields = $organizerconfig->allowedprofilefieldsprint;
+        $allowedprofilefields_array = explode(",", $allowedprofilefields);
+        foreach ($profilefields as $key => $value) {
+            if (in_array ( $key, $allowedprofilefields_array )) {
+                $profilefields[$key] = organizer_filter_text($value);
+            }
         }
     }
 
