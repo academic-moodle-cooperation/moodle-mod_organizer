@@ -34,7 +34,6 @@ require_once(dirname(__FILE__) . '/lib.php');
 class organizer_evaluate_slots_form extends moodleform
 {
     /**
-     * 
      * {@inheritDoc}
      * @see moodleform::definition()
      */
@@ -48,7 +47,6 @@ class organizer_evaluate_slots_form extends moodleform
         $this->_addbuttons();
     }
     /**
-     * 
      * {@inheritDoc}
      * @see moodleform::definition_after_data()
      */
@@ -230,7 +228,6 @@ class organizer_evaluate_slots_form extends moodleform
         }
     }
     /**
-     * 
      * @param int $id
      * @return string
      */

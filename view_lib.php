@@ -2484,7 +2484,6 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
             && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
 
-
     return array($canregister, $canunregister, $canreregister, $myapp,
             $regslotx, $myslotexists, $organizerdisabled, $slotdisabled, $myslotpending,
             $ismyslot, $slotfull, $disabled, $isalreadyinqueue, $isqueueable);

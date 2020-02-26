@@ -648,7 +648,7 @@ function organizer_update_slot($data) {
             } else if ($modified && $data->mod_maxparticipants == 1  && $data->maxparticipants > $appcount) {
                 $freeslots = (int)$data->maxparticipants - (int)$appcount;
                 if (organizer_hasqueue($organizerid)) {
-                    for ( $i = 0; $i<$freeslots; $i++ ) {
+                    for ($i = 0; $i < $freeslots; $i++) {
                         $slotx = new organizer_slot($slotid);
                         if (organizer_is_group_mode()) {
                             if ($next = $slotx->get_next_in_queue_group()) {
@@ -908,7 +908,6 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
     $semaphore = sem_get($slotid);
     sem_acquire($semaphore);
 
-
     if ($sendmessage) {
         $mail = get_mailer();
         $mail->Subject = get_string('queuesubject', 'organizer');
@@ -951,7 +950,6 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
     }
 
     $DB->delete_records('event', array('modulename' => 'organizer', 'eventtype' => 'Slot', 'uuid' => $slotid));
-
 
     sem_release($semaphore);
 
@@ -1869,7 +1867,7 @@ function organizer_add_event_appointment_strings($course, $organizer, $cm, $slot
     $a->courselink = html_writer::link(new moodle_url("/course/view.php?id={$course->id}"), $course->fullname);
     $a->organizername = organizer_filter_text($organizer->name);
     $a->organizerlink = html_writer::link(new moodle_url("/mod/organizer/view.php?id={$cm->id}"), $organizer->name);
-    $a->description =  $slot->comments;
+    $a->description = $slot->comments;
     if ($slot->locationlink) {
         $a->location = html_writer::link($slot->locationlink, $slot->location);
     } else {
@@ -1928,7 +1926,7 @@ function organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organ
                   WHERE t.slotid = :slotid AND t.trainerid = :trainerid";
     // Create new appointment event or update existent appointment event for trainers.
     if (!$teventid = $DB->get_field_sql($query, $params)) {
-        $teventid =  organizer_create_calendarevent(
+        $teventid = organizer_create_calendarevent(
             $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
             $trainerid, $slot->starttime, $slot->duration, 0, $appointment->id
         );
@@ -1948,7 +1946,7 @@ function organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organ
  * @param string $filename
  * @throws coding_exception
  */
-function organizer_format_and_print($mpdftable, $filename){
+function organizer_format_and_print($mpdftable, $filename) {
 
     $format = optional_param('format', 'pdf', PARAM_TEXT);
 

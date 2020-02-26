@@ -415,7 +415,7 @@ class organizer_print_slots_form extends moodleform
                         print_error("Unsupported column type: $column");
                 }
             } // Each column.
-        $rowspan = ($rowspan + 1) % $entry->rowspan;
+            $rowspan = ($rowspan + 1) % $entry->rowspan;
         }
 
         $table->data = $rows;
