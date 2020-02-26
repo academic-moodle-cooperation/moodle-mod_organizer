@@ -148,7 +148,8 @@ if ($ADMIN->fulltree) {
     for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
         $settings->add(
                 new admin_setting_configselect('organizer/singleslotprintfield' . $i,
-                        $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'), null, '', $selectedprofilefields));
+                        $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'),
+                    null, '', $selectedprofilefields));
     }
 
     // Allowed User profile fields for printing single slots.
@@ -156,5 +157,7 @@ if ($ADMIN->fulltree) {
         get_string('allowedprofilefieldsprint', 'organizer')));
     $settings->add(
         new admin_setting_configmultiselect('organizer/allowedprofilefieldsprint',
-           get_string('allowedprofilefieldsprint', 'organizer'), get_string('allowedprofilefieldsprint2', 'organizer'), null, $selectableprofilefields));
+           get_string('allowedprofilefieldsprint', 'organizer'),
+            get_string('allowedprofilefieldsprint2', 'organizer'),
+            null, $selectableprofilefields));
 }

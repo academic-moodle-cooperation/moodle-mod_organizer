@@ -327,6 +327,7 @@ function organizer_prepare_and_send_message($data, $type) {
             $slot = $DB->get_record('organizer_slots', array('id' => $data->selectedslot));
             $slotx = new organizer_slot($slot);
             if (!$slotx->is_past_due()) {
+                $customdata = array();
                 if ($data->participant) {
                     $apps = $DB->get_records(
                             'organizer_slot_appointments', array('slotid' => $data->selectedslot, 'userid' => $data->participant)
@@ -340,7 +341,8 @@ function organizer_prepare_and_send_message($data, $type) {
                     if ($app->groupid && !groups_is_member($app->groupid, $app->userid)) {
                         continue;
                     }
-                    $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($app->userid), $slot, $type);
+                    $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($app->userid),
+                        $slot, $type, null, $customdata);
                 }
             }
         break;

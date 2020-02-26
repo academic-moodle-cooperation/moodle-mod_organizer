@@ -105,7 +105,8 @@ if ($data = $mform->get_data()) {
     if (isset($organizerconfig->enableprintslotuserfields) && $organizerconfig->enableprintslotuserfields) {
         organizer_display_form($mform, get_string('title_print', 'organizer'));
     } else {
-        redirect($redirecturl, get_string('printslotuserfieldsnotenabled', 'organizer'), null, \core\output\notification::NOTIFY_ERROR);
+        redirect($redirecturl, get_string('printslotuserfieldsnotenabled', 'organizer'),
+            null, \core\output\notification::NOTIFY_ERROR);
     }
 }
 
