@@ -1056,7 +1056,8 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 }
                                 break;
                             case 'actions':
-                                $cell = $row->cells[] = new html_table_cell(organizer_teacher_action_new($params, $entry, $context));
+                                $cell = $row->cells[] = new html_table_cell(
+                                    organizer_teacher_action_new($params, $entry, $context));
                                 $cell->style .= " text-align: center;";
                                 break;
                         }

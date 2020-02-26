@@ -187,7 +187,7 @@ class mod_organizer_mod_form extends moodleform_mod
             $printslotuserfields =  array('' => '--');
             if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
                 foreach ($selectableprofilefields as $key => $value) {
-                    if (in_array($key, $allowedprofilefieldsprint)){
+                    if (in_array($key, $allowedprofilefieldsprint)) {
                         $printslotuserfields[$key] = $value;
                     }
                 }

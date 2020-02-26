@@ -191,7 +191,8 @@ class organizer_print_slotdetail_form extends moodleform
                     if (is_numeric($column)) { // Custom user field.
                         if ($userinfofield = $DB->get_record_select('user_info_field', 'id = :id', array('id' => $column))) {
                             $userinfofields[$userinfofield->id] = $userinfofield->datatype;
-                            $name = $userinfofield->name ? organizer_filter_text($userinfofield->name) : organizer_filter_text($userinfofield->shortname);
+                            $name = $userinfofield->name ?organizer_filter_text($userinfofield->name) :
+                                organizer_filter_text($userinfofield->shortname);
                         } else {
                             $name = "???";
                         }

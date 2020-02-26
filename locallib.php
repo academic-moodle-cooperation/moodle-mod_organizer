@@ -1776,9 +1776,9 @@ function organizer_printslotuserfields($nochoiceoption=false) {
     $organizerconfig = get_config('organizer');
     if (isset($organizerconfig->allowedprofilefieldsprint)) {
         $allowedprofilefields = $organizerconfig->allowedprofilefieldsprint;
-        $allowedprofilefields_array = explode(",", $allowedprofilefields);
+        $allowedprofilefieldsarray = explode(",", $allowedprofilefields);
         foreach ($profilefields as $key => $value) {
-            if (in_array ( $key, $allowedprofilefields_array )) {
+            if (in_array ( $key, $allowedprofilefieldsarray )) {
                 $profilefields[$key] = organizer_filter_text($value);
             }
         }
