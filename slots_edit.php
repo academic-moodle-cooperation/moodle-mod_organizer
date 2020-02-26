@@ -64,10 +64,6 @@ if (!$slots) {
     redirect($redirecturl);
 }
 
-if (!organizer_security_check_slots($slots)) {
-    print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
-}
-
 $mform = new organizer_edit_slots_form(
     null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots), 'post', '', array('name' => 'form_edit')
 );

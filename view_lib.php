@@ -2456,6 +2456,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
     $canreregister = $canregister && $canunregister;
 
+    $regslotx = null;
     $myapp = organizer_get_last_user_appointment($organizer);
     $regslotx = null;
     if ($myapp) {
@@ -2473,7 +2474,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     $slotfull = $slotx->is_full();
 
     $disabled = $myslotpending || $organizerdisabled || $slotdisabled ||
-            !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
+        !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $isalreadyinqueue = $slotx->is_group_in_queue();
@@ -2482,9 +2483,22 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     }
 
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
-            && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
+        && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
 
-    return array($canregister, $canunregister, $canreregister, $myapp,
-            $regslotx, $myslotexists, $organizerdisabled, $slotdisabled, $myslotpending,
-            $ismyslot, $slotfull, $disabled, $isalreadyinqueue, $isqueueable);
+    return array(
+        $canregister,
+        $canunregister,
+        $canreregister,
+        $myapp,
+        $regslotx,
+        $myslotexists,
+        $organizerdisabled,
+        $slotdisabled,
+        $myslotpending,
+        $ismyslot,
+        $slotfull,
+        $disabled,
+        $isalreadyinqueue,
+        $isqueueable
+    );
 }

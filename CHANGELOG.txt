@@ -18,6 +18,13 @@ CHANGELOG
 * [FIXED] #6502: Readme.md wrong_URL
 * [FIXED] #6373: Make all events organizer events
 
+3.7.2 (2020-01-28)
+------------------
+
+* [FIXED] #6490: Warning when student registers for slot
+* [FIXED] #6488: Notice: Undefined variable: regslotx in view_lib.php on line 2459
+* [FIXED] #6486: Fatal regression: Impossible to ungregister from slot with version v3.7.1
+
 3.7.1 (2019-10-30)
 ------------------
 

@@ -744,41 +744,6 @@ function organizer_update_slot($data) {
     return $data->slots;
 }
 
-/**
- * Checks if the slots to be evaluated are part of the actual organizer instance.
- *
- * @param $slots   given slots to evaluate
- * @return bool    Are (all) the given slots part of the actual organizer instance?
- * @throws coding_exception
- * @throws dml_exception
- */
-function organizer_security_check_slots($slots) {
-    global $DB;
-
-    if (isset($slots)) {
-        if (is_array($slots) || $slots instanceof Countable) {
-            $countslots = count($slots);
-        } else if (is_number($slots)) {
-            $countslots = 1;
-        } else {
-            return true;
-        }
-    } else {
-        return true;
-    }
-
-    $organizer = organizer_get_organizer();
-    list($insql, $inparams) = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
-
-    $params = array_merge(array('organizerid' => $organizer->id), $inparams);
-    $query = "SELECT COUNT(*) AS slots FROM {organizer_slots}
-            WHERE organizerid = :organizerid AND id $insql";
-
-    $records = $DB->count_records_sql($query, $params);
-
-    return $countslots == $records;
-}
-
 function organizer_delete_appointment_slot($id) {
     global $DB, $USER;
 
