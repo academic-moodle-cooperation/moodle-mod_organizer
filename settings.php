@@ -130,7 +130,7 @@ if ($ADMIN->fulltree) {
 
     $settings->add(
         new admin_setting_configcheckbox('organizer/enableprintslotuserfields',
-            get_string('enableprintslotuserfields', 'organizer'), null, ''));
+            get_string('enableprintslotuserfields', 'organizer'), null, 1));
 
     $selectableprofilefields = organizer_printslotuserfields(true);
     $selectedprofilefields = array();
@@ -144,6 +144,16 @@ if ($ADMIN->fulltree) {
                 }
             }
         }
+    } else {
+        $selectedprofilefields[''] = '--';
+        $selectedprofilefields['lastname'] = get_string('lastname');
+        $selectedprofilefields['firstname'] = get_string('firstname');
+        $selectedprofilefields['email'] = get_string('email');
+        $selectedprofilefields['idnumber'] = get_string('idnumber');
+        $selectedprofilefields['attended'] = get_string('attended', 'organizer');
+        $selectedprofilefields['grade'] = get_string('grade');
+        $selectedprofilefields['feedback'] = get_string('feedback');
+        $selectedprofilefields['signature'] = get_string('signature', 'organizer');
     }
     for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
         $settings->add(
@@ -159,5 +169,5 @@ if ($ADMIN->fulltree) {
         new admin_setting_configmultiselect('organizer/allowedprofilefieldsprint',
            get_string('allowedprofilefieldsprint', 'organizer'),
             get_string('allowedprofilefieldsprint2', 'organizer'),
-            null, $selectableprofilefields));
+            array_keys($selectedprofilefields), $selectableprofilefields));
 }
