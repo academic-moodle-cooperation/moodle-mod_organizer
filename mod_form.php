@@ -184,15 +184,16 @@ class mod_organizer_mod_form extends moodleform_mod
             $mform->addElement('header', 'printslotuserfields', get_string('singleslotprintfields', 'organizer'));
 
             $selectableprofilefields = organizer_printslotuserfields();
-            $printslotuserfields =  array('' => '--');
-            if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
-                foreach ($selectableprofilefields as $key => $value) {
-                    if (in_array($key, $allowedprofilefieldsprint)) {
-                        $printslotuserfields[$key] = $value;
+            $printslotuserfields = array('' => '--');
+            if (isset($organizerconfig->allowedprofilefieldsprint)) {
+                if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
+                    foreach ($selectableprofilefields as $key => $value) {
+                        if (in_array($key, $allowedprofilefieldsprint)) {
+                            $printslotuserfields[$key] = $value;
+                        }
                     }
                 }
             }
-
             for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
                 $fieldname = 'singleslotprintfield' . $i;
                 if (isset($organizerconfig->{'singleslotprintfield' . $i})) {
