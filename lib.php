@@ -1197,8 +1197,7 @@ function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eve
     return true;
 }
 
-function organizer_change_eventnames($organizerid, $oldname, $newname)
-{
+function organizer_change_eventnames($organizerid, $oldname, $newname) {
     global $DB;
 
     $record = new stdClass();

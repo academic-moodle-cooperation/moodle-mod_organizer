@@ -364,7 +364,8 @@ function organizer_prepare_and_send_message($data, $type) {
                     if ($app->groupid && !groups_is_member($app->groupid, $app->userid)) {
                         continue;
                     }
-                    $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($app->userid), $slot, $type, null, $customdata);
+                    $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($app->userid),
+                        $slot, $type, null, $customdata);
                 }
             }
             break;

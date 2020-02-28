@@ -37,7 +37,6 @@ require_once("$CFG->libdir/formslib.php");
 class organizer_edit_slots_form extends moodleform
 {
     /**
-     * 
      * {@inheritDoc}
      * @see moodleform::definition()
      */
@@ -60,7 +59,6 @@ class organizer_edit_slots_form extends moodleform
         $this->set_data($defaults);
     }
     /**
-     * 
      * @return number[]|NULL[]|array[]
      */
     private function _get_defaults() {
@@ -218,7 +216,6 @@ class organizer_edit_slots_form extends moodleform
         }
     }
     /**
-     * 
      * @param array $defaults
      */
     private function _addfields($defaults) {
@@ -412,7 +409,6 @@ class organizer_edit_slots_form extends moodleform
         $mform->setType('mod_comments', PARAM_BOOL);
     }
     /**
-     * 
      * @param mixed $value
      * @return boolean
      */
@@ -425,7 +421,6 @@ class organizer_edit_slots_form extends moodleform
         return false;
     }
     /**
-     * 
      * {@inheritDoc}
      * @see moodleform::validation()
      */
@@ -444,7 +439,7 @@ class organizer_edit_slots_form extends moodleform
             $errors['notificationtimegroup'] = get_string('err_posint', 'organizer');
         }
 
-       $locationmandatory = get_config('organizer', 'locationmandatory');
+        $locationmandatory = get_config('organizer', 'locationmandatory');
 
         if ($data['mod_location'] != 0 && (!isset($data['location']) || $data['location'] === '')
             && $locationmandatory) {
@@ -454,7 +449,6 @@ class organizer_edit_slots_form extends moodleform
         return $errors;
     }
     /**
-     * 
      * @return string[]
      */
     private function _load_trainers() {
@@ -474,7 +468,6 @@ class organizer_edit_slots_form extends moodleform
         return $trainers;
     }
     /**
-     * 
      * @param string $name
      * @param boolean $noshow
      * @return string
@@ -490,7 +483,6 @@ class organizer_edit_slots_form extends moodleform
         }
     }
     /**
-     * 
      * @param int $time
      * @return number
      */
@@ -506,7 +498,6 @@ class organizer_edit_slots_form extends moodleform
         }
     }
     /**
-     * 
      * @return string[]
      */
     private function _get_visibilities() {
@@ -519,7 +510,6 @@ class organizer_edit_slots_form extends moodleform
         return $visibilities;
     }
     /**
-     * 
      * @return mixed
      */
     private function _get_instance_visibility() {

@@ -36,7 +36,7 @@ define(
 
         var instance = new Initcheckboxes();
 
-        instance.init = function () {
+        instance.init = function() {
 
             function organizer_check_all(e) {
                 var checked = $(e.target).is(':checked');
@@ -44,11 +44,11 @@ define(
 
                 table.find('tbody').find('tr').each(
                     function() {
-                        if (($( this ).css('offsetWidth') === 0 &&
-                            $( this ).css('offsetHeight') === 0) || $( this ).css('display') === 'none') {
-                            $( this ).find('input[type=checkbox]').prop('checked', false);
+                        if (($(this).css('offsetWidth') === 0 &&
+                            $(this).css('offsetHeight') === 0) || $(this).css('display') === 'none') {
+                            $(this).find('input[type=checkbox]').prop('checked', false);
                         } else {
-                            $( this ).find('input[type=checkbox]').prop('checked', checked);
+                            $(this).find('input[type=checkbox]').prop('checked', checked);
                         }
                     }
                 );

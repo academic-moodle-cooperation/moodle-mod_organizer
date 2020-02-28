@@ -173,7 +173,7 @@ function organizer_generate_registration_status_view($params, $instance) {
     $columns = array_merge($columns, array('datetime', 'location', 'teacher', 'actions'));
 
     $align = array('center', 'left', 'center', 'left', 'left', 'left', 'center');
-    $sortable = array('datetime', 'status', 'group');
+    $sortable = array('status', 'group');
 
     $table = new html_table();
     $table->id = 'slot_overview';
@@ -782,8 +782,6 @@ function organizer_organizer_get_status_table_entries($params) {
         $orderby = "ORDER BY u.lastname $dir, u.firstname $dir, status ASC, u.idnumber ASC";
     } else if ($params['sort'] == 'id') {
         $orderby = "ORDER BY u.idnumber $dir, status ASC, u.lastname ASC, u.firstname ASC";
-    } else if ($params['sort'] == 'datetime') {
-        $orderby = "ORDER BY a2.starttime $dir, status ASC, u.lastname ASC, u.firstname ASC";
     } else {
         $orderby = "ORDER BY u.lastname ASC, u.firstname ASC, status ASC, u.idnumber ASC";
     }
@@ -1058,7 +1056,8 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 }
                                 break;
                             case 'actions':
-                                $cell = $row->cells[] = new html_table_cell(organizer_teacher_action_new($params, $entry, $context));
+                                $cell = $row->cells[] = new html_table_cell(
+                                    organizer_teacher_action_new($params, $entry, $context));
                                 $cell->style .= " text-align: center;";
                                 break;
                         }
@@ -2457,6 +2456,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
     $canreregister = $canregister && $canunregister;
 
+    $regslotx = null;
     $myapp = organizer_get_last_user_appointment($organizer);
     $regslotx = null;
     if ($myapp) {
@@ -2474,7 +2474,7 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     $slotfull = $slotx->is_full();
 
     $disabled = $myslotpending || $organizerdisabled || $slotdisabled ||
-            !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
+        !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $isalreadyinqueue = $slotx->is_group_in_queue();
@@ -2483,10 +2483,22 @@ function organizer_get_studentrights($slotx, $organizer, $context) {
     }
 
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
-            && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
+        && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
 
-
-    return array($canregister, $canunregister, $canreregister, $myapp,
-            $regslotx, $myslotexists, $organizerdisabled, $slotdisabled, $myslotpending,
-            $ismyslot, $slotfull, $disabled, $isalreadyinqueue, $isqueueable);
+    return array(
+        $canregister,
+        $canunregister,
+        $canreregister,
+        $myapp,
+        $regslotx,
+        $myslotexists,
+        $organizerdisabled,
+        $slotdisabled,
+        $myslotpending,
+        $ismyslot,
+        $slotfull,
+        $disabled,
+        $isalreadyinqueue,
+        $isqueueable
+    );
 }

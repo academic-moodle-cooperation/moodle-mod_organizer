@@ -1105,6 +1105,8 @@ $string['totalday_groups'] = 'xxx slots for yyy groups';
 $string['totaltotal'] = 'Total: xxx slots for yyy persons';
 $string['totaltotal_groups'] = 'Total: xxx slots for yyy groups';
 
+$string['enableprintslotuserfields'] = 'Enable Print Slot User Fields';
+$string['printslotuserfieldsnotenabled'] = 'The feature Print Slot User Fields is not enabled by the administrator.';
 $string['singleslotprintfield'] = 'Print slot user field';
 $string['singleslotprintfields'] = 'Print slot user fields';
 $string['singleslotprintfield0'] = 'Print slot user field';
@@ -1117,6 +1119,8 @@ $string['created'] = 'Created';
 $string['nosingleslotprintfields'] = 'Printing is not possible. There are no user fields defined. See the organizer settings.';
 $string['dbid'] = 'DB ID';
 $string['auth'] = 'Authentification method';
+$string['allowedprofilefieldsprint'] = 'Allowed User profile fields';
+$string['allowedprofilefieldsprint2'] = 'Allowed Moodle User profile fields for printing single organizer slots';
 
 // Privacy strings...
 $string['privacy:metadata:showhiddenslots'] = 'User preference: Shall slot table display hidden slots.';
