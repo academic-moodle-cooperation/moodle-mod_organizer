@@ -1702,12 +1702,6 @@ function organizer_printslotuserfields($nochoiceoption=false) {
 
     require_once($CFG->dirroot . '/user/profile/lib.php');
 
-    if ($nochoiceoption) {
-        $profilefields = array();
-    } else {
-        $profilefields = array('' => '--');
-    }
-
     $profilefields['lastname'] = organizer_filter_text(get_string('lastname'));
     $profilefields['firstname'] = organizer_filter_text(get_string('firstname'));
     $profilefields['email'] = organizer_filter_text(get_string('email'));
@@ -1734,17 +1728,6 @@ function organizer_printslotuserfields($nochoiceoption=false) {
     $profilefields['description'] = organizer_filter_text(get_string('userdescription', 'moodle'));
     foreach (profile_get_custom_fields() as $customfield) {
         $profilefields[$customfield->id] = organizer_filter_text($customfield->name);
-    }
-
-    $organizerconfig = get_config('organizer');
-    if (isset($organizerconfig->allowedprofilefieldsprint)) {
-        $allowedprofilefields = $organizerconfig->allowedprofilefieldsprint;
-        $allowedprofilefieldsarray = explode(",", $allowedprofilefields);
-        foreach ($profilefields as $key => $value) {
-            if (in_array ( $key, $allowedprofilefieldsarray )) {
-                $profilefields[$key] = organizer_filter_text($value);
-            }
-        }
     }
 
     return $profilefields;

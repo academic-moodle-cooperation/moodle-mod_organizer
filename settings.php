@@ -132,11 +132,12 @@ if ($ADMIN->fulltree) {
         new admin_setting_configcheckbox('organizer/enableprintslotuserfields',
             get_string('enableprintslotuserfields', 'organizer'), null, 1));
 
-    $selectableprofilefields = organizer_printslotuserfields(true);
+    $selectableprofilefields = organizer_printslotuserfields();
     $selectedprofilefields = array();
 
     $organizerconfig = get_config('organizer');
     if (isset($organizerconfig->allowedprofilefieldsprint)) {
+        $selectedprofilefields = array('' => '--');
         if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
             foreach ($selectableprofilefields as $key => $value) {
                 if (in_array($key, $allowedprofilefieldsprint)) {
