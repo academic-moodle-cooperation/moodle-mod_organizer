@@ -34,7 +34,9 @@
         <FIELD NAME="singleslotprintfield6" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield5" NEXT="singleslotprintfield7"/>
         <FIELD NAME="singleslotprintfield7" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield6" NEXT="singleslotprintfield8"/>
         <FIELD NAME="singleslotprintfield8" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield7" NEXT="singleslotprintfield9"/>
-        <FIELD NAME="singleslotprintfield9" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield8"/>
+        <FIELD NAME="singleslotprintfield9" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield8" NEXT="allowedprofilefieldsprint"/>
+        <FIELD NAME="allowedprofilefieldsprint" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield9" NEXT="enableprintslotuserfields"/>
+        <FIELD NAME="enableprintslotuserfields" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" PREVIOUS="allowedprofilefieldsprint"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

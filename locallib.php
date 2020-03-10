@@ -1690,6 +1690,15 @@ function organizer_fetch_slotparticipants($slotid) {
     return $participants;
 }
 
+/**
+ * Collection of printable fields of choice.
+ * Used with organizer instance settings (mod_form) and as a sitewide default setting in organizer settings as well.
+ *
+ * @param bool $nochoiceoption ... whether there should be a no-choice option at the top of the list, default false
+ * @return array ... all the choosable print options
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_printslotuserfields($nochoiceoption=false) {
     global $CFG;
 
@@ -1700,39 +1709,45 @@ function organizer_printslotuserfields($nochoiceoption=false) {
     } else {
         $profilefields = array('' => '--');
     }
-    $profilefields['lastname'] = get_string('lastname');
-    $profilefields['firstname'] = get_string('firstname');
-    $profilefields['email'] = get_string('email');
-    $profilefields['idnumber'] = get_string('idnumber');
-    $profilefields['attended'] = get_string('attended', 'organizer');
-    $profilefields['grade'] = get_string('grade');
-    $profilefields['feedback'] = get_string('feedback');
-    $profilefields['signature'] = get_string('signature', 'organizer');
+
+    $profilefields['lastname'] = organizer_filter_text(get_string('lastname'));
+    $profilefields['firstname'] = organizer_filter_text(get_string('firstname'));
+    $profilefields['email'] = organizer_filter_text(get_string('email'));
+    $profilefields['idnumber'] = organizer_filter_text(get_string('idnumber'));
+    $profilefields['attended'] = organizer_filter_text(get_string('attended', 'organizer'));
+    $profilefields['grade'] = organizer_filter_text(get_string('grade'));
+    $profilefields['feedback'] = organizer_filter_text(get_string('feedback'));
+    $profilefields['signature'] = organizer_filter_text(get_string('signature', 'organizer'));
+    $profilefields['fullnameuser'] = organizer_filter_text(get_string('fullnameuser', 'moodle'));
+    $profilefields['icq'] = organizer_filter_text(get_string('icqnumber', 'moodle'));
+    $profilefields['skype'] = organizer_filter_text(get_string('skypeid', 'moodle'));
+    $profilefields['yahoo'] = organizer_filter_text(get_string('yahooid', 'moodle'));
+    $profilefields['aim'] = organizer_filter_text(get_string('aimid', 'moodle'));
+    $profilefields['msn'] = organizer_filter_text(get_string('msnid', 'moodle'));
+    $profilefields['phone1'] = organizer_filter_text(get_string('phone1', 'moodle'));
+    $profilefields['phone2'] = organizer_filter_text(get_string('phone2', 'moodle'));
+    $profilefields['institution'] = organizer_filter_text(get_string('institution', 'moodle'));
+    $profilefields['department'] = organizer_filter_text(get_string('department', 'moodle'));
+    $profilefields['address'] = organizer_filter_text(get_string('address', 'moodle'));
+    $profilefields['city'] = organizer_filter_text(get_string('city', 'moodle'));
+    $profilefields['country'] = organizer_filter_text(get_string('country', 'moodle'));
+    $profilefields['lang'] = organizer_filter_text(get_string('language', 'moodle'));
+    $profilefields['timezone'] = organizer_filter_text(get_string('timezone', 'moodle'));
+    $profilefields['description'] = organizer_filter_text(get_string('userdescription', 'moodle'));
     foreach (profile_get_custom_fields() as $customfield) {
-        $profilefields[$customfield->id] = $customfield->shortname;
+        $profilefields[$customfield->id] = organizer_filter_text($customfield->name);
     }
-    $profilefields['id'] = get_string('dbid', 'organizer');
-    $profilefields['username'] = get_string('username', 'moodle');
-    $profilefields['auth'] = get_string('auth', 'organizer');
-    $profilefields['icq'] = get_string('icqnumber', 'moodle');
-    $profilefields['skype'] = get_string('skypeid', 'moodle');
-    $profilefields['yahoo'] = get_string('yahooid', 'moodle');
-    $profilefields['aim'] = get_string('aimid', 'moodle');
-    $profilefields['msn'] = get_string('msnid', 'moodle');
-    $profilefields['phone1'] = get_string('phone1', 'moodle');
-    $profilefields['phone2'] = get_string('phone2', 'moodle');
-    $profilefields['institution'] = get_string('institution', 'moodle');
-    $profilefields['department'] = get_string('department', 'moodle');
-    $profilefields['address'] = get_string('address', 'moodle');
-    $profilefields['city'] = get_string('city', 'moodle');
-    $profilefields['country'] = get_string('country', 'moodle');
-    $profilefields['lang'] = get_string('language', 'moodle');
-    $profilefields['timezone'] = get_string('timezone', 'moodle');
-    $profilefields['description'] = get_string('userdescription', 'moodle');
-    $profilefields['lastnamephonetic'] = get_string('lastnamephonetic', 'moodle');
-    $profilefields['firstnamephonetic'] = get_string('firstnamephonetic', 'moodle');
-    $profilefields['middlename'] = get_string('middlename', 'moodle');
-    $profilefields['alternatename'] = get_string('alternatename', 'moodle');
+
+    $organizerconfig = get_config('organizer');
+    if (isset($organizerconfig->allowedprofilefieldsprint)) {
+        $allowedprofilefields = $organizerconfig->allowedprofilefieldsprint;
+        $allowedprofilefieldsarray = explode(",", $allowedprofilefields);
+        foreach ($profilefields as $key => $value) {
+            if (in_array ( $key, $allowedprofilefieldsarray )) {
+                $profilefields[$key] = organizer_filter_text($value);
+            }
+        }
+    }
 
     return $profilefields;
 }
@@ -1750,8 +1765,6 @@ function organizer_fetch_printdetail_entries($slot) {
                     a.grade,
                     a.feedback,
                     g.name AS groupname,
-                    u.username,
-                    u.auth,
                     u.icq,
                     u.skype,
                     u.yahoo,
@@ -1766,11 +1779,7 @@ function organizer_fetch_printdetail_entries($slot) {
                     u.country,
                     u.lang,
                     u.timezone,
-                    u.description,
-                    u.lastnamephonetic,
-                    u.firstnamephonetic,
-                    u.middlename,
-                    u.alternatename
+                    u.description
                     FROM {organizer_slots} s
                     LEFT JOIN {organizer_slot_appointments} a ON a.slotid = s.id
                     LEFT JOIN {user} u ON a.userid = u.id
