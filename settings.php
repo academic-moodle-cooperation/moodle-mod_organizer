@@ -169,5 +169,5 @@ if ($ADMIN->fulltree) {
         new admin_setting_configmultiselect('organizer/allowedprofilefieldsprint',
            get_string('allowedprofilefieldsprint', 'organizer'),
             get_string('allowedprofilefieldsprint2', 'organizer'),
-            array_keys($selectedprofilefields), $selectableprofilefields));
+            array_keys($selectableprofilefields), $selectableprofilefields));
 }
