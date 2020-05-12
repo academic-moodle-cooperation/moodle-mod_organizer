@@ -992,9 +992,8 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
  * @param  calendar_event $event
  * @return bool Returns true if the event is visible to the current user, false otherwise.
  */
-function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
+function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $userid = 0) {
     global $USER, $DB;
-
     $props = $event->properties();
 
     $organizer = $DB->get_record('organizer', array('id' => $props->instance), '*', IGNORE_MISSING);
@@ -1002,6 +1001,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event) {
     if ($organizer == false) {
         return false;
     }
+
     if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
         $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid), IGNORE_MISSING);
         if (!(instance_is_visible('organizer', $organizer) && $courseisvisible)) {
@@ -1118,7 +1118,7 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
         }
         return false;
     } else {  // Appointments or slots.
-        $event->type = CALENDAR_EVENT_TYPE_STANDARD;
+        $event->type = CALENDAR_EVENT_TYPE_ACTION;
         if ($group) {
             $event->groupid = $group;
         }
