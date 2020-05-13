@@ -698,6 +698,19 @@ function xmldb_organizer_upgrade($oldversion) {
 
         upgrade_mod_savepoint(true, 2020020501, 'organizer');
     }
+    if ($oldversion < 2020020502) {
+        $sql = 'UPDATE {event} SET type=:type WHERE modulename=:modulename AND eventtype=:eventtype AND type=:oldtype';
+        $params = [
+            'type' => CALENDAR_EVENT_TYPE_ACTION,
+            'modulename' => 'organizer',
+            'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
+            'oldtype' => CALENDAR_EVENT_TYPE_STANDARD
+        ];
+        $DB->execute($sql, $params);
+        $params['eventtype'] = ORGANIZER_CALENDAR_EVENTTYPE_SLOT;
+        $DB->execute($sql, $params);
+        upgrade_mod_savepoint(true, 2020020502, 'organizer');
+    }
 
     return true;
 }
