@@ -23,7 +23,7 @@ before_script:
     - moodle-plugin-ci phplint
     # moodle-plugin-ci phpdoc
     - moodle-plugin-ci phpcpd
-    - moodle-plugin-ci phpcbf
+    # moodle-plugin-ci phpcbf
     - moodle-plugin-ci phpmd
     - moodle-plugin-ci codechecker
     - moodle-plugin-ci validate
@@ -34,4 +34,4 @@ code_checker:
   <<: *job_definition
   image: amcdev/moodle-plugin-ci:7.1
   variables:
-    MOODLE_BRANCH: "MOODLE_38_STABLE"
+    MOODLE_BRANCH: "v3.8.3"

@@ -21,6 +21,8 @@
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -47,10 +49,6 @@ require_capability('mod/organizer:deleteslots', $context);
 if (!$slots) {
     $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
     redirect($redirecturl);
-}
-
-if (!organizer_security_check_slots($slots)) {
-    print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
 }
 
 $mform = new organizer_delete_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));

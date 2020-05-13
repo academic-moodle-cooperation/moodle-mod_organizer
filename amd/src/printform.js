@@ -121,7 +121,7 @@ define(
                     $('a[name=' + col + '_cell]').show();
                 }
                 var printpreview = $('#print_preview');
-                printpreview.find('span[name=' + col + '_cell]').each(
+                printpreview.find('span[name="' + col + '_cell"]').each(
                     function() {
                         if (hide) {
                             $(this).hide();

@@ -74,10 +74,6 @@ if ($data = $mform->get_data()) {
         redirect($redirecturl);
     }
 
-    if (!organizer_security_check_slots($slots)) {
-        print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
-    }
-
     $ppp = organizer_print_setuserprefs_and_triggerevent($data, $cm, $context);
 
     organizer_display_printable_table(
@@ -97,10 +93,6 @@ if ($data = $mform->get_data()) {
     if ($slots == null || count($slots) == 0) {
         $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
         redirect($redirecturl);
-    }
-
-    if (!organizer_security_check_slots($slots)) {
-        print_error('Security failure: Some of selected slots don\'t belong to this organizer!');
     }
 
     organizer_display_form($mform, get_string('title_print', 'organizer'));
@@ -331,8 +323,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     }
                 break;
                 case 'teachercomments':
-                    $teachercomments = (isset($entry->teachercomments) && $entry->teachercomments !== '')
-                        ? $entry->teachercomments : '';
+                    $teachercomments = !empty($entry->teachercomments) ? $entry->teachercomments : '';
                     if ($rowspan != $entry->rowspan) {
                         $row[] = null;
                     } else {

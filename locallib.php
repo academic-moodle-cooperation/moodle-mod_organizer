@@ -648,7 +648,7 @@ function organizer_update_slot($data) {
             } else if ($modified && $data->mod_maxparticipants == 1  && $data->maxparticipants > $appcount) {
                 $freeslots = (int)$data->maxparticipants - (int)$appcount;
                 if (organizer_hasqueue($organizerid)) {
-                    for ( $i = 0; $i<$freeslots; $i++ ) {
+                    for ($i = 0; $i < $freeslots; $i++) {
                         $slotx = new organizer_slot($slotid);
                         if (organizer_is_group_mode()) {
                             if ($next = $slotx->get_next_in_queue_group()) {
@@ -742,41 +742,6 @@ function organizer_update_slot($data) {
     }
 
     return $data->slots;
-}
-
-/**
- * Checks if the slots to be evaluated are part of the actual organizer instance.
- *
- * @param $slots   given slots to evaluate
- * @return bool    Are (all) the given slots part of the actual organizer instance?
- * @throws coding_exception
- * @throws dml_exception
- */
-function organizer_security_check_slots($slots) {
-    global $DB;
-
-    if (isset($slots)) {
-        if (is_array($slots) || $slots instanceof Countable) {
-            $countslots = count($slots);
-        } else if (is_number($slots)) {
-            $countslots = 1;
-        } else {
-            return true;
-        }
-    } else {
-        return true;
-    }
-
-    $organizer = organizer_get_organizer();
-    list($insql, $inparams) = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
-
-    $params = array_merge(array('organizerid' => $organizer->id), $inparams);
-    $query = "SELECT COUNT(*) AS slots FROM {organizer_slots}
-            WHERE organizerid = :organizerid AND id $insql";
-
-    $records = $DB->count_records_sql($query, $params);
-
-    return $countslots == $records;
 }
 
 function organizer_delete_appointment_slot($id) {
@@ -908,7 +873,6 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
     $semaphore = sem_get($slotid);
     sem_acquire($semaphore);
 
-
     if ($sendmessage) {
         $mail = get_mailer();
         $mail->Subject = get_string('queuesubject', 'organizer');
@@ -951,7 +915,6 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
     }
 
     $DB->delete_records('event', array('modulename' => 'organizer', 'eventtype' => 'Slot', 'uuid' => $slotid));
-
 
     sem_release($semaphore);
 
@@ -1725,49 +1688,47 @@ function organizer_fetch_slotparticipants($slotid) {
     return $participants;
 }
 
+/**
+ * Collection of printable fields of choice.
+ * Used with organizer instance settings (mod_form) and as a sitewide default setting in organizer settings as well.
+ *
+ * @param bool $nochoiceoption ... whether there should be a no-choice option at the top of the list, default false
+ * @return array ... all the choosable print options
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_printslotuserfields($nochoiceoption=false) {
     global $CFG;
 
     require_once($CFG->dirroot . '/user/profile/lib.php');
 
-    if ($nochoiceoption) {
-        $profilefields = array();
-    } else {
-        $profilefields = array('' => '--');
-    }
-    $profilefields['lastname'] = get_string('lastname');
-    $profilefields['firstname'] = get_string('firstname');
-    $profilefields['email'] = get_string('email');
-    $profilefields['idnumber'] = get_string('idnumber');
-    $profilefields['attended'] = get_string('attended', 'organizer');
-    $profilefields['grade'] = get_string('grade');
-    $profilefields['feedback'] = get_string('feedback');
-    $profilefields['signature'] = get_string('signature', 'organizer');
+    $profilefields['lastname'] = organizer_filter_text(get_string('lastname'));
+    $profilefields['firstname'] = organizer_filter_text(get_string('firstname'));
+    $profilefields['email'] = organizer_filter_text(get_string('email'));
+    $profilefields['idnumber'] = organizer_filter_text(get_string('idnumber'));
+    $profilefields['attended'] = organizer_filter_text(get_string('attended', 'organizer'));
+    $profilefields['grade'] = organizer_filter_text(get_string('grade'));
+    $profilefields['feedback'] = organizer_filter_text(get_string('feedback'));
+    $profilefields['signature'] = organizer_filter_text(get_string('signature', 'organizer'));
+    $profilefields['fullnameuser'] = organizer_filter_text(get_string('fullnameuser', 'moodle'));
+    $profilefields['icq'] = organizer_filter_text(get_string('icqnumber', 'moodle'));
+    $profilefields['skype'] = organizer_filter_text(get_string('skypeid', 'moodle'));
+    $profilefields['yahoo'] = organizer_filter_text(get_string('yahooid', 'moodle'));
+    $profilefields['aim'] = organizer_filter_text(get_string('aimid', 'moodle'));
+    $profilefields['msn'] = organizer_filter_text(get_string('msnid', 'moodle'));
+    $profilefields['phone1'] = organizer_filter_text(get_string('phone1', 'moodle'));
+    $profilefields['phone2'] = organizer_filter_text(get_string('phone2', 'moodle'));
+    $profilefields['institution'] = organizer_filter_text(get_string('institution', 'moodle'));
+    $profilefields['department'] = organizer_filter_text(get_string('department', 'moodle'));
+    $profilefields['address'] = organizer_filter_text(get_string('address', 'moodle'));
+    $profilefields['city'] = organizer_filter_text(get_string('city', 'moodle'));
+    $profilefields['country'] = organizer_filter_text(get_string('country', 'moodle'));
+    $profilefields['lang'] = organizer_filter_text(get_string('language', 'moodle'));
+    $profilefields['timezone'] = organizer_filter_text(get_string('timezone', 'moodle'));
+    $profilefields['description'] = organizer_filter_text(get_string('userdescription', 'moodle'));
     foreach (profile_get_custom_fields() as $customfield) {
-        $profilefields[$customfield->id] = $customfield->shortname;
+        $profilefields[$customfield->id] = organizer_filter_text($customfield->name);
     }
-    $profilefields['id'] = get_string('dbid', 'organizer');
-    $profilefields['username'] = get_string('username', 'moodle');
-    $profilefields['auth'] = get_string('auth', 'organizer');
-    $profilefields['icq'] = get_string('icqnumber', 'moodle');
-    $profilefields['skype'] = get_string('skypeid', 'moodle');
-    $profilefields['yahoo'] = get_string('yahooid', 'moodle');
-    $profilefields['aim'] = get_string('aimid', 'moodle');
-    $profilefields['msn'] = get_string('msnid', 'moodle');
-    $profilefields['phone1'] = get_string('phone1', 'moodle');
-    $profilefields['phone2'] = get_string('phone2', 'moodle');
-    $profilefields['institution'] = get_string('institution', 'moodle');
-    $profilefields['department'] = get_string('department', 'moodle');
-    $profilefields['address'] = get_string('address', 'moodle');
-    $profilefields['city'] = get_string('city', 'moodle');
-    $profilefields['country'] = get_string('country', 'moodle');
-    $profilefields['lang'] = get_string('language', 'moodle');
-    $profilefields['timezone'] = get_string('timezone', 'moodle');
-    $profilefields['description'] = get_string('userdescription', 'moodle');
-    $profilefields['lastnamephonetic'] = get_string('lastnamephonetic', 'moodle');
-    $profilefields['firstnamephonetic'] = get_string('firstnamephonetic', 'moodle');
-    $profilefields['middlename'] = get_string('middlename', 'moodle');
-    $profilefields['alternatename'] = get_string('alternatename', 'moodle');
 
     return $profilefields;
 }
@@ -1785,8 +1746,6 @@ function organizer_fetch_printdetail_entries($slot) {
                     a.grade,
                     a.feedback,
                     g.name AS groupname,
-                    u.username,
-                    u.auth,
                     u.icq,
                     u.skype,
                     u.yahoo,
@@ -1801,11 +1760,7 @@ function organizer_fetch_printdetail_entries($slot) {
                     u.country,
                     u.lang,
                     u.timezone,
-                    u.description,
-                    u.lastnamephonetic,
-                    u.firstnamephonetic,
-                    u.middlename,
-                    u.alternatename
+                    u.description
                     FROM {organizer_slots} s
                     LEFT JOIN {organizer_slot_appointments} a ON a.slotid = s.id
                     LEFT JOIN {user} u ON a.userid = u.id
@@ -1860,7 +1815,7 @@ function organizer_add_event_appointment_strings($course, $organizer, $cm, $slot
     $a->courselink = html_writer::link(new moodle_url("/course/view.php?id={$course->id}"), $course->fullname);
     $a->organizername = organizer_filter_text($organizer->name);
     $a->organizerlink = html_writer::link(new moodle_url("/mod/organizer/view.php?id={$cm->id}"), $organizer->name);
-    $a->description =  $slot->comments;
+    $a->description = $slot->comments;
     if ($slot->locationlink) {
         $a->location = html_writer::link($slot->locationlink, $slot->location);
     } else {
@@ -1919,7 +1874,7 @@ function organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organ
                   WHERE t.slotid = :slotid AND t.trainerid = :trainerid";
     // Create new appointment event or update existent appointment event for trainers.
     if (!$teventid = $DB->get_field_sql($query, $params)) {
-        $teventid =  organizer_create_calendarevent(
+        $teventid = organizer_create_calendarevent(
             $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
             $trainerid, $slot->starttime, $slot->duration, 0, $appointment->id
         );
@@ -1939,7 +1894,7 @@ function organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organ
  * @param string $filename
  * @throws coding_exception
  */
-function organizer_format_and_print($mpdftable, $filename){
+function organizer_format_and_print($mpdftable, $filename) {
 
     $format = optional_param('format', 'pdf', PARAM_TEXT);
 

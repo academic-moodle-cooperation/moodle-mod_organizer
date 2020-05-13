@@ -37,7 +37,7 @@ define(
 
         var instance = new Evalform();
 
-        instance.init = function () {
+        instance.init = function() {
             function toggle_all(e) {
                 var target = $(e.target);
                 var checked = target.is(':checked');

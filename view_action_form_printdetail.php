@@ -92,6 +92,7 @@ class organizer_print_slotdetail_form extends moodleform
                 $selcols[] = $organizer->{'singleslotprintfield'.$i};
             }
         }
+
         $this->_selcols = $selcols;
 
         $mform->addElement('header', 'export_settings_header', get_string('exportsettings', 'organizer'));
@@ -163,131 +164,107 @@ class organizer_print_slotdetail_form extends moodleform
 
             switch($column) {
                 case 'lastname':
-                    $cell = new html_table_cell(get_string('lastname'));
+                    $cell = new html_table_cell(organizer_filter_text(get_string('lastname')));
                     break;
                 case 'firstname':
-                    $cell = new html_table_cell(get_string('firstname'));
+                    $cell = new html_table_cell(organizer_filter_text(get_string('firstname')));
                     break;
                 case 'email':
-                    $cell = new html_table_cell(get_string('email'));
+                    $cell = new html_table_cell(organizer_filter_text(get_string('email')));
                     break;
                 case 'idnumber':
-                    $cell = new html_table_cell(get_string('idnumber'));
+                    $cell = new html_table_cell(organizer_filter_text(get_string('idnumber')));
                     break;
                 case 'attended':
-                    $cell = new html_table_cell(get_string('attended', 'organizer'));
+                    $cell = new html_table_cell(organizer_filter_text(get_string('attended', 'organizer')));
                     break;
                 case 'grade':
-                    $cell = new html_table_cell(get_string('grade'));
+                    $cell = new html_table_cell(organizer_filter_text(get_string('grade')));
                     break;
                 case 'feedback':
-                    $cell = new html_table_cell(get_string('feedback'));
+                    $cell = new html_table_cell(organizer_filter_text(get_string('feedback')));
                     break;
                 case 'signature':
-                    $cell = new html_table_cell(get_string('signature', 'organizer'));
+                    $cell = new html_table_cell(organizer_filter_text(get_string('signature', 'organizer')));
                     break;
                 default:
                     if (is_numeric($column)) { // Custom user field.
                         if ($userinfofield = $DB->get_record_select('user_info_field', 'id = :id', array('id' => $column))) {
                             $userinfofields[$userinfofield->id] = $userinfofield->datatype;
-                            $name = $userinfofield->name ? $userinfofield->name : $userinfofield->shortname;
+                            $name = $userinfofield->name ? organizer_filter_text($userinfofield->name) :
+                                organizer_filter_text($userinfofield->shortname);
                         } else {
                             $name = "???";
                         }
                         $cell = new html_table_cell($name);
                     } else {  // Field of moodle user table.
                         switch ($column) {
-                            case 'id':
-                                $name = get_string('dbid', 'organizer');
-                                $cell = new html_table_cell($name);
-                                break;
-                            case 'username':
-                                $name = get_string('username', 'moodle');
-                                $cell = new html_table_cell($name);
-                                break;
-                            case 'auth':
-                                $name = get_string('auth', 'organizer');
+                            case 'fullnameuser':
+                                $name = organizer_filter_text(get_string('fullnameuser', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'icq':
-                                $name = get_string('icqnumber', 'moodle');
+                                $name = organizer_filter_text(get_string('icqnumber', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'skype':
-                                $name = get_string('skypeid', 'moodle');
+                                $name = organizer_filter_text(get_string('skypeid', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'yahoo':
-                                $name = get_string('yahooid', 'moodle');
+                                $name = organizer_filter_text(get_string('yahooid', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'aim':
-                                $name = get_string('aimid', 'moodle');
+                                $name = organizer_filter_text(get_string('aimid', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'msn':
-                                $name = get_string('msnid', 'moodle');
+                                $name = organizer_filter_text(get_string('msnid', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'phone1':
-                                $name = get_string('phone1', 'moodle');
+                                $name = organizer_filter_text(get_string('phone1', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'phone2':
-                                $name = get_string('phone2', 'moodle');
+                                $name = organizer_filter_text(get_string('phone2', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'institution':
-                                $name = get_string('institution', 'moodle');
+                                $name = organizer_filter_text(get_string('institution', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'department':
-                                $name = get_string('department', 'moodle');
+                                $name = organizer_filter_text(get_string('department', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'address':
-                                $name = get_string('address', 'moodle');
+                                $name = organizer_filter_text(get_string('address', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'city':
-                                $name = get_string('city', 'moodle');
+                                $name = organizer_filter_text(get_string('city', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'country':
-                                $name = get_string('country', 'moodle');
+                                $name = organizer_filter_text(get_string('country', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'lang':
-                                $name = get_string('language', 'moodle');
+                                $name = organizer_filter_text(get_string('language', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'timezone':
-                                $name = get_string('timezone', 'moodle');
+                                $name = organizer_filter_text(get_string('timezone', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'description':
-                                $name = get_string('userdescription', 'moodle');
-                                $cell = new html_table_cell($name);
-                                break;
-                            case 'lastnamephonetic':
-                                $name = get_string('lastnamephonetic', 'moodle');
-                                $cell = new html_table_cell($name);
-                                break;
-                            case 'firstnamephonetic':
-                                $name = get_string('firstnamephonetic', 'moodle');
-                                $cell = new html_table_cell($name);
-                                break;
-                            case 'middlename':
-                                $name = get_string('middlename', 'moodle');
-                                $cell = new html_table_cell($name);
-                                break;
-                            case 'alternatename':
-                                $name = get_string('alternatename', 'moodle');
+                                $name = organizer_filter_text(get_string('userdescription', 'moodle'));
                                 $cell = new html_table_cell($name);
                                 break;
                         }
                     }
-
             }
             $cell->header = true;
             $header[] = $cell;
@@ -305,6 +282,11 @@ class organizer_print_slotdetail_form extends moodleform
             foreach ($columns as $column) {
 
                 switch ($column) {
+                    case 'fullnameuser':
+                        $content = "<span name='{$column}_cell'>" . fullname($entry->id) . '</span>';
+                        $cell = new html_table_cell($content);
+                        $row->cells[] = $cell;
+                        break;
                     case 'lastname':
                         $content = "<span name='{$column}_cell'>" . $entry->lastname . '</span>';
                         $cell = new html_table_cell($content);
@@ -350,7 +332,8 @@ class organizer_print_slotdetail_form extends moodleform
                         $row->cells[] = $cell;
                     break;
                     case 'signature':
-                        $content = "<span name='{$column}_cell'>" . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . '</span>';
+                        $content = "<span name='{$column}_cell'>" . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
+                            '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
                     break;
@@ -370,9 +353,6 @@ class organizer_print_slotdetail_form extends moodleform
                             }
                         } else {  // Field of moodle user table.
                             switch ($column) {
-                                case 'id':
-                                case 'username':
-                                case 'auth':
                                 case 'icq':
                                 case 'skype':
                                 case 'yahoo':
@@ -388,10 +368,6 @@ class organizer_print_slotdetail_form extends moodleform
                                 case 'lang':
                                 case 'timezone':
                                 case 'description':
-                                case 'lastnamephonetic':
-                                case 'firstnamephonetic':
-                                case 'middlename':
-                                case 'alternatename':
                                     $content = "<span name='{$column}_cell'>" .  $entry->{$column} . '</span>';
                                     $cell = new html_table_cell($content);
                                     $row->cells[] = $cell;
