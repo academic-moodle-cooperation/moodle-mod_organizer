@@ -1999,7 +1999,6 @@ function organizer_slot_commands($slotid, $params) {
                 array('class' => 'editbutton', 'title' => get_string('btn_editsingle', 'organizer')));
     }
 
-
     // DELETE.
     if (has_capability("mod/organizer:deleteslots", $context)) {
         $actionurl = new moodle_url(
@@ -2034,7 +2033,6 @@ function organizer_slot_commands($slotid, $params) {
     }
 
     return $outstr;
-
 }
 
 function organizer_slot_reg_status($organizer, $slot) {
