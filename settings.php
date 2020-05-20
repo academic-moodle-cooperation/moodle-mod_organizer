@@ -125,12 +125,6 @@ if ($ADMIN->fulltree) {
 
 
     // User profile fields for printing single slots.
-    $settings->add(new admin_setting_heading('organizersingleslotprintfields', '',
-        get_string('singleslotprintfields', 'organizer')));
-
-    $settings->add(
-        new admin_setting_configcheckbox('organizer/enableprintslotuserfields',
-            get_string('enableprintslotuserfields', 'organizer'), null, 1));
 
     $selectableprofilefields = organizer_printslotuserfields();
     $selectedprofilefields = array();
@@ -156,12 +150,6 @@ if ($ADMIN->fulltree) {
         $selectedprofilefields['feedback'] = get_string('feedback');
         $selectedprofilefields['signature'] = get_string('signature', 'organizer');
     }
-    for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
-        $settings->add(
-                new admin_setting_configselect('organizer/singleslotprintfield' . $i,
-                        $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'),
-                    null, '', $selectedprofilefields));
-    }
 
     // Allowed User profile fields for printing single slots.
     $settings->add(new admin_setting_heading('allowedprofilefieldsprint', '',
@@ -171,4 +159,20 @@ if ($ADMIN->fulltree) {
            get_string('allowedprofilefieldsprint', 'organizer'),
             get_string('allowedprofilefieldsprint2', 'organizer'),
             array_keys($selectableprofilefields), $selectableprofilefields));
+
+
+    $settings->add(new admin_setting_heading('organizersingleslotprintfields', '',
+        get_string('singleslotprintfields', 'organizer')));
+
+    $settings->add(
+        new admin_setting_configcheckbox('organizer/enableprintslotuserfields',
+            get_string('enableprintslotuserfields', 'organizer'), null, 1));
+
+    for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
+        $settings->add(
+            new admin_setting_configselect('organizer/singleslotprintfield' . $i,
+                $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'),
+                null, '', $selectedprofilefields));
+    }
+
 }

@@ -1119,8 +1119,8 @@ $string['created'] = 'Created';
 $string['nosingleslotprintfields'] = 'Printing is not possible. There are no user fields defined. See the organizer settings.';
 $string['dbid'] = 'DB ID';
 $string['auth'] = 'Authentification method';
-$string['allowedprofilefieldsprint'] = 'Allowed User profile fields';
-$string['allowedprofilefieldsprint2'] = 'Allowed Moodle User profile fields for printing single organizer slots';
+$string['allowedprofilefieldsprint'] = 'Allowed user profile fields';
+$string['allowedprofilefieldsprint2'] = 'Allowed Moodle user profile fields for printing single organizer slots';
 
 // Privacy strings...
 $string['privacy:metadata:showhiddenslots'] = 'User preference: Shall slot table display hidden slots.';
