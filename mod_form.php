@@ -179,33 +179,35 @@ class mod_organizer_mod_form extends moodleform_mod
             $mform->setDefault('grade', $organizerconfig->maximumgrade);
         }
 
-        if (isset($organizerconfig->enableprintslotuserfields) && $organizerconfig->enableprintslotuserfields) {
+        $mform->addElement('header', 'printslotuserfields', get_string('singleslotprintfields', 'organizer'));
+        $mform->addHelpButton('printslotuserfields', 'printslotuserfieldshelp', 'organizer');
 
-            $mform->addElement('header', 'printslotuserfields', get_string('singleslotprintfields', 'organizer'));
+        $selectableprofilefields = organizer_printslotuserfields();
 
-            $selectableprofilefields = organizer_printslotuserfields();
-            $printslotuserfields = array('' => '--');
-            if (isset($organizerconfig->allowedprofilefieldsprint)) {
-                if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
-                    foreach ($selectableprofilefields as $key => $value) {
-                        if (in_array($key, $allowedprofilefieldsprint)) {
-                            $printslotuserfields[$key] = $value;
-                        }
-                    }
-                }
+        $allowedprofilefields = organizer_get_allowed_printslotuserfields();
+
+        $allowslotprofilefieldchange = isset($organizerconfig->enableprintslotuserfields) && $organizerconfig->enableprintslotuserfields;
+
+        $selectableprofilefields = ['' => '--'] + $selectableprofilefields;
+
+        for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
+            $fieldname = 'singleslotprintfield' . $i;
+            $fieldlabel = $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer');
+
+            if (isset($organizerconfig->{'singleslotprintfield' . $i})) {
+                $default = $organizerconfig->{'singleslotprintfield' . $i};
+            } else {
+                $default = "";
             }
-            for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
-                $fieldname = 'singleslotprintfield' . $i;
-                if (isset($organizerconfig->{'singleslotprintfield' . $i})) {
-                    $default = $organizerconfig->{'singleslotprintfield' . $i};
-                } else {
-                    $default = "";
-                }
-                $mform->addElement('select', $fieldname, $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'),
-                    $printslotuserfields);
+            if ($allowslotprofilefieldchange) {
+                $mform->addElement('select', $fieldname, $fieldlabel, $allowedprofilefields);
                 $mform->setType($fieldname, PARAM_TEXT);
                 $mform->setDefault($fieldname, $default);
+            } else {
+                $mform->addElement('static', $fieldname . 'static', $fieldlabel, $selectableprofilefields[$default]);
             }
+        }
+        if ($allowslotprofilefieldchange) {
             $mform->addHelpButton('singleslotprintfield0', 'singleslotprintfield0', 'organizer');
         }
 
