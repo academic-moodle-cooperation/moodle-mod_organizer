@@ -180,7 +180,7 @@ class mod_organizer_mod_form extends moodleform_mod
         }
 
         $mform->addElement('header', 'printslotuserfields', get_string('singleslotprintfields', 'organizer'));
-        $mform->addHelpButton('printslotuserfields', 'printslotuserfieldshelp', 'organizer');
+        $mform->addHelpButton('printslotuserfields', 'printslotuserfields', 'organizer');
 
         $selectableprofilefields = organizer_printslotuserfields();
 
