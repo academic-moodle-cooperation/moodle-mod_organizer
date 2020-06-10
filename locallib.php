@@ -1733,6 +1733,35 @@ function organizer_printslotuserfields($nochoiceoption=false) {
     return $profilefields;
 }
 
+
+function organizer_get_allowed_printslotuserfields() {
+    $selectableprofilefields = organizer_printslotuserfields();
+    $selectedprofilefields = array();
+
+    $organizerconfig = get_config('organizer');
+    if (isset($organizerconfig->allowedprofilefieldsprint)) {
+        $selectedprofilefields = array('' => '--');
+        if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
+            foreach ($selectableprofilefields as $key => $value) {
+                if (in_array($key, $allowedprofilefieldsprint)) {
+                    $selectedprofilefields[$key] = $value;
+                }
+            }
+        }
+    } else {
+        $selectedprofilefields[''] = '--';
+        $selectedprofilefields['lastname'] = get_string('lastname');
+        $selectedprofilefields['firstname'] = get_string('firstname');
+        $selectedprofilefields['email'] = get_string('email');
+        $selectedprofilefields['idnumber'] = get_string('idnumber');
+        $selectedprofilefields['attended'] = get_string('attended', 'organizer');
+        $selectedprofilefields['grade'] = get_string('grade');
+        $selectedprofilefields['feedback'] = get_string('feedback');
+        $selectedprofilefields['signature'] = get_string('signature', 'organizer');
+    }
+    return $selectedprofilefields;
+}
+
 function organizer_fetch_printdetail_entries($slot) {
     global $DB;
 
