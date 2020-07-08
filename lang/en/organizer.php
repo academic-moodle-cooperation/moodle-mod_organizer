@@ -1105,10 +1105,13 @@ $string['totalday_groups'] = 'xxx slots for yyy groups';
 $string['totaltotal'] = 'Total: xxx slots for yyy persons';
 $string['totaltotal_groups'] = 'Total: xxx slots for yyy groups';
 
-$string['enableprintslotuserfields'] = 'Enable Print Slot User Fields';
-$string['printslotuserfieldsnotenabled'] = 'The feature Print Slot User Fields is not enabled by the administrator.';
+$string['enableprintslotuserfields'] = 'Allow change in user profile fields';
+$string['enableprintslotuserfieldsdesc'] = 'Controls whether teachers are allowed to change the default selected user profile fields below';
+$string['printslotuserfieldsnotenabled'] = 'The feature Print Slot user Fields is not enabled by the administrator.';
 $string['singleslotprintfield'] = 'Print slot user field';
-$string['singleslotprintfields'] = 'Print slot user fields';
+$string['defaultsingleslotprintfields'] = 'Default single print slot user profile fields';
+$string['singleslotprintfields_help'] = 'FAKE TEXT - have to be changed with more info on profile fields and how they are controlled by an admin setting';
+$string['singleslotprintfields'] = 'Single print slot user profile fields';
 $string['singleslotprintfield0'] = 'Print slot user field';
 $string['singleslotprintfield0_help'] = 'These user fields are used for each participant when a single slot is printed out.';
 $string['attended'] = 'attended';
@@ -1119,8 +1122,8 @@ $string['created'] = 'Created';
 $string['nosingleslotprintfields'] = 'Printing is not possible. There are no user fields defined. See the organizer settings.';
 $string['dbid'] = 'DB ID';
 $string['auth'] = 'Authentification method';
-$string['allowedprofilefieldsprint'] = 'Allowed User profile fields';
-$string['allowedprofilefieldsprint2'] = 'Allowed Moodle User profile fields for printing single organizer slots';
+$string['allowedprofilefieldsprint'] = 'Allowed user profile fields';
+$string['allowedprofilefieldsprint2'] = 'Allowed user profile fields for printing single organizer slots';
 
 // Privacy strings...
 $string['privacy:metadata:showhiddenslots'] = 'User preference: Shall slot table display hidden slots.';

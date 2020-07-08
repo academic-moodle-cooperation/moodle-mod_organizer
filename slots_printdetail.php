@@ -57,6 +57,8 @@ $PAGE->set_heading($course->fullname);
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
 
 
+require_capability('mod/organizer:printslots', $context);
+
 if (!$slot) {
     $redirecturl->param('messages[]', 'message_warning_no_visible_slots_selected');
     redirect($redirecturl);
@@ -102,12 +104,8 @@ if ($data = $mform->get_data()) {
     }
 
     $organizerconfig = get_config('organizer');
-    if (isset($organizerconfig->enableprintslotuserfields) && $organizerconfig->enableprintslotuserfields) {
-        organizer_display_form($mform, get_string('title_print', 'organizer'));
-    } else {
-        redirect($redirecturl, get_string('printslotuserfieldsnotenabled', 'organizer'),
-            null, \core\output\notification::NOTIFY_ERROR);
-    }
+
+    organizer_display_form($mform, get_string('title_print', 'organizer'));
 }
 
 die;

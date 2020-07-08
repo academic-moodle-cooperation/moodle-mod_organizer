@@ -270,6 +270,7 @@ function organizer_generate_actionlink_bar($context, $organizerexpired) {
 
     $output .= html_writer::span(get_string('selectedslots', 'organizer'));
 
+    $actions = [];
     if (has_capability("mod/organizer:editslots", $context, null, true) && !$organizerexpired) {
         $actions['edit'] = get_string('actionlink_edit', 'organizer');
     }
@@ -1981,45 +1982,57 @@ function organizer_slot_status($params, $slot) {
 }
 
 function organizer_slot_commands($slotid, $params) {
-    global $OUTPUT;
+    global $OUTPUT, $PAGE;
 
     $outstr = "";
+
+    $context = $PAGE->context;
+
     // EDIT.
-    $actionurl = new moodle_url(
-            '/mod/organizer/slots_edit.php',
-            array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
-    );
-    $outstr .= \html_writer::link($actionurl,
-            $OUTPUT->image_icon('t/edit', get_string('btn_editsingle', 'organizer')),
-            array('class' => 'editbutton', 'title' => get_string('btn_editsingle', 'organizer')));
+    if (has_capability("mod/organizer:editslots", $context)) {
+        $actionurl = new moodle_url(
+                '/mod/organizer/slots_edit.php',
+                array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
+        );
+        $outstr .= \html_writer::link($actionurl,
+                $OUTPUT->image_icon('t/edit', get_string('btn_editsingle', 'organizer')),
+                array('class' => 'editbutton', 'title' => get_string('btn_editsingle', 'organizer')));
+    }
 
     // DELETE.
-    $actionurl = new moodle_url(
-            '/mod/organizer/slots_delete.php',
-            array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
-    );
-    $outstr .= \html_writer::link($actionurl,
-            $OUTPUT->image_icon('t/delete', get_string('btn_deletesingle', 'organizer')),
-            array('class' => 'deletebutton', 'title' => get_string('btn_deletesingle', 'organizer')));
+    if (has_capability("mod/organizer:deleteslots", $context)) {
+        $actionurl = new moodle_url(
+                '/mod/organizer/slots_delete.php',
+                array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
+        );
+        $outstr .= \html_writer::link($actionurl,
+                $OUTPUT->image_icon('t/delete', get_string('btn_deletesingle', 'organizer')),
+                array('class' => 'deletebutton', 'title' => get_string('btn_deletesingle', 'organizer')));
+    }
+
     // PRINT.
-    $actionurl = new moodle_url(
-            '/mod/organizer/slots_printdetail.php',
-            array('id' => $params['id'], 'slot' => $slotid, 'mode' => $params['mode'])
-    );
-    $outstr .= \html_writer::link($actionurl,
-            $OUTPUT->image_icon('t/print', get_string('btn_printsingle', 'organizer')),
-            array('class' => 'printbutton', 'title' => get_string('btn_printsingle', 'organizer')));
+    if (has_capability("mod/organizer:printslots", $context)) {
+        $actionurl = new moodle_url(
+                '/mod/organizer/slots_printdetail.php',
+                array('id' => $params['id'], 'slot' => $slotid, 'mode' => $params['mode'])
+        );
+        $outstr .= \html_writer::link($actionurl,
+                $OUTPUT->image_icon('t/print', get_string('btn_printsingle', 'organizer')),
+                array('class' => 'printbutton', 'title' => get_string('btn_printsingle', 'organizer')));
+    }
+
     // GRADE/EVALUATE.
-    $actionurl = new moodle_url(
-            '/mod/organizer/slots_eval.php',
-            array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
-    );
-    $outstr .= \html_writer::link($actionurl,
-            $OUTPUT->image_icon('t/grades', get_string('btn_evalsingle', 'organizer')),
-            array('class' => 'gradesbutton', 'title' => get_string('btn_evalsingle', 'organizer')));
+    if (has_capability("mod/organizer:evalslots", $context)) {
+        $actionurl = new moodle_url(
+                '/mod/organizer/slots_eval.php',
+                array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
+        );
+        $outstr .= \html_writer::link($actionurl,
+                $OUTPUT->image_icon('t/grades', get_string('btn_evalsingle', 'organizer')),
+                array('class' => 'gradesbutton', 'title' => get_string('btn_evalsingle', 'organizer')));
+    }
 
     return $outstr;
-
 }
 
 function organizer_slot_reg_status($organizer, $slot) {

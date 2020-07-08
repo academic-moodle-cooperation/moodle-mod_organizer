@@ -77,6 +77,7 @@ class organizer_print_slotdetail_form extends moodleform
 
         $mform = $this->_form;
         $data = &$this->_customdata;
+        $organizerconfig = get_config('organizer');
 
         $params = array('slotid' => $data['slot']);
         $organizer = $DB->get_records_sql(
@@ -86,10 +87,19 @@ class organizer_print_slotdetail_form extends moodleform
                  WHERE s.id = :slotid', $params);
 
         $organizer = reset($organizer);
-        $selcols = array();
-        for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
-            if ($organizer->{'singleslotprintfield'.$i}) {
-                $selcols[] = $organizer->{'singleslotprintfield'.$i};
+
+        if (isset($organizerconfig->enableprintslotuserfields) && $organizerconfig->enableprintslotuserfields) {
+            $selcols = array();
+            for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
+                if ($organizer->{'singleslotprintfield'.$i}) {
+                    $selcols[] = $organizer->{'singleslotprintfield'.$i};
+                }
+            }
+        } else {
+            for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
+                if ($organizerconfig->{'singleslotprintfield'.$i}) {
+                    $selcols[] = $organizerconfig->{'singleslotprintfield'.$i};
+                }
             }
         }
 
@@ -133,7 +143,7 @@ class organizer_print_slotdetail_form extends moodleform
 
         $output .= '<div class="forced_scroll">';
         $output .= '<div style="float: left">';
-        $output .= $this->_create_preview_table($this->_selcols, array());
+        $output .= $this->_create_preview_table($this->_selcols);
         $output .= '</div><div style="width: 1em; float: left;"> </div></div>';
 
         print $output;
