@@ -352,8 +352,7 @@ class organizer_edit_slots_form extends moodleform
         }
         $group[] = $mform->createElement(
             'static', '', '',
-            get_string('relative_deadline_before', 'organizer') . '&nbsp;&nbsp;&nbsp;'
-            . get_string('relative_deadline_now', 'organizer')
+            get_string('relative_deadline_before', 'organizer') 
         );
         $group[] = $mform->createElement('checkbox', 'availablefrom[now]', get_string('relative_deadline_now', 'organizer'));
         $group[] = $mform->createElement(
