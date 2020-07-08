@@ -71,12 +71,11 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
             } else {
                 $trainers = organizer_get_slot_trainers($slot->id);
             }
-            $strings->slot_teacher = "";
-            $conn = "";
+            $teachers = [];
             foreach ($trainers as $trainerid) {
-                $strings->slot_teacher .= $conn . fullname($DB->get_record('user', array('id' => $trainerid)), true);
-                $conn = " ";
+                $teachers[] = fullname($DB->get_record('user', array('id' => $trainerid)), true);
             }
+            $strings->slot_teacher = implode(', ', $teachers);
         } else {
             $strings->slot_teacher = get_string('teacherinvisible', 'organizer');
         }
@@ -92,12 +91,11 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
             } else {
                 $trainers = organizer_get_slot_trainers($slot->id);
             }
-            $strings->slot_teacher = "";
-            $conn = "";
+            $teachers = [];
             foreach ($trainers as $trainerid) {
-                $strings->slot_teacher .= $conn . fullname($DB->get_record('user', array('id' => $trainerid)), true);
-                $conn = ", ";
+                $teachers[] = fullname($DB->get_record('user', array('id' => $trainerid)), true);
             }
+            $strings->slot_teacher = implode(', ', $teachers);
         } else {
             $strings->slot_teacher = get_string('teacherinvisible', 'organizer');
         }
@@ -146,6 +144,14 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
 
     if ($namesplit[0] == "eval_notify_newappointment") {
         $namesplit[0] = "eval_notify";
+    }
+
+    if (!empty($customdata) && isset($customdata['showsendername'])) {
+        if ($customdata['showsendername'] == 1) {
+            $strings->sendername = get_string('with', 'organizer') . ' ' . $strings->sendername;
+        } else {
+            $strings->sendername = '';
+        }
     }
 
     $message = organizer_build_message($namesplit, $cm, $course, $organizer, $sender, $receiver, $digest,
@@ -241,11 +247,17 @@ function organizer_prepare_and_send_message($data, $type) {
                 $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
                 $trainers = organizer_get_slot_trainers($slot->id);
                 $trainerid = reset($trainers);
+                $customdata = [];
+                if ($slot->teachervisible == 1) {
+                    $customdata['showsendername'] = true;
+                } else {
+                    $customdata['showsendername'] = false;
+                }
                 foreach ($apps as $app) {
                     if ($app->groupid && !groups_is_member($app->groupid, $app->userid)) {
                         continue;
                     }
-                    $sentok = organizer_send_message(intval($trainerid), intval($app->userid), $slot, $type);
+                    $sentok = organizer_send_message(intval($trainerid), intval($app->userid), $slot, $type, null, $customdata);
                 }
             }
             break;
@@ -274,8 +286,14 @@ function organizer_prepare_and_send_message($data, $type) {
                     } else {
                         $type = 'eval_notify_student';
                     }
+                    $customdata = [];
+                    if ($slot->teachervisible == 1) {
+                        $customdata['showsendername'] = true;
+                    } else {
+                        $customdata['showsendername'] = false;
+                    }
 
-                    $sentok = organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
+                    $sentok = organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type, null, $customdata);
                 }
             }
             break;

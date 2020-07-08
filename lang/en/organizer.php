@@ -485,6 +485,8 @@ $string['recipientname'] = '&lt;recipient name&gt;';
 $string['modformwarningsingular'] = 'This field cannot be edited as there are appointments already made in this organizer!';
 $string['modformwarningplural'] = 'These fields cannot be edited as there are appointments already made in this organizer!';
 
+
+$string['with'] = 'with';
 /* Message templates following.
  * Please note that the following strings are available:
  *     sendername, receivername, courseshortname, courselongname, courseid, organizername,
@@ -617,7 +619,7 @@ $string['register_notify_teacher:unqueue:group:smallmessage'] = 'Student {$a->se
 $string['eval_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify_student:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, your appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
+As a part of the course {$a->courseid} {$a->coursefullname}, your appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
 Moodle Messaging System';
 
@@ -629,7 +631,7 @@ $string['eval_notify_newappointment:student:subject'] = '[{$a->courseid}{$a->cou
 
 $string['eval_notify_newappointment:student:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, your appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
+As a part of the course {$a->courseid} {$a->coursefullname}, your appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
 Teachers of the course enable you to re-register to any available slot in the organizer {$a->organizername}.
 
@@ -642,7 +644,7 @@ $string['eval_notify_newappointment:student:smallmessage'] = 'Your appointment o
 $string['eval_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, your group appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
+As a part of the course {$a->courseid} {$a->coursefullname}, your group appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
 Moodle Messaging System';
 $string['eval_notify_student:group:smallmessage'] = 'Your group appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
@@ -652,7 +654,7 @@ $string['eval_notify_student:group:smallmessage'] = 'Your group appointment on {
 $string['eval_notify_newappointment:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify_newappointment:student:group:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, your group appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
+As a part of the course {$a->courseid} {$a->coursefullname}, your group appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
 Teachers of the course enable you to re-register to any available slot in the organizer {$a->coursefullname}.
 
@@ -664,7 +666,7 @@ $string['eval_notify_newappointment:student:group:smallmessage'] = 'Your group a
 $string['edit_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify_student:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, the details of the appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.
+As a part of the course {$a->courseid} {$a->coursefullname}, the details of the appointment {$a->sendername} on {$a->date} at {$a->time} have been changed.
 
 Teacher: {$a->slot_teacher}
 Location: {$a->slot_location}
@@ -673,14 +675,14 @@ Comments:
 {$a->slot_comments}
 
 Moodle Messaging System';
-$string['edit_notify_student:smallmessage'] = 'The details of the appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.';
+$string['edit_notify_student:smallmessage'] = 'The details of the appointment {$a->sendername} on {$a->date} at {$a->time} have been changed.';
 
 // Edit student group.
 
 $string['edit_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, the details of the group appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.
+As a part of the course {$a->courseid} {$a->coursefullname}, the details of the group appointment {$a->sendername} on {$a->date} at {$a->time} have been changed.
 
 Teacher: {$a->slot_teacher}
 Location: {$a->slot_location}
@@ -689,7 +691,7 @@ Comments:
 {$a->slot_comments}
 
 Moodle Messaging System';
-$string['edit_notify_student:group:smallmessage'] = 'The details of the group appointment with {$a->sendername} on {$a->date} at {$a->time} have been changed.';
+$string['edit_notify_student:group:smallmessage'] = 'The details of the group appointment {$a->sendername} on {$a->date} at {$a->time} have been changed.';
 
 // Edit teacher.
 
@@ -1110,7 +1112,7 @@ $string['enableprintslotuserfieldsdesc'] = 'Controls whether teachers are allowe
 $string['printslotuserfieldsnotenabled'] = 'The feature Print Slot user Fields is not enabled by the administrator.';
 $string['singleslotprintfield'] = 'Print slot user field';
 $string['defaultsingleslotprintfields'] = 'Default single print slot user profile fields';
-$string['singleslotprintfields_help'] = 'The following user profile fields will be used for exporting a single organizer slot (printer icon). Depending on the instance settings of moodle you can change them individually or they have been predefined by an administrator.';
+$string['singleslotprintfields_help'] = 'FAKE TEXT - have to be changed with more info on profile fields and how they are controlled by an admin setting';
 $string['singleslotprintfields'] = 'Single print slot user profile fields';
 $string['singleslotprintfield0'] = 'Print slot user field';
 $string['singleslotprintfield0_help'] = 'These user fields are used for each participant when a single slot is printed out.';
