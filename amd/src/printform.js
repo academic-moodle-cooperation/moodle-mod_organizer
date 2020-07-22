@@ -54,6 +54,9 @@ define(
                     $(this).parent().append(iconminus).append(iconplus);
                     $('#' + col + '_thiconplus').hide();
                 });
+                var $form = $('#organizer_main_cointainer form');
+                $('input[name="downloadfile"]').click(function() { $form.attr('target', '_blank'); });
+                $('input[name="cancel"]').click(function() { $form.attr('target', '_self'); });
             }
 
             /**
