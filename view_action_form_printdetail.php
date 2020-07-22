@@ -157,7 +157,6 @@ class organizer_print_slotdetail_form extends moodleform
     private function _create_preview_table($columns) {
         global $OUTPUT, $CFG, $DB, $PAGE;
 
-
         $PAGE->requires->js_call_amd('mod_organizer/printform', 'init', ['iconminus' => '', 'iconplus' => '']);
 
         $table = new html_table();
