@@ -60,11 +60,15 @@ define(
                 }
 
                 if (!showhiddenslots) {
-                    tablebody.find('tr:not(.info).unavailable').hide();
+                    tablebody.find('tr.unavailable').hide();
+                } else {
+                    tablebody.find('tr.not_unavailable').hide();
                 }
 
                 if (!showpastslots) {
                     tablebody.find('tr.past_due').hide();
+                } else {
+                    tablebody.find('tr.not_past_due').hide();
                 }
                 if (showmyslotsonly) {
                     if (!instance.student) {
