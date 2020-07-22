@@ -692,14 +692,15 @@ function organizer_cron() {
     $success = true;
 
     $params = array('now' => $now, 'now2' => $now);
-    $appsquery = "SELECT a.*, s.location, s.starttime, s.organizerid FROM {organizer_slot_appointments} a
+    $appsquery = "SELECT a.*, s.location, s.starttime, s.organizerid, s.teachervisible FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id WHERE
         s.starttime - s.notificationtime < :now AND s.starttime > :now2 AND
         a.notified = 0";
 
     $apps = $DB->get_records_sql($appsquery, $params);
     foreach ($apps as $app) {
-        $success &= organizer_send_message_from_trainer(intval($app->userid), $app, 'appointment_reminder_student');
+        $customdata = ['showsendername' => intval($app->teachervisible == 1)];
+        $success &= organizer_send_message_from_trainer(intval($app->userid), $app, 'appointment_reminder_student', null, $customdata);
     }
 
     if (empty($apps)) {
