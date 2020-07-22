@@ -888,13 +888,14 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
         }
     }
 
+    $organizer = $slot->get_organizer();
     $ok = true;
-    if (organizer_is_group_mode()) {
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
         $generatetrainerevents = true;
         foreach ($memberids as $memberid) {
             if ($ok = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid,
-                $teacherapplicantid, $generatetrainerevents)) {
+                $teacherapplicantid, $generatetrainerevents, null, $organizer->id)) {
                 $address = $DB->get_field('user', 'email', array('id' => $memberid));
                 if (isset($mail) && $mail) {
                     $mail->addAddress($address);
@@ -905,7 +906,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
         }
     } else {
         if ($ok = organizer_register_single_appointment($slotid, $userid, 0, 0,
-            $teacherapplicantid, true)) {
+            $teacherapplicantid, true, null, $organizer->id)) {
             $address = $DB->get_field('user', 'email', array('id' => $userid));
             if (isset($mail) && $mail) {
                 $mail->addAddress($address);
@@ -922,10 +923,10 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
 }
 
 function organizer_register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0,
-                                               $teacherapplicantid = null, $trainerevents = false, $trainerid = null) {
+                                               $teacherapplicantid = null, $trainerevents = false, $trainerid = null, $ogranizerid = null) {
     global $DB;
 
-    list($cm, , $organizer, ) = organizer_get_course_module_data();
+    list($cm, , $organizer, ) = organizer_get_course_module_data(null, $ogranizerid);
 
     $params = array('organizerid' => $organizer->id, 'userid' => $userid);
     $query = "SELECT COUNT(*) FROM {organizer_slot_appointments}
@@ -1158,10 +1159,12 @@ function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
     return $ok;
 }
 
-function organizer_unregister_single_appointment($slotid, $userid) {
+function organizer_unregister_single_appointment($slotid, $userid, $organizer = null) {
     global $DB;
 
-    $organizer = organizer_get_organizer();
+    if (empty($organizer)) {
+        $organizer = organizer_get_organizer();
+    }
 
     if ($appointment = $DB->get_record('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid))) {
         $DB->delete_records('event', array('id' => $appointment->eventid));
