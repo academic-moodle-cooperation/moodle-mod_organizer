@@ -690,10 +690,7 @@ function organizer_cron() {
     include_once(__DIR__ . '/locallib.php');
     $now = time();
 
-
-
     /* Handle deleted users in slots */
-
     $sql = <<<SQL
 SELECT
     s.id,
@@ -702,7 +699,7 @@ SELECT
     s.organizerid,
     o.isgrouporganizer,
     o.queue
-FROM 
+FROM
     {organizer_slots} s
 JOIN
     {organizer_slot_appointments} sa ON sa.slotid = s.id
@@ -740,7 +737,7 @@ SELECT
     s.organizerid,
     o.isgrouporganizer,
     o.queue
-FROM 
+FROM
     {organizer_slots} s
 JOIN
     {organizer_slot_queues} sa ON sa.slotid = s.id
