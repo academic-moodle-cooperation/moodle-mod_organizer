@@ -674,7 +674,6 @@ function organizer_fetch_group($organizer, $userid = null) {
 
     return $group;
 }
-
 /**
  * Function to be run periodically according to the moodle cron
  * This function searches for things that need to be done, such
@@ -685,9 +684,76 @@ function organizer_fetch_group($organizer, $userid = null) {
  * @throws dml_exception
  **/
 function organizer_cron() {
-    include_once(dirname(__FILE__) . '/messaging.php');
     global $DB;
+
+    include_once(__DIR__ . '/messaging.php');
+    include_once(__DIR__ . '/locallib.php');
     $now = time();
+
+    /* Handle deleted users in slots */
+    $sql = <<<SQL
+SELECT
+    s.id,
+    u.id AS userid,
+    s.id AS slotid,
+    s.organizerid,
+    o.isgrouporganizer,
+    o.queue
+FROM
+    {organizer_slots} s
+JOIN
+    {organizer_slot_appointments} sa ON sa.slotid = s.id
+JOIN
+    {organizer} o ON o.id = s.organizerid
+JOIN
+    {user} u ON u.id = sa.userid
+WHERE
+    (u.deleted = 1 OR u.suspended = 1) AND
+    s.starttime >= :now
+SQL;
+
+    $deletedusers = $DB->get_records_sql($sql, ['now' => $now]);
+    foreach ($deletedusers as $du) {
+        $org = new stdClass;
+        $org->id = $du->organizerid;
+        $org->isgrouporganizer = $du->isgrouporganizer;
+        organizer_unregister_single_appointment($du->slotid, $du->userid, $org);
+        if ($du->isgrouporganizer != ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+            if ($du->queue) {
+                $slotx = new organizer_slot($du->slotid);
+                if ($next = $slotx->get_next_in_queue()) {
+                    organizer_register_appointment($du->slotid, 0, $next->userid, true);
+                    organizer_delete_from_queue($du->slotid, $next->userid);
+                }
+            }
+        }
+    }
+    // Handle queued deleted or suspended users!
+    $sql = <<<SQL
+SELECT
+    s.id,
+    u.id AS userid,
+    s.id AS slotid,
+    s.organizerid,
+    o.isgrouporganizer,
+    o.queue
+FROM
+    {organizer_slots} s
+JOIN
+    {organizer_slot_queues} sa ON sa.slotid = s.id
+JOIN
+    {organizer} o ON o.id = s.organizerid
+JOIN
+    {user} u ON u.id = sa.userid
+WHERE
+    (u.deleted = 1 OR u.suspended = 1) AND
+    s.starttime >= :now
+SQL;
+
+    $deletedusers = $DB->get_records_sql($sql, ['now' => $now]);
+    foreach ($deletedusers as $du) {
+        organizer_delete_from_queue($du->slotid, $du->userid);
+    }
 
     $success = true;
 
@@ -713,7 +779,7 @@ function organizer_cron() {
 
     $organizerconfig = get_config('organizer');
     if ($organizerconfig->digest == 'never') {
-         return $success;
+        return $success;
     }
     $time = $organizerconfig->digest + mktime(0, 0, 0, date("m"), date("d"), date("Y"));
     if (abs(time() - $time) >= 300) {
@@ -778,9 +844,9 @@ function organizer_cron() {
             }
         }
     }
-
     return $success;
 }
+
 
 function organizer_create_digest($trainerid) {
     include_once(dirname(__FILE__) . '/messaging.php');

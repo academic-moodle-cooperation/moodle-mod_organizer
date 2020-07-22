@@ -318,7 +318,11 @@ class organizer_add_slots_form extends moodleform
         }
 
         // Get the gap.
-        $gap = $data['gap']['number'] * $data['gap']['timeunit'];
+        if ($data['gap'] == 0) {
+            $gap = 0;
+        } else {
+            $gap = $data['gap']['number'] * $data['gap']['timeunit'];
+        }
 
         // For new slots.
         if (isset($data['newslots'])) {
