@@ -62,7 +62,7 @@ if ($tsort != null) {
 
 $s = $slots == null ? array() : $slots;
 
-$mform = new organizer_print_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $s));
+$mform = new organizer_print_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $s), 'post', '_blank');
 
 if ($data = $mform->get_data()) {
     // Create pdf.

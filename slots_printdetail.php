@@ -66,7 +66,7 @@ if (!$slot) {
     $_SESSION['organizer_slot'] = $slot;
 }
 
-$mform = new organizer_print_slotdetail_form(null, array('id' => $cm->id, 'mode' => $mode, 'slot' => $slot));
+$mform = new organizer_print_slotdetail_form(null, array('id' => $cm->id, 'mode' => $mode, 'slot' => $slot), 'post', '_blank');
 
 if ($data = $mform->get_data()) {
     // Create pdf.
