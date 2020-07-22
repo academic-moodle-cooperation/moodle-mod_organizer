@@ -936,20 +936,20 @@ $string['appointment_reminder_teacher:group:digest:smallmessage'] = 'You have re
 $string['appointment_reminder_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment reminder';
 $string['appointment_reminder_student:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, you have an appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.
+As a part of the course {$a->courseid} {$a->coursefullname}, you have an appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.
 
 Moodle Messaging System';
-$string['appointment_reminder_student:smallmessage'] = 'You have an appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.';
+$string['appointment_reminder_student:smallmessage'] = 'You have an appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.';
 
 // Appointment reminder student group.
 
 $string['appointment_reminder_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group appointment reminder';
 $string['appointment_reminder_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, you have a group appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.
+As a part of the course {$a->courseid} {$a->coursefullname}, you have a group appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.
 
 Moodle Messaging System';
-$string['appointment_reminder_student:group:smallmessage'] = 'You have a group appointment with {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.';
+$string['appointment_reminder_student:group:smallmessage'] = 'You have a group appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.';
 
 $string['teachercomment_title'] = 'Teacher comments';
 $string['studentcomment_title'] = 'Student comments';
