@@ -325,7 +325,7 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                     $row[] = array('data' => $content);
                     break;
                 case 'grade':
-                    $grade = isset($entry->grade) && $entry->grade >= 0  ? sprintf("%01.2f", $entry->grade) : '';
+                    $grade = isset($entry->grade) && $entry->grade >= 0 ? sprintf("%01.2f", $entry->grade) : '';
                     $content = $grade;
                     $row[] = array('data' => $content);
                     break;
