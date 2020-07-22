@@ -364,7 +364,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     $row[] = array('data' => $attended, 'rowspan' => 0);
                 break;
                 case 'grade':
-                    $grade = isset($entry->grade) ? sprintf("%01.2f", $entry->grade) : '';
+                    $grade = isset($entry->grade) && $entry->grade >= 0 ? sprintf("%01.2f", $entry->grade) : '';
                     $row[] = array('data' => $grade, 'rowspan' => 0);
                 break;
                 case 'feedback':

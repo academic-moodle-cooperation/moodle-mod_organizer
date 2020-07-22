@@ -325,7 +325,7 @@ class organizer_print_slotdetail_form extends moodleform
                         $row->cells[] = $cell;
                     break;
                     case 'grade':
-                        $grade = isset($entry->grade) ? sprintf("%01.2f", $entry->grade) : '';
+                        $grade = isset($entry->grade) && $entry->grade >= 0  ? sprintf("%01.2f", $entry->grade) : '';
                         $content = "<span name='{$column}_cell'>" . $grade . '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
