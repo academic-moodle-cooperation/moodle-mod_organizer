@@ -778,6 +778,30 @@ function organizer_cron() {
         }
     }
 
+    /* Handle deleted users in slots */
+
+    $sql = <<<SQL
+SELECT
+    s.id,
+    u.id AS userid,
+    s.id AS slotid  
+FROM 
+    {organizer_slots} s
+JOIN
+    {organizer_slot_appointments} sa ON sa.slotid = s.id
+JOIN
+    {user} u ON u.id = sa.userid
+WHERE
+    u.deleted = 1 AND  ADD SUSPENDED USERS
+    s.starttime >= :now
+SQL;
+    $deletedusers = $DB->get_records_sql($sql, ['now' => time()]);
+    foreach ($deletedusers as $deleteduser) {
+        var_dump($deleteduser);
+    }
+
+
+
     return $success;
 }
 
