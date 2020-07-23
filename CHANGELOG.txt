@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.8.3 (2020-07-22)
+------------------
+* [FEATURE] #6067: github #43 Data leak with feature "Print slot user fields" part two
+
 3.8.2 (2020-05-12)
 ------------------
 
