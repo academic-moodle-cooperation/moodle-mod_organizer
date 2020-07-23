@@ -152,7 +152,7 @@ class organizer_print_slots_form extends moodleform
         $output .= '<div class="forced_scroll">';
         $output .= '<div style="float: left">';
         $output .= $this->_create_preview_table($printcols);
-        $output .= '</div><div style="width: 1em; float: left;"> </div>';
+        $output .= '</div><div style="width: 1em; float: left;"> </div></div>';
 
         echo $output;
     }
@@ -385,7 +385,7 @@ class organizer_print_slots_form extends moodleform
                         $row->cells[] = $cell;
                     break;
                     case 'grade':
-                        $grade = isset($entry->grade) ? sprintf("%01.2f", $entry->grade) : '';
+                        $grade = isset($entry->grade) && $entry->grade >= 0 ? sprintf("%01.2f", $entry->grade) : '';
                         $content = "<span name='{$column}_cell'>" . $grade . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->style = 'vertical-align: middle;';

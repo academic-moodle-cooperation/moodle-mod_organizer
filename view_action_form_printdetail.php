@@ -155,7 +155,9 @@ class organizer_print_slotdetail_form extends moodleform
      * @return string the html of the table
      */
     private function _create_preview_table($columns) {
-        global $OUTPUT, $CFG, $DB;
+        global $OUTPUT, $CFG, $DB, $PAGE;
+
+        $PAGE->requires->js_call_amd('mod_organizer/printform', 'init', ['iconminus' => '', 'iconplus' => '']);
 
         $table = new html_table();
         $table->id = 'print_preview';
@@ -325,7 +327,7 @@ class organizer_print_slotdetail_form extends moodleform
                         $row->cells[] = $cell;
                     break;
                     case 'grade':
-                        $grade = isset($entry->grade) ? sprintf("%01.2f", $entry->grade) : '';
+                        $grade = isset($entry->grade) && $entry->grade >= 0 ? sprintf("%01.2f", $entry->grade) : '';
                         $content = "<span name='{$column}_cell'>" . $grade . '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
