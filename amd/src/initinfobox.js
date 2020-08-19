@@ -131,11 +131,7 @@ define(
 
                 noninforows.each(
                     function() {
-                        if (!(
-                                $(this).css('offsetWidth') === 0 &&
-                                $(this).css('offsetHeight') === 0) ||
-                                $(this).css('display') === 'none'
-                        ) {
+                        if ($(this).css('display') !== 'none') {
                             anyvisible = true;
                         }
                     }
