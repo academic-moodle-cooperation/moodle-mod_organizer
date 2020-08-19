@@ -43,7 +43,7 @@ define(
             instance.student = param; // Is user student or not.
 
             // What happens when a view option checkbox is clicked or the filter field has been changed.
-            function toggle_all_slots() {
+            function toggle_all_slots(saveuserprefs) {
                 var tablebody = $('#slot_overview tbody');
                 var showpastslots = $('#show_past_slots').is(':checked');
                 var showmyslotsonly = $('#show_my_slots_only').is(':checked');
@@ -54,15 +54,15 @@ define(
                 tablebody.find('tr').show();
 
                 if (showregistrationsonly) {
-                    tablebody.find('tr:not(.registered)').hide();
-                } else {
-                    tablebody.find('tr.registered').show();
+                    tablebody.find('tr.not_registered').hide();
                 }
 
-                if (!showhiddenslots) {
-                    tablebody.find('tr.unavailable').hide();
-                } else {
-                    tablebody.find('tr.not_unavailable').hide();
+                if (!instance.student) {
+                    if (!showhiddenslots) {
+                        tablebody.find('tr.unavailable').hide();
+                    } else {
+                        tablebody.find('tr.not_unavailable').hide();
+                    }
                 }
 
                 if (!showpastslots) {
@@ -112,14 +112,15 @@ define(
 
                 toggle_info();
 
-                set_user_preference('mod_organizer_showhiddenslots', (showhiddenslots));
-                if (!instance.student) {
-                    set_user_preference('mod_organizer_showmyslotsonly', (showmyslotsonly));
+                if (saveuserprefs) {
+                    set_user_preference('mod_organizer_showhiddenslots', (showhiddenslots));
+                    if (!instance.student) {
+                        set_user_preference('mod_organizer_showmyslotsonly', (showmyslotsonly));
+                    }
+                    set_user_preference('mod_organizer_showfreeslotsonly', (showfreeslotsonly));
+                    set_user_preference('mod_organizer_showpasttimeslots', (showpastslots));
+                    set_user_preference('mod_organizer_showregistrationsonly', (showregistrationsonly));
                 }
-                set_user_preference('mod_organizer_showfreeslotsonly', (showfreeslotsonly));
-                set_user_preference('mod_organizer_showpasttimeslots', (showpastslots));
-                set_user_preference('mod_organizer_showregistrationsonly', (showregistrationsonly));
-
             }
 
             function toggle_info() {
@@ -173,14 +174,14 @@ define(
                 return text;
             }
 
-            $('#show_past_slots').on('click', toggle_all_slots);
-            $('#show_my_slots_only').on('click', toggle_all_slots);
-            $('#show_free_slots_only').on('click', toggle_all_slots);
-            $('#show_hidden_slots').on('click', toggle_all_slots);
-            $('#show_registrations_only').on('click', toggle_all_slots);
-            $('.organizer_filtertable').on('keyup', toggle_all_slots);
+            $('#show_past_slots').on('click', function() { toggle_all_slots(true); });
+            $('#show_my_slots_only').on('click', function() { toggle_all_slots(true); });
+            $('#show_free_slots_only').on('click', function() { toggle_all_slots(true); });
+            $('#show_hidden_slots').on('click', function() { toggle_all_slots(true); });
+            $('#show_registrations_only').on('click', function() { toggle_all_slots(true); });
+            $('.organizer_filtertable').on('keyup', function() { toggle_all_slots(true); });
 
-            toggle_all_slots();
+            toggle_all_slots(false);
 
             function set_user_preference(name, value) {
 
