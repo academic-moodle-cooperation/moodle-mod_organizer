@@ -844,8 +844,8 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
         $mail = get_mailer();
         $mail->Subject = get_string('queuesubject', 'organizer');
         $mail->Body = get_string('queuebody', 'organizer');
-        if ($slot->get_slot()->teachervisible) {
-            $trainers = organizer_get_slot_trainers($slot->get_slot()->id);
+        $trainers = organizer_get_slot_trainers($slot->get_slot()->id);
+        if ($slot->get_slot()->teachervisible && !empty($trainers)) {
             $trainerid = reset($trainers);
             $trainer = $DB->get_record('user', array('id' => $trainerid));
             $mail->From = $trainer->email;

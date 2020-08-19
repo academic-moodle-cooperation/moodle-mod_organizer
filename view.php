@@ -127,12 +127,6 @@ switch ($params['mode']) {
     break;
 }
 
-// Load bootstrap plugin tooltips for comment and feedback popups.
-$PAGE->requires->js_amd_inline("require(['theme_boost/loader']);
-require(['jquery', 'theme_boost/tooltip'], function($){
-    $('[data-toggle=\"tooltip\"]').tooltip();
-});");
-
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();
 

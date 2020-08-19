@@ -488,6 +488,8 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
 
             if ($slotx->has_participants()) {
                 $row->attributes['class'] .= 'registered';
+            } else {
+                $row->attributes['class'] .= 'not_registered';
             }
 
             $slotpastdue = $slotx->is_past_due();

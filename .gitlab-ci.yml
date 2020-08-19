@@ -32,6 +32,6 @@ before_script:
 
 code_checker:
   <<: *job_definition
-  image: amcdev/moodle-plugin-ci:7.1
+  image: amcdev/moodle-plugin-ci:7.3.node14
   variables:
-    MOODLE_BRANCH: "v3.8.3"
+    MOODLE_BRANCH: "v3.9.0"
