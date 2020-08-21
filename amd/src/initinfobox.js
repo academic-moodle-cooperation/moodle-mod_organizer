@@ -65,6 +65,8 @@ define(
 
                 if (showpastslots) {
                     tablebody.find('tr.not_past_due').hide();
+                } else {
+                    tablebody.find('tr.past_due').hide();
                 }
 
                 if (showmyslotsonly) {
