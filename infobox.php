@@ -230,11 +230,7 @@ function organizer_make_slotoptions_section($params) {
             ($pref ? 'checked="true" ' : '') . ' /> ' .
             get_string('infobox_showfreeslots', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
 
-    if ($params['slots']) { // When added slots are shown show hidden slots anyway.
-        $pref = true;
-    } else {
-        $pref = get_user_preferences('mod_organizer_showhiddenslots', false);
-    }
+    $pref = get_user_preferences('mod_organizer_showhiddenslots', false);
     $output .= '<span' . ($displayhiddenslots ? '' : ' style="display: none;" ') . '>' .
         '<input type="checkbox" id="show_hidden_slots" ' .
         ($pref ? 'checked="true" ' : '') . ' /> ' .

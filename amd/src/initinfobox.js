@@ -58,18 +58,17 @@ define(
                 }
 
                 if (!instance.student) {
-                    if (!showhiddenslots) {
-                        tablebody.find('tr.unavailable').hide();
-                    } else {
+                    if (showhiddenslots) {
                         tablebody.find('tr.not_unavailable').hide();
                     }
                 }
 
-                if (!showpastslots) {
-                    tablebody.find('tr.past_due').hide();
-                } else {
+                if (showpastslots) {
                     tablebody.find('tr.not_past_due').hide();
+                } else {
+                    tablebody.find('tr.past_due').hide();
                 }
+
                 if (showmyslotsonly) {
                     if (!instance.student) {
                         tablebody.find('tr.not_my_slot').hide();
