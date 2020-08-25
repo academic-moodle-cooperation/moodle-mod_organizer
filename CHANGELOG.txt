@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.9.0 (2020-08-25)
+------------------
+* Moodle 3.9 compatible version
+
+
 3.8.3 (2020-07-22)
 ------------------
 * [FEATURE] #6067: github #43 Data leak with feature "Print slot user fields" part two
