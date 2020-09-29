@@ -36,7 +36,7 @@ require_once(dirname(__FILE__) . '/slotlib.php');
 class organizer_comment_slot_form extends moodleform
 {
     /**
-     * 
+     *
      * {@inheritDoc}
      * @see moodleform::definition()
      */

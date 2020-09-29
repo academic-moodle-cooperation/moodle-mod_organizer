@@ -31,36 +31,6 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/lib.php');
 
-if (!function_exists('sem_get')) {
-    /**
-     *
-     * @param string $key
-     * @return resource
-     */
-    function sem_get($key) {
-        global $CFG;
-        if (!is_dir($CFG->dataroot . '/temp/mod/organizer')) {
-            mkdir($CFG->dataroot . '/temp/mod/organizer', 0777, true);
-        }
-        return fopen($CFG->dataroot . '/temp/mod/organizer/organizer_' . $key . '.sem', 'w+');
-    }
-    /**
-     *
-     * @param int $semid
-     * @return boolean
-     */
-    function sem_acquire($semid) {
-        return flock($semid, LOCK_EX);
-    }
-    /**
-     *
-     * @param int $semid
-     * @return boolean
-     */
-    function sem_release($semid) {
-        return flock($semid, LOCK_UN);
-    }
-}
 /**
  *
  * @param int $trainerid
@@ -648,7 +618,7 @@ function organizer_update_slot($data) {
             } else if ($modified && $data->mod_maxparticipants == 1  && $data->maxparticipants > $appcount) {
                 $freeslots = (int)$data->maxparticipants - (int)$appcount;
                 if (organizer_hasqueue($organizerid)) {
-                    for ( $i = 0; $i<$freeslots; $i++ ) {
+                    for ($i = 0; $i < $freeslots; $i++) {
                         $slotx = new organizer_slot($slotid);
                         if (organizer_is_group_mode()) {
                             if ($next = $slotx->get_next_in_queue_group()) {
@@ -870,10 +840,6 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
         }
     }
 
-    $semaphore = sem_get($slotid);
-    sem_acquire($semaphore);
-
-
     if ($sendmessage) {
         $mail = get_mailer();
         $mail->Subject = get_string('queuesubject', 'organizer');
@@ -916,9 +882,6 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
     }
 
     $DB->delete_records('event', array('modulename' => 'organizer', 'eventtype' => 'Slot', 'uuid' => $slotid));
-
-
-    sem_release($semaphore);
 
     return $ok;
 }
@@ -1000,9 +963,6 @@ function organizer_queue_single_appointment($slotid, $userid, $applicantid = 0, 
 function organizer_reregister_appointment($slotid, $groupid = 0) {
     global $DB, $USER;
 
-    $semaphore = sem_get($slotid);
-    sem_acquire($semaphore);
-
     $params = array('slotid' => $slotid);
     $query = "SELECT s.organizerid FROM {organizer_slots} s
                   WHERE s.id = :slotid ";
@@ -1080,8 +1040,6 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
             }
         }
     }
-
-    sem_release($semaphore);
 
     return $okregister && $okunregister;
 }
