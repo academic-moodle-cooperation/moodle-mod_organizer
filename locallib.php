@@ -1704,12 +1704,6 @@ function organizer_printslotuserfields($nochoiceoption=false) {
 
     require_once($CFG->dirroot . '/user/profile/lib.php');
 
-    if ($nochoiceoption) {
-        $profilefields = array();
-    } else {
-        $profilefields = array('' => '--');
-    }
-
     $profilefields['lastname'] = organizer_filter_text(get_string('lastname'));
     $profilefields['firstname'] = organizer_filter_text(get_string('firstname'));
     $profilefields['email'] = organizer_filter_text(get_string('email'));
@@ -1738,18 +1732,35 @@ function organizer_printslotuserfields($nochoiceoption=false) {
         $profilefields[$customfield->id] = organizer_filter_text($customfield->name);
     }
 
+    return $profilefields;
+}
+
+function organizer_get_allowed_printslotuserfields() {
+    $selectableprofilefields = organizer_printslotuserfields();
+    $selectedprofilefields = array();
+
     $organizerconfig = get_config('organizer');
     if (isset($organizerconfig->allowedprofilefieldsprint)) {
-        $allowedprofilefields = $organizerconfig->allowedprofilefieldsprint;
-        $allowedprofilefieldsarray = explode(",", $allowedprofilefields);
-        foreach ($profilefields as $key => $value) {
-            if (in_array ( $key, $allowedprofilefieldsarray )) {
-                $profilefields[$key] = organizer_filter_text($value);
+        $selectedprofilefields = array('' => '--');
+        if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
+            foreach ($selectableprofilefields as $key => $value) {
+                if (in_array($key, $allowedprofilefieldsprint)) {
+                    $selectedprofilefields[$key] = $value;
+                }
             }
         }
+    } else {
+        $selectedprofilefields[''] = '--';
+        $selectedprofilefields['lastname'] = get_string('lastname');
+        $selectedprofilefields['firstname'] = get_string('firstname');
+        $selectedprofilefields['email'] = get_string('email');
+        $selectedprofilefields['idnumber'] = get_string('idnumber');
+        $selectedprofilefields['attended'] = get_string('attended', 'organizer');
+        $selectedprofilefields['grade'] = get_string('grade');
+        $selectedprofilefields['feedback'] = get_string('feedback');
+        $selectedprofilefields['signature'] = get_string('signature', 'organizer');
     }
-
-    return $profilefields;
+    return $selectedprofilefields;
 }
 
 function organizer_fetch_printdetail_entries($slot) {
