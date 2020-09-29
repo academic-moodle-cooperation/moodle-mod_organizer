@@ -125,49 +125,34 @@ if ($ADMIN->fulltree) {
 
 
     // User profile fields for printing single slots.
-    $settings->add(new admin_setting_heading('organizersingleslotprintfields', '',
-        get_string('singleslotprintfields', 'organizer')));
-
-    $settings->add(
-        new admin_setting_configcheckbox('organizer/enableprintslotuserfields',
-            get_string('enableprintslotuserfields', 'organizer'), null, 1));
-
-    $selectableprofilefields = organizer_printslotuserfields(true);
-    $selectedprofilefields = array();
-
-    $organizerconfig = get_config('organizer');
-    if (isset($organizerconfig->allowedprofilefieldsprint)) {
-        if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
-            foreach ($selectableprofilefields as $key => $value) {
-                if (in_array($key, $allowedprofilefieldsprint)) {
-                    $selectedprofilefields[$key] = $value;
-                }
-            }
-        }
-    } else {
-        $selectedprofilefields[''] = '--';
-        $selectedprofilefields['lastname'] = get_string('lastname');
-        $selectedprofilefields['firstname'] = get_string('firstname');
-        $selectedprofilefields['email'] = get_string('email');
-        $selectedprofilefields['idnumber'] = get_string('idnumber');
-        $selectedprofilefields['attended'] = get_string('attended', 'organizer');
-        $selectedprofilefields['grade'] = get_string('grade');
-        $selectedprofilefields['feedback'] = get_string('feedback');
-        $selectedprofilefields['signature'] = get_string('signature', 'organizer');
-    }
-    for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
-        $settings->add(
-                new admin_setting_configselect('organizer/singleslotprintfield' . $i,
-                        $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'),
-                    null, '', $selectedprofilefields));
-    }
+    $selectableprofilefields = organizer_printslotuserfields();
 
     // Allowed User profile fields for printing single slots.
     $settings->add(new admin_setting_heading('allowedprofilefieldsprint', '',
         get_string('allowedprofilefieldsprint', 'organizer')));
+
+    $settings->add(
+        new admin_setting_configcheckbox('organizer/enableprintslotuserfields',
+            get_string('enableprintslotuserfields', 'organizer'),
+            get_string('enableprintslotuserfieldsdesc', 'organizer'), 1));
     $settings->add(
         new admin_setting_configmultiselect('organizer/allowedprofilefieldsprint',
-           get_string('allowedprofilefieldsprint', 'organizer'),
+            get_string('allowedprofilefieldsprint', 'organizer'),
             get_string('allowedprofilefieldsprint2', 'organizer'),
             array_keys($selectableprofilefields), $selectableprofilefields));
+
+
+    $settings->add(new admin_setting_heading('organizersingleslotprintfields', '',
+        get_string('defaultsingleslotprintfields', 'organizer')));
+
+
+    $selectableprofilefields = ['' => '--'] + $selectableprofilefields;
+
+    for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
+        $settings->add(
+            new admin_setting_configselect('organizer/singleslotprintfield' . $i,
+                $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'),
+                null, '', $selectableprofilefields));
+    }
+
 }

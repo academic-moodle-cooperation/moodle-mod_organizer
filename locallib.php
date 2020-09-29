@@ -31,36 +31,6 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/lib.php');
 
-if (!function_exists('sem_get')) {
-    /**
-     *
-     * @param string $key
-     * @return resource
-     */
-    function sem_get($key) {
-        global $CFG;
-        if (!is_dir($CFG->dataroot . '/temp/mod/organizer')) {
-            mkdir($CFG->dataroot . '/temp/mod/organizer', 0777, true);
-        }
-        return fopen($CFG->dataroot . '/temp/mod/organizer/organizer_' . $key . '.sem', 'w+');
-    }
-    /**
-     *
-     * @param int $semid
-     * @return boolean
-     */
-    function sem_acquire($semid) {
-        return flock($semid, LOCK_EX);
-    }
-    /**
-     *
-     * @param int $semid
-     * @return boolean
-     */
-    function sem_release($semid) {
-        return flock($semid, LOCK_UN);
-    }
-}
 /**
  *
  * @param int $trainerid
@@ -648,7 +618,7 @@ function organizer_update_slot($data) {
             } else if ($modified && $data->mod_maxparticipants == 1  && $data->maxparticipants > $appcount) {
                 $freeslots = (int)$data->maxparticipants - (int)$appcount;
                 if (organizer_hasqueue($organizerid)) {
-                    for ( $i = 0; $i<$freeslots; $i++ ) {
+                    for ($i = 0; $i < $freeslots; $i++) {
                         $slotx = new organizer_slot($slotid);
                         if (organizer_is_group_mode()) {
                             if ($next = $slotx->get_next_in_queue_group()) {
@@ -870,10 +840,6 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
         }
     }
 
-    $semaphore = sem_get($slotid);
-    sem_acquire($semaphore);
-
-
     if ($sendmessage) {
         $mail = get_mailer();
         $mail->Subject = get_string('queuesubject', 'organizer');
@@ -916,9 +882,6 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
     }
 
     $DB->delete_records('event', array('modulename' => 'organizer', 'eventtype' => 'Slot', 'uuid' => $slotid));
-
-
-    sem_release($semaphore);
 
     return $ok;
 }
@@ -1000,9 +963,6 @@ function organizer_queue_single_appointment($slotid, $userid, $applicantid = 0, 
 function organizer_reregister_appointment($slotid, $groupid = 0) {
     global $DB, $USER;
 
-    $semaphore = sem_get($slotid);
-    sem_acquire($semaphore);
-
     $params = array('slotid' => $slotid);
     $query = "SELECT s.organizerid FROM {organizer_slots} s
                   WHERE s.id = :slotid ";
@@ -1080,8 +1040,6 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
             }
         }
     }
-
-    sem_release($semaphore);
 
     return $okregister && $okunregister;
 }
@@ -1704,12 +1662,6 @@ function organizer_printslotuserfields($nochoiceoption=false) {
 
     require_once($CFG->dirroot . '/user/profile/lib.php');
 
-    if ($nochoiceoption) {
-        $profilefields = array();
-    } else {
-        $profilefields = array('' => '--');
-    }
-
     $profilefields['lastname'] = organizer_filter_text(get_string('lastname'));
     $profilefields['firstname'] = organizer_filter_text(get_string('firstname'));
     $profilefields['email'] = organizer_filter_text(get_string('email'));
@@ -1738,18 +1690,35 @@ function organizer_printslotuserfields($nochoiceoption=false) {
         $profilefields[$customfield->id] = organizer_filter_text($customfield->name);
     }
 
+    return $profilefields;
+}
+
+function organizer_get_allowed_printslotuserfields() {
+    $selectableprofilefields = organizer_printslotuserfields();
+    $selectedprofilefields = array();
+
     $organizerconfig = get_config('organizer');
     if (isset($organizerconfig->allowedprofilefieldsprint)) {
-        $allowedprofilefields = $organizerconfig->allowedprofilefieldsprint;
-        $allowedprofilefieldsarray = explode(",", $allowedprofilefields);
-        foreach ($profilefields as $key => $value) {
-            if (in_array ( $key, $allowedprofilefieldsarray )) {
-                $profilefields[$key] = organizer_filter_text($value);
+        $selectedprofilefields = array('' => '--');
+        if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
+            foreach ($selectableprofilefields as $key => $value) {
+                if (in_array($key, $allowedprofilefieldsprint)) {
+                    $selectedprofilefields[$key] = $value;
+                }
             }
         }
+    } else {
+        $selectedprofilefields[''] = '--';
+        $selectedprofilefields['lastname'] = get_string('lastname');
+        $selectedprofilefields['firstname'] = get_string('firstname');
+        $selectedprofilefields['email'] = get_string('email');
+        $selectedprofilefields['idnumber'] = get_string('idnumber');
+        $selectedprofilefields['attended'] = get_string('attended', 'organizer');
+        $selectedprofilefields['grade'] = get_string('grade');
+        $selectedprofilefields['feedback'] = get_string('feedback');
+        $selectedprofilefields['signature'] = get_string('signature', 'organizer');
     }
-
-    return $profilefields;
+    return $selectedprofilefields;
 }
 
 function organizer_fetch_printdetail_entries($slot) {
@@ -1834,7 +1803,7 @@ function organizer_add_event_appointment_strings($course, $organizer, $cm, $slot
     $a->courselink = html_writer::link(new moodle_url("/course/view.php?id={$course->id}"), $course->fullname);
     $a->organizername = organizer_filter_text($organizer->name);
     $a->organizerlink = html_writer::link(new moodle_url("/mod/organizer/view.php?id={$cm->id}"), $organizer->name);
-    $a->description =  $slot->comments;
+    $a->description = $slot->comments;
     if ($slot->locationlink) {
         $a->location = html_writer::link($slot->locationlink, $slot->location);
     } else {
@@ -1893,7 +1862,7 @@ function organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organ
                   WHERE t.slotid = :slotid AND t.trainerid = :trainerid";
     // Create new appointment event or update existent appointment event for trainers.
     if (!$teventid = $DB->get_field_sql($query, $params)) {
-        $teventid =  organizer_create_calendarevent(
+        $teventid = organizer_create_calendarevent(
             $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
             $trainerid, $slot->starttime, $slot->duration, 0, $appointment->id
         );
@@ -1913,7 +1882,7 @@ function organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organ
  * @param string $filename
  * @throws coding_exception
  */
-function organizer_format_and_print($mpdftable, $filename){
+function organizer_format_and_print($mpdftable, $filename) {
 
     $format = optional_param('format', 'pdf', PARAM_TEXT);
 

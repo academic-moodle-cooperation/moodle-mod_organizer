@@ -1,9 +1,8 @@
 CHANGELOG
 =========
 
-3.7.3 (2020-02-28)
-=======
-
+3.7.3 (2020-09-29)
+------------------
 * [FEATURE] #6109: github #44 Multi language processing of custom user profile fields is missing
 * [FEATURE] #6067: github #43 Data leak with feature "Print slot user fields"
 

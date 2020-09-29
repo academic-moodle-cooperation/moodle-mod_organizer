@@ -40,7 +40,7 @@ define('ORGANIZER_APP_STATUS_NOT_ATTENDED', 4);
 define('ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP', 5);
 define('ORGANIZER_APP_STATUS_NOT_REGISTERED', 6);
 /**
- * 
+ *
  * @param mixed $app
  * @return number|boolean
  */
@@ -64,7 +64,7 @@ function organizer_get_appointment_status($app) {
     return ($evaluated) & ($attended << 1) & ($pending << 2) & ($reapp << 3);
 }
 /**
- * 
+ *
  * @param mixed $app
  * @param string $status
  * @return boolean
