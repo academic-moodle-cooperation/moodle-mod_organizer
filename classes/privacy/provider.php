@@ -514,7 +514,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
 
             $organizerids[] = $records[$context->id]->id;
         }
-       if (empty($organizerids)) {
+        if (empty($organizerids)) {
             return;
         }
 

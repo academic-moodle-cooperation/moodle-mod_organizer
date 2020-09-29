@@ -444,7 +444,7 @@ class organizer_edit_slots_form extends moodleform
             $errors['notificationtimegroup'] = get_string('err_posint', 'organizer');
         }
 
-       $locationmandatory = get_config('organizer', 'locationmandatory');
+        $locationmandatory = get_config('organizer', 'locationmandatory');
 
         if ($data['mod_location'] != 0 && (!isset($data['location']) || $data['location'] === '')
             && $locationmandatory) {

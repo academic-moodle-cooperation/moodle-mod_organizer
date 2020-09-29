@@ -33,14 +33,14 @@ require_once(dirname(__FILE__) . '/lib.php');
 class organizer_assign_slot_form extends moodleform
 {
     /**
-     * 
+     *
      * {@inheritDoc}
      * @see moodleform::definition()
      */
     protected function definition() {
         $this->_sethiddenfields();
     }
-    
+
     /**
      * {@inheritDoc}
      * @see moodleform::definition_after_data()
@@ -136,7 +136,7 @@ class organizer_assign_slot_form extends moodleform
     /**
      * looks if the slot is free for the user
      * @param mixed $slot
-     * @param int $userid 
+     * @param int $userid
      * @return boolean
      */
     private function _organizer_slot_is_free($slot, $userid) {

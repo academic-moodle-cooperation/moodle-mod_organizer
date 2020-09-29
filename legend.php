@@ -207,7 +207,7 @@ function organizer_legend_regstatusline($output) {
  * @return string $output with the new line added.
  * @throws coding_exception
  */
-function organizer_legend_anonline($output){
+function organizer_legend_anonline($output) {
 
     $output .= html_writer::start_tag('tr');
     $output .= organizer_make_cell(

@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 class restore_organizer_activity_structure_step extends restore_activity_structure_step
 {
     /**
-     * 
+     *
      * {@inheritDoc}
      * @see restore_structure_step::define_structure()
      */
@@ -113,7 +113,7 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
         $this->set_mapping('appointment', $oldid, $newitemid);
     }
     /**
-     * 
+     *
      * {@inheritDoc}
      * @see restore_structure_step::after_execute()
      */
