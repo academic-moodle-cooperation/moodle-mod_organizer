@@ -58,14 +58,12 @@ define(
                 }
 
                 if (!instance.student) {
-                    if (showhiddenslots) {
-                        tablebody.find('tr.not_unavailable').hide();
+                    if (!showhiddenslots) {
+                        tablebody.find('tr.unavailable').hide();
                     }
                 }
 
-                if (showpastslots) {
-                    tablebody.find('tr.not_past_due').hide();
-                } else {
+                if (!showpastslots) {
                     tablebody.find('tr.past_due').hide();
                 }
 
