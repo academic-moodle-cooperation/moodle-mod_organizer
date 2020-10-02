@@ -453,9 +453,11 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
         $slots = $DB->get_records_sql($query, $sqlparams);
     }
 
-    $showpasttimeslots = get_user_preferences('mod_organizer_showpasttimeslots', true);
-    $showonlymyslots = get_user_preferences('mod_organizer_showmyslotsonly', false);
-    $showonlyfreeslots = get_user_preferences('mod_organizer_showfreeslotsonly', false);
+    $showpasttimeslots = false;
+    $showonlymyslots = false;
+    $showonlyfreeslots = false;
+    $showpastslots = false;
+    $showmyslotsonly = false;
 
     $rows = array();
     if (count($slots) != 0) {
@@ -608,9 +610,6 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
         foreach ($inforownames as $inforowname) {
             $defaultrow = $rows[] = new html_table_row();
             $defaultrow->attributes['class'] = "info $inforowname";
-
-            $showpastslots = get_user_preferences('mod_organizer_showpasttimeslots');
-            $showmyslotsonly = get_user_preferences('mod_organizer_showmyslotsonly');
 
             $defaultrow->cells[] = organizer_get_span_cell(get_string($inforowname, 'organizer'), count($columns));
 

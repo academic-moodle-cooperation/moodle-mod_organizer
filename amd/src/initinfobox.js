@@ -25,8 +25,7 @@
  */
 
 
-define(
-    ['jquery', 'core/config', 'core/log'], function($, config, log) {
+define(['jquery'], function($) {
 
         /**
      * @constructor
@@ -43,7 +42,7 @@ define(
             instance.student = param; // Is user student or not.
 
             // What happens when a view option checkbox is clicked or the filter field has been changed.
-            function toggle_all_slots(saveuserprefs) {
+            function toggle_all_slots() {
                 var tablebody = $('#slot_overview tbody');
                 var showpastslots = $('#show_past_slots').is(':checked');
                 var showmyslotsonly = $('#show_my_slots_only').is(':checked');
@@ -108,16 +107,6 @@ define(
                 tablebody.show();
 
                 toggle_info();
-
-                if (saveuserprefs) {
-                    set_user_preference('mod_organizer_showhiddenslots', (showhiddenslots));
-                    if (!instance.student) {
-                        set_user_preference('mod_organizer_showmyslotsonly', (showmyslotsonly));
-                    }
-                    set_user_preference('mod_organizer_showfreeslotsonly', (showfreeslotsonly));
-                    set_user_preference('mod_organizer_showpasttimeslots', (showpastslots));
-                    set_user_preference('mod_organizer_showregistrationsonly', (showregistrationsonly));
-                }
             }
 
             function toggle_info() {
@@ -167,28 +156,14 @@ define(
                 return text;
             }
 
-            $('#show_past_slots').on('click', function() { toggle_all_slots(true); });
-            $('#show_my_slots_only').on('click', function() { toggle_all_slots(true); });
-            $('#show_free_slots_only').on('click', function() { toggle_all_slots(true); });
-            $('#show_hidden_slots').on('click', function() { toggle_all_slots(true); });
-            $('#show_registrations_only').on('click', function() { toggle_all_slots(true); });
-            $('.organizer_filtertable').on('keyup', function() { toggle_all_slots(true); });
+            $('#show_past_slots').on('click', function() { toggle_all_slots(); });
+            $('#show_my_slots_only').on('click', function() { toggle_all_slots(); });
+            $('#show_free_slots_only').on('click', function() { toggle_all_slots(); });
+            $('#show_hidden_slots').on('click', function() { toggle_all_slots(); });
+            $('#show_registrations_only').on('click', function() { toggle_all_slots(); });
+            $('.organizer_filtertable').on('keyup', function() { toggle_all_slots(); });
 
-            toggle_all_slots(false);
-
-            function set_user_preference(name, value) {
-
-                $.get(config.wwwroot + '/lib/ajax/setuserpref.php', {
-                    sesskey: config.sesskey,
-                    pref: encodeURI(name),
-                    value: encodeURI(value)
-                }, 'json').done(function(data) {
-                    if (data != 'OK') {
-                        log.error(data);
-                    }
-                });
-
-            }
+            toggle_all_slots();
         };
 
         return instance;
