@@ -75,12 +75,6 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     // Display search field for fulltext search.
     $output .= organizer_make_filtersection();
 
-    user_preference_allow_ajax_update('mod_organizer_showpasttimeslots', PARAM_BOOL);
-    user_preference_allow_ajax_update('mod_organizer_showmyslotsonly', PARAM_BOOL);
-    user_preference_allow_ajax_update('mod_organizer_showfreeslotsonly', PARAM_BOOL);
-    user_preference_allow_ajax_update('mod_organizer_showhiddenslots', PARAM_BOOL);
-    user_preference_allow_ajax_update('mod_organizer_showregistrationsonly', PARAM_BOOL);
-
     $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams->studentview));
 
     return $output;
@@ -218,34 +212,24 @@ function organizer_make_slotoptions_section($params) {
     $displayfreeslots = $displaypastslots = $params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW;
     $displayregistrationsonly = true;
 
-    $pref = get_user_preferences('mod_organizer_showmyslotsonly', false);
     $output .= '<span' . ($displaymyslotsonly ? '' : ' style="display: none;" ') . '>' .
-                '<input type="checkbox" id="show_my_slots_only" ' .
-                ($pref ? 'checked="true" ' : '') . ' /> ' .
+                '<input type="checkbox" id="show_my_slots_only" /> ' .
                 get_string('infobox_showmyslotsonly', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
 
-    $pref = get_user_preferences('mod_organizer_showfreeslotsonly', false);
     $output .= '<span' . ($displayfreeslots ? '' : ' style="display: none;" ') . '>' .
-            '<input type="checkbox" id="show_free_slots_only" ' .
-            ($pref ? 'checked="true" ' : '') . ' /> ' .
+            '<input type="checkbox" id="show_free_slots_only"  /> ' .
             get_string('infobox_showfreeslots', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
 
-    $pref = get_user_preferences('mod_organizer_showhiddenslots', false);
     $output .= '<span' . ($displayhiddenslots ? '' : ' style="display: none;" ') . '>' .
-        '<input type="checkbox" id="show_hidden_slots" ' .
-        ($pref ? 'checked="true" ' : '') . ' /> ' .
+        '<input type="checkbox" id="show_hidden_slots" /> ' .
         get_string('infobox_showhiddenslots', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
 
-    $pref = get_user_preferences('mod_organizer_showpasttimeslots', false);
     $output .= '<span' . ($displaypastslots ? '' : ' style="display: none;" ') . '>' .
-                '<input type="checkbox" id="show_past_slots" ' .
-                ($pref ? 'checked="true" ' : '') . ' /> ' .
+                '<input type="checkbox" id="show_past_slots" /> ' .
                 get_string('infobox_showslots', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
 
-    $pref = get_user_preferences('mod_organizer_showregistrationsonly', false);
     $output .= '<span' . ($displayregistrationsonly ? '' : ' style="display: none;" ') . '>' .
-        '<input type="checkbox" id="show_registrations_only" ' .
-        ($pref ? 'checked="true" ' : '') . ' /> ' .
+        '<input type="checkbox" id="show_registrations_only" /> ' .
         get_string('infobox_showregistrationsonly', 'organizer') . '</span>';
 
     $output .= '</div>';
