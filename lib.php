@@ -598,6 +598,7 @@ function organizer_get_counters($organizer) {
 
 function organizer_get_eventaction_instance_trainer($organizer) {
 
+    return ""; // This is a temporary hotfix!
     $a = organizer_get_counters($organizer);
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         if ($a->attended == 0) {
