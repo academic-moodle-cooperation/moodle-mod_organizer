@@ -555,6 +555,12 @@ function organizer_get_last_group_appointment($organizer, $groupid) {
 function organizer_get_counters($organizer) {
     global $DB;
 
+    // Remember results for subsequent calls.
+    static $cache = [];
+    if (array_key_exists($organizer->id, $cache)) {
+        return $cache[$organizer->id];
+    }
+
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
         $params = array('groupingid' => $cm->groupingid);
@@ -605,6 +611,7 @@ function organizer_get_counters($organizer) {
         $a->total = $total;
     }
 
+    $cache[$organizer->id] = $a;
     return $a;
 }
 
