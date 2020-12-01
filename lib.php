@@ -597,8 +597,6 @@ function organizer_get_counters($organizer) {
 }
 
 function organizer_get_eventaction_instance_trainer($organizer) {
-
-    return ""; // This is a temporary hotfix!
     $a = organizer_get_counters($organizer);
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         if ($a->attended == 0) {
@@ -1020,36 +1018,7 @@ function organizer_remove_waitingqueueentries($organizer) {
 function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
     \core_calendar\action_factory $factory
 ) {
-    global $DB;
-
-    $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
-    $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
-    $context = context_module::instance($cm->id, MUST_EXIST);
-    if (has_capability('mod/organizer:viewallslots', $context)) {
-        $name = organizer_get_eventaction_instance_trainer($organizer);
-    } else {
-        $name = organizer_get_eventaction_instance_student($organizer);
-    }
-
-    if ($name) {
-        $url = new \moodle_url(
-            '/mod/organizer/view.php', [
-                'id' => $cm->id,
-                'action' => 'show'
-            ]
-        );
-        $itemcount = 1;
-        $actionable = true;
-
-        return $factory->create_instance(
-            $name,
-            $url,
-            $itemcount,
-            $actionable
-        );
-    } else {
-        return false;
-    }
+    return null;
 }
 
 /**
