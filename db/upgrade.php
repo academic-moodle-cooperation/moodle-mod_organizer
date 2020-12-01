@@ -41,24 +41,6 @@ function xmldb_organizer_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2012081404) {
-
-        // Changing precision of field grade on table organizer to (10, 5).
-        $table = new xmldb_table('organizer_slot_appointments');
-        $field = new xmldb_field(
-            'grade', XMLDB_TYPE_NUMBER, '10, 5', null, null, null, null,
-            'attended'
-        );
-
-        // Launch change of precision, sign and the default value for field grade.
-        $dbman->change_field_precision($table, $field);
-        $dbman->change_field_unsigned($table, $field);
-        $dbman->change_field_default($table, $field);
-
-        // Organizer savepoint reached.
-        upgrade_mod_savepoint(true, 2012081404, 'organizer');
-    }
-
     if ($oldversion < 2012081401) {
 
         // Changing precision of field grade on table organizer to (10, 5).
