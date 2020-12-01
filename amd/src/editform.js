@@ -63,22 +63,6 @@ define(
 
             var initialstate;
 
-            function toggle_hidden_field(e) {
-                var target = $(e.target);
-                if (typeof initialstate == 'undefined') {
-                    initialstate = target.is(':checked');
-                }
-                $('[id^=mform1] [name^=availablefrom]:not([name*=now])').attr('disabled', target.is(':checked'));
-                if (target.is(':checked')) {
-                    target.parent.append('<input type="hidden" name="availablefrom" value="0"></input>');
-                } else {
-                    var hidden = $('[id^=mform1] input[name=availablefrom]');
-                    if (hidden) {
-                        hidden.remove();
-                    }
-                }
-            }
-
             function reset_edit_form() {
                 reset_modfields();
                 reset_icons_warning();
@@ -97,7 +81,6 @@ define(
 
             $('[id^=mform1]').find('select, input[type=checkbox]').on('change', detect_change);
             $('[id^=mform1]').find('input[type=text], textarea').on('keydown', detect_change);
-            $('#id_availablefrom_now').on('change', toggle_hidden_field);
             $('#id_editreset').on('click', reset_edit_form);
 
         };

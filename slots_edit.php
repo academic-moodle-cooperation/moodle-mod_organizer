@@ -65,8 +65,7 @@ if (!$slots) {
 }
 
 $mform = new organizer_edit_slots_form(
-    null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots), 'post', '', array('name' => 'form_edit')
-);
+    null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
 if ($data = $mform->get_data()) {
     $slotids = organizer_update_slot($data);
