@@ -178,7 +178,12 @@ class organizer_add_slots_form extends moodleform
             ), 'notificationtime'
         );
         $mform->addHelpButton('availablefromgroup', 'availablefrom', 'organizer');
-        $mform->disabledif ('availablefrom', 'now', 'checked');
+        $mform->disabledIf('availablefrom[number]', 'now', 'checked');
+        $mform->disabledIf('availablefrom[timeunit]', 'now', 'checked');
+
+        $availablefromgroup = $mform->getElement('availablefromgroup')->getElements();
+        $availablefrom = $availablefromgroup[0]->getElements();
+        $availablefrom[1]->removeOption(1);
 
         $mform->addElement('header', 'slotperiod', get_string('slotperiodheader', 'organizer'));
         $mform->addHelpButton('slotperiod', 'slotperiodheader', 'organizer');
@@ -591,8 +596,6 @@ class organizer_add_slots_form extends moodleform
         if (!ORGANIZER_USE_SCROLL_FIX) {
             return;
         }
-
-        $PAGE->requires->js_call_amd('mod_organizer/addform', 'init', array(false));
 
         $mform = &$this->_form;
 

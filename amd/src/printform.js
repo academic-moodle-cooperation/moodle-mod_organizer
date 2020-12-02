@@ -16,7 +16,7 @@
 /**
  * @package mod
  * @subpackage organizer
- * @copyright 2017 Thomas Niedermaier (thomas.niedermaier@gmail.com)
+ * @copyright 2020 Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

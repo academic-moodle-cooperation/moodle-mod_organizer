@@ -48,7 +48,7 @@ use core_privacy\local\request\approved_userlist;
  * @copyright  2018 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements metadataprovider, pluginprovider, preference_provider, core_userlist_provider
+class provider implements metadataprovider, pluginprovider, core_userlist_provider
 {
     /**
      * Provides meta data that is stored about a user with mod_organizer
@@ -83,15 +83,6 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
             'privacy:metadata:organizerslotqueues');
         $collection->add_database_table('organizer_slot_trainer', $organizerslottrainer,
             'privacy:metadata:organizerslottrainer');
-
-        $collection->add_user_preference('mod_organizer_showhiddenslots',
-            'privacy:metadata:showhiddenslots');
-        $collection->add_user_preference('mod_organizer_showmyslotsonly',
-            'privacy:metadata:showmyslotsonly');
-        $collection->add_user_preference('mod_organizer_showfreeslotsonly',
-            'privacy:metadata:showfreeslotsonly');
-        $collection->add_user_preference('mod_organizer_showpasttimeslots',
-            'privacy:metadata:showpasttimeslots');
 
         return $collection;
     }
@@ -228,31 +219,6 @@ class provider implements metadataprovider, pluginprovider, preference_provider,
      */
     public static function export_user_preferences(int $userid) {
         $context = \context_system::instance();
-        $value = get_user_preferences('mod_organizer_showhiddenslots', null, $userid);
-        if ($value !== null) {
-            writer::with_context($context)->export_user_preference('mod_organizer', 'mod_organizer_showhiddenslots', $value,
-                get_string('privacy:metadata:showhiddenslots', 'mod_organizer'));
-        }
-        $value = get_user_preferences('mod_organizer_showmyslotsonly', null, $userid);
-        if ($value !== null) {
-            writer::with_context($context)->export_user_preference('mod_organizer', 'mod_organizer_showmyslotsonly', $value,
-                get_string('privacy:metadata:showmyslotsonly', 'mod_organizer'));
-        }
-        $value = get_user_preferences('mod_organizer_showfreeslotsonly', null, $userid);
-        if ($value !== null) {
-            writer::with_context($context)->export_user_preference('mod_organizer', 'mod_organizer_showfreeslotsonly', $value,
-                get_string('privacy:metadata:showfreeslotsonly', 'mod_organizer'));
-        }
-        $value = get_user_preferences('mod_organizer_showpasttimeslots', null, $userid);
-        if ($value !== null) {
-            writer::with_context($context)->export_user_preference('mod_organizer', 'mod_organizer_showpasttimeslots', $value,
-                get_string('privacy:metadata:showpasttimeslots', 'mod_organizer'));
-        }
-        $value = get_user_preferences('mod_organizer_showregistrationsonly', null, $userid);
-        if ($value !== null) {
-            writer::with_context($context)->export_user_preference('mod_organizer', 'mod_organizer_showregistrationsonly', $value,
-                get_string('privacy:metadata:showpasttimeslots', 'mod_organizer'));
-        }
     }
 
     /**
