@@ -1007,6 +1007,7 @@ function organizer_remove_waitingqueueentries($organizer) {
 
 /**
  * This function receives a calendar event and returns the action associated with it, or null if there is none.
+ * HOWEVER, due to significant performance issues, it always returns null.
  *
  * This is used by block_myoverview in order to display the event appropriately. If null is returned then the event
  * is not displayed on the block.
@@ -1018,6 +1019,7 @@ function organizer_remove_waitingqueueentries($organizer) {
 function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
     \core_calendar\action_factory $factory
 ) {
+    // Due to significant performance issues, it always returns null!
     return null;
 }
 
