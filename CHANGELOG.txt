@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.10.1 (2021-04-14)
+------------------
+* [FIXED] #6848: github #90 - fix request uri too long when creating/editing many slots
+* [FIXED] #6849: github #84 - fix usage of undefined function fullusername
+
 3.10.0 (2020-12-01)
 ------------------
 * Moodle 3.10 compatible version
