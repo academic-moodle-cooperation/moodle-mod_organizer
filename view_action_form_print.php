@@ -217,9 +217,8 @@ class organizer_print_slots_form extends moodleform
                 $url .= '&tsort=' . $column;
             }
 
-            foreach ($data['slots'] as $slot) {
-                $url .= "&slots[]=" . $slot;
-            }
+            $slotids = implode(',', array_values($data['slots']));
+            $url .= '&slots=' . $slotids;
 
             $linkarray = array('name' => $column . '_cell');
 

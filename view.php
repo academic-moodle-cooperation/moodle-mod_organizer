@@ -179,7 +179,7 @@ function organizer_load_params($instance) {
         break;
     }
 
-    $params['slots'] = optional_param_array('slots', array(), PARAM_INT);
+    $params['slots'] = organizer_get_param_slots();
     $params['pdir'] = optional_param('pdir', 'ASC', PARAM_ALPHA);
     $params['psort'] = optional_param('psort', 'name', PARAM_ALPHA);
     $params['dir'] = optional_param('dir', 'ASC', PARAM_ALPHA);
