@@ -299,7 +299,7 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
 
             switch ($column) {
                 case 'fullnameuser':
-                    $content = fullusername($entry->id);
+                    $content = fullname($entry);
                     $row[] = array('data' => $content);
                     break;
                 case 'lastname':
