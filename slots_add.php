@@ -32,7 +32,7 @@ require_once(dirname(__FILE__) . '/view_lib.php');
 $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $slot = optional_param('slot', null, PARAM_INT);
-$slots = optional_param_array('slots', array(), PARAM_INT);
+$slots = organizer_get_param_slots();
 
 list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
@@ -68,10 +68,7 @@ if ($data = $mform->get_data()) {  // When page is called the first time (=empty
                 $redirecturl->param('messages[]', 'message_info_slots_added_pl');
             }
 
-            $redirecturl = $redirecturl->out();
-            foreach ($slotids as $slotid) {
-                $redirecturl .= '&slots[]=' . $slotid;
-            }
+            $redirecturl->param('slots', implode(',', array_values($slotids)));
         }
         if ($messages) {
             redirect($redirecturl, $messages, 10);

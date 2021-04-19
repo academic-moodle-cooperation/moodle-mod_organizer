@@ -1973,3 +1973,22 @@ function organizer_get_registrationview_entries($groupmode, $params) {
     }
     return $entries;
 }
+
+
+/**
+ * Obtains slots parameters if present
+ *
+ * @return array slots
+ */
+function organizer_get_param_slots() {
+    $slots = [];
+    if (isset($_REQUEST['slots'])) { // Dirty, dirty hack...
+        if (is_array($_REQUEST['slots'])) {
+            $slots = optional_param_array('slots', [], PARAM_INT);
+        } else {
+            $slots = optional_param('slots', '', PARAM_SEQUENCE);
+            $slots = explode(',', $slots);
+        }
+    }
+    return $slots;
+}

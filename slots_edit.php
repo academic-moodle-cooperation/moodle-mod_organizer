@@ -39,7 +39,7 @@ $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
-$slots = optional_param_array('slots', null, PARAM_INT);
+$slots = organizer_get_param_slots();
 $app = optional_param('app', null, PARAM_INT);
 $tsort = optional_param('tsort', null, PARAM_ALPHA);
 
@@ -73,10 +73,8 @@ if ($data = $mform->get_data()) {
     organizer_prepare_and_send_message($data, 'edit_notify_teacher');
     organizer_prepare_and_send_message($data, 'edit_notify_student'); // Message.
 
+    $redirecturl->param('slots', implode(',', array_values($slotids)));
     $newurl = $redirecturl->out();
-    foreach ($slotids as $slotid) {
-        $newurl .= '&slots[]=' . $slotid;
-    }
 
     $event = \mod_organizer\event\slot_updated::create(
         array(

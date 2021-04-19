@@ -52,7 +52,7 @@ $action = optional_param('action', null, PARAM_ALPHA);
 $bulkaction = optional_param('bulkaction', null, PARAM_ALPHA);
 $user = optional_param('user', null, PARAM_INT);
 $slot = optional_param('slot', null, PARAM_INT);
-$slots = optional_param_array('slots', array(), PARAM_INT);
+$slots = organizer_get_param_slots();
 $app = optional_param('app', null, PARAM_INT);
 $tsort = optional_param('tsort', null, PARAM_ALPHA);
 
@@ -76,42 +76,40 @@ if ($bulkaction) {
         // If an action is chosen but no slots were selected: redirect with message.
         redirect($redirecturl->out(), get_string('message_warning_no_slots_selected', 'organizer'), 5);
     } else {
-        $slotsarray = "";
-        foreach ($slots as $slot) {
-            $slotsarray .= "&slots[]=".$slot;
-        }
+        $slotids = implode(',', array_values($slots));
+
         $organizerexpired = isset($organizer->duedate) && $organizer->duedate - time() < 0;
         switch($bulkaction) {
             case 'edit':
                 require_capability('mod/organizer:editslots', $context);
                 $redirecturl = new moodle_url(
                 '/mod/organizer/slots_edit.php',
-                array('id' => $cm->id, 'mode' => $mode)
-                    ) . $slotsarray;
+                array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids)
+                    );
                     redirect($redirecturl);
             break;
             case 'delete':
                 require_capability('mod/organizer:deleteslots', $context);
                 $redirecturl = new moodle_url(
                 '/mod/organizer/slots_delete.php',
-                array('id' => $cm->id, 'mode' => $mode)
-                    ) . $slotsarray;
+                array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids)
+                    );
                     redirect($redirecturl);
             break;
             case 'print':
                 require_capability('mod/organizer:printslots', $context);
                 $redirecturl = new moodle_url(
                 '/mod/organizer/slots_print.php',
-                array('id' => $cm->id, 'mode' => $mode)
-                    ) . $slotsarray;
+                array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids)
+                    );
                     redirect($redirecturl);
             break;
             case 'eval':
                 require_capability('mod/organizer:evalslots', $context);
                 $redirecturl = new moodle_url(
                 '/mod/organizer/slots_eval.php',
-                array('id' => $cm->id, 'mode' => $mode)
-                    ) . $slotsarray;
+                array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids)
+                    );
                     redirect($redirecturl);
             break;
             default:
