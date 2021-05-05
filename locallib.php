@@ -841,17 +841,12 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
     }
 
     if ($sendmessage) {
-        $mail = get_mailer();
-        $mail->Subject = get_string('queuesubject', 'organizer');
-        $mail->Body = get_string('queuebody', 'organizer');
         $trainers = organizer_get_slot_trainers($slot->get_slot()->id);
         if ($slot->get_slot()->teachervisible && !empty($trainers)) {
             $trainerid = reset($trainers);
-            $trainer = $DB->get_record('user', array('id' => $trainerid));
-            $mail->From = $trainer->email;
-            $mail->FromName = fullname($trainer);
+            $from = core_user::get_user($trainerid);
         } else {
-            $mail->From = $CFG->noreplyaddress;
+            $from = core_user::get_noreply_user();
         }
     }
 
@@ -863,10 +858,11 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
         foreach ($memberids as $memberid) {
             if ($ok = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid,
                 $teacherapplicantid, $generatetrainerevents, null, $organizer->id)) {
-                $address = $DB->get_field('user', 'email', array('id' => $memberid));
-                if (isset($mail) && $mail) {
-                    $mail->addAddress($address);
-                    $mail->send();
+                if ($sendmessage) {
+                    $receiver = core_user::get_user($memberid);
+                    /* Here we have some overlap with functions organizer_send_message_from_trainer,
+                     * but they don't fit exactly for our usecase. */
+                    organizer_send_message($from, $receiver, $slot, 'register_promotion_student');
                 }
                 $generatetrainerevents = false;
             }
@@ -874,10 +870,11 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
     } else {
         if ($ok = organizer_register_single_appointment($slotid, $userid, 0, 0,
             $teacherapplicantid, true, null, $organizer->id)) {
-            $address = $DB->get_field('user', 'email', array('id' => $userid));
-            if (isset($mail) && $mail) {
-                $mail->addAddress($address);
-                $mail->send();
+            if ($sendmessage) {
+                $receiver = core_user::get_user($userid);
+                /* Here we have some overlap with functions organizer_send_message_from_trainer,
+                 * but they don't fit exactly for our usecase. */
+                organizer_send_message($from, $receiver, $slot, 'register_promotion_student');
             }
         }
     }

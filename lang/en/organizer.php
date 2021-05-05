@@ -439,6 +439,7 @@ $string['messageprovider:register_notify_teacher_register'] = 'Organizer registr
 $string['messageprovider:register_notify_teacher_unregister'] = 'Organizer unsubscription notification';
 $string['messageprovider:register_notify_teacher_reregister'] = 'Organizer re-registration notification';
 $string['messageprovider:group_registration_notify_student'] = 'Organizer groupregistration notification';
+$string['messageprovider:register_promotion_student'] = 'Organizer promoted from queue notification';
 $string['messageprovider:register_reminder_student'] = 'Organizer registration reminder';
 $string['messageprovider:edit_notify_student'] = 'Organizer changes';
 $string['messageprovider:edit_notify_teacher'] = 'Organizer changes (Teacher)';
@@ -724,6 +725,11 @@ Comments:
 
 Moodle Messaging System';
 $string['edit_notify_teacher:group:smallmessage'] = 'The details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.';
+
+// Registered by promotion from queue.
+$string['register_promotion_student:subject'] = 'Moodle Organizer: Promoted from queue';
+$string['register_promotion_student:fullmessage'] = 'Your registration for a timeslot has been promoted from status "waiting list" to status "booked".';
+$string['register_promotion_student:smallmessage'] = 'Your registration for a timeslot has been promoted from status "waiting list" to status "booked".';
 
 // Register reminder student.
 
@@ -1072,8 +1078,6 @@ $string['timeshift'] = 'Shifting absolute deadline';
 $string['queue'] = 'Waiting queues';
 $string['queue_help'] = 'Waiting queues allow users to register to a time slot even if the maximum number of participants is already reached.
 		Users are added to a waiting queue and assigned to the slot (in order) as soon as a slot becomes available.';
-$string['queuesubject'] = 'Moodle Organizer: Promoted from queue';
-$string['queuebody'] = 'Your registration for a timeslot has been promoted from status "waiting list" to status "booked".';
 $string['eventqueueadded'] = 'Added to waiting list';
 $string['eventqueueremoved'] = 'Removed from waiting list';
 
@@ -1180,3 +1184,7 @@ $string['locationsettings'] = 'Slot location settings';
 
 $string['filtertable'] = '\'Searching this table\'';
 $string['filtertable_help'] = 'Search these slots for mutual strings here.';
+
+// Deprecated
+$string['queuesubject'] = 'Moodle Organizer: Promoted from queue';
+$string['queuebody'] = 'Your registration for a timeslot has been promoted from status "waiting list" to status "booked".';
