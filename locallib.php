@@ -1762,7 +1762,7 @@ function organizer_fetch_printdetail_entries($slot) {
                     u.description
                     FROM {organizer_slots} s
                     LEFT JOIN {organizer_slot_appointments} a ON a.slotid = s.id
-                    LEFT JOIN {user} u ON a.userid = u.id   
+                    LEFT JOIN {user} u ON a.userid = u.id
                     $socialjoin
                     LEFT JOIN {groups} g ON a.groupid = g.id
                     WHERE s.id = :slotid
