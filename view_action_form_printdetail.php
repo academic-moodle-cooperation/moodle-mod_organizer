@@ -191,7 +191,7 @@ class organizer_print_slotdetail_form extends moodleform
                     $cell = new html_table_cell(organizer_filter_text(get_string('attended', 'organizer')));
                     break;
                 case 'grade':
-                    $cell = new html_table_cell(organizer_filter_text(get_string('grade')));
+                    $cell = new html_table_cell(organizer_filter_text(get_string('grade', 'grades')));
                     break;
                 case 'feedback':
                     $cell = new html_table_cell(organizer_filter_text(get_string('feedback')));
@@ -216,23 +216,23 @@ class organizer_print_slotdetail_form extends moodleform
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'icq':
-                                $name = organizer_filter_text(get_string('icqnumber', 'moodle'));
+                                $name = organizer_filter_text(get_string('icqnumber', 'profilefield_social'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'skype':
-                                $name = organizer_filter_text(get_string('skypeid', 'moodle'));
+                                $name = organizer_filter_text(get_string('skypeid', 'profilefield_social'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'yahoo':
-                                $name = organizer_filter_text(get_string('yahooid', 'moodle'));
+                                $name = organizer_filter_text(get_string('yahooid', 'profilefield_social'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'aim':
-                                $name = organizer_filter_text(get_string('aimid', 'moodle'));
+                                $name = organizer_filter_text(get_string('aimid', 'profilefield_social'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'msn':
-                                $name = organizer_filter_text(get_string('msnid', 'moodle'));
+                                $name = organizer_filter_text(get_string('msnid', 'profilefield_social'));
                                 $cell = new html_table_cell($name);
                                 break;
                             case 'phone1':
