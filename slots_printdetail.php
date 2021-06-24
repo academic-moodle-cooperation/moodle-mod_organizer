@@ -157,7 +157,7 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;
             case 'grade':
-                $titles[] = organizer_filter_text(get_string('grade'));
+                $titles[] = organizer_filter_text(get_string('grade', 'grades'));
                 $columnwitdh[] = array('value' => 12, 'mode' => 'Relativ');
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;
@@ -187,27 +187,27 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'icq':
-                            $titles[] = organizer_filter_text(get_string('icqnumber', 'moodle'));
+                            $titles[] = organizer_filter_text(get_string('icqnumber', 'profilefield_social'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'skype':
-                            $titles[] = organizer_filter_text(get_string('skypeid', 'moodle'));
+                            $titles[] = organizer_filter_text(get_string('skypeid', 'profilefield_social'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'yahoo':
-                            $titles[] = organizer_filter_text(get_string('yahooid', 'moodle'));
+                            $titles[] = organizer_filter_text(get_string('yahooid', 'profilefield_social'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'aim':
-                            $titles[] = organizer_filter_text(get_string('aimid', 'moodle'));
+                            $titles[] = organizer_filter_text(get_string('aimid', 'profilefield_social'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;
                         case 'msn':
-                            $titles[] = organizer_filter_text(get_string('msnid', 'moodle'));
+                            $titles[] = organizer_filter_text(get_string('msnid', 'profilefield_social'));
                             $columnwitdh[] = array('value' => 48, 'mode' => 'Relativ');
                             $columnformats[] = array('fill' => 0, 'align' => 'C');
                             break;

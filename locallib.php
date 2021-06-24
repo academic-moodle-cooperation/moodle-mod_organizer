@@ -1667,15 +1667,15 @@ function organizer_printslotuserfields($nochoiceoption=false) {
     $profilefields['email'] = organizer_filter_text(get_string('email'));
     $profilefields['idnumber'] = organizer_filter_text(get_string('idnumber'));
     $profilefields['attended'] = organizer_filter_text(get_string('attended', 'organizer'));
-    $profilefields['grade'] = organizer_filter_text(get_string('grade'));
+    $profilefields['grade'] = organizer_filter_text(get_string('grade', 'grades'));
     $profilefields['feedback'] = organizer_filter_text(get_string('feedback'));
     $profilefields['signature'] = organizer_filter_text(get_string('signature', 'organizer'));
     $profilefields['fullnameuser'] = organizer_filter_text(get_string('fullnameuser', 'moodle'));
-    $profilefields['icq'] = organizer_filter_text(get_string('icqnumber', 'moodle'));
-    $profilefields['skype'] = organizer_filter_text(get_string('skypeid', 'moodle'));
-    $profilefields['yahoo'] = organizer_filter_text(get_string('yahooid', 'moodle'));
-    $profilefields['aim'] = organizer_filter_text(get_string('aimid', 'moodle'));
-    $profilefields['msn'] = organizer_filter_text(get_string('msnid', 'moodle'));
+    $profilefields['icq'] = organizer_filter_text(get_string('icqnumber', 'profilefield_social'));
+    $profilefields['skype'] = organizer_filter_text(get_string('skypeid', 'profilefield_social'));
+    $profilefields['yahoo'] = organizer_filter_text(get_string('yahooid', 'profilefield_social'));
+    $profilefields['aim'] = organizer_filter_text(get_string('aimid', 'profilefield_social'));
+    $profilefields['msn'] = organizer_filter_text(get_string('msnid', 'profilefield_social'));
     $profilefields['phone1'] = organizer_filter_text(get_string('phone1', 'moodle'));
     $profilefields['phone2'] = organizer_filter_text(get_string('phone2', 'moodle'));
     $profilefields['institution'] = organizer_filter_text(get_string('institution', 'moodle'));
@@ -1715,7 +1715,7 @@ function organizer_get_allowed_printslotuserfields() {
         $selectedprofilefields['email'] = get_string('email');
         $selectedprofilefields['idnumber'] = get_string('idnumber');
         $selectedprofilefields['attended'] = get_string('attended', 'organizer');
-        $selectedprofilefields['grade'] = get_string('grade');
+        $selectedprofilefields['grade'] = get_string('grade', 'grades');
         $selectedprofilefields['feedback'] = get_string('feedback');
         $selectedprofilefields['signature'] = get_string('signature', 'organizer');
     }
@@ -1725,7 +1725,21 @@ function organizer_get_allowed_printslotuserfields() {
 function organizer_fetch_printdetail_entries($slot) {
     global $DB;
 
-    $params = array('slotid' => $slot);
+    $params = ['slotid' => $slot];
+
+    $socialfields = ['icq', 'skype', 'yahoo', 'msn', 'aim'];
+    $socialfields = $DB->get_records_list('user_info_field', 'shortname', $socialfields);
+    $socialselect = '';
+    $socialjoin = '';
+    foreach ($socialfields as $socialfield) {
+        $tablename = 'u_' . $socialfield->shortname;
+        $fieldname = $socialfield->shortname;
+        $paramname = 'u_' . $fieldname . '_fieldid';
+        $socialselect .= "$tablename.data AS $fieldname, ";
+        $socialjoin .= "LEFT JOIN {user_info_data} $tablename ON $tablename.userid = a.userid AND $tablename.fieldid = :$paramname";
+        $params[$paramname] = $socialfield->id;
+    }
+
     $query = "SELECT u.id,
                     u.firstname,
                     u.lastname,
@@ -1735,11 +1749,7 @@ function organizer_fetch_printdetail_entries($slot) {
                     a.grade,
                     a.feedback,
                     g.name AS groupname,
-                    u.icq,
-                    u.skype,
-                    u.yahoo,
-                    u.aim,
-                    u.msn,
+                    $socialselect
                     u.phone1,
                     u.phone2,
                     u.institution,
@@ -1753,11 +1763,11 @@ function organizer_fetch_printdetail_entries($slot) {
                     FROM {organizer_slots} s
                     LEFT JOIN {organizer_slot_appointments} a ON a.slotid = s.id
                     LEFT JOIN {user} u ON a.userid = u.id
+                    $socialjoin
                     LEFT JOIN {groups} g ON a.groupid = g.id
                     WHERE s.id = :slotid
                     ORDER BY lastname, firstname
                   ";
-
     return $DB->get_records_sql($query, $params);
 }
 

@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.11.0 (2021-06-23)
+-------------------
+* Moodle 3.11 compatible version
+
 3.10.1 (2021-04-14)
 ------------------
 * [FIXED] #6848: github #90 - fix request uri too long when creating/editing many slots
