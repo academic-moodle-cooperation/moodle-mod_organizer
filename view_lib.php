@@ -982,7 +982,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 }
                                 if ($queueable) {
                                     $list .= "<span style='display:table-cell'>" .
-                                        organizer_reg_waitinglist_status($organizer->id, $member, $groupmode)
+                                        organizer_reg_waitinglist_status($organizer->id, $groupmode, $member)
                                         . "</span>";
                                 }
                                 $list .= "<span style='display:table-cell'>" .
@@ -1089,7 +1089,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                     break;
                     case 'appdetails':
                         if ($queueable) {
-                            $outcell = organizer_reg_waitinglist_status($organizer->id, 0, $groupmode);
+                            $outcell = organizer_reg_waitinglist_status($organizer->id, $groupmode, 0);
                         } else {
                             $outcell = '';
                         }
@@ -1379,7 +1379,7 @@ function organizer_reg_organizer_app_details($organizer, $userid, $groupmode) {
     return $list;
 }
 
-function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupmode) {
+function organizer_reg_waitinglist_status($organizerid, $groupmode, $userid = 0) {
     global $DB;
 
     $list = "";
