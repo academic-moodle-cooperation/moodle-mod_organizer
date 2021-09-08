@@ -696,7 +696,6 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2021062301) {
-
         $table = new xmldb_table('organizer');
         $field = new xmldb_field('visibility', XMLDB_TYPE_INTEGER, '4', null, false, null, '1', 'queue');
         $dbman->change_field_default($table, $field);
@@ -707,7 +706,6 @@ function xmldb_organizer_upgrade($oldversion) {
         $dbman->change_field_notnull($table, $field);
         $field = new xmldb_field('duration', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'starttime');
         $dbman->change_field_notnull($table, $field);
-
 
         upgrade_mod_savepoint(true, 2021062301, 'organizer');
     }
