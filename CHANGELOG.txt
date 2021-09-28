@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+3.9.2 (2021-09-28)
+------------------
+* [FEATURE] #7014: github #96 - use message API to send messages (Philipp Hager)
+
+
 3.9.1 (2020-10-02)
 ------------------
 * [FIXED] #6760: fix confusing slots filtering options
