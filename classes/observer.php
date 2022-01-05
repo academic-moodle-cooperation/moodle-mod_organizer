@@ -75,7 +75,7 @@ class mod_organizer_observer {
                                 organizer_delete_from_queue($slot->id, $next->userid);
                             }
                         }
-                        //TODO: Handle group mode? Is it even possible???
+                        // TODO: Handle group mode? Is it even possible???
                         /*
                             if ($organizer->isgrouporganizer== ORGANIZER_GROUPMODE_EXISTINGGROUP) {
                                 if ($next = $slotx->get_next_in_queue_group()) {
