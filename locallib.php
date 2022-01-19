@@ -1123,6 +1123,7 @@ function organizer_unregister_single_appointment($slotid, $userid, $organizer = 
         $organizer = organizer_get_organizer();
     }
 
+    $ok = false;
     if ($appointment = $DB->get_record('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid))) {
         $DB->delete_records('event', array('id' => $appointment->eventid));
         $ok = $DB->delete_records('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid));

@@ -179,7 +179,7 @@ class organizer_slot
     private $queue;
     private $queuegroup;
 
-    public function __construct($slot, $lazy = true) {
+    public function __construct($slot, $lazy = true, $organizer = null) {
         global $DB;
 
         if (is_number($slot) && $slot == intval($slot)) {
@@ -207,6 +207,9 @@ class organizer_slot
                 $this->load_queue();
                 $this->load_queue_group();
             }
+        }
+        if ($organizer) {
+            $this->organizer = $organizer;
         }
     }
 
