@@ -3,7 +3,7 @@ CHANGELOG
 
 3.11.2 (2022-01-04)
 ------------------
-* [BUG]  #6505 - fix participation when unenrolled from course - github issue #59
+* [BUG]  #6506 - fix participation when unenrolled from course - github issue #59
 
 3.11.1 (2022-01-03)
 -------------------
