@@ -152,6 +152,10 @@ define(
             // Evaluate a certain row to make forecast.
             function evaluaterow(i) {
                 var howmanyslots = getslots(i);
+                if (howmanyslots === 0) {
+                    resetrowevaluation(i);
+                    return;
+                }
                 var slots = howmanyslots[0];
                 var slotsnotcreatedduetodeadline = howmanyslots[1];
                 var slotsnotcreatedduetopasttime = howmanyslots[2];
