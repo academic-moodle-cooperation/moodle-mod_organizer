@@ -116,8 +116,10 @@ define(
                 var valdayfrom = parseInt($("select[name='newslots\[" + i + "\]\[day\]']").val());
                 var valdayto = parseInt($("select[name='newslots\[" + i + "\]\[dayto\]']").val());
                 var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[from\]']").val());
+                var duration = getduration();
                 // Proposal for to-date's time when from-date's time has been changed.
-                if ((valdayfrom != -1 && valdayto == -1) || name.indexOf("[from]") != -1) {
+                if (duration > 0 &&
+                        ((valdayfrom != -1 && valdayto == -1) || name.indexOf("[from]") != -1)) {
                     var periodstartdate = getstartdate();
                     var periodenddate = getenddate();
                     for (var daydate = periodstartdate; daydate <= periodenddate; daydate = addDays(daydate * 1000, 1)) {
@@ -128,7 +130,7 @@ define(
                             break;
                         }
                     }
-                    var pdate = (jsdaydate / 1000) + valfrom + getduration();
+                    var pdate = (jsdaydate / 1000) + valfrom + duration;
                     var jspdate = new Date(pdate * 1000);
                     var pday = jspdate.getDay();
                     var pweekday = pday ? (pday - 1) : 6;
@@ -141,7 +143,7 @@ define(
                 }
                 valdayfrom = parseInt($("select[name='newslots\[" + i + "\]\[day\]']").val());
                 valdayto = parseInt($("select[name='newslots\[" + i + "\]\[dayto\]']").val());
-                if (valdayfrom != -1 && valdayto != -1) {
+                if (duration > 0 && valdayfrom != -1 && valdayto != -1) {
                     evaluaterow(i);
                 } else {
                     resetrowevaluation(i);
@@ -212,7 +214,11 @@ define(
                 var valto = parseInt($("select[name='newslots\[" + i + "\]\[to\]']").val());
                 // Duration + gap in seconds.
                 var duration = getduration();
-                var iteration = duration + getgap();
+                var gap = getgap();
+                if (duration <= 0 || gap < 0) {
+                    return 0;
+                }
+                var iteration = duration + gap;
                 var iweekday, daydate, jsdaydate, datefrom, dateto, itime;
                 var slots = 0;
                 var slotsnotcreatedduetodeadline = 0;
