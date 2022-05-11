@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+3.11.3 (2022-04-25)
+------------------
+* [FEATURE]  Provide activity dates for display in course overview
 
 3.11.2 (2022-01-04)
 ------------------

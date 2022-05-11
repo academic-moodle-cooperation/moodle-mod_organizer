@@ -980,7 +980,7 @@ function organizer_get_coursemodule_info($coursemodule) {
     global $DB;
 
     $dbparams = array('id' => $coursemodule->instance);
-    $fields = 'id, name, alwaysshowdescription, allowregistrationsfromdate, intro, introformat';
+    $fields = 'id, name, alwaysshowdescription, allowregistrationsfromdate, intro, introformat, duedate';
     if (! $organizer = $DB->get_record('organizer', $dbparams, $fields)) {
         return false;
     }
@@ -993,6 +993,15 @@ function organizer_get_coursemodule_info($coursemodule) {
             $result->content = format_module_intro('organizer', $organizer, $coursemodule->id, false);
         }
     }
+
+    // Populate some other values that can be used in calendar or on dashboard.
+    if ($organizer->allowregistrationsfromdate) {
+        $result->customdata['allowregistrationsfromdate'] = $organizer->allowregistrationsfromdate;
+    }
+    if ($organizer->duedate) {
+        $result->customdata['duedate'] = $organizer->duedate;
+    }
+
     return $result;
 }
 
