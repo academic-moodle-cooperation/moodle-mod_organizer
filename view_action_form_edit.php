@@ -356,8 +356,6 @@ class organizer_edit_slots_form extends moodleform
         $mform->setDefault('availablefrom', '');
         $mform->setDefault('availablefrom[now]', $defaults['now']);
 
-        var_dump($group);
-        die();
         $mform->addGroup($group, 'availablefromgroup', get_string('availablefrom', 'organizer'), ORGANIZER_SPACING, false);
 
         $mform->disabledIf('availablefrom[number]', 'availablefrom[now]', 'checked');
