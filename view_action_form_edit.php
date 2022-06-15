@@ -360,9 +360,10 @@ class organizer_edit_slots_form extends moodleform
             print_r($record->id);
             print_r($record->organizerid);
             print_r($record->duration);
-            echo "<br>";
+            echo "<br>----<br>";
         }
-die();
+        die();
+
         $mform->setDefault('availablefrom', '');
         $mform->setDefault('availablefrom[now]', $defaults['now']);
 
