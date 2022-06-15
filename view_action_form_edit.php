@@ -219,6 +219,8 @@ class organizer_edit_slots_form extends moodleform
      * @param array $defaults
      */
     private function _addfields($defaults) {
+        global $DB;
+
         $mform = $this->_form;
         $data = $this->_customdata;
 
@@ -353,6 +355,14 @@ class organizer_edit_slots_form extends moodleform
             $this->_warning_icon('availablefrom', isset($defaults['availablefrom']))
         );
 
+        $records = $DB->get_records('organizer_slots', null, null, 'id, organizerid, duration');
+        foreach ($records as $record) {
+            print_r($record->id);
+            print_r($record->organizerid);
+            print_r($record->duration);
+            echo "<br>";
+        }
+die();
         $mform->setDefault('availablefrom', '');
         $mform->setDefault('availablefrom[now]', $defaults['now']);
 
