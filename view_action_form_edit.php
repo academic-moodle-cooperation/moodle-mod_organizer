@@ -357,7 +357,7 @@ class organizer_edit_slots_form extends moodleform
 
         $records = $DB->get_records('organizer_slots', null, null, 'id, organizerid, duration');
         foreach ($records as $record) {
-            if (!is_number($record->duration)){
+            if (!is_number($record->duration)) {
                 var_dump($record);
                 echo "<br>----<br>";
             }
