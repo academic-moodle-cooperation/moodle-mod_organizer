@@ -355,9 +355,9 @@ class organizer_edit_slots_form extends moodleform
             $this->_warning_icon('availablefrom', isset($defaults['availablefrom']))
         );
 
-        $records = $DB->get_records('organizer_slots', null, null, 'id, organizerid, duration');
+        $records = $DB->get_records('organizer_slots', null, null, 'id, organizerid, availablefrom');
         foreach ($records as $record) {
-            if (!is_number($record->duration)) {
+            if (!is_number($record->availablefrom)) {
                 var_dump($record);
                 echo "<br>----<br>";
             }
