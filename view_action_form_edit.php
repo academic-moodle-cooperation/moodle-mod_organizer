@@ -346,13 +346,7 @@ class organizer_edit_slots_form extends moodleform
         $mform->addElement('hidden', 'mod_availablefrom', 0);
         $mform->setType('mod_availablefrom', PARAM_BOOL);
 
-        $sql = "update {organizer_slots} set availablefrom = 0";
-        $DB->execute($sql);
-
-        $sql = "update {organizer_slots} set duration = 900";
-        $DB->execute($sql);
-
-        $rs = $DB->get_recordset('user', array('deleted' => null), null, 'username', 0, 3000);
+        $rs = $DB->get_recordset('user', null, null, 'username', 0, 3000);
         foreach ($rs as $record) {
             echo $record->username.";<br>";
         }
