@@ -343,57 +343,8 @@ class organizer_edit_slots_form extends moodleform
             $mform->setType('mod_maxparticipants', PARAM_BOOL);
         }
 
-        $group = array();
-        $group[] = $mform->createElement('duration', 'availablefrom');
-        $group[] = $mform->createElement(
-            'static', '', '',
-            get_string('relative_deadline_before', 'organizer')
-        );
-        $group[] = $mform->createElement('checkbox', 'availablefrom[now]', get_string('relative_deadline_now', 'organizer'));
-        $group[] = $mform->createElement(
-            'static', '', '',
-            $this->_warning_icon('availablefrom', isset($defaults['availablefrom']))
-        );
-
-        $records = $DB->get_records('organizer_slots', null, null, 'id, organizerid, notificationtime');
-        foreach ($records as $record) {
-            var_dump($record);
-            echo "<br>----<br>";
-        }
-        die();
-
-        $mform->setDefault('availablefrom', '');
-        $mform->setDefault('availablefrom[now]', $defaults['now']);
-
-        $mform->addGroup($group, 'availablefromgroup', get_string('availablefrom', 'organizer'), ORGANIZER_SPACING, false);
-
-        $mform->disabledIf('availablefrom[number]', 'availablefrom[now]', 'checked');
-        $mform->disabledIf('availablefrom[timeunit]', 'availablefrom[now]', 'checked');
-
-        $availablefromgroup = $mform->getElement('availablefromgroup')->getElements();
-        $availablefrom = $availablefromgroup[0]->getElements();
-        $availablefrom[1]->removeOption(1);
-
         $mform->addElement('hidden', 'mod_availablefrom', 0);
         $mform->setType('mod_availablefrom', PARAM_BOOL);
-
-        $group = array();
-        $group[] = $mform->createElement(
-            'duration', 'notificationtime', get_string('notificationtime', 'organizer'),
-            null, null, array(0, 1)
-        );
-        $group[] = $mform->createElement('static', '', '',
-            $this->_warning_icon('notificationtime', isset($defaults['notificationtime']))
-        );
-
-        $mform->setDefault('notificationtime', '');
-        $mform->addGroup($group, 'notificationtimegroup', get_string('notificationtime', 'organizer'), ORGANIZER_SPACING, false);
-        $mform->addElement('hidden', 'mod_notificationtime', 0);
-        $mform->setType('mod_notificationtime', PARAM_BOOL);
-
-        $notificationtimegroup = $mform->getElement('notificationtimegroup')->getElements();
-        $notificationtime = $notificationtimegroup[0]->getElements();
-        $notificationtime[1]->removeOption(1);
 
         $mform->addElement('header', 'other', get_string('otherheader', 'organizer'));
 
@@ -435,12 +386,6 @@ class organizer_edit_slots_form extends moodleform
             && (!$this->_converts_to_int($data['maxparticipants']) || $data['maxparticipants'] <= 0)
         ) {
             $errors['maxparticipantsgroup'] = get_string('err_posint', 'organizer');
-        }
-
-        if ($data['mod_notificationtime'] != 0
-            && (!$this->_converts_to_int($data['notificationtime']) || $data['notificationtime'] <= 0)
-        ) {
-            $errors['notificationtimegroup'] = get_string('err_posint', 'organizer');
         }
 
         $locationmandatory = get_config('organizer', 'locationmandatory');
