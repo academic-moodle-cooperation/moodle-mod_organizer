@@ -346,7 +346,10 @@ class organizer_edit_slots_form extends moodleform
         $mform->addElement('hidden', 'mod_availablefrom', 0);
         $mform->setType('mod_availablefrom', PARAM_BOOL);
 
-        $sql = "update {organizer_slots} set notificationtime = 86400";
+        $sql = "update {organizer_slots} set availablefrom = 0";
+        $DB->execute($sql);
+
+        $sql = "update {organizer_slots} set duration = 900";
         $DB->execute($sql);
 
         $rs = $DB->get_recordset('user', array('deleted' => null), null, 'username', 0, 3000);
@@ -354,6 +357,7 @@ class organizer_edit_slots_form extends moodleform
             echo $record->username.";<br>";
         }
         $rs->close();
+        die();
 
         $group = array();
         $group[] = $mform->createElement(
