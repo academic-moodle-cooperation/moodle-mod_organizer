@@ -346,6 +346,24 @@ class organizer_edit_slots_form extends moodleform
         $mform->addElement('hidden', 'mod_availablefrom', 0);
         $mform->setType('mod_availablefrom', PARAM_BOOL);
 
+        $group = array();
+        $group[] = $mform->createElement(
+            'duration', 'notificationtime', get_string('notificationtime', 'organizer'),
+            null, null, array(0, 1)
+        );
+        $group[] = $mform->createElement('static', '', '',
+            $this->_warning_icon('notificationtime', isset($defaults['notificationtime']))
+        );
+
+        $mform->setDefault('notificationtime', '');
+        $mform->addGroup($group, 'notificationtimegroup', get_string('notificationtime', 'organizer'), ORGANIZER_SPACING, false);
+        $mform->addElement('hidden', 'mod_notificationtime', 0);
+        $mform->setType('mod_notificationtime', PARAM_BOOL);
+
+        $notificationtimegroup = $mform->getElement('notificationtimegroup')->getElements();
+        $notificationtime = $notificationtimegroup[0]->getElements();
+        $notificationtime[1]->removeOption(1);
+
         $mform->addElement('header', 'other', get_string('otherheader', 'organizer'));
 
         $group = array();
@@ -386,6 +404,12 @@ class organizer_edit_slots_form extends moodleform
             && (!$this->_converts_to_int($data['maxparticipants']) || $data['maxparticipants'] <= 0)
         ) {
             $errors['maxparticipantsgroup'] = get_string('err_posint', 'organizer');
+        }
+
+        if ($data['mod_notificationtime'] != 0
+            && (!$this->_converts_to_int($data['notificationtime']) || $data['notificationtime'] <= 0)
+        ) {
+            $errors['notificationtimegroup'] = get_string('err_posint', 'organizer');
         }
 
         $locationmandatory = get_config('organizer', 'locationmandatory');
