@@ -343,19 +343,6 @@ class organizer_edit_slots_form extends moodleform
             $mform->setType('mod_maxparticipants', PARAM_BOOL);
         }
 
-        $record = new stdClass();
-        $record->availablefrom = "100";
-        $record->id = "11576";
-        $DB->update_record('organizer_slots', $record);
-        $record->id = "11579";
-        $DB->update_record('organizer_slots', $record);
-        $record->id = "11582";
-        $DB->update_record('organizer_slots', $record);
-        $record->id = "11585";
-        $DB->update_record('organizer_slots', $record);
-        $record->id = "11588";
-        $DB->update_record('organizer_slots', $record);
-
         $group = array();
         $group[] = $mform->createElement('duration', 'availablefrom');
         $group[] = $mform->createElement(
@@ -367,6 +354,13 @@ class organizer_edit_slots_form extends moodleform
             'static', '', '',
             $this->_warning_icon('availablefrom', isset($defaults['availablefrom']))
         );
+
+        $records = $DB->get_records('organizer_slots', null, null, 'id, organizerid, gap');
+        foreach ($records as $record) {
+            var_dump($record);
+            echo "<br>----<br>";
+        }
+        die();
 
         $mform->setDefault('availablefrom', '');
         $mform->setDefault('availablefrom[now]', $defaults['now']);
