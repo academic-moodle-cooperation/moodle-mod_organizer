@@ -342,15 +342,18 @@ class organizer_edit_slots_form extends moodleform
         }
 
         $group = array();
-        // $group[] = $mform->createElement('duration', 'availablefrom');
+        $group[] = $mform->createElement('duration', 'availablefrom');
         $group[] = $mform->createElement(
             'static', '', '',
             get_string('relative_deadline_before', 'organizer')
         );
         $group[] = $mform->createElement('checkbox', 'availablefrom[now]', get_string('relative_deadline_now', 'organizer'));
-        // $group[] = $mform->createElement('static', '', '', $this->_warning_icon('availablefrom', isset($defaults['availablefrom'])));
+        $group[] = $mform->createElement(
+            'static', '', '',
+            $this->_warning_icon('availablefrom', isset($defaults['availablefrom']))
+        );
 
-        // $mform->setDefault('availablefrom', '');
+        $mform->setDefault('availablefrom', '');
         $mform->setDefault('availablefrom[now]', $defaults['now']);
 
         $mform->addGroup($group, 'availablefromgroup', get_string('availablefrom', 'organizer'), ORGANIZER_SPACING, false);
@@ -358,9 +361,9 @@ class organizer_edit_slots_form extends moodleform
         $mform->disabledIf('availablefrom[number]', 'availablefrom[now]', 'checked');
         $mform->disabledIf('availablefrom[timeunit]', 'availablefrom[now]', 'checked');
 
-        // $availablefromgroup = $mform->getElement('availablefromgroup')->getElements();
-        // $availablefrom = $availablefromgroup[0]->getElements();
-        // $availablefrom[1]->removeOption(1);
+        $availablefromgroup = $mform->getElement('availablefromgroup')->getElements();
+        $availablefrom = $availablefromgroup[0]->getElements();
+        $availablefrom[1]->removeOption(1);
 
         $mform->addElement('hidden', 'mod_availablefrom', 0);
         $mform->setType('mod_availablefrom', PARAM_BOOL);
