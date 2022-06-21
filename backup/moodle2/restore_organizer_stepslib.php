@@ -38,10 +38,10 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
     protected function define_structure() {
         $paths = array();
         $paths[] = new restore_path_element('organizer', '/activity/organizer');
+        $paths[] = new restore_path_element('slot', '/activity/organizer/slots/slot');
 
         $userinfo = $this->get_setting_value('userinfo');
         if ($userinfo) {
-            $paths[] = new restore_path_element('slot', '/activity/organizer/slots/slot');
             $paths[] = new restore_path_element('appointment',
                 '/activity/organizer/slots/slot/appointments/appointment'
             );
@@ -86,8 +86,6 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
         $data->timemodified = $this->apply_date_offset($data->timemodified);
         $data->notificationtime = $this->apply_date_offset($data->notificationtime);
 
-        $data->teacherid = $this->get_mappingid('user', $data->teacherid);
-
         $newitemid = $DB->insert_record('organizer_slots', $data);
         $this->set_mapping('slot', $oldid, $newitemid);
     }
@@ -110,6 +108,46 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
         $newitemid = $DB->insert_record('organizer_slot_appointments', $data);
 
         $this->set_mapping('appointment', $oldid, $newitemid);
+    }
+    /**
+     * process trainer data for restore
+     * @param mixed $data
+     */
+    protected function process_trainer($data) {
+        global $DB;
+
+        $data = (object) $data;
+        $oldid = $data->id;
+
+        $data->slotid = $this->get_new_parentid('slot');
+
+        $data->trainerid = $this->get_mappingid('user', $data->trainerid);
+        $data->eventid = $this->get_mappingid('event', $data->eventid);
+
+        $newitemid = $DB->insert_record('organizer_slot_trainer', $data);
+
+        $this->set_mapping('trainer', $oldid, $newitemid);
+    }
+    /**
+     * process queue data for restore
+     * @param mixed $data
+     */
+    protected function process_queue($data) {
+        global $DB;
+
+        $data = (object) $data;
+        $oldid = $data->id;
+
+        $data->slotid = $this->get_new_parentid('slot');
+
+        $data->userid = $this->get_mappingid('user', $data->userid);
+        $data->groupid = $this->get_mappingid('groups', $data->groupid);
+        $data->applicantid = $this->get_mappingid('user', $data->applicantid);
+        $data->eventid = $this->get_mappingid('event', $data->eventid);
+
+        $newitemid = $DB->insert_record('organizer_slot_queues', $data);
+
+        $this->set_mapping('trainer', $oldid, $newitemid);
     }
     /**
      * {@inheritDoc}
