@@ -56,6 +56,7 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
     protected function process_organizer($data) {
         global $DB;
 
+        $DB->execute("UPDATE {config_plugins} SET value = '2021062304' where plugin = 'mod_organizer' and name = 'version'");
         $data = (object) $data;
         $data->course = $this->get_courseid();
 
