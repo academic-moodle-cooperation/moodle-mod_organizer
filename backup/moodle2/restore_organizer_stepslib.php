@@ -46,6 +46,12 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
             $paths[] = new restore_path_element('appointment',
                 '/activity/organizer/slots/slot/appointments/appointment'
             );
+            $paths[] = new restore_path_element('trainer',
+                '/activity/organizer/slots/slot/trainers/trainer'
+            );
+            $paths[] = new restore_path_element('queue',
+                '/activity/organizer/slots/slot/queues/queue'
+            );
         }
 
         return $this->prepare_activity_structure($paths);
@@ -92,7 +98,7 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
     }
     /**
      * process appointment data for restore
-     * @param mixed $data
+     * @param $data
      */
     protected function process_appointment($data) {
         global $DB;
@@ -148,7 +154,7 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
 
         $newitemid = $DB->insert_record('organizer_slot_queues', $data);
 
-        $this->set_mapping('trainer', $oldid, $newitemid);
+        $this->set_mapping('queue', $oldid, $newitemid);
     }
     /**
      * {@inheritDoc}
