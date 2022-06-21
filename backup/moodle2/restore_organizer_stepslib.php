@@ -22,6 +22,7 @@ defined('MOODLE_INTERNAL') || die();
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -56,7 +57,6 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
     protected function process_organizer($data) {
         global $DB;
 
-        $DB->execute("UPDATE {config_plugins} SET value = '2021062304' where plugin = 'mod_organizer' and name = 'version'");
         $data = (object) $data;
         $data->course = $this->get_courseid();
 
