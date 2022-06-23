@@ -101,8 +101,7 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
      * Only restore appointments if user is enrolled with right to register in new course or there is a group id
      * @param $data
      */
-    protected function process_appointment($data)
-    {
+    protected function process_appointment($data) {
         global $DB;
 
         $data = (object)$data;
