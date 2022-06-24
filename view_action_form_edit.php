@@ -186,7 +186,7 @@ class organizer_edit_slots_form extends moodleform
         $buttonarray[] = &$mform->createElement('reset', 'editreset', get_string('revert'), array('class' => 'btn btn-secondary'));
         $buttonarray[] = &$mform->createElement('cancel');
 
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', array('&nbsp;'), false);
         $mform->closeHeaderBefore('buttonar');
     }
     /**
@@ -353,7 +353,7 @@ class organizer_edit_slots_form extends moodleform
             $this->_warning_icon('availablefrom', isset($defaults['availablefrom']))
         );
 
-        $mform->setDefault('availablefrom', $defaults['availablefrom']);
+        $mform->setDefault('availablefrom', isset($defaults['availablefrom']) ? $defaults['availablefrom'] : 604800);
         $mform->setDefault('availablefrom[now]', $defaults['now']);
 
         $mform->addGroup($group, 'availablefromgroup', get_string('availablefrom', 'organizer'), ORGANIZER_SPACING, false);
@@ -377,7 +377,7 @@ class organizer_edit_slots_form extends moodleform
             $this->_warning_icon('notificationtime', isset($defaults['notificationtime']))
         );
 
-        $mform->setDefault('notificationtime', $defaults['notificationtime']);
+        $mform->setDefault('notificationtime', isset($defaults['notificationtime']) ? $defaults['notificationtime'] : 86400);
         $mform->addGroup($group, 'notificationtimegroup', get_string('notificationtime', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_notificationtime', 0);
         $mform->setType('mod_notificationtime', PARAM_BOOL);
