@@ -353,7 +353,7 @@ class organizer_edit_slots_form extends moodleform
             $this->_warning_icon('availablefrom', isset($defaults['availablefrom']))
         );
 
-        $mform->setDefault('availablefrom', '');
+        $mform->setDefault('availablefrom', $defaults['availablefrom']);
         $mform->setDefault('availablefrom[now]', $defaults['now']);
 
         $mform->addGroup($group, 'availablefromgroup', get_string('availablefrom', 'organizer'), ORGANIZER_SPACING, false);
@@ -377,7 +377,7 @@ class organizer_edit_slots_form extends moodleform
             $this->_warning_icon('notificationtime', isset($defaults['notificationtime']))
         );
 
-        $mform->setDefault('notificationtime', '');
+        $mform->setDefault('notificationtime', $defaults['notificationtime']);
         $mform->addGroup($group, 'notificationtimegroup', get_string('notificationtime', 'organizer'), ORGANIZER_SPACING, false);
         $mform->addElement('hidden', 'mod_notificationtime', 0);
         $mform->setType('mod_notificationtime', PARAM_BOOL);
