@@ -289,13 +289,9 @@ class organizer_edit_slots_form extends moodleform
             }
         } else {
             $locations = explode("\n", $locations);
-            $options = array(
-                'multiple' => false,
-                'tags' => true,
-            );
+            $locations = array_combine($locations, $locations);
             $group = array();
-            $group[] = $mform->createElement('autocomplete', 'location', null,
-                array_combine($locations, $locations), $options);
+            $group[] = $mform->createElement('autocomplete', 'location', null, $locations, array('tags' => true));
             $group[] = $mform->createElement('static', '', '', $this->_warning_icon('location', isset($defaults['location'])));
 
             $mform->addGroup($group, 'locationgroup', get_string('location', 'organizer'), ORGANIZER_SPACING, false);
@@ -442,6 +438,17 @@ class organizer_edit_slots_form extends moodleform
         }
 
         return $errors;
+    }
+    /**
+     * {@inheritDoc}
+     * @see moodleform::get_data()
+     */
+    public function get_data() {
+        $data = parent::get_data();
+        if (isset($_POST['location']) && $_POST['location']) {
+            $data->location = $_POST['location'];
+        }
+        return $data;
     }
     /**
      * @return string[]
