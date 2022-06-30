@@ -20,6 +20,7 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -53,7 +54,7 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
         $slots = new backup_nested_element('slots');
         $slot = new backup_nested_element(
             'slot', array('id'),
-            array('organizerid', 'starttime', 'gap', 'duration', 'location', 'locationlink', 'maxparticipants',
+            array('organizerid', 'starttime', 'duration', 'gap', 'location', 'locationlink', 'maxparticipants',
                         'visibility', 'availablefrom', 'timemodified', 'notificationtime', 'comments',
             'teachervisible', 'eventid', 'notified', 'visible', 'coursegroup')
         );
@@ -93,17 +94,18 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
 
         // Define sources.
         $organizer->set_source_table('organizer', array('id' => backup::VAR_ACTIVITYID));
+        $slot->set_source_table('organizer_slots', array('organizerid' => backup::VAR_PARENTID));
 
         // To know if we are including userinfo.
         $userinfo = $this->get_setting_value('userinfo');
         if ($userinfo) {
-            $slot->set_source_table('organizer_slots', array('organizerid' => backup::VAR_PARENTID));
             $appointment->set_source_table('organizer_slot_appointments', array('slotid' => backup::VAR_PARENTID));
             $queue->set_source_table('organizer_slot_queues', array('slotid' => backup::VAR_PARENTID));
             $trainer->set_source_table('organizer_slot_trainer', array('slotid' => backup::VAR_PARENTID));
         }
 
         // Annotate the user id's where required.
+        $slot->annotate_ids('event', 'eventid');
         $appointment->annotate_ids('user', 'userid');
         $appointment->annotate_ids('user', 'applicantid');
         $appointment->annotate_ids('group', 'groupid');

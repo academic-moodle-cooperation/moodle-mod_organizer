@@ -3,9 +3,9 @@ Organizer Module
 
 This file is part of the mod_organizer plugin for Moodle - <http://moodle.org/>
 
-*Author:*    Thomas Niedermaier, Ivan Sakic, Katarzyna Potocka
+*Author:*    Thomas Niedermaier, Ivan Sakic, Katarzyna Potocka, Simeon Naydenov
 
-*Copyright:* 2020 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
+*Copyright:* 2022 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
 
 *License:*   [GNU GPL v3 or later](http://www.gnu.org/copyleft/gpl.html)
 

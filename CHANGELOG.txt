@@ -1,10 +1,16 @@
 CHANGELOG
 =========
+3.11.3 (2022-04-25)
+------------------
+* [FEATURE]  Provide activity dates for display in course overview
 
-3.11.1 (2021-06-23)
+3.11.2 (2022-01-04)
+------------------
+* [BUG]  #6506 - fix participation when unenrolled from course - github issue #59
+
+3.11.1 (2022-01-03)
 -------------------
 * [FIXED] #6968 - fix db discrepancies caused by wrong upgrade.php - github issue #98
-
 
 3.11.0 (2021-06-23)
 -------------------
