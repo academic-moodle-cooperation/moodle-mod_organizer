@@ -169,7 +169,7 @@ class organizer_add_slots_form extends moodleform
         );
         $group[] = $mform->createElement('checkbox', 'now', '', get_string('relative_deadline_now', 'organizer'));
 
-        $mform->setDefault('availablefrom', 86400 * 7);
+        $mform->setDefault('availablefrom', 604800);
         $mform->setDefault('now', 1);
         $mform->insertElementBefore(
             $mform->createElement(
