@@ -365,10 +365,7 @@ class organizer_edit_slots_form extends moodleform
         $mform->setType('mod_availablefrom', PARAM_BOOL);
 
         $group = array();
-        $group[] = $mform->createElement(
-            'duration', 'notificationtime', get_string('notificationtime', 'organizer'),
-            null, null, array(0, 1)
-        );
+        $group[] = $mform->createElement('duration', 'notificationtime', null, null, null, array(0, 1));
         $group[] = $mform->createElement('static', '', '',
             $this->_warning_icon('notificationtime', isset($defaults['notificationtime']))
         );
