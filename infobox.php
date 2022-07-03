@@ -35,7 +35,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/slotlib.php');
 
 function organizer_make_infobox($params, $organizer, $context, $organizerexpired = null) {
-    global $PAGE;
+    global $PAGE, $USER;
 
     $output = '';
     if ($organizer->alwaysshowdescription ||  time() > $organizer->allowregistrationsfromdate) {
@@ -75,7 +75,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     // Display search field for fulltext search.
     $output .= organizer_make_filtersection();
 
-    $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams->studentview));
+    $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams->studentview, $USER->id));
 
     return $output;
 }
@@ -205,6 +205,7 @@ function organizer_make_myapp_section($params, $organizer, $app) {
     return organizer_make_section('infobox_myslot', $output);
 }
 function organizer_make_slotoptions_section($params) {
+    global $OUTPUT;
 
     $output = '<div>';
 
@@ -212,25 +213,49 @@ function organizer_make_slotoptions_section($params) {
     $displayfreeslots = $displaypastslots = $params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW;
     $displayregistrationsonly = true;
 
-    $output .= '<span' . ($displaymyslotsonly ? '' : ' style="display: none;" ') . '>' .
-                '<input type="checkbox" id="show_my_slots_only" /> ' .
-                get_string('infobox_showmyslotsonly', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
+    if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
+        $showmyslotsonly = substr($prefs, 0, 1) ? true : false;
+        $showfreeslotsonly = substr($prefs, 1, 1) ? true : false;
+        $showhiddenslots = substr($prefs, 2, 1) ? true : false;
+        $showpastslots = substr($prefs, 3, 1) ? true : false;
+        $showregistrationsonly = substr($prefs, 4, 1) ? true : false;
+    } else {
+        $showmyslotsonly = $showfreeslotsonly = $showhiddenslots = $showpastslots = $showregistrationsonly = false;
+    }
 
-    $output .= '<span' . ($displayfreeslots ? '' : ' style="display: none;" ') . '>' .
-            '<input type="checkbox" id="show_free_slots_only"  /> ' .
-            get_string('infobox_showfreeslots', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
+    $labelmarginstyles = array('style' => 'margin-right:1.5em;margin-left:0.3em;');
 
-    $output .= '<span' . ($displayhiddenslots ? '' : ' style="display: none;" ') . '>' .
-        '<input type="checkbox" id="show_hidden_slots" /> ' .
-        get_string('infobox_showhiddenslots', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
+    if ($displaymyslotsonly) {
+        $output .= html_writer::checkbox('show_my_slots_only', '1', $showmyslotsonly,
+            get_string('infobox_showmyslotsonly', 'organizer'), array('id' => 'show_my_slots_only'),
+            $labelmarginstyles);
+    }
 
-    $output .= '<span' . ($displaypastslots ? '' : ' style="display: none;" ') . '>' .
-                '<input type="checkbox" id="show_past_slots" /> ' .
-                get_string('infobox_showslots', 'organizer') . '&nbsp;&nbsp;&nbsp;</span>';
+    if ($displayfreeslots) {
+        $output .= html_writer::checkbox('show_free_slots_only', '1', $showfreeslotsonly,
+            get_string('infobox_showfreeslots', 'organizer'), array('id' => 'show_free_slots_only'),
+            $labelmarginstyles);
+    }
 
-    $output .= '<span' . ($displayregistrationsonly ? '' : ' style="display: none;" ') . '>' .
-        '<input type="checkbox" id="show_registrations_only" /> ' .
-        get_string('infobox_showregistrationsonly', 'organizer') . '</span>';
+    if ($displayhiddenslots) {
+        $output .= html_writer::checkbox('show_hidden_slots', '1', $showhiddenslots,
+            get_string('infobox_showhiddenslots', 'organizer'), array('id' => 'show_hidden_slots'),
+            $labelmarginstyles);
+    }
+
+    if ($displaypastslots) {
+        $output .= html_writer::checkbox('show_past_slots', '1', $showpastslots,
+            get_string('infobox_showslots', 'organizer'), array('id' => 'show_past_slots'),
+            $labelmarginstyles);
+    }
+
+    if ($displayregistrationsonly) {
+        $output .= html_writer::checkbox('show_registrations_only', '1', $showregistrationsonly,
+            get_string('infobox_showregistrationsonly', 'organizer'), array('id' => 'show_registrations_only'),
+            $labelmarginstyles);
+    }
+
+    $output .= $OUTPUT->help_icon('infobox_slotsviewoptions', 'organizer', '');
 
     $output .= '</div>';
 

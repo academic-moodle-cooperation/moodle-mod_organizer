@@ -340,11 +340,13 @@ $string['infobox_deadline_passed_slot'] = 'xxx slots could not be created becaus
 $string['fullname_template'] = '{$a->firstname} {$a->lastname}';
 
 $string['infobox_showfreeslots'] = 'Free slots';
-$string['infobox_showslots'] = 'Past time slots';
+$string['infobox_showslots'] = 'Also past time slots';
 $string['infobox_showregistrationsonly'] = 'Booked slots';
 $string['infobox_showlegend'] = 'Show legend';
 $string['infobox_hidelegend'] = 'Hide legend';
 $string['infobox_slotoverview_title'] = 'Slot overview';
+$string['infobox_slotsviewoptions'] = 'Special filter options';
+$string['infobox_slotsviewoptions_help'] = 'These filter options are combined by AND conjunctions!';
 $string['infobox_description_title'] = 'Organizer description';
 $string['infobox_messages_title'] = 'System messages';
 $string['message_warning_no_slots_selected'] = 'You must select at least one slot first!';
