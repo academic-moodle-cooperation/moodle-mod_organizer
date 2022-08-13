@@ -25,7 +25,7 @@
  */
 
 
-define(['jquery'], function($) {
+define(['jquery', 'core/config'], function($, config) {
 
         /**
      * @constructor
@@ -33,16 +33,21 @@ define(['jquery'], function($) {
      */
         var Initinfobox = function() {
             this.student = 0;
+            this.userid = 0;
         };
 
         var instance = new Initinfobox();
 
-        instance.init = function(param) {
+        instance.init = function(participant, userid) {
 
-            instance.student = param; // Is user student or not.
+            instance.student = participant; // Is user student or not?
+            instance.userid = userid; // This user ID.
 
             // What happens when a view option checkbox is clicked or the filter field has been changed.
-            function toggle_all_slots() {
+            function toggle_all_slots(event) {
+                if (event!=undefined) {
+                    saveuserpreference();
+                }
                 var tablebody = $('#slot_overview tbody');
                 var showpastslots = $('#show_past_slots').is(':checked');
                 var showmyslotsonly = $('#show_my_slots_only').is(':checked');
@@ -156,13 +161,30 @@ define(['jquery'], function($) {
                 return text;
             }
 
-            $('#show_past_slots').on('click', function() { toggle_all_slots(); });
-            $('#show_my_slots_only').on('click', function() { toggle_all_slots(); });
-            $('#show_free_slots_only').on('click', function() { toggle_all_slots(); });
-            $('#show_hidden_slots').on('click', function() { toggle_all_slots(); });
-            $('#show_registrations_only').on('click', function() { toggle_all_slots(); });
-            $('.organizer_filtertable').on('keyup', function() { toggle_all_slots(); });
+            // Save userpreference to server.
+            function saveuserpreference() {
+                let slotsviewoptions = '';
 
+                slotsviewoptions += $('#show_my_slots_only').is(':checked') ? '1' : '0';
+                slotsviewoptions += $('#show_free_slots_only').is(':checked') ? '1' : '0';
+                slotsviewoptions += $('#show_hidden_slots').is(':checked') ? '1' : '0';
+                slotsviewoptions += $('#show_past_slots').is(':checked') ? '1' : '0';
+                slotsviewoptions += $('#show_registrations_only').is(':checked') ? '1' : '0';
+
+                $.get(config.wwwroot + '/mod/organizer/slotsviewoptions.php', {
+                    sesskey: config.sesskey,
+                    slotsviewoptions: encodeURI(slotsviewoptions),
+                    userid: instance.userid
+                }, 'json');
+
+            }
+
+            $('#show_past_slots').on('click', function() { toggle_all_slots(event); });
+            $('#show_my_slots_only').on('click', function() { toggle_all_slots(event); });
+            $('#show_free_slots_only').on('click', function() { toggle_all_slots(event); });
+            $('#show_hidden_slots').on('click', function() { toggle_all_slots(event); });
+            $('#show_registrations_only').on('click', function() { toggle_all_slots(event); });
+            $('.organizer_filtertable').on('keyup', function() { toggle_all_slots(event); });
             toggle_all_slots();
         };
 
