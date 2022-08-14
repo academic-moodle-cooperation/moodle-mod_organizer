@@ -115,12 +115,12 @@ class organizer_evaluate_slots_form extends moodleform
                 $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
                 $mform->insertElementBefore(
                     $mform->createElement(
-                        'advcheckbox', 'allownewappointments', $groupname, get_string('eval_allow_new_appointments', 'organizer'),
+                        'advcheckbox', "allownewappointments{$slotid}", $groupname, get_string('eval_allow_new_appointments', 'organizer'),
                         array('group' => 0, 'class' => "allow{$slotid}"), array(0, 1)
                     ), 'buttonar'
                 );
-                $mform->setType("allownewappointments", PARAM_INT);
-                $mform->setDefault("allownewappointments", $app->allownewappointments);
+                $mform->setType("allownewappointments{$slotid}", PARAM_INT);
+                $mform->setDefault("allownewappointments{$slotid}", $app->allownewappointments);
             }
 
             // If no apps write it and deactivate slot.
@@ -180,8 +180,8 @@ class organizer_evaluate_slots_form extends moodleform
                         }
                     }
 
-                    $appgroup[] = $mform->createElement('static', '', '', get_string('eval_feedback', 'organizer') . ':');
-                    $appgroup[] = $mform->createElement('text', 'feedback', null, array('size' => 24));
+                    $appgroup[] = $mform->createElement('static', '', '', get_string('eval_feedback', 'organizer') . ':&nbsp;');
+                    $appgroup[] = $mform->createElement('text', 'feedback', null, array('size' => 32));
 
                     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                         $appgroup[] = $mform->createElement(
@@ -189,7 +189,7 @@ class organizer_evaluate_slots_form extends moodleform
                         );
                     } else {
                         $appgroup[] = $mform->createElement(
-                            'static', '', '', get_string('eval_allow_new_appointments', 'organizer')
+                            'static', '', '', '&nbsp;'.get_string('eval_allow_new_appointments', 'organizer').':&nbsp;'
                         );
                         $appgroup[] = $mform->createElement(
                             'advcheckbox', 'allownewappointments', '', '', null, array(0, 1)
