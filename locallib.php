@@ -605,7 +605,6 @@ function organizer_update_slot($data) {
 
     if ($modified || $trainermodified) {
         $organizer = organizer_get_organizer();
-        $organizerid = $organizer->id;
         foreach ($data->slots as $slotid) {
             $slot->id = $slotid;
             $appcount = organizer_count_slotappointments(array($slotid));
@@ -617,7 +616,7 @@ function organizer_update_slot($data) {
                 // Check if there are waiting list entries in case of increased places.
             } else if ($modified && $data->mod_maxparticipants == 1  && $data->maxparticipants > $appcount) {
                 $freeslots = (int)$data->maxparticipants - (int)$appcount;
-                if (organizer_hasqueue($organizerid)) {
+                if (organizer_hasqueue($organizer->id)) {
                     for ($i = 0; $i < $freeslots; $i++) {
                         $slotx = new organizer_slot($slotid);
                         if (organizer_is_group_mode()) {
@@ -672,8 +671,11 @@ function organizer_update_slot($data) {
                     $DB->delete_records_select(
                             'organizer_slot_trainer', 'slotid = ' . $slot->id . ' AND trainerid ' . $insql, $inparams
                     );
-                    foreach ($deletions as $trainerid) {
-                        organizer_groupsynchronization($slot->id, $trainerid, 'remove');
+                    if ($organizer->includetraineringroups && ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPBOOKING ||
+                        $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPSLOT)) {
+                        foreach ($deletions as $trainerid) {
+                            organizer_groupsynchronization($slot->id, $trainerid, 'remove');
+                        }
                     }
                 }
                 if ($inserts = array_diff($data->trainerid, $trainers)) {
@@ -688,7 +690,10 @@ function organizer_update_slot($data) {
                                 organizer_add_event_appointment_trainer($cm->id, $app, $trainerid);
                             }
                         }
-                        organizer_groupsynchronization($slot->id, $trainerid, 'add');
+                        if ($organizer->includetraineringroups && ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPBOOKING ||
+                                $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPSLOT)) {
+                            organizer_groupsynchronization($slot->id, $trainerid, 'add');
+                        }
                     }
                 }
             }
@@ -1535,28 +1540,41 @@ function organizer_get_user_identity($user) {
 
 }
 
+/**
+ * Call only if group creation from slots is active!
+ * Add or remove trainer or participant to/from the slot group.
+ * Create slot group if there is none.
+ *
+ * @param $slotid ID of slot
+ * @param $userid participant or trainer ID
+ * @param $action 'add' to group or 'remove' from group
+ * @return bool default: true
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_groupsynchronization($slotid, $userid, $action) {
     global $DB, $CFG;
 
     require_once($CFG->dirroot.'/group/lib.php');
 
     $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-    if ($coursegroup = $slot->coursegroup) {
-        // If group is not there anymore create a new one.
-        if (!$groupid = $DB->get_fieldset_select('groups', 'id', 'id = :groupid', array('groupid' => $coursegroup))) {
-            $coursegroup = null;
-        }
+    if ($slot->coursegroup) {
+        $coursegroup = $DB->get_field('groups', 'id', array('id' => $slot->coursegroup));
+    } else {
+        $coursegroup = false;
     }
+    // If there is no group create a new one.
     if (!$coursegroup) {
         $coursegroup = organizer_create_coursegroup($slot);
+        // Present slot trainers included, makes trainer 'add' redundant.
     }
     if ($action == 'add') {
-        $ok = groups_add_member($coursegroup, $userid);
+        groups_add_member($coursegroup, $userid);
     } else {
-        $ok = groups_remove_member($coursegroup, $userid);
+        groups_remove_member($coursegroup, $userid);
     }
 
-    return $ok;
+    return true;
 
 }
 

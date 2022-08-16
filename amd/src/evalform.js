@@ -47,6 +47,39 @@ define(
             }
 
             $('[name*=allownewappointments]').on('click', toggle_all);
+
+            var container = document.querySelector("#organizer_main_cointainer");
+            var inputs = container.querySelectorAll("input, select");
+            for (const el of inputs){
+                if (el.type == "checkbox") {
+                    el.oldValue = el.checked;
+                } else {
+                    el.oldValue = el.value;
+                }
+            }
+
+            // Declares function and call it directly
+            var setEnabled;
+            (setEnabled = function() {
+                var e = true;
+                for (const el of inputs) {
+                    if (el.type == "checkbox") {
+                        if (el.oldValue !== el.checked) {
+                            e = false;
+                            break;
+                        }
+                    } else {
+                        if (el.oldValue !== el.value) {
+                            e = false;
+                            break;
+                        }
+                    }
+                }
+                document.querySelector("#id_evalsubmit").disabled = e;
+            })();
+
+            document.oninput = setEnabled;
+            document.onchange = setEnabled;
         };
 
         return instance;

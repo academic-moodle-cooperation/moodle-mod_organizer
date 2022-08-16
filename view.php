@@ -36,6 +36,7 @@ require_once(dirname(__FILE__) . '/../../calendar/lib.php');
 require_once(dirname(__FILE__) . '/lib.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
+require_once($CFG->libdir.'/completionlib.php');
 
 $instance = organizer_get_course_module_data_new();
 
@@ -62,6 +63,10 @@ $PAGE->set_heading($instance->course->shortname);
 if ($instance->organizer->hidecalendar != 1) {
     organizer_add_calendar();
 }
+
+// Completion.
+$completion = new completion_info($instance->course);
+$completion->set_module_viewed($instance->cm);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($instance->organizer->name), 2, null);
