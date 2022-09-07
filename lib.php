@@ -1052,11 +1052,16 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $us
 
     if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
         $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid), IGNORE_MISSING);
-        if (!(instance_is_visible('organizer', $organizer) && $courseisvisible)) {
-            return false;
+        if (instance_is_visible('organizer', $organizer) && $courseisvisible) {
+            $isvisible = true;
+        } else {
+            $isvisible = false;
         }
-        $userid = $DB->get_field('event', 'userid', array('id' => $props->id));
-        $isvisible = $userid == $USER->id ? true : false;
+        if (empty($userid)) {
+            if (!$USER->id) {
+                $isvisible = false;
+            }
+        }
     } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT) {
         $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
         $context = context_module::instance($cm->id, MUST_EXIST);
