@@ -53,12 +53,13 @@ if (isset($_SESSION["organizer_new_instance"])) {
     }
 }
 
+$context = context_module::instance($instance->cm->id);
 $url = organizer_create_url($params);
-$logurl = 'view.php?id=' . $params['id'] . '&mode=' . $params['mode'];
-
 $PAGE->set_url($url);
+$PAGE->set_context($context);
 $PAGE->set_title($instance->organizer->name);
 $PAGE->set_heading($instance->course->shortname);
+$PAGE->set_activity_record($instance->organizer);
 
 if ($instance->organizer->hidecalendar != 1) {
     organizer_add_calendar();
