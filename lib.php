@@ -1044,23 +1044,30 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $us
     global $USER, $DB;
     $props = $event->properties();
 
-    $organizer = $DB->get_record('organizer', array('id' => $props->instance), '*', IGNORE_MISSING);
+    $organizer = $DB->get_record('organizer', array('id' => $props->instance), '*');
 
     if ($organizer == false) {
         return false;
     }
 
     if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
-        $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid), IGNORE_MISSING);
+        $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid));
         if (instance_is_visible('organizer', $organizer) && $courseisvisible) {
-            $isvisible = true;
+            if (empty($userid)) {
+                $userid = $USER->id;
+            }
+            if (!$userid) {
+                $isvisible = false;
+            } else {
+                $useridevent = $DB->get_field('event', 'userid', array('id' => $props->id));
+                if ($userid != $useridevent) {
+                    $isvisible = false;
+                } else {
+                    $isvisible = true;
+                }
+            }
         } else {
             $isvisible = false;
-        }
-        if (empty($userid)) {
-            if (!$USER->id) {
-                $isvisible = false;
-            }
         }
     } else if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_SLOT) {
         $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
@@ -1074,28 +1081,30 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $us
         $cm = get_fast_modinfo($event->courseid)->instances['organizer'][$event->instance];
         $context = context_module::instance($cm->id, MUST_EXIST);
         if (!is_enrolled($context)) {
-            return false;
-        }
-        if (has_capability('mod/organizer:viewallslots', $context)) {
-            $a = organizer_get_counters($organizer);
-            if ($a->total == 0) {
-                $isvisible = true;
-            } else if ($organizer->grade != 0 && $a->attended < $a->total) { // If grading is active.
-                $isvisible = true;
-            } else if ($a->registered < $a->total) {
-                $isvisible = true;
-            } else {
-                $isvisible = false;
-            }
-        } else if (has_capability('mod/organizer:viewstudentview', $context)) {
-            $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid), IGNORE_MISSING);
-            if (!(instance_is_visible('organizer', $organizer) && $courseisvisible)) {
-                return false;
-            }
-            if (organizer_get_last_user_appointment($organizer)) {
-                $isvisible = false;
-            } else {
-                $isvisible = true;
+            $isvisible = false;
+        } else {
+            if (has_capability('mod/organizer:viewallslots', $context)) {
+                $a = organizer_get_counters($organizer);
+                if ($a->total == 0) {
+                    $isvisible = true;
+                } else if ($organizer->grade != 0 && $a->attended < $a->total) { // If grading is active.
+                    $isvisible = true;
+                } else if ($a->registered < $a->total) {
+                    $isvisible = true;
+                } else {
+                    $isvisible = false;
+                }
+            } else if (has_capability('mod/organizer:viewstudentview', $context)) {
+                $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid));
+                if (!(instance_is_visible('organizer', $organizer) && $courseisvisible)) {
+                    $isvisible = false;
+                } else {
+                    if (organizer_get_last_user_appointment($organizer)) {
+                        $isvisible = false;
+                    } else {
+                        $isvisible = true;
+                    }
+                }
             }
         }
     } else {
