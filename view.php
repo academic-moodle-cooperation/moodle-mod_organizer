@@ -53,10 +53,9 @@ if (isset($_SESSION["organizer_new_instance"])) {
     }
 }
 
-$context = context_module::instance($instance->cm->id);
 $url = organizer_create_url($params);
 $PAGE->set_url($url);
-$PAGE->set_context($context);
+$PAGE->set_context($instance->context);
 $PAGE->set_title($instance->organizer->name);
 $PAGE->set_heading($instance->course->shortname);
 $PAGE->set_activity_record($instance->organizer);
