@@ -345,13 +345,13 @@ class organizer_add_slots_form extends moodleform
             // Are there overlapping slots? Is the gap considered?
             for ($i = 0; $i < count($slots); $i++) {
                 $currentslot = $slots[$i];
-                $currentslot['from'] = ($currentslot['fromh'] * 3600) +  ($currentslot['fromm'] * 60);
-                $currentslot['to'] = ($currentslot['toh'] * 3600) +  ($currentslot['tom'] * 60);
+                $currentslot['from'] = ($currentslot['fromh'] * 3600) + ($currentslot['fromm'] * 60);
+                $currentslot['to'] = ($currentslot['toh'] * 3600) + ($currentslot['tom'] * 60);
                 $message = ' ';
                 for ($j = 0; $j < $i; $j++) {
                     $otherslot = $slots[$j];
-                    $otherslot['from'] = ($otherslot['fromh'] * 3600) +  ($otherslot['fromm'] * 60);
-                    $otherslot['to'] = ($otherslot['toh'] * 3600) +  ($otherslot['tom'] * 60);
+                    $otherslot['from'] = ($otherslot['fromh'] * 3600) + ($otherslot['fromm'] * 60);
+                    $otherslot['to'] = ($otherslot['toh'] * 3600) + ($otherslot['tom'] * 60);
                     if ($currentslot['day'] == $otherslot['day']
                         && ($this->_between($currentslot['from'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
                         || $this->_between($currentslot['to'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
@@ -359,9 +359,9 @@ class organizer_add_slots_form extends moodleform
                         || $this->_between($otherslot['to'], $currentslot['from'] - $gap, $currentslot['to'] + $gap))
                     ) {
 
-                        $message .= '(' . str_pad($otherslot['fromh']/3600, 2, "0", STR_PAD_LEFT) . ":" .
+                        $message .= '(' . str_pad($otherslot['fromh'] / 3600, 2, "0", STR_PAD_LEFT) . ":" .
                             str_pad($otherslot['fromm'], 2, "0") . '-' .
-                            str_pad($otherslot['toh']/3600, 2, "0") . ":" .
+                            str_pad($otherslot['toh'] / 3600, 2, "0") . ":" .
                             str_pad($otherslot['tom'], 2, "0", STR_PAD_LEFT) . '), ';
                     }
                 }
