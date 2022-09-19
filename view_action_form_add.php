@@ -31,6 +31,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * view_action_form_add.php
  *
  * @package   mod_organizer
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @author    Andreas Windbichler
@@ -41,7 +42,9 @@ require_once(dirname(__FILE__) . '/locallib.php');
 class organizer_add_slots_form extends moodleform
 {
 
-    private $pickeroptions;
+    private $pickeroptionshours;
+
+    private $pickeroptionsminutes;
 
     private $weekdays;
     /**
@@ -50,7 +53,7 @@ class organizer_add_slots_form extends moodleform
      * @see moodleform::definition()
      */
     protected function definition() {
-        global $USER, $PAGE, $DB;
+        global $PAGE, $DB;
 
         $this->_init_arrays();
         $this->_add_scroll_fix();
@@ -342,9 +345,13 @@ class organizer_add_slots_form extends moodleform
             // Are there overlapping slots? Is the gap considered?
             for ($i = 0; $i < count($slots); $i++) {
                 $currentslot = $slots[$i];
+                $currentslot['from'] = ($currentslot['fromh'] * 3600) + ($currentslot['fromm'] * 60);
+                $currentslot['to'] = ($currentslot['toh'] * 3600) + ($currentslot['tom'] * 60);
                 $message = ' ';
                 for ($j = 0; $j < $i; $j++) {
                     $otherslot = $slots[$j];
+                    $otherslot['from'] = ($otherslot['fromh'] * 3600) + ($otherslot['fromm'] * 60);
+                    $otherslot['to'] = ($otherslot['toh'] * 3600) + ($otherslot['tom'] * 60);
                     if ($currentslot['day'] == $otherslot['day']
                         && ($this->_between($currentslot['from'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
                         || $this->_between($currentslot['to'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
@@ -352,8 +359,10 @@ class organizer_add_slots_form extends moodleform
                         || $this->_between($otherslot['to'], $currentslot['from'] - $gap, $currentslot['to'] + $gap))
                     ) {
 
-                        $message .= '(' . $this->pickeroptions[$otherslot['from']] . '-'
-                                . $this->pickeroptions[$otherslot['to']] . '), ';
+                        $message .= '(' . str_pad($otherslot['fromh'] / 3600, 2, "0", STR_PAD_LEFT) . ":" .
+                            str_pad($otherslot['fromm'], 2, "0") . '-' .
+                            str_pad($otherslot['toh'] / 3600, 2, "0") . ":" .
+                            str_pad($otherslot['tom'], 2, "0", STR_PAD_LEFT) . '), ';
                     }
                 }
                 if ($message != ' ' && $currentslot['day'] != -1) {
@@ -411,6 +420,8 @@ class organizer_add_slots_form extends moodleform
             // Is "from" before "to"?
             for ($i = 0; $i < count($slots); $i++) {
                 $slot = $slots[$i];
+                $slot['from'] = $slot['fromh'] + $slot['fromm'];
+                $slot['to'] = $slot['toh'] + $slot['tom'];
                 if ($slot['day'] != -1 && ($slot['from'] >= $slot['to'])) {
                     return false;
                 }
@@ -419,8 +430,12 @@ class organizer_add_slots_form extends moodleform
             // Are there overlapping slots? Is the gap considered?
             for ($i = 0; $i < count($slots); $i++) {
                 $currentslot = $slots[$i];
+                $currentslot['from'] = $currentslot['fromh'] + $currentslot['fromm'];
+                $currentslot['to'] = $currentslot['toh'] + $currentslot['tom'];
                 for ($j = 0; $j < $i; $j++) {
                     $otherslot = $slots[$j];
+                    $otherslot['from'] = $otherslot['fromh'] + $otherslot['fromm'];
+                    $otherslot['to'] = $otherslot['toh'] + $otherslot['tom'];
                     if ($currentslot['day'] == $otherslot['day']
                         && ($currentslot['day'] != -1 && $otherslot['day'] != -1)
                         && ($this->_between($currentslot['from'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
@@ -491,18 +506,25 @@ class organizer_add_slots_form extends moodleform
         $mform->setDefault("{$name}[day]", -1);
 
         $slotgroup[] = $mform->createElement('static', '', '', get_string('slotfrom', 'organizer'));
-        $slotgroup[] = $mform->createElement('select', "{$name}[from]", '', $this->pickeroptions);
-        $mform->setType("{$name}[from]", PARAM_INT);
-        $mform->setDefault("{$name}[from]", 8 * 3600);
+        $slotgroup[] = $mform->createElement('select', "{$name}[fromh]", '', $this->pickeroptionshours);
+        $mform->setType("{$name}[fromh]", PARAM_INT);
+        $mform->setDefault("{$name}[fromh]", 8 * 3600);
+        $slotgroup[] = $mform->createElement('select', "{$name}[fromm]", '', $this->pickeroptionsminutes);
+        $mform->setType("{$name}[fromm]", PARAM_INT);
+        $mform->setDefault("{$name}[fromm]", 0);
 
         $slotgroup[] = $mform->createElement('select', "{$name}[dayto]", '', $this->weekdays);
         $mform->setType("{$name}[dayto]", PARAM_INT);
         $mform->setDefault("{$name}[dayto]", -1);
 
         $slotgroup[] = $mform->createElement('static', '', '', get_string('slotto', 'organizer'));
-        $slotgroup[] = $mform->createElement('select', "{$name}[to]", '', $this->pickeroptions);
-        $mform->setType("{$name}[to]", PARAM_INT);
-        $mform->setDefault("{$name}[to]", 8 * 3600);
+        $slotgroup[] = $mform->createElement('select', "{$name}[toh]", '', $this->pickeroptionshours);
+        $mform->setType("{$name}[toh]", PARAM_INT);
+        $mform->setDefault("{$name}[toh]", 8 * 3600);
+        $slotgroup[] = $mform->createElement('select', "{$name}[tom]", '', $this->pickeroptionsminutes);
+        $mform->setType("{$name}[tom]", PARAM_INT);
+        $mform->setDefault("{$name}[tom]", 0);
+
         $slotgroup[] = $mform->createElement('advcheckbox', "{$name}[visible]", '', get_string('visible', 'organizer'),
                 null, array(0, 1));
         $mform->setType("{$name}[visible]", PARAM_INT);
@@ -562,12 +584,15 @@ class organizer_add_slots_form extends moodleform
      * initialize arrays
      */
     private function _init_arrays() {
-        $this->pickeroptions = array();
+        $this->pickeroptionshours = array();
         for ($i = 0; $i < 24; $i++) {
-            for ($j = 0; $j < 60; $j += 5) {
-                $this->pickeroptions[($i * 3600) + ($j * 60)] = gmdate('H:i', ($i * 3600) + ($j * 60));
-            }
+            $this->pickeroptionshours[($i * 3600)] = gmdate('H', ($i * 3600));
         }
+        $this->pickeroptionsminutes = array();
+        for ($j = 0; $j < 60; $j += 5) {
+            $this->pickeroptionsminutes[($j * 60)] = gmdate('i', ($j * 60));
+        }
+
         $this->weekdays = array();
         $this->weekdays[-1] = get_string("choose");
         $this->weekdays[0] = get_string('day_0', 'organizer');
