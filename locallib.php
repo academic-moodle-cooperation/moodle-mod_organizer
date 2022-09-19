@@ -162,6 +162,8 @@ function organizer_add_new_slots($data) {
             if ($slot['day'] != $weekday || $slot['day'] == -1 || $slot['dayto'] == -1 ) {
                 continue;
             }
+            $slot['from'] = $slot['fromh'] + $slot['fromm'];
+            $slot['to'] = $slot['toh'] + $slot['tom'];
             $slot['datefrom'] = $daydate + $slot['from'];
             $slot['dateto'] = organizer_get_dayto($slot['dayto'], $daydate);
             $slot['dateto'] = $slot['dateto'] + $slot['to'];
