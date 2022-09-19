@@ -420,6 +420,8 @@ class organizer_add_slots_form extends moodleform
             // Is "from" before "to"?
             for ($i = 0; $i < count($slots); $i++) {
                 $slot = $slots[$i];
+                $slot['from'] = $slot['fromh'] + $slot['fromm'];
+                $slot['to'] = $slot['toh'] + $slot['tom'];
                 if ($slot['day'] != -1 && ($slot['from'] >= $slot['to'])) {
                     return false;
                 }
@@ -428,8 +430,12 @@ class organizer_add_slots_form extends moodleform
             // Are there overlapping slots? Is the gap considered?
             for ($i = 0; $i < count($slots); $i++) {
                 $currentslot = $slots[$i];
+                $currentslot['from'] = $currentslot['fromh'] + $currentslot['fromm'];
+                $currentslot['to'] = $currentslot['toh'] + $currentslot['tom'];
                 for ($j = 0; $j < $i; $j++) {
                     $otherslot = $slots[$j];
+                    $otherslot['from'] = $otherslot['fromh'] + $otherslot['fromm'];
+                    $otherslot['to'] = $otherslot['toh'] + $otherslot['tom'];
                     if ($currentslot['day'] == $otherslot['day']
                         && ($currentslot['day'] != -1 && $otherslot['day'] != -1)
                         && ($this->_between($currentslot['from'], $otherslot['from'] - $gap, $otherslot['to'] + $gap)
