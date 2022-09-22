@@ -328,6 +328,7 @@ define(
                 if (e.which === 48) {
                     if (instance.hours == "0") {
                         $(e.target).val("0");
+                        instance.hours = "";
                     } else {
                         instance.hours = "0";
                     }
