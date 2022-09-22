@@ -54,6 +54,7 @@ define(
             // not been created due to registration deadline. "xxx" is replaced by the number of not created slots.
             instance.allowcreationofpasttimeslots = param.allowcreationofpasttimeslots;// Deadline for registrations(s).
             instance.pasttimeslotsstring = param.pasttimeslotsstring; // String warning message if slots had
+            instance.hours = "";
 
             if (instance.displayallslots == 0) { // So the form is loaded initially.
 
@@ -78,6 +79,10 @@ define(
 
             // If a new slot field is changed evaluate the row to provide the forecast.
             $('[name^="newslots"]').not(':checkbox').on('change', startevaluation);
+
+            // Bug in the hours fields of slot creation. If user input is "00": "01" is selected.
+            $('[name*="fromh"]').on('keyup', zerohoursbug);
+            $('[name*="toh"]').on('keyup', zerohoursbug);
 
             // After relevant input is changed recalculate the forecasts.
             $('input[name^="duration"]').on('change', evaluateallrows);
@@ -316,6 +321,18 @@ define(
                         $('#id_addday').show();
                     }
                     instance.current++;
+                }
+            }
+
+            function zerohoursbug(e) {
+                if (e.which === 48) {
+                    if (instance.hours == "0") {
+                        $(e.target).val("0");
+                    } else {
+                        instance.hours = "0";
+                    }
+                } else {
+                    instance.hours = "";
                 }
             }
         };
