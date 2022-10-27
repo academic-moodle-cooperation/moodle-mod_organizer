@@ -26,7 +26,7 @@
 
 
 define(
-    ['jquery'], function($) {
+    ['jquery', 'core/log'], function($, log) {
 
         /**
          * @constructor
@@ -71,21 +71,6 @@ define(
                     $('#id_addday').hide();
                 }
 
-                // As soon as a to time is edited, display the next day.
-                $('[id^=id_newslots_]').change(
-                    function() {
-                        var id = $(this).attr("id");
-                        var nextindex = parseInt(id.split("_")[2]) + 1;
-                        if (nextindex > instance.current) {
-                            $("#id_newslots_" + String(nextindex) + "_day").closest(".form-group.row.fitem").show(); // Boost-theme.
-                            $("#fgroup_id_slotgroup" + String(nextindex)).show(); // Clean-theme.
-                            if (nextindex == instance.totalslots) {
-                                $('#id_addday').show();
-                            }
-                            instance.current++;
-                        }
-                    }
-                );
             } else {
                 instance.current = instance.totalslots;
                 evaluateallrows();
@@ -115,9 +100,10 @@ define(
                 var i = parseInt(name.replace('newslots[', ''));
                 var valdayfrom = parseInt($("select[name='newslots\[" + i + "\]\[day\]']").val());
                 var valdayto = parseInt($("select[name='newslots\[" + i + "\]\[dayto\]']").val());
-                var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[from\]']").val());
+                var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[fromh\]']").val()) +
+                    parseInt($("select[name='newslots\[" + i + "\]\[fromm\]']").val());
                 // Proposal for to-date's time when from-date's time has been changed.
-                if ((valdayfrom != -1 && valdayto == -1) || name.indexOf("[from]") != -1) {
+                if ((valdayfrom != -1 && valdayto == -1) || (name.indexOf("[fromh]") != -1 && name.indexOf("[fromm]") != -1)) {
                     var periodstartdate = getstartdate();
                     var periodenddate = getenddate();
                     for (var daydate = periodstartdate; daydate <= periodenddate; daydate = addDays(daydate * 1000, 1)) {
@@ -133,16 +119,17 @@ define(
                     var pday = jspdate.getDay();
                     var pweekday = pday ? (pday - 1) : 6;
                     $("select[name='newslots\[" + i + "\]\[dayto\]']").val(pweekday);
+                    valdayto = pweekday;
                     var hours = jspdate.getHours();
-                    var minutes = jspdate.getMinutes() + (hours * 60);
+                    var minutes = jspdate.getMinutes();
                     minutes = minutes % 5 ? minutes + (5 - (minutes % 5)) : minutes;
                     var pseconds = minutes * 60;
-                    $("select[name='newslots\[" + i + "\]\[to\]']").val(pseconds);
+                    $("select[name='newslots\[" + i + "\]\[toh\]']").val(hours * 3600);
+                    $("select[name='newslots\[" + i + "\]\[tom\]']").val(pseconds);
                 }
-                valdayfrom = parseInt($("select[name='newslots\[" + i + "\]\[day\]']").val());
-                valdayto = parseInt($("select[name='newslots\[" + i + "\]\[dayto\]']").val());
                 if (valdayfrom != -1 && valdayto != -1) {
                     evaluaterow(i);
+                    shownextnewslot(i);
                 } else {
                     resetrowevaluation(i);
                 }
@@ -204,8 +191,10 @@ define(
                 // Get period, time from, slot duration and gap between slots.
                 var periodstartdate = getstartdate();
                 var periodenddate = getenddate();
-                var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[from\]']").val());
-                var valto = parseInt($("select[name='newslots\[" + i + "\]\[to\]']").val());
+                var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[fromh\]']").val()) +
+                    parseInt($("select[name='newslots\[" + i + "\]\[fromm\]']").val());
+                var valto = parseInt($("select[name='newslots\[" + i + "\]\[toh\]']").val()) +
+                    parseInt($("select[name='newslots\[" + i + "\]\[tom\]']").val());
                 // Duration + gap in seconds.
                 var duration = getduration();
                 var iteration = duration + getgap();
@@ -316,6 +305,20 @@ define(
                 result.setDate(result.getDate() + days);
                 return result.getTime() / 1000;
             }
+
+            function shownextnewslot(id) {
+                // As soon as a to time is edited, display the next day.
+                let nextindex = parseInt(id) + 1;
+                if (nextindex > instance.current) {
+                    $("#id_newslots_" + String(nextindex) + "_day").closest(".form-group.row.fitem").show(); // Boost-theme.
+                    $("#fgroup_id_slotgroup" + String(nextindex)).show(); // Clean-theme.
+                    if (nextindex == instance.totalslots) {
+                        $('#id_addday').show();
+                    }
+                    instance.current++;
+                }
+            }
+
         };
 
         return instance;
