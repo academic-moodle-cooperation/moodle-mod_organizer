@@ -441,11 +441,12 @@ class organizer_edit_slots_form extends moodleform
      * @see moodleform::get_data()
      */
     public function get_data() {
-        $data = parent::get_data();
-        if (isset($_POST['location']) && $_POST['location']) {
-            $data->location = $_POST['location'];
+        if ($data = parent::get_data()) {
+            if (isset($_POST['location']) && $_POST['location']) {
+                $data->location = $_POST['location'];
+            }
+            return $data;
         }
-        return $data;
     }
     /**
      * @return string[]
