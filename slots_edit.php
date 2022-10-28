@@ -67,7 +67,9 @@ if (!$slots) {
 $mform = new organizer_edit_slots_form(
     null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
-if ($data = $mform->get_data()) {
+if ($mform->is_cancelled()) {
+    redirect($redirecturl);
+} else if ($data = $mform->get_data()) {
     $slotids = organizer_update_slot($data);
 
     organizer_prepare_and_send_message($data, 'edit_notify_teacher');
@@ -85,8 +87,6 @@ if ($data = $mform->get_data()) {
     $event->trigger();
 
     redirect($newurl);
-} else if ($mform->is_cancelled()) {
-    redirect($redirecturl);
 } else {
     organizer_display_form($mform, get_string('title_edit', 'organizer'));
 }
