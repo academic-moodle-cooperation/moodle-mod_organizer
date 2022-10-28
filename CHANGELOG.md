@@ -1,5 +1,20 @@
 CHANGELOG
 =========
+
+3.11.4 (2022-10-31)
+------------------
+* [FIXED] #6383: slot edit leads to shortened location string
+* [FIXED] #6954: cancelled slot grading not removable
+* [FIXED] #7181: calendar export shows no organizer entries
+* [FIXED] #7215: debug messages when clicking the gear icon of a slot
+* [FIXED] #7219: slot creation: make the time input field a select field
+* [FIXED] #7232: slot creation: warning message when using a gap
+* [FEATURE] #7233: backup/copy: copy slots as well
+* [FIXED] #7248: slot edit form: label "Relative appointment reminder" is shown two times
+* [FIXED] #7249: slot view: Display/hide slot options settings are not saved
+* [FIXED] #7278: show completion status in view.php
+* [FIXED] #7380: slot edit form: cancel button does not work if there is a location entry
+
 3.11.3 (2022-04-25)
 ------------------
 * [FEATURE]  Provide activity dates for display in course overview
