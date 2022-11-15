@@ -231,34 +231,33 @@ function organizer_end_form() {
 }
 
 function organizer_generate_tab_row($params, $context) {
-    $tabrow = array();
+    global $OUTPUT;
+
+    $thirdnav = array();
+    $thirdnavlink = array();
+    $url = new moodle_url('/mod/organizer/view.php', array('id' => $params['id']));
 
     if (has_capability('mod/organizer:viewallslots', $context, null, true)) {
-        $targeturl = new moodle_url(
-            '/mod/organizer/view.php',
-            array('id' => $params['id'], 'mode' => ORGANIZER_TAB_APPOINTMENTS_VIEW)
-        );
-        $tabrow[] = new tabobject(ORGANIZER_TAB_APPOINTMENTS_VIEW, $targeturl, get_string('taballapp', 'organizer'));
+        $url->param('mode', ORGANIZER_TAB_APPOINTMENTS_VIEW);
+        $thirdnavlink[ORGANIZER_TAB_APPOINTMENTS_VIEW] = $url->out();
+        $thirdnav[$thirdnavlink[ORGANIZER_TAB_APPOINTMENTS_VIEW]] = get_string('taballapp', 'organizer');
     }
 
     if (has_capability('mod/organizer:viewregistrations', $context, null, true)) {
-        $targeturl = new moodle_url(
-            '/mod/organizer/view.php',
-            array('id' => $params['id'], 'mode' => ORGANIZER_TAB_REGISTRATION_STATUS_VIEW)
-        );
-        $tabrow[] = new tabobject(ORGANIZER_TAB_REGISTRATION_STATUS_VIEW, $targeturl, get_string('tabstatus', 'organizer'));
+        $url->param('mode', ORGANIZER_TAB_REGISTRATION_STATUS_VIEW);
+        $thirdnavlink[ORGANIZER_TAB_REGISTRATION_STATUS_VIEW] = $url->out();
+        $thirdnav[$thirdnavlink[ORGANIZER_TAB_REGISTRATION_STATUS_VIEW]] = get_string('tabstatus', 'organizer');
     }
 
     if (has_capability('mod/organizer:viewstudentview', $context, null, true)) {
-        $targeturl = new moodle_url('/mod/organizer/view.php', array('id' => $params['id'], 'mode' => ORGANIZER_TAB_STUDENT_VIEW));
-        $tabrow[] = new tabobject(ORGANIZER_TAB_STUDENT_VIEW, $targeturl, get_string('tabstud', 'organizer'));
+        $url->param('mode', ORGANIZER_TAB_STUDENT_VIEW);
+        $thirdnavlink[ORGANIZER_TAB_STUDENT_VIEW] = $url->out();
+        $thirdnav[$thirdnavlink[ORGANIZER_TAB_STUDENT_VIEW]] = get_string('tabstud', 'organizer');
     }
 
-    if (count($tabrow) > 1) {
-        $tabs = array($tabrow);
-        $output = print_tabs($tabs, $params['mode'], null, null, true);
-        $output = preg_replace('/<div class="tabtree">/', '<div class="tabtree" style="margin-bottom: 0em;">', $output);
-        return $output;
+    if (count($thirdnavlink) > 0) {
+        $urlselector = new \url_select($thirdnav, $thirdnavlink[$params['mode']]);
+        return $OUTPUT->render($urlselector);
     } else {
         return ''; // If only one tab is enabled, hide the tab row altogether.
     }
@@ -1208,14 +1207,24 @@ function organizer_date_time($slot) {
         return '-';
     }
 
-    $datefrom = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer')) . " " .
-            userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-    $dateto = userdate($slot->starttime + $slot->duration, get_string('fulldatetemplate', 'organizer')) . " " .
-            userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
     list($unitname, $value) = organizer_figure_out_unit($slot->duration);
     $duration = ($slot->duration / $value) . ' ' . $unitname;
 
-    return "$datefrom -<br />$dateto ($duration)";
+    // If slot is within a day.
+    if (userdate($slot->starttime, get_string('datetemplate', 'organizer')) ==
+        userdate($slot->starttime + $slot->duration, get_string('datetemplate', 'organizer'))) {
+        $datefrom = userdate($slot->starttime, get_string('datetemplate', 'organizer')) . " " .
+            userdate($slot->starttime, get_string('timetemplate', 'organizer'));
+        $dateto = userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
+    } else {
+        $datefrom = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer')) . " " .
+            userdate($slot->starttime, get_string('timetemplate', 'organizer'));
+        $dateto = userdate($slot->starttime + $slot->duration, get_string('fulldatetemplate', 'organizer')) . " " .
+            userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
+    }
+    $datestr = html_writer::span("$datefrom-$dateto ($duration)", "slotdates");
+    return $datestr;
+
 }
 
 function organizer_trainer_data($params, $slot, $trainerids = null) {
