@@ -49,6 +49,8 @@ if (count($slots) == 0) {
     redirect($redirecturl);
 }
 
+$PAGE->add_body_class('limitedwidth');
+
 if ($tsort != null) {
     if (isset($_SESSION['organizer_slots'])) {
         $slots = $_SESSION['organizer_slots'];

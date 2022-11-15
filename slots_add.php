@@ -42,6 +42,8 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 
 require_capability('mod/organizer:addslots', $context);
 
+$PAGE->add_body_class('limitedwidth');
+
 $mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
 
 if ($data = $mform->get_data()) {  // When page is called the first time (=empty form) or form data has errors: no data.

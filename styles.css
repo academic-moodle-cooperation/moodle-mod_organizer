@@ -181,3 +181,7 @@
 #id_export_settings_header {
     border-bottom: none !important;
 }
+
+.path-mod-organizer .slotdates {
+    white-space: nowrap;
+}

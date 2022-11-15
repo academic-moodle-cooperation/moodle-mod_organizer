@@ -505,7 +505,6 @@ class organizer_add_slots_form extends moodleform
         $mform->setType("{$name}[day]", PARAM_INT);
         $mform->setDefault("{$name}[day]", -1);
 
-        $slotgroup[] = $mform->createElement('static', '', '', get_string('slotfrom', 'organizer'));
         $slotgroup[] = $mform->createElement('select', "{$name}[fromh]", '', $this->pickeroptionshours);
         $mform->setType("{$name}[fromh]", PARAM_INT);
         $mform->setDefault("{$name}[fromh]", 8 * 3600);
@@ -513,11 +512,11 @@ class organizer_add_slots_form extends moodleform
         $mform->setType("{$name}[fromm]", PARAM_INT);
         $mform->setDefault("{$name}[fromm]", 0);
 
+        $slotgroup[] = $mform->createElement('static', '', '', '-');
         $slotgroup[] = $mform->createElement('select', "{$name}[dayto]", '', $this->weekdays);
         $mform->setType("{$name}[dayto]", PARAM_INT);
         $mform->setDefault("{$name}[dayto]", -1);
 
-        $slotgroup[] = $mform->createElement('static', '', '', get_string('slotto', 'organizer'));
         $slotgroup[] = $mform->createElement('select', "{$name}[toh]", '', $this->pickeroptionshours);
         $mform->setType("{$name}[toh]", PARAM_INT);
         $mform->setDefault("{$name}[toh]", 8 * 3600);
@@ -595,13 +594,9 @@ class organizer_add_slots_form extends moodleform
 
         $this->weekdays = array();
         $this->weekdays[-1] = get_string("choose");
-        $this->weekdays[0] = get_string('day_0', 'organizer');
-        $this->weekdays[1] = get_string('day_1', 'organizer');
-        $this->weekdays[2] = get_string('day_2', 'organizer');
-        $this->weekdays[3] = get_string('day_3', 'organizer');
-        $this->weekdays[4] = get_string('day_4', 'organizer');
-        $this->weekdays[5] = get_string('day_5', 'organizer');
-        $this->weekdays[6] = get_string('day_6', 'organizer');
+        for ($i = 0; $i < 7; $i++) {
+            $this->weekdays[$i] = substr(get_string("day_$i", 'organizer'), 0, 2);
+        }
     }
 
     /**

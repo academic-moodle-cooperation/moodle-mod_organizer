@@ -45,6 +45,8 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 
 require_capability('mod/organizer:evalslots', $context);
 
+$PAGE->add_body_class('limitedwidth');
+
 if (!is_null($slot)) {
     $slots = array($slot);
 }

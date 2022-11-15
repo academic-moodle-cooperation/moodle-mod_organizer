@@ -1037,8 +1037,8 @@ $string['eventtemplatecomment'] = 'Comment:<br />{$a}<br />';
 $string['fulldatetimelongtemplate'] = '%A %d. %B %Y %H:%M';
 $string['fulldatetimetemplate'] = '%a %d.%m.%Y %H:%M';
 $string['fulldatelongtemplate'] = '%A %d. %B %Y';
-$string['fulldatetemplate'] = '%a %d.%m.%Y';
-$string['datetemplate'] = '%d.%m.%Y';
+$string['fulldatetemplate'] = '%a %d.%m.%y';
+$string['datetemplate'] = '%d.%m.%y';
 $string['timetemplate'] = '%H:%M';
 
 $string['font_small'] = 'small';

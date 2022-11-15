@@ -59,6 +59,7 @@ $PAGE->set_context($instance->context);
 $PAGE->set_title($instance->organizer->name);
 $PAGE->set_heading($instance->course->shortname);
 $PAGE->set_activity_record($instance->organizer);
+$PAGE->add_body_class('limitedwidth');
 
 if ($instance->organizer->hidecalendar != 1) {
     organizer_add_calendar();
@@ -69,7 +70,6 @@ $completion = new completion_info($instance->course);
 $completion->set_module_viewed($instance->cm);
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(format_string($instance->organizer->name), 2, null);
 
 echo $OUTPUT->box_start('', 'organizer_main_cointainer');
 switch ($params['mode']) {
