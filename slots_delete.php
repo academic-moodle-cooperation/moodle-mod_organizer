@@ -51,6 +51,8 @@ if (!$slots) {
     redirect($redirecturl);
 }
 
+$PAGE->add_body_class('limitedwidth');
+
 $mform = new organizer_delete_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
 if ($data = $mform->get_data()) {
