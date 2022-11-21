@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.0.0 (2022-10-28)
+-------------------
+* Moodle 4.0 compatible version
+
 3.11.4 (2022-10-31)
 ------------------
 * [FIXED] #6383: slot edit leads to shortened location string
