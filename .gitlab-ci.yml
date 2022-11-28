@@ -57,11 +57,11 @@ code_checker_pgsql:
   <<: *job_definition
   image: amcdev/moodle-plugin-ci:7.4-n.16
   variables:
-    MOODLE_BRANCH: "MOODLE_311_STABLE"
+    MOODLE_BRANCH: "master"
 
 code_checker_mariadb:
   extends: .mariadb
   <<: *job_definition
   image: amcdev/moodle-plugin-ci:7.4-n.16
   variables:
-    MOODLE_BRANCH: "MOODLE_311_STABLE"
+    MOODLE_BRANCH: "master"
