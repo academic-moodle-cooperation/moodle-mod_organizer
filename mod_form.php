@@ -169,6 +169,28 @@ class mod_organizer_mod_form extends moodleform_mod
         $mform->setDefault('nocalendareventslotcreation', 1);
         $mform->addHelpButton('nocalendareventslotcreation', 'nocalendareventslotcreation', 'organizer');
 
+        $mform->addElement(
+            'advcheckbox', 'allowmultiple',
+            get_string('allowmultiple', 'organizer'), null, null, array(0, 1)
+        );
+        $mform->setType('allowmultiple', PARAM_INT);
+        $mform->setDefault('allowmultiple', 0);
+        $mform->addHelpButton('allowmultiple', 'allowmultiple', 'organizer');
+
+        $mform->addElement('text', 'multiplemin', get_string('multiplemin', 'organizer'), array('size' => '3'));
+        $mform->setType('multiplemin', PARAM_INT);
+        $mform->setDefault('multiplemin', 1);
+        $mform->addHelpButton('multiplemin', 'multiplemin', 'organizer');
+        $mform->disabledif ('multiplemin', 'allowmultiple', 'notchecked');
+        $mform->addRule('multiplemin', null, 'numeric', null, 'client');
+
+        $mform->addElement('text', 'multiplemax', get_string('multiplemax', 'organizer'), array('size' => '3'));
+        $mform->setType('multiplemax', PARAM_INT);
+        $mform->setDefault('multiplemax', 1);
+        $mform->addHelpButton('multiplemax', 'multiplemax', 'organizer');
+        $mform->disabledif ('multiplemax', 'allowmultiple', 'notchecked');
+        $mform->addRule('multiplemax', null, 'numeric', null, 'client');
+
         if ($organizerconfig->absolutedeadline != 'never') {
             $absdefault = strtotime($organizerconfig->absolutedeadline);
             $mform->setDefault('duedate', $absdefault);

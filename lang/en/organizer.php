@@ -1093,6 +1093,13 @@ $string['hidecalendar_help'] = 'Check to hide the calendar in this organizer';
 $string['nocalendareventslotcreation'] = 'No calendar events for empty slots';
 $string['nocalendareventslotcreation_help'] = 'If you check this option no calendar events will be created when creating slots. Only appointments will create slot calendar events.';
 
+$string['allowmultiple'] = 'Allow multiple bookings';
+$string['allowmultiple_help'] = 'If you check this option participants are able to book more than one slot in this organizer.';
+$string['multiplemin'] = 'Minimum of slots per participant';
+$string['multiplemin_help'] = 'Minimum of slots a participant has to book.';
+$string['multiplemax'] = 'Maximum of slots per participant';
+$string['multiplemax_help'] = 'Amount of slots a participant is allowed to book.';
+
 $string['finalgrade'] = 'This value has been set in the gradebook and can not be changed with the organizer.';
 
 $string['selectedslots'] = 'Selected slots';

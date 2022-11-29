@@ -710,5 +710,20 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021062301, 'organizer');
     }
 
+    if ($oldversion < 2021062305) {
+        $table = new xmldb_table('organizer');
+
+        $field = new xmldb_field('allowmultiple', XMLDB_TYPE_INTEGER, '4', null, false, null, '0', 'enableprintslotuserfields');
+        $dbman->add_field($table, $field);
+
+        $field = new xmldb_field('multiplemin', XMLDB_TYPE_INTEGER, '4', null, false, null, '0', 'allowmultiple');
+        $dbman->add_field($table, $field);
+
+        $field = new xmldb_field('multiplemax', XMLDB_TYPE_INTEGER, '4', null, false, null, '0', 'multiplemin');
+        $dbman->add_field($table, $field);
+
+        upgrade_mod_savepoint(true, 2021062305, 'organizer');
+    }
+
     return true;
 }

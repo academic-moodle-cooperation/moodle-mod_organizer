@@ -36,7 +36,10 @@
         <FIELD NAME="singleslotprintfield8" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield7" NEXT="singleslotprintfield9"/>
         <FIELD NAME="singleslotprintfield9" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield8" NEXT="allowedprofilefieldsprint"/>
         <FIELD NAME="allowedprofilefieldsprint" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield9" NEXT="enableprintslotuserfields"/>
-        <FIELD NAME="enableprintslotuserfields" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" PREVIOUS="allowedprofilefieldsprint"/>
+        <FIELD NAME="enableprintslotuserfields" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" PREVIOUS="allowedprofilefieldsprint" NEXT="allowmultiple"/>
+        <FIELD NAME="allowmultiple" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="enableprintslotuserfields" NEXT="allowmultiple" COMMENT="Flag to enable multiple slot bookings."/>
+        <FIELD NAME="multiplemin" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="allowmultiple" NEXT="multiplemax" COMMENT="How many slots must be booked by participant"/>
+        <FIELD NAME="multiplemax" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="multiplemin" COMMENT="How many slots can be booked by participant"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
