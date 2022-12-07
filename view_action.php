@@ -289,6 +289,8 @@ function organizer_organizer_student_action_allowed($action, $slot, $organizer, 
         return false;
     }
 
+    $cmid = $context->_instanceid;
+
     $slotx = new organizer_slot($slot);
 
     list(, , $organizer, $context) = organizer_get_course_module_data();
