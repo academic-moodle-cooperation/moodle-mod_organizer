@@ -16,7 +16,7 @@ variables:
     - cd ../..
     - moodle-plugin-ci install --moodle="moodle-upstream-core" --db-user=moodleci --db-pass=moodleing --db-host=127.0.0.1
   services:
-    - postgres:11
+    - postgres:12
     - docker:dind
 
   variables:
@@ -57,11 +57,11 @@ code_checker_pgsql:
   <<: *job_definition
   image: amcdev/moodle-plugin-ci:7.4-n.16
   variables:
-    MOODLE_BRANCH: "MOODLE_311_STABLE"
+    MOODLE_BRANCH: "master"
 
 code_checker_mariadb:
   extends: .mariadb
   <<: *job_definition
   image: amcdev/moodle-plugin-ci:7.4-n.16
   variables:
-    MOODLE_BRANCH: "MOODLE_311_STABLE"
+    MOODLE_BRANCH: "master"
