@@ -34,10 +34,9 @@ define('ORGANIZER_ACTION_QUEUE', 'queue');
 define('ORGANIZER_ACTION_UNQUEUE', 'unqueue');
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
-require_once(dirname(__FILE__) . '/locallib.php');
+require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/view_action_form_comment.php');
 require_once(dirname(__FILE__) . '/view_action_form_print.php');
-require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 require_once($CFG->dirroot . '/mod/organizer/classes/event/queue_added.php');
 require_once($CFG->dirroot . '/mod/organizer/classes/event/queue_removed.php');
@@ -123,8 +122,9 @@ if ($bulkaction) {
 if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
     require_capability('mod/organizer:register', $context);
 
-    if (!organizer_organizer_student_action_allowed($action, $slot, $organizer, $context)) {
+    if (!organizer_participants_action_allowed($action, $slot, $organizer, $context)) {
         print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
+        die();
     }
 
     $group = organizer_fetch_my_group();
@@ -170,8 +170,9 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 
     require_capability('mod/organizer:unregister', $context);
 
-    if (!organizer_organizer_student_action_allowed($action, $slot, $organizer, $context)) {
+    if (!organizer_participants_action_allowed($action, $slot, $organizer, $context)) {
         print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
+        die();
     }
 
     $group = organizer_fetch_my_group();
@@ -224,7 +225,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
     require_capability('mod/organizer:register', $context);
     require_capability('mod/organizer:unregister', $context);
 
-    if (!organizer_organizer_student_action_allowed($action, $slot, $organizer, $context)) {
+    if (!organizer_participants_action_allowed($action, $slot, $organizer, $context)) {
         print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
     }
 
@@ -275,65 +276,56 @@ die;
 /**
  * Checks if the participant is allowed and able to process the given action on the given slot.
  *
- * @param mixed $action   Participant's action like register, unregister, etc...
- * @param mixed $slot     The slot to which the action is applied.
- * @param $organizer
- * @param $context
+ * @param string $action   Participant's action like register, unregister, etc...
+ * @param object $slot     The slot to which the action is applied.
+ * @param object $organizer
+ * @param object $context
  * @return boolean        Whether this action is allowed or possible for the participant or not
  * @throws dml_exception
+ * @throws coding_exception
  */
-function organizer_organizer_student_action_allowed($action, $slot, $organizer, $context) {
-    global $DB;
+function organizer_participants_action_allowed($action, $slot, $organizer, $context) {
+    global $DB, $USER;
 
     if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
         return false;
     }
-
     $slotx = new organizer_slot($slot);
-
-    list(, , $organizer, $context) = organizer_get_course_module_data();
-
-    list(
-        $canregister,
-        $canunregister,
-        $canreregister,
-        $myapp,
-        $regslotx,
-        $myslotexists,
-        $organizerdisabled,
-        $slotdisabled,
-        $myslotpending,
-        $ismyslot,
-        $slotfull,
-        $disabled,
-        $isalreadyinqueue,
-        $isqueueable
-        )
-        = organizer_get_studentrights($slotx, $organizer, $context);
-
-    if ($myslotexists) {
-        if (!$slotdisabled) {
-            if ($ismyslot) {
-                $disabled |= !$canunregister
-                    || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
-            } else {
-                $disabled |= $slotfull || !$canreregister
-                    || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
-            }
-        }
-        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REREGISTER;
+    $rightregister = has_capability('mod/organizer:register', $context, null, false);
+    $rightunregister = has_capability('mod/organizer:unregister', $context, null, false);
+    $isuserslot = organizer_get_slot_user_appointment($slotx) ? true : false;
+    $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
+    $slotexpired = $slotx->is_past_due() || $slotx->is_past_deadline();
+    $slotevalpending = $slotx->is_past_deadline() && !$slotx->is_evaluated();
+    $slotfull = $slotx->is_full();
+    $disabled = $slotevalpending || $organizerdisabled || $slotexpired ||
+        !$slotx->organizer_groupmode_user_has_access() || $slotx->is_evaluated();
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $isalreadyinqueue = $slotx->is_group_in_queue();
     } else {
-        $disabled |= $slotfull || !$canregister || $ismyslot;
-        $allowedaction = $ismyslot ? ORGANIZER_ACTION_UNREGISTER : ORGANIZER_ACTION_REGISTER;
+        $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
     }
-
-    $result = !$disabled && ($action == $allowedaction);
-    if (!$result && $isqueueable &&  $action == ORGANIZER_ACTION_QUEUE) {
-        $result = true;
+    $isqueueable = $organizer->queue && !$isalreadyinqueue && !$slotevalpending && !$organizerdisabled
+        && !$slotexpired && $slotx->organizer_groupmode_user_has_access() && !$slotx->is_evaluated();
+    if ($isuserslot) {
+        $allowedaction = ORGANIZER_ACTION_UNREGISTER;
+        $disabled |= !$rightunregister;
+    } else {
+        $allowedaction = ORGANIZER_ACTION_REGISTER;
+        $slotsleft = organizer_userslots_left($organizer);
+        if ($slotsleft) {
+            $disabled |= $slotfull || !$rightregister;
+        } else {
+            $disabled = true;
+        }
     }
-    if (!$result && $isalreadyinqueue && $action == ORGANIZER_ACTION_UNQUEUE) {
-        $result = true;
+    if (!$isuserslot && $slotfull && $rightregister && $isqueueable && !$isalreadyinqueue && !$disabled) {
+        $allowedaction = ORGANIZER_ACTION_QUEUE;
+        $disabled = false;
     }
-
-    return $result;
+    if ($isalreadyinqueue) {
+        $allowedaction = ORGANIZER_ACTION_UNQUEUE;
+        $disabled = false;
+    }
+    return ($allowedaction == $action) && !$disabled;
 }

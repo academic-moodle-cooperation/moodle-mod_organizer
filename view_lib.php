@@ -44,10 +44,8 @@ define('ORGANIZER_ICON_TEACHER_FEEDBACK', 2);
 
 require_once(dirname(__FILE__) . '/../../course/lib.php');
 require_once(dirname(__FILE__) . '/../../calendar/lib.php');
-require_once(dirname(__FILE__) . '/lib.php');
-require_once(dirname(__FILE__) . '/custom_table_renderer.php');
-require_once(dirname(__FILE__) . '/slotlib.php');
 require_once(dirname(__FILE__) . '/infobox.php');
+require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
 function organizer_display_form(moodleform $mform, $title) {
     global $OUTPUT;
@@ -421,7 +419,7 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
     return $header;
 }
 
-function organizer_generate_table_content($columns, $params, $organizer, $showonlyregslot = false) {
+function organizer_generate_table_content($columns, $params, $organizer, $onlyownslots = false) {
     global $DB, $USER;
 
     $translate = array('datetime' => "starttime {$params['dir']}", 'location' => "location {$params['dir']}",
@@ -429,29 +427,16 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
 
     $order = $translate[$params['sort']];
 
-    $app = organizer_get_last_user_appointment($organizer);
+    $apps = organizer_get_all_user_appointments($organizer);
+    $userslots = array_column($apps, 'slotid', 'id');
 
-    if ($showonlyregslot) {
-        if ($app) {
-            $evaldapp = organizer_get_last_user_appointment($organizer, 0, false, true);
-            if (!$evaldapp || $app->id == $evaldapp->id) {
-                $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)));
-            } else {
-                $slots = array($DB->get_record('organizer_slots', array('id' => $app->slotid)),
-                    $DB->get_record('organizer_slots', array('id' => $evaldapp->slotid)));
-            }
-        } else {
-            $slots = array();
-        }
+    $sqlparams = array('organizerid' => $organizer->id);
+    if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW) {
+        $query = "SELECT s.* FROM {organizer_slots} s WHERE s.organizerid = :organizerid ORDER BY $order";
     } else {
-        $sqlparams = array('organizerid' => $organizer->id);
-        if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW) {
-            $query = "SELECT s.* FROM {organizer_slots} s WHERE s.organizerid = :organizerid ORDER BY $order";
-        } else {
-            $query = "SELECT s.* FROM {organizer_slots} s WHERE s.organizerid = :organizerid AND s.visible = 1 ORDER BY $order";
-        }
-        $slots = $DB->get_records_sql($query, $sqlparams);
+        $query = "SELECT s.* FROM {organizer_slots} s WHERE s.organizerid = :organizerid AND s.visible = 1 ORDER BY $order";
     }
+    $slots = $DB->get_records_sql($query, $sqlparams);
 
     $showpasttimeslots = false;
     $showonlymyslots = false;
@@ -459,11 +444,45 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
     $showpastslots = false;
     $showmyslotsonly = false;
 
+    $onlyownslotsmsg = "";
+
     $rows = array();
     if (count($slots) != 0) {
         $numshown = 0;
         foreach ($slots as $slot) {
-
+            if ($isuserslot = array_search($slot->id, $userslots)) {
+                $app = $apps[$isuserslot];
+                if ($onlyownslots) {
+                    $onlyownslotsmsg = "";
+                    if ($slot->starttime - $organizer->relativedeadline - time() > 0) {
+                        $a = new stdClass();
+                        list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown(
+                            $slot->starttime - $organizer->relativedeadline - time());
+                        $class = $a->days > 1 ? "countdown_normal" : ($a->hours > 1 ? "countdown_hurry" : "countdown_critical");
+                        $onlyownslotsmsg .= "<div><span class=\"$class\">".
+                            get_string('infobox_deadline_countdown', 'organizer', $a).'</span></div>';
+                    } else {
+                        $onlyownslotsmsg .= '<div><span class="countdown_passed">'.
+                            get_string('infobox_deadline_passed', 'organizer').'</span></div>';
+                    }
+                    if ($slot->starttime - time() > 0) {
+                        $a = new stdClass();
+                        list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown($slot->starttime - time());
+                        $class = $a->days > 1 ? "countdown_normal" : ($a->hours > 1 ? "countdown_hurry" : "countdown_critical");
+                        $onlyownslotsmsg .= "<div><span class=\"$class\">".
+                            get_string('infobox_app_countdown', 'organizer', $a).'</span></div>';
+                    } else {
+                        $onlyownslotsmsg .= '<div><span class="countdown_passed">'.
+                            get_string('infobox_app_occured', 'organizer').'</span></div>';
+                    }
+                }
+            } else {
+                if ($onlyownslots) {
+                    continue;
+                } else {
+                    $app = null;
+                }
+            }
             $slotx = new organizer_slot($slot);
             if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                       $alreadyinqueue = $slotx->is_group_in_queue();
@@ -485,15 +504,12 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
                     $row = $rows[] = new html_table_row();
                     $row->attributes['class'] = '';
                 }
-
             }
-
             if ($slotx->has_participants()) {
                 $row->attributes['class'] .= 'registered';
             } else {
                 $row->attributes['class'] .= 'not_registered';
             }
-
             $slotpastdue = $slotx->is_past_due();
             $myslot = false;
             if ($trainerids = organizer_get_slot_trainers($slotx->id)) {
@@ -502,19 +518,16 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
                 }
             }
             $slotvisible = $slot->visible;
-
             $hidden = false;
-
             if ($slotpastdue) {
                 $row->attributes['class'] .= ' past_due';
-                if (!$showpasttimeslots && !$showonlyregslot) {
+                if (!$showpasttimeslots) {
                     $row->style = 'display: none;';
                     $hidden = true;
                 }
             } else {
                 $row->attributes['class'] .= ' not_past_due';
             }
-
             if ($myslot) {
                 $row->attributes['class'] .= ' my_slot';
             } else {
@@ -524,17 +537,15 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
                 }
                 $row->attributes['class'] .= ' not_my_slot';
             }
-
             if (!$slotx->is_full()) {
                 $row->attributes['class'] .= ' free_slot';
             } else {
-                if (!($showonlyregslot) && $showonlyfreeslots) {
+                if ($showonlyfreeslots) {
                     $row->style = 'display: none;';
                     $hidden = true;
                 }
                 $row->attributes['class'] .= ' not_free_slot';
             }
-
             if (!$slotvisible && $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
                 $row->attributes['class'] .= ' unavailable';
             } else {
@@ -544,19 +555,15 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
                 }
                 $row->attributes['class'] .= ' not_unavailable';
             }
-
             if (!$hidden) {
                 $numshown++;
             }
-
             if (array_search($slot->id, $params['slots']) !== false) {
                 $row->attributes['class'] .= ' affected_slot';
             }
-
-            if (($params['mode'] == ORGANIZER_TAB_STUDENT_VIEW) && $app && ($app->slotid == $slot->id)) {
+            if (($params['mode'] == ORGANIZER_TAB_STUDENT_VIEW) && $isuserslot) {
                 $row->attributes['class'] .= ' registered_slot';
             }
-
             foreach ($columns as $column) {
                 switch ($column) {
                     case 'select':
@@ -576,15 +583,9 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
                         $cell = $row->cells[] = new html_table_cell(organizer_location_link($slot));
                     break;
                     case 'participants':
-                        if ($showonlyregslot) {
-                            $cell = $row->cells[] = new html_table_cell(
-                                    organizer_organizer_get_participant_list_infobox($params, $slot, false)
-                            );
-                        } else {
-                            $cell = $row->cells[] = new html_table_cell(
-                                    organizer_get_participant_list($params, $slot, $app)
-                            );
-                        }
+                        $cell = $row->cells[] = new html_table_cell(
+                                organizer_get_participant_list($params, $slot, $app)
+                        );
                     break;
                     case 'teacher':
                         $cell = $row->cells[] = new html_table_cell(organizer_trainer_data($params, $slot, $trainerids));
@@ -593,28 +594,23 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
                         $cell = $row->cells[] = new html_table_cell(organizer_slot_status($params, $slot));
                     break;
                     case 'status':
-                        $cell = $row->cells[] = new html_table_cell(organizer_slot_reg_status($organizer, $slot));
+                        $cell = $row->cells[] = new html_table_cell(organizer_slot_reg_status($organizer, $slot, $onlyownslotsmsg));
                     break;
                     case 'actions':
-                        $cell = $row->cells[] = new html_table_cell(organizer_student_action($params, $slot));
+                        $cell = $row->cells[] = new html_table_cell(organizer_participants_action($params, $slot));
                     break;
                     default:
                         print_error("Unrecognized column type: $column");
                 }
-
                 $cell->style .= ' vertical-align: middle;';
             }
         }
-
         $inforownames = array('no_slots', 'no_due_slots', 'no_my_slots', 'no_due_my_slots');
         foreach ($inforownames as $inforowname) {
             $defaultrow = $rows[] = new html_table_row();
             $defaultrow->attributes['class'] = "info $inforowname";
-
             $defaultrow->cells[] = organizer_get_span_cell(get_string($inforowname, 'organizer'), count($columns));
-
             $defaultrow->style = '';
-
             if ($numshown == 0) {
                 switch ($inforowname) {
                     case 'no_slots':
@@ -638,19 +634,16 @@ function organizer_generate_table_content($columns, $params, $organizer, $showon
         }
     } else {
         $defaultrow = $rows[] = new html_table_row();
-        if (!$showonlyregslot) {
-            if ($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
-                $url = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
-                $a = new stdClass();
-                $a->link = $url->out();
-                $message = get_string('no_slots_defined_teacher', 'organizer', $a);
-            } else {
-                $message = get_string('no_slots_defined', 'organizer');
-            }
-
-            $defaultrow->cells[] = organizer_get_span_cell($message, count($columns));
-            $defaultrow->attributes['class'] = "info no_slots_defined";
+        if ($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
+            $url = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
+            $a = new stdClass();
+            $a->link = $url->out();
+            $message = get_string('no_slots_defined_teacher', 'organizer', $a);
+        } else {
+            $message = get_string('no_slots_defined', 'organizer');
         }
+        $defaultrow->cells[] = organizer_get_span_cell($message, count($columns));
+        $defaultrow->attributes['class'] = "info no_slots_defined";
     }
     return $rows;
 }
@@ -1251,7 +1244,7 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
     $myslotpending = $wasownslot && $slotx->is_past_deadline() && !$slotx->is_evaluated();
 
     $showteacher = $myslotpending || $organizerdisabled || $slotdisabled ||
-        !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
+        !$slotx->organizer_groupmode_user_has_access() || $slotx->is_evaluated();
 
     if ($wasownslot) {
         if (!$slotdisabled) {
@@ -2036,7 +2029,7 @@ function organizer_slot_commands($slotid, $params) {
     return $outstr;
 }
 
-function organizer_slot_reg_status($organizer, $slot) {
+function organizer_slot_reg_status($organizer, $slot, $onlyownslotsmsg = null) {
     global $DB;
 
     $slotx = new organizer_slot($slot);
@@ -2107,64 +2100,76 @@ function organizer_slot_reg_status($organizer, $slot) {
         }
     }
 
+    if ($onlyownslotsmsg) {
+        $output .= $onlyownslotsmsg;
+    }
     return $output;
 }
 
-function organizer_student_action($params, $slot) {
-    global $DB, $OUTPUT, $USER;
+function organizer_participants_action($params, $slot) {
+    global $OUTPUT, $USER;
 
     $slotx = new organizer_slot($slot);
 
     list(, , $organizer, $context) = organizer_get_course_module_data();
 
-    list($canregister, $canunregister, $canreregister, $myapp, $regslotx, $myslotexists, $organizerdisabled, $slotdisabled,
-            , $ismyslot, $slotfull, $disabled, $isalreadyinqueue, $isqueueable)
-                = organizer_get_studentrights($slotx, $organizer, $context);
-
-    if ($myslotexists) {
-        if (!$slotdisabled) {
-            if ($ismyslot) {
-                $disabled |= !$canunregister
-                        || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
-            } else {
-                $disabled |= $slotfull || !$canreregister
-                        || (isset($regslotx) && $regslotx->is_evaluated() && !$myapp->allownewappointments);
-            }
-        }
-        $action = $ismyslot ? 'unregister' : 'reregister';
+    $rightregister = has_capability('mod/organizer:register', $context, null, false);
+    $rightunregister = has_capability('mod/organizer:unregister', $context, null, false);
+    $isuserslot = organizer_get_slot_user_appointment($slotx) ? true : false;
+    $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
+    $slotexpired = $slotx->is_past_due() || $slotx->is_past_deadline();
+    $slotevalpending = $slotx->is_past_deadline() && !$slotx->is_evaluated();
+    $slotfull = $slotx->is_full();
+    $disabled = $slotevalpending || $organizerdisabled || $slotexpired ||
+        !$slotx->organizer_groupmode_user_has_access() || $slotx->is_evaluated();
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $isalreadyinqueue = $slotx->is_group_in_queue();
     } else {
-        $disabled |= $slotfull || !$canregister || $ismyslot;
-        $action = $ismyslot ? 'unregister' : 'register';
+        $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
+    }
+    $isqueueable = $organizer->queue && !$isalreadyinqueue && !$slotevalpending && !$organizerdisabled
+        && !$slotexpired && $slotx->organizer_groupmode_user_has_access() && !$slotx->is_evaluated();
+
+    if ($isuserslot) {
+        $action = 'unregister';
+        $disabled |= !$rightunregister;
+    } else {
+        $action = 'register';
+        $slotsleft = organizer_userslots_left($organizer);
+        if ($slotsleft) {
+            $disabled |= $slotfull || !$rightregister;
+        } else {
+            $disabled = true;
+        }
     }
 
-    if (!$myslotexists && $slotfull && $canregister && !$ismyslot && $isqueueable && !$isalreadyinqueue) {
+    if (!$isuserslot && $slotfull && $rightregister && $isqueueable && !$isalreadyinqueue && !$disabled) {
         $action = 'queue';
         $disabled = false;
     }
 
-    if ($isalreadyinqueue ) {
+    if ($isalreadyinqueue) {
         $action = 'unqueue';
         $disabled = false;
     }
 
-    if ($ismyslot || organizer_is_my_slot($slotx)) {
+    // Show slot comments if user is owner.
+    $commentbtn = "";
+    if ($isuserslot) {
         $commenturl = new moodle_url(
             '/mod/organizer/comment_edit.php',
             array('id' => $params['id'], 'slot' => $slotx->id)
         );
-
-        $commentbtndisabled = $organizerdisabled || !$slotx->organizer_user_has_access();
-
+        $commentbtndisabled = $organizerdisabled || !$slotx->organizer_groupmode_user_has_access();
         $commentbtn = $OUTPUT->single_button(
             $commenturl, get_string("btn_comment", 'organizer'), 'post',
             array('disabled' => $commentbtndisabled)
         );
-
-        return organizer_get_reg_button($action, $slotx->id, $params, $disabled) . '<br/>'
-                . $commentbtn;
-    } else {
-        return organizer_get_reg_button($action, $slotx->id, $params, $disabled);
+        $commentbtn = "<br/>".$commentbtn;
     }
+
+    return organizer_get_reg_button($action, $slotx->id, $params, $disabled).$commentbtn;
+
 }
 
 function organizer_is_my_slot($slot) {
@@ -2461,58 +2466,4 @@ function organizer_get_participants_tableheadercell($params, $column, $columnhel
     $cell = new html_table_cell(get_string("th_{$column}", 'organizer') . " " . $links . $columnhelpicon);
 
     return $cell;
-}
-
-function organizer_get_studentrights($slotx, $organizer, $context) {
-    global $DB, $USER;
-
-    $canregister = has_capability('mod/organizer:register', $context, null, false);
-    $canunregister = has_capability('mod/organizer:unregister', $context, null, false);
-    $canreregister = $canregister && $canunregister;
-
-    $regslotx = null;
-    $myapp = organizer_get_last_user_appointment($organizer);
-    $regslotx = null;
-    if ($myapp) {
-        $regslot = $DB->get_record('organizer_slots', array('id' => $myapp->slotid));
-        if (isset($regslot)) {
-            $regslotx = new organizer_slot($regslot);
-        }
-    }
-
-    $myslotexists = isset($regslot);
-    $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
-    $slotdisabled = $slotx->is_past_due() || $slotx->is_past_deadline();
-    $myslotpending = $myslotexists && $regslotx->is_past_deadline() && !$regslotx->is_evaluated();
-    $ismyslot = $myslotexists && ($slotx->id == $regslot->id);
-    $slotfull = $slotx->is_full();
-
-    $disabled = $myslotpending || $organizerdisabled || $slotdisabled ||
-        !$slotx->organizer_user_has_access() || $slotx->is_evaluated();
-
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $isalreadyinqueue = $slotx->is_group_in_queue();
-    } else {
-        $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
-    }
-
-    $isqueueable = $organizer->queue && !$isalreadyinqueue && !$myslotpending && !$organizerdisabled
-        && !$slotdisabled && $slotx->organizer_user_has_access() && !$slotx->is_evaluated();
-
-    return array(
-        $canregister,
-        $canunregister,
-        $canreregister,
-        $myapp,
-        $regslotx,
-        $myslotexists,
-        $organizerdisabled,
-        $slotdisabled,
-        $myslotpending,
-        $ismyslot,
-        $slotfull,
-        $disabled,
-        $isalreadyinqueue,
-        $isqueueable
-    );
 }

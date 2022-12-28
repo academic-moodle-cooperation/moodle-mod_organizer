@@ -320,7 +320,12 @@ $string['mymoodle_no_reg_slot'] = 'You have not registered to a time slot yet';
 $string['mymoodle_no_reg_slot_group'] = 'Your group {$a->groupname} has not registered to a time slot yet';
 
 $string['infobox_title'] = 'Infobox';
-$string['infobox_myslot_title'] = 'My slot';
+$string['infobox_myslot_title'] = 'My slots';
+$string['infobox_myslot_userslots_status'] = '{$a->booked} of {$a->max} slots booked.';
+$string['infobox_myslot_userslots_min_not_reached'] = 'You have not reached the minimum of {$a->min} bookings yet.';
+$string['infobox_myslot_userslots_min_reached'] = 'You have reached the minimum amount of {$a->min} bookings.';
+$string['infobox_myslot_userslots_max_reached'] = 'You have reached the maximum amount of {$a->max} bookings.';
+$string['infobox_myslot_userslots_left'] = 'You have {$a->left} bookings left.';
 $string['infobox_mycomments_title'] = 'My comments';
 $string['infobox_messaging_title'] = '';
 $string['infobox_deadlines_title'] = 'Deadlines';
@@ -1093,12 +1098,10 @@ $string['hidecalendar_help'] = 'Check to hide the calendar in this organizer';
 $string['nocalendareventslotcreation'] = 'No calendar events for empty slots';
 $string['nocalendareventslotcreation_help'] = 'If you check this option no calendar events will be created when creating slots. Only appointments will create slot calendar events.';
 
-$string['allowmultiple'] = 'Allow multiple bookings';
-$string['allowmultiple_help'] = 'If you check this option participants are able to book more than one slot in this organizer.';
-$string['multiplemin'] = 'Minimum of slots per participant';
-$string['multiplemin_help'] = 'Minimum of slots a participant has to book.';
-$string['multiplemax'] = 'Maximum of slots per participant';
-$string['multiplemax_help'] = 'Amount of slots a participant is allowed to book.';
+$string['userslotsmin'] = 'Minimum of slots per participant or group';
+$string['userslotsmin_help'] = 'Minimum of slots a participant or group has to book.';
+$string['userslotsmax'] = 'Maximum of slots per participant or group';
+$string['userslotsmax_help'] = 'Amount of slots a participant or group is allowed to book.';
 
 $string['finalgrade'] = 'This value has been set in the gradebook and can not be changed with the organizer.';
 
@@ -1193,6 +1196,8 @@ $string['locationsettings'] = 'Slot location settings';
 
 $string['filtertable'] = '\'Searching this table\'';
 $string['filtertable_help'] = 'Search these slots for mutual strings here.';
+
+$string['userslots_mingreatermax'] = 'Minimum user slots is greater than maximum.';
 
 // Deprecated
 $string['queuesubject'] = 'Moodle Organizer: Promoted from queue';

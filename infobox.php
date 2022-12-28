@@ -29,9 +29,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__) . '/lib.php');
-require_once(dirname(__FILE__) . '/legend.php');
 require_once(dirname(__FILE__) . '/locallib.php');
+require_once(dirname(__FILE__) . '/legend.php');
 require_once(dirname(__FILE__) . '/slotlib.php');
 
 function organizer_make_infobox($params, $organizer, $context, $organizerexpired = null) {
@@ -53,7 +52,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
         case ORGANIZER_TAB_STUDENT_VIEW:
             // My own booking information section.
             $output .= organizer_make_myapp_section($params, $organizer,
-                organizer_get_last_user_appointment($organizer));
+                organizer_get_all_user_appointments($organizer));
             $jsparams->studentview = 1;
         break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
@@ -167,9 +166,28 @@ function organizer_make_description_section($organizer, $cmid) {
 
     return $OUTPUT->box($output, 'generalbox', 'intro');
 }
-function organizer_make_myapp_section($params, $organizer, $app) {
+function organizer_make_myapp_section($params, $organizer, $apps) {
     global $DB;
-    if ($app) {
+
+    $output = html_writer::start_div('userslotsboard');
+    $a = new stdClass();
+    $a->booked = organizer_count_userslots($organizer->id);
+    $userslotsstate = organizer_userslots_bookingstatus($a->booked, $organizer);
+    $a->max = $organizer->userslotsmax;
+    $a->min = $organizer->userslotsmin;
+    $a->left = $organizer->userslotsmax - $a->booked;
+    $userslotsboard = html_writer::div(get_string('infobox_myslot_userslots_status', 'organizer', $a));
+    if ($userslotsstate == USERSLOTS_MIN_NOT_REACHED) {
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_not_reached', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left', 'organizer', $a));
+    } else if ($userslotsstate == USERSLOTS_MAX_REACHED) {
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_max_reached', 'organizer', $a));
+    } else {
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_reached', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left', 'organizer', $a));
+    }
+    $output .= $userslotsboard;
+    if ($apps) {
         $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
         $align = array('left', 'left', 'left', 'left', 'center', 'center');
         $sortable = array();
@@ -179,29 +197,9 @@ function organizer_make_myapp_section($params, $organizer, $app) {
         $table->head = organizer_generate_table_header($columns, $sortable, $params);
         $table->data = organizer_generate_table_content($columns, $params, $organizer, true);
         $table->align = $align;
-        $output = organizer_render_table_with_footer($table, false);
-        $output = preg_replace('/<th /', '<th style="width: 0%;" ', $output); // Afterburner fix - try to fix it using css!
-        $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
-        if ($slot->starttime - $organizer->relativedeadline - time() > 0) {
-            $a = new stdClass();
-            list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown(
-                    $slot->starttime - $organizer->relativedeadline - time());
-            $class = $a->days > 1 ? "countdown_normal" : ($a->hours > 1 ? "countdown_hurry" : "countdown_critical");
-            $output .= "<p><span class=\"$class\">" . get_string('infobox_deadline_countdown', 'organizer', $a) . '</span></p>';
-        } else {
-            $output .= '<p><span class="countdown_passed">' . get_string('infobox_deadline_passed', 'organizer') . '</span></p>';
-        }
-        if ($slot->starttime - time() > 0) {
-            $a = new stdClass();
-            list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown($slot->starttime - time());
-            $class = $a->days > 1 ? "countdown_normal" : ($a->hours > 1 ? "countdown_hurry" : "countdown_critical");
-            $output .= "<p><span class=\"$class\">" . get_string('infobox_app_countdown', 'organizer', $a) . '</span></p>';
-        } else {
-            $output .= '<p><span class="countdown_passed">' . get_string('infobox_app_occured', 'organizer') . '</span></p>';
-        }
-    } else {
-        $output = '<p>' . get_string('infobox_myslot_noslot', 'organizer') . '</p>';
+        $output .= organizer_render_table_with_footer($table, false);
     }
+    $output .= html_writer::end_div();
     return organizer_make_section('infobox_myslot', $output);
 }
 function organizer_make_slotoptions_section($params) {
@@ -210,8 +208,7 @@ function organizer_make_slotoptions_section($params) {
     $output = '<div>';
 
     $displaymyslotsonly = $displayhiddenslots = $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW;
-    $displayfreeslots = $displaypastslots = $params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW;
-    $displayregistrationsonly = true;
+    $displayregistrationsonly = $displayfreeslots = $displaypastslots = $params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW;
 
     if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
         $showmyslotsonly = substr($prefs, 0, 1) ? true : false;

@@ -50,6 +50,10 @@ define('ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE', 'Instance');
 define('EIGHTDAYS', 691200);
 define('ORGANIZER_PRINTSLOTUSERFIELDS', 9);
 
+define('USERSLOTS_MIN_NOT_REACHED', 0);
+define('USERSLOTS_MIN_REACHED', 1);
+define('USERSLOTS_MAX_REACHED', 2);
+
 require_once(dirname(__FILE__) . '/slotlib.php');
 
 /**

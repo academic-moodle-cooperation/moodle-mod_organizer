@@ -51,17 +51,17 @@
 }
 
 #organizer_main_cointainer div.datapreviewtitle{
-    margin-bottom:-2em;
-    font-weight:bold;
+    margin-bottom: -2em;
+    font-weight: bold;
     margin-left: 1.5em;
 }
 
 /* Fix here sn. */
 #organizer_main_cointainer div.forced_scroll {
     border: solid 1px #ddd;
-    margin-left:10px;
-    margin-right:10px;
-    padding-top:2em;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-top: 2em;
 }
 
 #organizer_main_cointainer div.forced_scroll table {
@@ -97,7 +97,7 @@
 }
 
 #organizer_main_cointainer span.countdown_critical {
-    background-color: rgb(255,204,153);
+    background-color: rgb(255, 204, 153);
 }
 
 #organizer_main_cointainer span.countdown_passed {
@@ -122,46 +122,46 @@
 }
 
 #organizer_main_cointainer table.coloredrows th {
-    white-space:nowrap;
+    white-space: nowrap;
 }
 
 #organizer_main_cointainer table.coloredrows .r0 {
     background-color: #f0f0f0;
-    white-space:nowrap
+    white-space: nowrap;
 }
 
 #organizer_main_cointainer table.coloredrows .r1 {
     background-color: #fafafa;
-    white-space:nowrap
+    white-space: nowrap;
 }
 
-#page-mod-organizer-view div#organizer_popup_header div.title h2{
-    width:100%;
+#page-mod-organizer-view div#organizer_popup_header div.title h2 {
+    width: 100%;
 }
 
 #organizer_main_cointainer fieldset#id_slotdetails input[readonly='readonly'] {
     background: #ffffff;
     color: #6d6d6d;
     border: 1px solid #afafaf;
-    cursor:default;
+    cursor: default;
 }
 
-#organizer_main_cointainer a.action{
-    white-space:nowrap;
+#organizer_main_cointainer a.action {
+    white-space: nowrap;
     display: block;
 }
 
-#organizer_main_cointainer a.disabled{
-    color:grey;
+#organizer_main_cointainer a.disabled {
+    color: grey;
 }
 
 #organizer_main_cointainer .finalgrade {
     margin-left: 0.1em;
-    cursor:help;
+    cursor: help;
     color: red;
 }
 
-#organizer_addbutton_div{
+#organizer_addbutton_div {
     margin-top: 0.5em;
     margin-bottom: 0.7em;
 }
@@ -181,3 +181,12 @@
 #id_export_settings_header {
     border-bottom: none !important;
 }
+
+.path-mod-organizer .userslotsboard {
+    width: 100%;
+    background-color: #e8e8e8;
+    text-align: right;
+    padding: 0.5em;
+    margin-bottom: 1em;
+}
+
