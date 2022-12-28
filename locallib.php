@@ -925,7 +925,7 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
 
     if (organizer_hasqueue($organizer->id)) {
         if (!$organizer->allowmultiple ||
-        organizer_count_userslots($organizer->id) >= $organizer->multiplemax) {
+        organizer_count_bookedslots($organizer->id) >= $organizer->multiplemax) {
             organizer_delete_user_from_any_queue($organizer->id, $userid);
         }
     }
@@ -2015,22 +2015,30 @@ function organizer_get_param_slots() {
 /**
  * How many slots has a participant booked
  *
- * @param int $userid ID of user
  * @param int $organizerid  ID of organizer instance
+ * @param int $userid ID of user
+ * @param int $groupid ID of group (if instance is groupmode)
  *
  * @return int $slots
  */
-function organizer_count_userslots($organizerid, $userid = null) {
+function organizer_count_bookedslots($organizerid, $userid = null, $groupid = null) {
     global $DB, $USER;
 
-    if ($userid == null) {
+    if ($userid == null && $groupid == null) {
         $userid = $USER->id;
     }
 
-    $paramssql = array('userid' => $userid, 'organizerid' => $organizerid);
-    $query = "SELECT count(*) FROM {organizer_slot_appointments} a
-    INNER JOIN {organizer_slots} s ON a.slotid = s.id
-    WHERE s.organizerid = :organizerid AND a.userid = :userid";
+    if ($userid) {
+        $paramssql = array('userid' => $userid, 'organizerid' => $organizerid);
+        $query = "SELECT count(*) FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.userid = :userid";
+    } else {
+        $paramssql = array('groupid' => $groupid, 'organizerid' => $organizerid);
+        $query = "SELECT count(*) FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.groupid = :groupid";
+    }
     $slots = $DB->count_records_sql($query, $paramssql);
 
     return $slots;
@@ -2091,22 +2099,30 @@ function organizer_userslots_bookingstatus($slotsbooked, $organizer) {
 /**
  * How many slots has a participant left
  *
+ * @param object $organizer  organizer instance
  * @param int $userid ID of user
- * @param int $organizerid  ID of organizer instance
+ * @param int $groupid ID of group (if instance is groupmode)
  *
  * @return int $slotsleft
  */
-function organizer_userslots_left($organizer, $userid = null) {
+function organizer_slots_lefttobook($organizer, $userid = null, $groupid = null) {
     global $DB, $USER;
 
-    if ($userid == null) {
+    if ($userid == null && $groupid = null) {
         $userid = $USER->id;
     }
 
-    $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
-    $query = "SELECT count(*) FROM {organizer_slot_appointments} a
-    INNER JOIN {organizer_slots} s ON a.slotid = s.id
-    WHERE s.organizerid = :organizerid AND a.userid = :userid";
+    if ($userid) {
+        $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
+        $query = "SELECT count(*) FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.userid = :userid";
+    } else {
+        $paramssql = array('groupid' => $groupid, 'organizerid' => $organizer->id);
+        $query = "SELECT count(*) FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.groupid = :groupid";
+    }
     $userslots = $DB->count_records_sql($query, $paramssql);
 
     $slotsleft = $organizer->userslotsmax - $userslots;

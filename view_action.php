@@ -302,6 +302,7 @@ function organizer_participants_action_allowed($action, $slot, $organizer, $cont
         !$slotx->organizer_groupmode_user_has_access() || $slotx->is_evaluated();
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $isalreadyinqueue = $slotx->is_group_in_queue();
+        $group = organizer_fetch_user_group($USER->id, $organizer->id);
     } else {
         $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
     }
@@ -312,7 +313,8 @@ function organizer_participants_action_allowed($action, $slot, $organizer, $cont
         $disabled |= !$rightunregister;
     } else {
         $allowedaction = ORGANIZER_ACTION_REGISTER;
-        $slotsleft = organizer_userslots_left($organizer);
+        $slotsleft = organizer_slots_lefttobook($organizer,
+            isset($group->id) ? null : $USER->id, isset($group->id) ? $group->id : null);
         if ($slotsleft) {
             $disabled |= $slotfull || !$rightregister;
         } else {

@@ -69,8 +69,10 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     }
     // Display messages here.
     $output .= organizer_make_messages_section($params);
-    // Display section with predefined filter view options like "hidden slots only" etc..
-    $output .= organizer_make_slotoptions_section($params);
+    if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
+        // Display section with predefined filter view options like "hidden slots only" etc..
+        $output .= organizer_make_slotoptions_section($params);
+    }
     // Display search field for fulltext search.
     $output .= organizer_make_filtersection();
 
@@ -128,7 +130,7 @@ function organizer_make_sendreminder_section($params, $context) {
     if (has_capability("mod/organizer:sendreminders", $context, null, true)) {
         $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id']));
         $output = '<div name="button_bar" class="organizer_addbutton_div">';
-        $output .= $OUTPUT->single_button($sendurl, get_string("btn_sendall", 'organizer'), 'post');
+        $output .= $OUTPUT->single_button($sendurl, get_string("btn_sendallmultiple", 'organizer'), 'post');
         $output .= '</div>';
         return organizer_make_section('infobox_messaging', $output);
     } else {
@@ -167,24 +169,31 @@ function organizer_make_description_section($organizer, $cmid) {
     return $OUTPUT->box($output, 'generalbox', 'intro');
 }
 function organizer_make_myapp_section($params, $organizer, $apps) {
-    global $DB;
+    global $USER;
 
+    $groupstr = "";
+    if (organizer_is_group_mode()) {
+        $group = organizer_fetch_user_group($USER->id, $organizer->id);
+        $groupstr = "_group";
+    }
     $output = html_writer::start_div('userslotsboard');
     $a = new stdClass();
-    $a->booked = organizer_count_userslots($organizer->id);
+    $a->booked = organizer_count_bookedslots($organizer->id,
+        isset($group->id) ? null : $USER->id,
+        isset($group->id) ? $group->id : null);
     $userslotsstate = organizer_userslots_bookingstatus($a->booked, $organizer);
     $a->max = $organizer->userslotsmax;
     $a->min = $organizer->userslotsmin;
     $a->left = $organizer->userslotsmax - $a->booked;
     $userslotsboard = html_writer::div(get_string('infobox_myslot_userslots_status', 'organizer', $a));
     if ($userslotsstate == USERSLOTS_MIN_NOT_REACHED) {
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_not_reached', 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_not_reached'.$groupstr, 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a));
     } else if ($userslotsstate == USERSLOTS_MAX_REACHED) {
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_max_reached', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_max_reached'.$groupstr, 'organizer', $a));
     } else {
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_reached', 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_reached'.$groupstr, 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a));
     }
     $output .= $userslotsboard;
     if ($apps) {
@@ -208,7 +217,7 @@ function organizer_make_slotoptions_section($params) {
     $output = '<div>';
 
     $displaymyslotsonly = $displayhiddenslots = $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW;
-    $displayregistrationsonly = $displayfreeslots = $displaypastslots = $params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW;
+    $displayregistrationsonly = $displayfreeslots = $displaypastslots = true;
 
     if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
         $showmyslotsonly = substr($prefs, 0, 1) ? true : false;

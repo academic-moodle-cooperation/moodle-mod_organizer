@@ -397,7 +397,7 @@ class organizer_slot
         $position = 0;
 
         if ($groupid == 0) {
-               $group = organizer_fetch_my_group();
+            $group = organizer_fetch_my_group();
             $groupid = $group ? $group->id : 0;
         }
 
