@@ -168,7 +168,7 @@ function organizer_generate_registration_status_view($params, $instance) {
         $columns[] = 'appdetails';
     }
 
-    $columns = array_merge($columns, array('datetime', 'location', 'teacher', 'actions'));
+    $columns = array_merge($columns, array('bookings', 'datetime', 'location', 'teacher', 'actions'));
 
     $align = array('center', 'left', 'center', 'left', 'left', 'left', 'center');
     $sortable = array('status', 'group');
@@ -927,6 +927,11 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                     }
                                     $cell->style .= " text-align: center;";
                                     break;
+                                case 'bookings':
+                                    $cell = $row->cells[] = new html_table_cell(
+                                        "#".organizer_count_bookedslots($organizer->id, null, $entry->id));
+                                    $cell->style .= " text-align: center;";
+                                    break;
                                 case 'datetime':
                                     if ($entry->starttime) {
                                         $cell = $row->cells[] = new html_table_cell(organizer_date_time($entry));
@@ -1004,6 +1009,11 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 break;
                             case 'status':
                                 $cell = $row->cells[] = new html_table_cell(organizer_get_status_icon_new($entry->status));
+                                break;
+                            case 'bookings':
+                                $cell = $row->cells[] = new html_table_cell(
+                                        "#".organizer_count_bookedslots($organizer->id, $entry->id, null));
+                                $cell->style .= " text-align: center;";
                                 break;
                             case 'datetime':
                                 $text = organizer_date_time($entry);
@@ -2136,7 +2146,7 @@ function organizer_participants_action($params, $slot) {
         $disabled |= !$rightunregister;
     } else {
         $action = 'register';
-        $slotsleft = organizer_slots_lefttobook($organizer,
+        $slotsleft = organizer_multiplebookings_slotslefttobook($organizer,
             isset($group->id) ? null : $USER->id, isset($group->id) ? $group->id : null);
         if ($slotsleft) {
             $disabled |= $slotfull || !$rightregister;

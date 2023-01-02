@@ -2027,7 +2027,6 @@ function organizer_count_bookedslots($organizerid, $userid = null, $groupid = nu
     if ($userid == null && $groupid == null) {
         $userid = $USER->id;
     }
-
     if ($userid) {
         $paramssql = array('userid' => $userid, 'organizerid' => $organizerid);
         $query = "SELECT count(*) FROM {organizer_slot_appointments} a
@@ -2045,38 +2044,6 @@ function organizer_count_bookedslots($organizerid, $userid = null, $groupid = nu
 }
 
 /**
- * The maximum amount of slots a single participant/group has booked in this organizer instance
- *
- * @param object $organizerid ID of organizer instance
- *
- * @return int $appsmax
- */
-function organizer_getmax_userslots($organizerid, $groupmode = false) {
-    global $DB;
-
-    if (organizer_bookings_exist($organizerid)) {
-        $paramssql = array('organizerid' => $organizerid);
-        if ($groupmode) {
-            $query = "select count(*) as c from mp_organizer_slot_appointments a
-            inner join mp_organizer_slots s on a.slotid = s.id
-            where s.organizerid = :organizerid
-            group by a.groupid order by c desc limit 1";
-        } else {
-            $query = "select count(*) as c from mp_organizer_slot_appointments a
-            inner join mp_organizer_slots s on a.slotid = s.id
-            where s.organizerid = :organizerid
-            group by a.userid order by c desc limit 1";
-        }
-        $appsmax = $DB->count_records_sql($query, $paramssql);
-
-        return $appsmax;
-
-    } else {
-        return 0;
-    }
-}
-
-/**
  * What is the multiple slots bookings status for the given amount of user bookings in this organizer instance
  *
  * @param int $slotsbooked amount of booked slots of a user
@@ -2084,7 +2051,7 @@ function organizer_getmax_userslots($organizerid, $groupmode = false) {
  *
  * @return int $status 0 for min not reached, 1 for min reached, 2 for max_reached
  */
-function organizer_userslots_bookingstatus($slotsbooked, $organizer) {
+function organizer_multiplebookings_status($slotsbooked, $organizer) {
 
     if ($slotsbooked >= $organizer->userslotsmax) {
         $status = USERSLOTS_MAX_REACHED;
@@ -2105,7 +2072,7 @@ function organizer_userslots_bookingstatus($slotsbooked, $organizer) {
  *
  * @return int $slotsleft
  */
-function organizer_slots_lefttobook($organizer, $userid = null, $groupid = null) {
+function organizer_multiplebookings_slotslefttobook($organizer, $userid = null, $groupid = null) {
     global $DB, $USER;
 
     if ($userid == null && $groupid = null) {
@@ -2133,7 +2100,7 @@ function organizer_slots_lefttobook($organizer, $userid = null, $groupid = null)
 /**
  * Returns true if at least one user booking exists in this organizer instance
  *
- * @param object $organizerid ID of organizer instance
+ * @param int $organizerid ID of organizer instance
  *
  * @return bool $exist
  */
@@ -2147,4 +2114,36 @@ function organizer_bookings_exist($organizerid) {
     $exist = $DB->record_exists_sql($query, $paramssql);
 
     return $exist;
+}
+
+/**
+ * Returns amount of course participants who have not booked the minimum of slots yet.
+ *
+ * @param object $organizer organizer instance
+ * @param boolean $groupmode is organizer instance in groupmode
+ * @param objects $entries of registration view
+ *
+ * @return array $entries, $underminimum: participants booked under minimum, $maxreached: participants
+ * who have reached the max
+ */
+function organizer_multiplebookings_statistics($organizer, $groupmode, $entries) {
+    $countentries = 0;
+    $underminimum = 0;
+    $maxreached = 0;
+    foreach ($entries as $entry) {
+        $countentries++;
+        if ($groupmode) {
+            $booked = organizer_count_bookedslots($organizer->id, null, $entry->id);
+        } else {
+            $booked = organizer_count_bookedslots($organizer->id, $entry->id, null);
+        }
+        $status = organizer_multiplebookings_status($booked, $organizer);
+        if ($status == USERSLOTS_MIN_NOT_REACHED) {
+            $underminimum++;
+        } else if ($status == USERSLOTS_MAX_REACHED) {
+            $maxreached++;
+        }
+    }
+
+    return [$countentries, $underminimum, $maxreached];
 }

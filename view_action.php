@@ -313,7 +313,7 @@ function organizer_participants_action_allowed($action, $slot, $organizer, $cont
         $disabled |= !$rightunregister;
     } else {
         $allowedaction = ORGANIZER_ACTION_REGISTER;
-        $slotsleft = organizer_slots_lefttobook($organizer,
+        $slotsleft = organizer_multiplebookings_slotslefttobook($organizer,
             isset($group->id) ? null : $USER->id, isset($group->id) ? $group->id : null);
         if ($slotsleft) {
             $disabled |= $slotfull || !$rightregister;

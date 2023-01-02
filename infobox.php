@@ -61,6 +61,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
                 $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS, $params)) {
                 $output .= organizer_make_sendreminder_section($params, $context);
             }
+            $output .= organizer_make_minmax_section($organizer, $entries);
         break;
         case ORGANIZER_ASSIGNMENT_VIEW:
         break;
@@ -168,48 +169,46 @@ function organizer_make_description_section($organizer, $cmid) {
 
     return $OUTPUT->box($output, 'generalbox', 'intro');
 }
-function organizer_make_myapp_section($params, $organizer, $apps) {
-    global $USER;
+function organizer_make_minmax_section($organizer, $entries) {
 
-    $groupstr = "";
-    if (organizer_is_group_mode()) {
-        $group = organizer_fetch_user_group($USER->id, $organizer->id);
-        $groupstr = "_group";
-    }
     $output = html_writer::start_div('userslotsboard');
     $a = new stdClass();
-    $a->booked = organizer_count_bookedslots($organizer->id,
-        isset($group->id) ? null : $USER->id,
-        isset($group->id) ? $group->id : null);
-    $userslotsstate = organizer_userslots_bookingstatus($a->booked, $organizer);
     $a->max = $organizer->userslotsmax;
     $a->min = $organizer->userslotsmin;
-    $a->left = $organizer->userslotsmax - $a->booked;
-    $userslotsboard = html_writer::div(get_string('infobox_myslot_userslots_status', 'organizer', $a));
-    if ($userslotsstate == USERSLOTS_MIN_NOT_REACHED) {
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_not_reached'.$groupstr, 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a));
-    } else if ($userslotsstate == USERSLOTS_MAX_REACHED) {
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_max_reached'.$groupstr, 'organizer', $a));
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        list($a->entries, $a->undermin, $a->maxreached) =
+            organizer_multiplebookings_statistics($organizer, true, $entries);
+        $userslotsboard = html_writer::div(get_string('infobox_minmax_entries_group', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_minmax_min_group', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_minmax_max_group', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_minmax_undermin_group', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_minmax_maxreached_group', 'organizer', $a));
     } else {
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_reached'.$groupstr, 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a));
+        list($a->entries, $a->undermin, $a->maxreached) =
+            organizer_multiplebookings_statistics($organizer, false, $entries);
+        $userslotsboard = html_writer::div(get_string('infobox_minmax_entries', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_minmax_min', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_minmax_max', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_minmax_undermin', 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_minmax_maxreached', 'organizer', $a));
     }
     $output .= $userslotsboard;
-    if ($apps) {
-        $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
-        $align = array('left', 'left', 'left', 'left', 'center', 'center');
-        $sortable = array();
-        $table = new html_table();
-        $table->id = 'my_slot_overview';
-        $table->attributes['class'] = 'generaltable boxaligncenter overview';
-        $table->head = organizer_generate_table_header($columns, $sortable, $params);
-        $table->data = organizer_generate_table_content($columns, $params, $organizer, true);
-        $table->align = $align;
-        $output .= organizer_render_table_with_footer($table, false);
-    }
     $output .= html_writer::end_div();
-    return organizer_make_section('infobox_myslot', $output);
+    return organizer_make_section('infobox_minmax', $output);
+}
+function organizer_make_filtersection() {
+    global $OUTPUT;
+
+    $output = '<p class="organizer_filterblock">';
+    $output .= '<span id="organizer_filterfield">' . get_string('search') .
+        $OUTPUT->help_icon('filtertable', 'organizer', '');
+    $output .= html_writer::tag('input', null,
+        array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
+    $output .= '</span>';
+    $output .= '</p>';
+    $output .= '<div class="clearer">&nbsp;</div>';
+
+    return $output;
 }
 function organizer_make_slotoptions_section($params) {
     global $OUTPUT;
@@ -267,22 +266,6 @@ function organizer_make_slotoptions_section($params) {
 
     return organizer_make_section('infobox_slotoverview', $output);
 }
-
-function organizer_make_filtersection() {
-    global $OUTPUT;
-
-    $output = '<p class="organizer_filterblock">';
-    $output .= '<span id="organizer_filterfield">' . get_string('search') .
-        $OUTPUT->help_icon('filtertable', 'organizer', '');
-    $output .= html_writer::tag('input', null,
-        array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
-    $output .= '</span>';
-    $output .= '</p>';
-    $output .= '<div class="clearer">&nbsp;</div>';
-
-    return $output;
-}
-
 function organizer_make_addslotbutton_section($params, $organizerexpired) {
 
     $output = '<div id="organizer_addbutton_div">';
@@ -296,5 +279,3 @@ function organizer_make_addslotbutton_section($params, $organizerexpired) {
 
     return $output;
 }
-
-
