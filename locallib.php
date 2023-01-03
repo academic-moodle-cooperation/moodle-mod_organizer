@@ -924,8 +924,12 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     $DB->update_record('organizer_slot_appointments', $appointment);
 
     if (organizer_hasqueue($organizer->id)) {
-        if (!$organizer->allowmultiple ||
-        organizer_count_bookedslots($organizer->id) >= $organizer->multiplemax) {
+        if ($groupid) {
+            $booked = organizer_count_bookedslots($organizer->id, null, $groupid);
+        } else {
+            $booked = organizer_count_bookedslots($organizer->id, $userid, null);
+        }
+        if (organizer_multiplebookings_status($booked, $organizer) != USERSLOTS_MAX_REACHED) {
             organizer_delete_user_from_any_queue($organizer->id, $userid);
         }
     }
@@ -2034,7 +2038,7 @@ function organizer_count_bookedslots($organizerid, $userid = null, $groupid = nu
             WHERE s.organizerid = :organizerid AND a.userid = :userid";
     } else {
         $paramssql = array('groupid' => $groupid, 'organizerid' => $organizerid);
-        $query = "SELECT count(*) FROM {organizer_slot_appointments} a
+        $query = "SELECT count(DISTINCT s.id) FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.organizerid = :organizerid AND a.groupid = :groupid";
     }
@@ -2130,18 +2134,22 @@ function organizer_multiplebookings_statistics($organizer, $groupmode, $entries)
     $countentries = 0;
     $underminimum = 0;
     $maxreached = 0;
+    $entrybefore = 0;
     foreach ($entries as $entry) {
-        $countentries++;
-        if ($groupmode) {
-            $booked = organizer_count_bookedslots($organizer->id, null, $entry->id);
-        } else {
-            $booked = organizer_count_bookedslots($organizer->id, $entry->id, null);
-        }
-        $status = organizer_multiplebookings_status($booked, $organizer);
-        if ($status == USERSLOTS_MIN_NOT_REACHED) {
-            $underminimum++;
-        } else if ($status == USERSLOTS_MAX_REACHED) {
-            $maxreached++;
+        if ($entry->id != $entrybefore) {
+            $countentries++;
+            if ($groupmode) {
+                $booked = organizer_count_bookedslots($organizer->id, null, $entry->id);
+            } else {
+                $booked = organizer_count_bookedslots($organizer->id, $entry->id, null);
+            }
+            $status = organizer_multiplebookings_status($booked, $organizer);
+            if ($status == USERSLOTS_MIN_NOT_REACHED) {
+                $underminimum++;
+            } else if ($status == USERSLOTS_MAX_REACHED) {
+                $maxreached++;
+            }
+            $entrybefore = $entry->id;
         }
     }
 

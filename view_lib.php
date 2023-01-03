@@ -693,39 +693,62 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
     $par = array_merge($par, $inparams);
 
     $query = "SELECT DISTINCT
-        g.id, g.name, a2.id AS appid,
+        g.id,
+        g.name,
+        a2.id AS appid,
         CASE
-            WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 0
+            WHEN a2.id IS NOT NULL AND a2.attended = 1
                 THEN " . ORGANIZER_APP_STATUS_ATTENDED . "
-            WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 1
-                THEN " . ORGANIZER_APP_STATUS_ATTENDED_REAPP . "
             WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime <= :now1
                 THEN " . ORGANIZER_APP_STATUS_PENDING . "
             WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime > :now2
                 THEN " . ORGANIZER_APP_STATUS_REGISTERED . "
-            WHEN a2.id IS NOT NULL AND a2.attended = 0 AND a2.allownewappointments = 0
-                THEN " . ORGANIZER_APP_STATUS_NOT_ATTENDED . "
-            WHEN a2.id IS NOT NULL AND a2.attended = 0 AND a2.allownewappointments = 1
-                THEN " . ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP . "
             WHEN a2.id IS NULL
                 THEN " . ORGANIZER_APP_STATUS_NOT_REGISTERED . "
             ELSE " . ORGANIZER_APP_STATUS_INVALID . "
-        END AS status, a2.starttime, a2.duration, a2.location, a2.locationlink,
-        a2.applicantid, a2.teachercomments, a2.comments, a2.teachervisible,
-        a2.slotid, a2.allownewappointments, a2.teacherapplicantid, a2.teacherapplicanttimemodified
-
+        END AS status,
+        a2.starttime,
+        a2.duration,
+        a2.location,
+        a2.locationlink,
+        a2.applicantid,
+        a2.teachercomments,
+        a2.comments,
+        a2.teachervisible,
+        a2.slotid,
+        a2.allownewappointments,
+        a2.teacherapplicantid,
+        a2.teacherapplicanttimemodified
         FROM {groups} g
         LEFT JOIN
-        (SELECT
-        a.id, a.groupid, a.allownewappointments, s.id as slotid, s.starttime, s.location,
-        s.locationlink, s.teachervisible,
-        s.duration, a.applicantid, a.comments, s.comments AS teachercomments, a.teacherapplicantid, a.teacherapplicanttimemodified,
-        (SELECT MAX(a3.attended) FROM {organizer_slot_appointments} a3
-        WHERE a3.groupid = a.groupid GROUP BY a3.slotid ORDER BY a3.slotid DESC LIMIT 1) AS attended
-
-        FROM {organizer_slot_appointments} a
-        INNER JOIN {organizer_slots} s ON a.slotid = s.id
-        WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON g.id = a2.groupid
+        (
+            SELECT
+            a.id,
+            a.groupid,
+            a.allownewappointments,
+            s.id as slotid,
+            s.starttime,
+            s.location,
+            s.locationlink,
+            s.teachervisible,
+            s.duration,
+            a.applicantid,
+            a.comments,
+            s.comments AS teachercomments,
+            a.teacherapplicantid,
+            a.teacherapplicanttimemodified,
+            (
+                SELECT MAX(a3.attended) 
+                FROM {organizer_slot_appointments} a3
+                WHERE a3.groupid = a.groupid
+                GROUP BY a3.slotid
+                ORDER BY a3.slotid DESC
+                LIMIT 1
+            ) AS attended
+            FROM {organizer_slot_appointments} a INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid
+            ORDER BY a.id DESC
+        ) a2 ON g.id = a2.groupid
         WHERE g.id $insql
         $orderby";
 
@@ -785,36 +808,60 @@ function organizer_organizer_get_status_table_entries($params) {
     $par = array_merge($par, $inparams);
 
     $query = "SELECT DISTINCT
-        u.id, u.firstname, u.lastname, u.idnumber,
+        u.id,
+        u.firstname,
+        u.lastname,
+        u.idnumber,
         CASE
-        WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 0
-            THEN " . ORGANIZER_APP_STATUS_ATTENDED . "
-        WHEN a2.id IS NOT NULL AND a2.attended = 1 AND a2.allownewappointments = 1
-            THEN " . ORGANIZER_APP_STATUS_ATTENDED_REAPP . "
-        WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime <= :now1
-            THEN " . ORGANIZER_APP_STATUS_PENDING . "
-        WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime > :now2
-            THEN " . ORGANIZER_APP_STATUS_REGISTERED . "
-        WHEN a2.id IS NOT NULL AND a2.attended = 0 AND a2.allownewappointments = 0
-            THEN " . ORGANIZER_APP_STATUS_NOT_ATTENDED . "
-        WHEN a2.id IS NOT NULL AND a2.attended = 0 AND a2.allownewappointments = 1
-            THEN " . ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP . "
-        WHEN a2.id IS NULL
-            THEN " . ORGANIZER_APP_STATUS_NOT_REGISTERED . "
-        ELSE " . ORGANIZER_APP_STATUS_INVALID . "
+            WHEN a2.id IS NOT NULL AND a2.attended = 1
+                THEN " . ORGANIZER_APP_STATUS_ATTENDED . "
+            WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime <= :now1
+                THEN " . ORGANIZER_APP_STATUS_PENDING . "
+            WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime > :now2
+                THEN " . ORGANIZER_APP_STATUS_REGISTERED . "
+            WHEN a2.id IS NULL
+                THEN " . ORGANIZER_APP_STATUS_NOT_REGISTERED . "
+            ELSE " . ORGANIZER_APP_STATUS_INVALID . "
         END AS status,
-        a2.starttime, a2.duration, a2.attended, a2.location, a2.locationlink,
-        a2.grade, a2.comments, a2.teachercomments, a2.feedback,
-        a2.userid, a2.teachervisible, a2.slotid, a2.allownewappointments, a2.id AS appid,
-        a2.teacherapplicantid, a2.teacherapplicanttimemodified
+        a2.starttime,
+        a2.duration,
+        a2.attended,
+        a2.location,
+        a2.locationlink,
+        a2.grade,
+        a2.comments,
+        a2.teachercomments,
+        a2.feedback,
+        a2.userid,
+        a2.teachervisible,
+        a2.slotid,
+        a2.id AS appid,
+        a2.teacherapplicantid,
+        a2.teacherapplicanttimemodified
         FROM {user} u
         LEFT JOIN
-        (SELECT a.id, a.attended, a.grade, a.feedback, a.comments, a.userid,
-        a.allownewappointments, s.starttime, s.location, s.locationlink,
-        s.comments AS teachercomments, s.duration, s.teachervisible, s.id AS slotid,
-        a.teacherapplicantid, a.teacherapplicanttimemodified
-        FROM {organizer_slot_appointments} a INNER JOIN {organizer_slots} s ON a.slotid = s.id
-        WHERE s.organizerid = :organizerid ORDER BY a.id DESC) a2 ON u.id = a2.userid
+        (
+            SELECT 
+                a.id,
+                a.attended,
+                a.grade,
+                a.feedback,
+                a.comments,
+                a.userid,
+                a.allownewappointments,
+                s.starttime,
+                s.location,
+                s.locationlink,
+                s.comments AS teachercomments,
+                s.duration,
+                s.teachervisible,
+                s.id AS slotid,
+                a.teacherapplicantid,
+                a.teacherapplicanttimemodified
+            FROM {organizer_slot_appointments} a INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid 
+            ORDER BY a.id DESC
+        ) a2 ON u.id = a2.userid
         WHERE u.id $insql
         GROUP BY u.id, a2.id, u.firstname, u.lastname, u.idnumber, status,
         a2.starttime, a2.duration, a2.attended, a2.location, a2.locationlink,
@@ -852,12 +899,14 @@ function organizer_organizer_generate_registration_table_content($columns, $para
             $queueable = organizer_is_queueable();
 
             if ($groupmode) {
+                $slotswitch = "";
                 $groupswitch = "";
                 foreach ($entries as $entry) {
                     if ($entry->status == ORGANIZER_APP_STATUS_INVALID) {
                         continue;
                     }
-                    if ($groupswitch != $entry->id) {
+                    if ($slotswitch != $entry->slotid or $groupswitch != $entry->id) {
+                        $slotswitch = $entry->slotid;
                         $groupswitch = $entry->id;
                         $row = new html_table_row();
 
@@ -884,7 +933,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                     }
                                     $members = $DB->get_fieldset_sql(
                                         'SELECT userid FROM {groups_members} gm
-                                    INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid ' .
+                                        INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid '.
                                         $orderby, array('groupid' => $entry->id)
                                     );
                                     $list = "<span style='display:table'>";
@@ -965,25 +1014,18 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                     }
                                     break;
                                 case 'actions':
-                                    if ($entry->starttime) {
-                                        $cell = $row->cells[] = new html_table_cell(
-                                            organizer_teacher_action_new($params, $entry, $context)
-                                        );
-                                    } else {
-                                        $cell = $row->cells[] = new html_table_cell(
-                                            organizer_teacher_action_new_noentries($params, $entry->id, $context)
-                                        );
-                                    }
+                                    $cell = $row->cells[] = new html_table_cell(
+                                        organizer_teacher_action($params, $entry, $context, $organizer, $groupmode)
+                                    );
                                     $cell->style .= " text-align: center;";
                                     break;
                             }
-
                             $cell->style .= ' vertical-align: middle;';
                         }  // Foreach column.
                         $rows[] = $row;
-                    } else {  // Groupswitch.
+                    } else {  // Slotswitch and groupswitch.
                         continue;
-                    }// Groupswitch.
+                    }// Slotswitch and groupswitch.
                 }  // Foreach entry.
             } else {  // No groupmode.
                 foreach ($entries as $entry) {
@@ -1012,7 +1054,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 break;
                             case 'bookings':
                                 $cell = $row->cells[] = new html_table_cell(
-                                        "#".organizer_count_bookedslots($organizer->id, $entry->id, null));
+                                        "#".organizer_count_bookedslots($organizer->id, $entry->id));
                                 $cell->style .= " text-align: center;";
                                 break;
                             case 'datetime':
@@ -1062,7 +1104,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 break;
                             case 'actions':
                                 $cell = $row->cells[] = new html_table_cell(
-                                    organizer_teacher_action_new($params, $entry, $context));
+                                    organizer_teacher_action($params, $entry, $context, $organizer, $groupmode));
                                 $cell->style .= " text-align: center;";
                                 break;
                         }
@@ -1368,7 +1410,7 @@ function organizer_reg_waitinglist_status($organizerid, $groupmode, $userid = 0)
 
 }
 
-function organizer_teacher_action_new($params, $entry, $context) {
+function organizer_teacher_action($params, $entry, $context, $organizer, $groupmode) {
 
     $evalenabled = has_capability('mod/organizer:evalslots', $context, null, true);
     $evalurl = new moodle_url(
@@ -1386,83 +1428,31 @@ function organizer_teacher_action_new($params, $entry, $context) {
 
     $buttons = array();
 
-    switch ($entry->status) {
-        case ORGANIZER_APP_STATUS_ATTENDED:
-            $button = new stdClass();
-            $button->text = get_string("btn_reeval", 'organizer');
-            $button->url = $evalurl;
-            $button->disabled = !$evalenabled;
-            $buttons[] = $button;
-        break;
-
-        case ORGANIZER_APP_STATUS_ATTENDED_REAPP:
-            $button = new stdClass();
-            $button->text = get_string("btn_reeval", 'organizer');
-            $button->url = $evalurl;
-            $button->disabled = !$evalenabled;
-            $buttons[] = $button;
-        break;
-
-        case ORGANIZER_APP_STATUS_PENDING:
-            $button = new stdClass();
-            $button->text = get_string("btn_eval_short", 'organizer');
-            $button->url = $evalurl;
-            $button->disabled = !$evalenabled;
-            $buttons[] = $button;
-        break;
-
-        case ORGANIZER_APP_STATUS_REGISTERED:
-            $button = new stdClass();
-            $button->text = get_string("btn_eval_short", 'organizer');
-            $button->url = $evalurl;
-            $button->disabled = !$evalenabled;
-            $buttons[] = $button;
-        break;
-
-        case ORGANIZER_APP_STATUS_NOT_ATTENDED:
-            $button = new stdClass();
-            $button->text = get_string("btn_reeval", 'organizer');
-            $button->url = $evalurl;
-            $button->disabled = !$evalenabled;
-            $buttons[] = $button;
-        break;
-
-        case ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP:
-            $button = new stdClass();
-            $button->text = get_string("btn_remind", 'organizer');
-            $button->url = $remindurl;
-            $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true);
-            $buttons[] = $button;
-
-            $button = new stdClass();
-            $button->text = get_string("btn_assign", 'organizer');
-            $button->url = $assignurl;
-            $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
-            $buttons[] = $button;
-
-            $button = new stdClass();
-            $button->text = get_string("btn_reeval", 'organizer');
-            $button->url = $evalurl;
-            $button->disabled = !$evalenabled;
-            $buttons[] = $button;
-        break;
-
-        case ORGANIZER_APP_STATUS_NOT_REGISTERED:
-            $button = new stdClass();
-            $button->text = get_string("btn_remind", 'organizer');
-            $button->url = $remindurl;
-            $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true);
-            $buttons[] = $button;
-
-            $button = new stdClass();
-            $button->text = get_string("btn_assign", 'organizer');
-            $button->url = $assignurl;
-            $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
-            $buttons[] = $button;
-
-        break;
-        default:
-            print_error("Wrong status code: $entry->status");
+    // If entry is appointment => show grade button.
+    if ($entry->status != ORGANIZER_APP_STATUS_NOT_REGISTERED) {
+        $button = new stdClass();
+        $button->text = get_string("btn_eval_short", 'organizer');
+        $button->url = $evalurl;
+        $button->disabled = !$evalenabled;
+        $buttons[] = $button;
+    }
+    // If max booking is not reached => show reminder and assign button.
+    if ($groupmode) {
+        $booked = organizer_count_bookedslots($organizer->id, null, $entry->id);
+    } else {
+        $booked = organizer_count_bookedslots($organizer->id, $entry->id, null);
+    }
+    if (organizer_multiplebookings_status($booked, $organizer) != USERSLOTS_MAX_REACHED) {
+        $button = new stdClass();
+        $button->text = get_string("btn_remind", 'organizer');
+        $button->url = $remindurl;
+        $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true);
+        $buttons[] = $button;
+        $button = new stdClass();
+        $button->text = get_string("btn_assign", 'organizer');
+        $button->url = $assignurl;
+        $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
+        $buttons[] = $button;
     }
 
     $output = "";
@@ -1473,184 +1463,6 @@ function organizer_teacher_action_new($params, $entry, $context) {
         } else {
             $output .= '<a href="' . $button->url . '" class="action">' . $button->text . '</a>';
         }
-    }
-
-    return $output;
-}
-
-function organizer_teacher_action_new_noentries($params, $groupid, $context) {
-
-    $remindurl = new moodle_url(
-        '/mod/organizer/send_reminder.php',
-        array('id' => $params['id'], 'user' => $groupid)
-    );
-    $assignurl = new moodle_url(
-        '/mod/organizer/view.php',
-        array('id' => $params['id'], 'sort' => 'datetime', 'mode' => '4', 'assignid' => $groupid)
-    );
-
-    $buttons = array();
-
-    $button = new stdClass();
-    $button->text = get_string("btn_remind", 'organizer');
-    $button->url = $remindurl;
-    $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true);
-    $buttons[] = $button;
-
-    $button = new stdClass();
-    $button->text = get_string("btn_assign", 'organizer');
-    $button->url = $assignurl;
-    $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
-    $buttons[] = $button;
-
-    $output = "";
-
-    foreach ($buttons as $button) {
-        if ($button->disabled) {
-            $output .= '<a href="#" class="action disabled">' . $button->text . '</a>';
-        } else {
-            $output .= '<a href="' . $button->url . '" class="action">' . $button->text . '</a>';
-        }
-    }
-
-    return $output;
-}
-
-function organizer_organizer_get_participant_list_infobox($params, $slot, $userid = 0) {
-    global $DB, $USER;
-
-    $output = "";
-
-    if ($userid == null) {
-        $userid = $USER->id;
-    }
-
-    $isgroupmode = organizer_is_group_mode();
-
-    $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
-    $firstapp = reset($apps);
-
-    if ($isgroupmode && $firstapp !== false) {
-        $groupname = $DB->get_field('groups', 'name', array('id' => $firstapp->groupid));
-        $output .= "<em>{$groupname}</em>" .
-            organizer_get_teacherapplicant_output(
-                $firstapp->teacherapplicantid,
-                $firstapp->teacherapplicanttimemodified
-            )
-            . "<br />";
-    }
-
-    $output .= '<span style="display:table">';
-    foreach ($apps as $app) {
-        $output .= '<span style="display:table-row">';
-        $name = organizer_get_name_link($app->userid);
-        $identity = organizer_get_user_identity($app->userid);
-        $identity = $identity != "" ? " ({$identity})" : "";
-        if ($app->userid == $userid) {
-            $output .= '<span style="display:table-cell">';
-            if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW) {
-                $output .= $name . $identity;
-            } else {
-                $output .= $name;
-            }
-            if ($isgroupmode && $app->userid == $app->applicantid) {
-                $output .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
-            }
-            $output .= '</span>';
-            if (!$isgroupmode) {
-                $output .= '<span style="display:table-cell">';
-                $output .= organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);
-                $output .= '</span>';
-            }
-            $output .= organizer_app_details($app);
-        } else if ($slot->visibility != ORGANIZER_VISIBILITY_ANONYMOUS && (organizer_is_my_slot($slot) ||
-                        $slot->visibility == ORGANIZER_VISIBILITY_ALL) ) {
-            $output .= '<span style="display:table-cell">';
-            if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW) {
-                $output .= $name . $identity;
-            } else {
-                $output .= $name;
-            }
-            if ($isgroupmode && $app->userid == $app->applicantid) {
-                $output .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
-            }
-            if (!$isgroupmode) {
-                $output .= organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified);
-            }
-            $output .= '</span>';
-        }
-        $output .= '</span>';
-    }
-    $output .= '</span>';
-
-    $a = new stdClass();
-
-    if ($isgroupmode) {
-
-        if (count($apps) == 0) {
-            $output .= "<em>" . get_string('group_slot_available', 'organizer') . "</em><br />";
-        } else {
-            $output .= "<span style=\"color: red;\"><em>" . get_string('group_slot_full', 'organizer')
-            . "</em></span><br />";
-            if (organizer_is_queueable()) {
-                $sql = "SELECT COUNT(distinct q.groupid) FROM {organizer_slot_queues} q
-                        WHERE q.slotid = :slotid";
-                $paramssql = array('slotid' => $slot->id);
-                $inqueues = $DB->count_records_sql($sql, $paramssql);
-                if ($inqueues) {
-                    $a = new stdClass();
-                    $a->inqueue = $inqueues;
-                    $slotx = new organizer_slot($slot);
-                    if ($a->queueposition = $slotx->is_group_in_queue()) {
-                                    $output .= organizer_write_places_inqueue_position($a);
-                    } else {
-                                    $output .= organizer_write_places_inqueue($a, $slot, $params);
-                    }
-                }
-            }
-        }
-
-    } else {  // Not groupmode.
-
-        $count = count($apps);
-        $maxparticipants = $slot->maxparticipants;
-        $a->numtakenplaces = $count;
-        $a->totalplaces = $maxparticipants;
-
-        if ($maxparticipants - $count != 0) {
-            if ($maxparticipants == 1) {
-                $output .= "<em>" . get_string('places_taken_sg', 'organizer', $a) . "</em>";
-            } else {
-                $output .= "<em>" . get_string('places_taken_pl', 'organizer', $a) . "</em>";
-            }
-        } else {
-            if ($maxparticipants == 1) {
-                $output .= "<span style=\"color: red;\"><em>" . get_string('places_taken_sg', 'organizer', $a)
-                . "</em></span>";
-            } else {
-                $output .= "<span style=\"color: red;\"><em>" . get_string('places_taken_pl', 'organizer', $a)
-                . "</em></span>";
-            }
-            if (organizer_is_queueable()) {
-                $inqueue = count($DB->get_records('organizer_slot_queues', array('slotid' => $slot->id)));
-                if ($inqueue) {
-                    $a->inqueue = $inqueue;
-                    $slotx = new organizer_slot($slot);
-                    if ($a->queueposition = $slotx->is_user_in_queue($USER->id)) {
-                        $output .= organizer_write_places_inqueue_position($a);
-                    } else {
-                        $output .= organizer_write_places_inqueue($a, $slot, $params);
-                    }
-                }
-            }
-        }
-
-    }
-
-    if ($slot->visibility == ORGANIZER_VISIBILITY_ANONYMOUS) {
-        $output .= organizer_get_icon('anon', get_string('slot_anonymous', 'organizer'));
-    } else if ($slot->visibility == ORGANIZER_VISIBILITY_SLOT) {
-        $output .= organizer_get_icon('slotanon', get_string('slot_slotvisible', 'organizer'));
     }
 
     return $output;

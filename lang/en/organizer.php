@@ -338,12 +338,12 @@ $string['infobox_minmax_entries'] = 'Participants: {$a->entries}';
 $string['infobox_minmax_min'] = 'Minimum slots per participant: {$a->min}';
 $string['infobox_minmax_max'] = 'Maximum slots per participant: {$a->max}';
 $string['infobox_minmax_undermin'] = 'Participants under minimum: {$a->undermin}';
-$string['infobox_minmax_maxreached'] = 'Participants who reached maximum: {$a->maxreached}';
+$string['infobox_minmax_maxreached'] = 'Participants reached maximum: {$a->maxreached}';
 $string['infobox_minmax_entries_group'] = 'Groups: {$a->entries}';
 $string['infobox_minmax_min_group'] = 'Minimum slots per group: {$a->min}';
 $string['infobox_minmax_max_group'] = 'Maximum slots per group: {$a->max}';
 $string['infobox_minmax_undermin_group'] = 'Groups under minimum: {$a->undermin}';
-$string['infobox_minmax_maxreached_group'] = 'Groups who reached maximum: {$a->maxreached}';
+$string['infobox_minmax_maxreached_group'] = 'Groups reached maximum: {$a->maxreached}';
 $string['infobox_mycomments_title'] = 'My comments';
 $string['infobox_messaging_title'] = '';
 $string['infobox_deadlines_title'] = 'Deadlines';
@@ -761,36 +761,36 @@ $string['register_promotion_student:smallmessage'] = 'Your registration for a ti
 $string['register_reminder_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
 $string['register_reminder_student:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, you either still haven\'t registered to any time slot, or you\'ve missed the one you did register to.
+As a part of the course {$a->courseid} {$a->coursefullname}, you haven\'t registered to the requested amount of time slots yet.
 
 {$a->custommessage}
 
 Moodle Messaging System';
-$string['register_reminder_student:smallmessage'] = 'Please register to a (new) time slot.';
+$string['register_reminder_student:smallmessage'] = 'Please register to the requested amounts of time slots.';
 
 // Register reminder ??? group.
 
 $string['register_reminder_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
 $string['register_reminder_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, your group {$a->groupname} either still hasn\'t registered to any time slot, or you\'ve missed the one you did register to.
+As a part of the course {$a->courseid} {$a->coursefullname}, your group {$a->groupname} hasn\'t registered the requested amount of time slots yet.
 
 {$a->custommessage}
 
 Moodle Messaging System';
-$string['register_reminder_student:group:smallmessage'] = 'Please register your group to a (new) time slot.';
+$string['register_reminder_student:group:smallmessage'] = 'Please register your group to the requested amount of time slots.';
 
 // Register reminder student group.
 
 $string['register_reminder_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
 $string['register_reminder_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
-As a part of the course {$a->courseid} {$a->coursefullname}, your group {$a->groupname} either still hasn\'t registered to any time slot, or you\'ve missed the one you did register to.
+As a part of the course {$a->courseid} {$a->coursefullname}, your group {$a->groupname} hasn\'t registered the requested amount of time slots yet.
 
 {$a->custommessage}
 
 Moodle Messaging System';
-$string['register_reminder_student:group:smallmessage'] = 'Please register your group to a new time slot.';
+$string['register_reminder_student:group:smallmessage'] = 'Please register your group to the requested amount of time slots.';
 
 // Group registration student register group.
 
