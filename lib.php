@@ -379,7 +379,7 @@ function organizer_update_grades($organizer, $userid = 0) {
                                 $sum += $value->rawgrade;
                             }
                         }
-                        $grade->rawgrade = $sum/$i;
+                        $grade->rawgrade = $sum / $i;
                         break;
                     case GRADEAGGREGATIONMETHOD_SUM:
                         $sum = 0;
