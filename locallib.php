@@ -2111,7 +2111,7 @@ function organizer_bookings_exist($organizerid) {
     global $DB;
 
     $paramssql = array('organizerid' => $organizerid);
-    $query = "select a.id from mp_organizer_slot_appointments a
+    $query = "select a.id from {organizer_slot_appointments} a
         inner join mp_organizer_slots s on a.slotid = s.id
         where s.organizerid = :organizerid";
     $exist = $DB->record_exists_sql($query, $paramssql);
