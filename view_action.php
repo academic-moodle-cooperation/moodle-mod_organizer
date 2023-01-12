@@ -291,43 +291,43 @@ function organizer_participants_action_allowed($action, $slot, $organizer, $cont
         return false;
     }
     $slotx = new organizer_slot($slot);
-    $rightregister = has_capability('mod/organizer:register', $context, null, false);
-    $rightunregister = has_capability('mod/organizer:unregister', $context, null, false);
-    $isuserslot = organizer_get_slot_user_appointment($slotx) ? true : false;
-    $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
+    $rightreg = has_capability('mod/organizer:register', $context, null, false);
+    $rightunreg = has_capability('mod/organizer:unregister', $context, null, false);
+    $userslot = organizer_get_slot_user_appointment($slotx) ? true : false;
+    $instancedisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
     $slotexpired = $slotx->is_past_due() || $slotx->is_past_deadline();
     $slotevalpending = $slotx->is_past_deadline() && !$slotx->is_evaluated();
     $slotfull = $slotx->is_full();
-    $disabled = $slotevalpending || $organizerdisabled || $slotexpired ||
+    $notavailable = $slotevalpending || $instancedisabled || $slotexpired ||
         !$slotx->organizer_groupmode_user_has_access() || $slotx->is_evaluated();
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $isalreadyinqueue = $slotx->is_group_in_queue();
+        $alreadyinqueue = $slotx->is_group_in_queue();
         $group = organizer_fetch_user_group($USER->id, $organizer->id);
     } else {
-        $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
+        $alreadyinqueue = $slotx->is_user_in_queue($USER->id);
     }
-    $isqueueable = $organizer->queue && !$isalreadyinqueue && !$slotevalpending && !$organizerdisabled
+    $queueable = $organizer->queue && !$alreadyinqueue && !$slotevalpending && !$instancedisabled
         && !$slotexpired && $slotx->organizer_groupmode_user_has_access() && !$slotx->is_evaluated();
-    if ($isuserslot) {
+    if ($userslot) {
         $allowedaction = ORGANIZER_ACTION_UNREGISTER;
-        $disabled |= !$rightunregister;
+        $notavailable |= !$rightunreg;
     } else {
         $allowedaction = ORGANIZER_ACTION_REGISTER;
         $slotsleft = organizer_multiplebookings_slotslefttobook($organizer,
             isset($group->id) ? null : $USER->id, isset($group->id) ? $group->id : null);
         if ($slotsleft) {
-            $disabled |= $slotfull || !$rightregister;
+            $notavailable |= $slotfull || !$rightreg;
         } else {
-            $disabled = true;
+            $notavailable = true;
         }
     }
-    if (!$isuserslot && $slotfull && $rightregister && $isqueueable && !$isalreadyinqueue && !$disabled) {
+    if (!$userslot && $slotfull && $rightreg && $queueable && !$alreadyinqueue && !$notavailable) {
         $allowedaction = ORGANIZER_ACTION_QUEUE;
-        $disabled = false;
+        $notavailable = false;
     }
-    if ($isalreadyinqueue) {
+    if ($alreadyinqueue) {
         $allowedaction = ORGANIZER_ACTION_UNQUEUE;
-        $disabled = false;
+        $notavailable = false;
     }
-    return ($allowedaction == $action) && !$disabled;
+    return ($allowedaction == $action) && !$notavailable;
 }
