@@ -733,7 +733,7 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        $sql = 'UPDATE {organizer} SET userslotsmin=1,userslotsmax=1';
+        $sql = 'UPDATE {organizer} SET userslotsmin=1,userslotsmax=1,gradeaggregationmethod=2';
         $DB->execute($sql, []);
 
         upgrade_mod_savepoint(true, 2021062307, 'organizer');
