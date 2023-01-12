@@ -490,7 +490,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                       $alreadyinqueue = $slotx->is_user_in_queue($USER->id);
             }
             if (!$slotx->is_available()) {
-                if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW) {
+                if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW || $isuserslot) {
                     $row = $rows[] = new html_table_row();
                     $row->attributes['class'] = 'unavailable';
                 } else {
@@ -511,10 +511,10 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                 $row->attributes['class'] .= 'not_registered';
             }
             $slotpastdue = $slotx->is_past_due();
-            $myslot = false;
+            $myslotastrainer = false;
             if ($trainerids = organizer_get_slot_trainers($slotx->id)) {
                 if (in_array($USER->id, $trainerids)) {
-                    $myslot = true;
+                    $myslotastrainer = true;
                 }
             }
             $slotvisible = $slot->visible;
@@ -528,7 +528,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
             } else {
                 $row->attributes['class'] .= ' not_past_due';
             }
-            if ($myslot) {
+            if ($myslotastrainer) {
                 $row->attributes['class'] .= ' my_slot';
             } else {
                 if ($showonlymyslots && $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
