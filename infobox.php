@@ -169,6 +169,49 @@ function organizer_make_description_section($organizer, $cmid) {
 
     return $OUTPUT->box($output, 'generalbox', 'intro');
 }
+function organizer_make_myapp_section($params, $organizer, $apps) {
+    global $USER;
+
+    $groupstr = "";
+    if (organizer_is_group_mode()) {
+        $group = organizer_fetch_user_group($USER->id, $organizer->id);
+        $groupstr = "_group";
+    }
+    $output = html_writer::start_div('userslotsboard');
+    $a = new stdClass();
+    $a->booked = organizer_count_bookedslots($organizer->id,
+        isset($group->id) ? null : $USER->id,
+        isset($group->id) ? $group->id : null);
+    $userslotsstate = organizer_multiplebookings_status($a->booked, $organizer);
+    $a->max = $organizer->userslotsmax;
+    $a->min = $organizer->userslotsmin;
+    $a->left = $organizer->userslotsmax - $a->booked;
+    $userslotsboard = html_writer::div(get_string('infobox_myslot_userslots_status', 'organizer', $a));
+    if ($userslotsstate == USERSLOTS_MIN_NOT_REACHED) {
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_not_reached'.$groupstr, 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a));
+    } else if ($userslotsstate == USERSLOTS_MAX_REACHED) {
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_max_reached'.$groupstr, 'organizer', $a));
+    } else {
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_reached'.$groupstr, 'organizer', $a));
+        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a));
+    }
+    $output .= $userslotsboard;
+    if ($apps) {
+        $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
+        $align = array('left', 'left', 'left', 'left', 'center', 'center');
+        $sortable = array();
+        $table = new html_table();
+        $table->id = 'my_slot_overview';
+        $table->attributes['class'] = 'generaltable boxaligncenter overview';
+        $table->head = organizer_generate_table_header($columns, $sortable, $params);
+        $table->data = organizer_generate_table_content($columns, $params, $organizer, true);
+        $table->align = $align;
+        $output .= organizer_render_table_with_footer($table, false);
+    }
+    $output .= html_writer::end_div();
+    return organizer_make_section('infobox_myslot', $output);
+}
 function organizer_make_minmax_section($organizer, $entries) {
 
     $output = html_writer::start_div('userslotsboard');
