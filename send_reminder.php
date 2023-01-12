@@ -79,7 +79,7 @@ if ($recipient != null) {
                 } else {
                     if (organizer_multiplebookings_status(
                             organizer_count_bookedslots($organizer->id, $entry->id, null),
-                                $organizer)  == USERSLOTS_MIN_NOT_REACHED) {
+                                $organizer) == USERSLOTS_MIN_NOT_REACHED) {
                         $in = true;
                     }
                 }

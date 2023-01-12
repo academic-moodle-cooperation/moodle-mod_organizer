@@ -738,7 +738,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
             a.teacherapplicantid,
             a.teacherapplicanttimemodified,
             (
-                SELECT MAX(a3.attended) 
+                SELECT MAX(a3.attended)
                 FROM {organizer_slot_appointments} a3
                 WHERE a3.groupid = a.groupid
                 GROUP BY a3.slotid
@@ -843,7 +843,7 @@ function organizer_organizer_get_status_table_entries($params) {
         FROM {user} u
         LEFT JOIN
         (
-            SELECT 
+            SELECT
                 a.id,
                 a.attended,
                 a.grade,
@@ -861,7 +861,7 @@ function organizer_organizer_get_status_table_entries($params) {
                 a.teacherapplicantid,
                 a.teacherapplicanttimemodified
             FROM {organizer_slot_appointments} a INNER JOIN {organizer_slots} s ON a.slotid = s.id
-            WHERE s.organizerid = :organizerid 
+            WHERE s.organizerid = :organizerid
             ORDER BY a.id DESC
         ) a2 ON u.id = a2.userid
         WHERE u.id $insql
@@ -1031,10 +1031,6 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                 }  // Foreach entry.
             } else {  // No groupmode.
                 foreach ($entries as $entry) {
-/*                    if ($entry->status == ORGANIZER_APP_STATUS_INVALID) {
-                        continue;
-                    }*/
-
                     $row = new html_table_row();
                     if ($entry->starttime) {
                         $row->attributes['class'] = 'registered';
