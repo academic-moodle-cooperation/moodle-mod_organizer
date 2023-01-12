@@ -54,6 +54,11 @@ define('USERSLOTS_MIN_NOT_REACHED', 0);
 define('USERSLOTS_MIN_REACHED', 1);
 define('USERSLOTS_MAX_REACHED', 2);
 
+define('GRADEAGGREGATIONMETHOD_AVERAGE', 1);
+define('GRADEAGGREGATIONMETHOD_SUM', 2);
+define('GRADEAGGREGATIONMETHOD_BEST', 3);
+define('GRADEAGGREGATIONMETHOD_WORST', 4);
+
 require_once(dirname(__FILE__) . '/slotlib.php');
 
 /**
@@ -111,7 +116,7 @@ function organizer_update_instance($organizer) {
     }
 
     $newname = $organizer->name;
-    $oldname = $DB->get_field('organizer', 'name', array('id' => $organizer->id));
+    $organizerold = $DB->get_record('organizer', array('id' => $organizer->id), 'name, gradeaggregationmethod');
 
     organizer_grade_item_update($organizer);
 
@@ -121,6 +126,12 @@ function organizer_update_instance($organizer) {
         organizer_remove_waitingqueueentries($organizer);
     }
 
+    // If grade aggregation method has changed regrade all grades.
+    if ($organizerold->gradeaggregationmethod != $organizer->gradeaggregationmethod) {
+        organizer_update_all_grades($organizer->id);
+    }
+
+    // Update event entries.
     $params = array('modulename' => 'organizer', 'instance' => $organizer->id,
         'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE);
 
@@ -134,8 +145,8 @@ function organizer_update_instance($organizer) {
 
     organizer_change_event_instance($organizer, $eventids);
 
-    if ($oldname != $newname) {
-        organizer_change_eventnames($organizer->id, $oldname, $newname);
+    if ($organizerold->name != $newname) {
+        organizer_change_eventnames($organizer->id, $organizerold->name, $newname);
     }
 
     return true;
@@ -301,7 +312,7 @@ function organizer_reset_userdata($data) {
 }
 
 function organizer_reset_gradebook($courseid) {
-    global $CFG, $DB;
+    global $DB;
 
     $params = array('courseid' => $courseid);
 
@@ -336,18 +347,18 @@ function organizer_get_user_grade($organizer, $userid = 0) {
                 INNER JOIN {organizer_slots} s ON a.slotid = s.id
                 WHERE s.organizerid = :organizerid AND a.userid = :userid
                 ORDER BY id DESC';
-        $arr = $DB->get_records_sql($query, $params);
-        $result = reset($arr);
-        if ($result) {
-            return array($userid => $result);
-        } else {
-            return array();
-        }
+        return $DB->get_records_sql($query, $params);
     } else {
         return array();
     }
 }
 
+/**
+ * Update activity grades.
+ *
+ * @param object $organizer
+ * @param int $userid specific user only, 0 means all
+ */
 function organizer_update_grades($organizer, $userid = 0) {
     global $CFG;
     include_once($CFG->libdir . '/gradelib.php');
@@ -356,18 +367,68 @@ function organizer_update_grades($organizer, $userid = 0) {
         return organizer_grade_item_update($organizer);
     } else {
         if ($grades = organizer_get_user_grade($organizer, $userid)) {
-            foreach ($grades as $key => $value) {
-                if ($value->rawgrade == -1) {
-                    $grades[$key]->rawgrade = null;
+            $grade = reset($grades);
+            if ($organizer->grade > 0) { // Numerical.
+                switch ($organizer->gradeaggregationmethod) {
+                    case GRADEAGGREGATIONMETHOD_AVERAGE:
+                        $sum = 0;
+                        $i = 0;
+                        foreach ($grades as $value) {
+                            if ($value->rawgrade) {
+                                $i++;
+                                $sum += $value->rawgrade;
+                            }
+                        }
+                        $grade->rawgrade = $sum/$i;
+                        break;
+                    case GRADEAGGREGATIONMETHOD_SUM:
+                        $sum = 0;
+                        foreach ($grades as $value) {
+                            if ($value->rawgrade) {
+                                $sum += $value->rawgrade;
+                            }
+                        }
+                        $grade->rawgrade = $sum;
+                        break;
+                    case GRADEAGGREGATIONMETHOD_BEST:
+                        $max = 0;
+                        foreach ($grades as $value) {
+                            if (is_numeric($value->rawgrade)) {
+                                if ((float) $value->rawgrade > (float) $max) {
+                                    $max = $value->rawgrade;
+                                }
+                            }
+                        }
+                        $grade->rawgrade = $max;
+                        break;
+                    case GRADEAGGREGATIONMETHOD_WORST:
+                        $min = INF;
+                        foreach ($grades as $value) {
+                            if (is_numeric($value->rawgrade)) {
+                                if ((float) $value->rawgrade < (float) $min) {
+                                    $min = $value->rawgrade;
+                                }
+                            }
+                        }
+                        $grade->rawgrade = $min;
+                        break;
+                    default:
+                        raise_error('No valid gradeaggregationmethod!');
                 }
             }
-            return organizer_grade_item_update($organizer, $grades);
+            return organizer_grade_item_update($organizer, $grade);
         } else {
             return organizer_grade_item_update($organizer);
         }
     }
 }
 
+/**
+ * Create/update grade items for given organizer.
+ *
+ * @param stdClass $organizer Organizer instance object
+ * @param mixed $grades Optional array/object of grade(s); 'reset' means reset grades in gradebook
+ */
 function organizer_grade_item_update($organizer, $grades = null) {
     global $CFG;
     include_once($CFG->libdir . '/gradelib.php');
@@ -406,7 +467,7 @@ function organizer_display_grade($organizer, $grade, $userid) {
     $nograde = get_string('nograde');
     static $scalegrades = array();   // Cache scales for each organizer - they might have different scales!!
 
-    if ($organizer->grade >= 0) {    // Normal number.
+    if ($organizer->grade > 0) {    // Normal number.
         if ($grade == -1 || $grade == null) {
             $finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid);
             if ($finalgrade !== false) {
@@ -424,7 +485,7 @@ function organizer_display_grade($organizer, $grade, $userid) {
         }
     } else {    // Scale.
         if (empty($scalegrades[$organizer->id])) {
-            if ($scale = $DB->get_record('scale', array('id' => -($organizer->grade)))) {
+            if ($scale = $DB->get_record('scale', array('id' => -($organizer->scale)))) {
                 $scalegrades[$organizer->id] = make_menu_from_list($scale->scale);
             } else {
                 return $nograde;
@@ -479,6 +540,35 @@ function organizer_get_finalgrade_overwritten($organizerid, $userid) {
     } else {
         return false;
     }
+}
+
+function organizer_update_all_grades($organizerid) {
+    global $DB;
+
+    list($cm, , $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
+
+    $studentids = array();
+
+    if ($organizer->isgrouporganizer != ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $students = get_enrolled_users($context, 'mod/organizer:register');
+        foreach ($students as $student) {
+            $studentids[] = $student->id;
+        }
+    } else if ($cm->groupingid != 0) {
+        $query = "SELECT u.id FROM {user} u
+        INNER JOIN {groups_members} gm ON u.id = gm.userid
+        INNER JOIN {groups} g ON gm.groupid = g.id
+        INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
+        WHERE gg.groupingid = :grouping";
+        $par = array('grouping' => $cm->groupingid);
+        $studentids = $DB->get_fieldset_sql($query, $par);
+    }
+
+    foreach ($studentids as $studentid) {
+        organizer_update_grades($organizer, $studentid);
+    }
+
+    return count($studentids);
 }
 
 // Tscpr: we can strip the trailing _organizer in this function name...
@@ -947,25 +1037,16 @@ function organizer_uninstall() {
 function organizer_supports($feature) {
     switch ($feature) {
         case FEATURE_GROUPS:
-        return true;
         case FEATURE_GROUPINGS:
-        return true;
-        case FEATURE_GROUPMEMBERSONLY:
-        return true;
         case FEATURE_MOD_INTRO:
-        return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS:
-        return true;
         case FEATURE_GRADE_HAS_GRADE:
-        return true;
         case FEATURE_GRADE_OUTCOMES:
-        return true;
         case FEATURE_BACKUP_MOODLE2:
-        return true;
         case FEATURE_SHOW_DESCRIPTION:
-        return true;
+            return true;
         default:
-        return null;
+            return null;
     }
 }
 

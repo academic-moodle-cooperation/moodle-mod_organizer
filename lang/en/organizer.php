@@ -1216,6 +1216,13 @@ $string['filtertable'] = '\'Searching this table\'';
 $string['filtertable_help'] = 'Search these slots for mutual strings here.';
 
 $string['userslots_mingreatermax'] = 'Minimum user slots is greater than maximum.';
+$string['gradeaggregationmethod'] = 'Aggregation method';
+$string['gradeaggregationmethod_help'] = 'The aggregation determines how grades in a category are combined, such as
+
+* Mean of grades - The sum of all grades divided by the total number of grades
+* Lowest grade
+* Highest grade
+* Natural - The sum of all grade values';
 
 // Deprecated
 $string['queuesubject'] = 'Moodle Organizer: Promoted from queue';

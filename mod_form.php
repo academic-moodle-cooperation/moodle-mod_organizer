@@ -207,9 +207,6 @@ class mod_organizer_mod_form extends moodleform_mod
 
         // Grading.
         $this->standard_grading_coursemodule_elements();
-        if (isset($organizerconfig->maximumgrade)) {
-            $mform->setDefault('grade', $organizerconfig->maximumgrade);
-        }
 
         // Print slot userfields.
         // Header.
@@ -246,6 +243,14 @@ class mod_organizer_mod_form extends moodleform_mod
 
         // Action buttons.
         $this->add_action_buttons();
+
+        // Grading Aggragation Methods.
+        $aggregationmethods = $mform->createElement('select', 'gradeaggregationmethod', get_string('gradeaggregationmethod', 'organizer'), $this->_get_gradeaggregationmethods());
+        $mform->insertElementBefore($aggregationmethods, 'gradecat');
+        $mform->setDefault('gradeaggregationmethod', 0);
+        $mform->addHelpButton('gradeaggregationmethod', 'gradeaggregationmethod', 'organizer');
+        $mform->disabledIf('gradeaggregationmethod', 'grade[modgrade_type]', 'neq', 'point');
+        $mform->hideIf('gradeaggregationmethod', 'grade[modgrade_type]', 'neq', 'point');
 
         // Insert grouping-ID warning.
         $warning = $mform->createElement(
@@ -387,6 +392,7 @@ class mod_organizer_mod_form extends moodleform_mod
 
         $groupmodes = array();
         $groupmodes[ORGANIZER_GROUPMODE_NOGROUPS] = get_string('groupmodenogroups', 'organizer');
+        $groupmodes[ORGANIZER_GROUPMODE_NOGROUPS] = get_string('groupmodenogroups', 'organizer');
         $groupmodes[ORGANIZER_GROUPMODE_EXISTINGGROUPS] = get_string('groupmodeexistingcoursegroups', 'organizer');
         $groupmodes[ORGANIZER_GROUPMODE_NEWGROUPSLOT] = get_string('groupmodeslotgroups', 'organizer');
         $groupmodes[ORGANIZER_GROUPMODE_NEWGROUPBOOKING] = get_string('groupmodeslotgroupsappointment', 'organizer');
@@ -394,4 +400,15 @@ class mod_organizer_mod_form extends moodleform_mod
         return $groupmodes;
     }
 
+    private function _get_gradeaggregationmethods() {
+
+        $gradeaggregationmethods = array();
+        $gradeaggregationmethods[0] = get_string('choose').'...';
+        $gradeaggregationmethods[GRADEAGGREGATIONMETHOD_AVERAGE] = get_string('aggregatemean', 'grades');
+        $gradeaggregationmethods[GRADEAGGREGATIONMETHOD_SUM] = get_string('aggregatesum', 'grades');
+        $gradeaggregationmethods[GRADEAGGREGATIONMETHOD_BEST] = get_string('aggregatemax', 'grades');
+        $gradeaggregationmethods[GRADEAGGREGATIONMETHOD_WORST] = get_string('aggregatemin', 'grades');
+
+        return $gradeaggregationmethods;
+    }
 }

@@ -1172,7 +1172,6 @@ function organizer_evaluate_slots($data) {
             }
 
             $newapp->feedback = isset($app['feedback']) ? $app['feedback'] : "";
-            $newapp->allownewappointments = $app['allownewappointments'];
 
             $DB->update_record('organizer_slot_appointments', $newapp);
 
@@ -2134,9 +2133,9 @@ function organizer_multiplebookings_statistics($organizer, $groupmode, $entries)
     $countentries = 0;
     $underminimum = 0;
     $maxreached = 0;
-    $entrybefore = 0;
+    $entriesdone = array();
     foreach ($entries as $entry) {
-        if ($entry->id != $entrybefore) {
+        if (!in_array($entry->id, $entriesdone)) { // No duplicates!
             $countentries++;
             if ($groupmode) {
                 $booked = organizer_count_bookedslots($organizer->id, null, $entry->id);
@@ -2149,7 +2148,7 @@ function organizer_multiplebookings_statistics($organizer, $groupmode, $entries)
             } else if ($status == USERSLOTS_MAX_REACHED) {
                 $maxreached++;
             }
-            $entrybefore = $entry->id;
+            $entriesdone[] = $entry->id;
         }
     }
 

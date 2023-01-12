@@ -714,10 +714,24 @@ function xmldb_organizer_upgrade($oldversion) {
         $table = new xmldb_table('organizer');
 
         $field = new xmldb_field('userslotsmin', XMLDB_TYPE_INTEGER, '4', null, false, null, '0', 'enableprintslotuserfields');
-        $dbman->add_field($table, $field);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
         $field = new xmldb_field('userslotsmax', XMLDB_TYPE_INTEGER, '4', null, false, null, '0', 'userslotsmin');
-        $dbman->add_field($table, $field);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('gradeaggregationmethod', XMLDB_TYPE_INTEGER, '4', null, true, null, '0', 'grade');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('scale', XMLDB_TYPE_INTEGER, '4', null, true, null, '0', 'gradeaggregationmethod');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
         upgrade_mod_savepoint(true, 2021062306, 'organizer');
     }
