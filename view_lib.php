@@ -521,7 +521,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
             $hidden = false;
             if ($slotpastdue) {
                 $row->attributes['class'] .= ' past_due';
-                if (!$showpasttimeslots) {
+                if (!$showpasttimeslots && !$onlyownslots) {
                     $row->style = 'display: none;';
                     $hidden = true;
                 }
