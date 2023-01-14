@@ -669,6 +669,8 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
 
     if (!$groupids || count($groupids) == 0) {
         return array();
+    } else {
+        var_dump($groupids);
     }
 
     list($insql, $inparams) = $DB->get_in_or_equal($groupids, SQL_PARAMS_NAMED);
@@ -753,7 +755,8 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         $orderby";
 
     $rs = $DB->get_recordset_sql($query, $par);
-
+var_dump($query);
+die();
     return $rs;
 }
 
