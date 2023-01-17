@@ -38,9 +38,10 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     global $PAGE, $USER;
 
     $output = '';
-    if ($organizer->alwaysshowdescription ||  time() > $organizer->allowregistrationsfromdate) {
-        // Module description, group and duedate informations.
-        $output = organizer_make_description_section($organizer, $params['id']);
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS ||
+        time() > $organizer->allowregistrationsfromdate) {
+        // Group and duedate informations.
+        $output = organizer_make_description_section($organizer);
     }
 
     $jsparams = new stdClass();
@@ -136,11 +137,10 @@ function organizer_make_sendreminder_section($params, $context) {
         return '';
     }
 }
-function organizer_make_description_section($organizer, $cmid) {
+function organizer_make_description_section($organizer) {
     global $OUTPUT;
 
-    $output = '<br>';
-    $output .= format_module_intro('organizer', $organizer, $cmid);
+    $output = '';
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $group = organizer_fetch_my_group();
         if ($group) {
