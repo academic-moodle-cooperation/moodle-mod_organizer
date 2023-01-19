@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+4.1.1 (2022-01-19)
+-------------------
+* [FIXED] #7431: evaluation form sort order by participants name
+* [FIXED] #7444: github #110 remove double module description appearance at view.php
+
 4.1.0 (2022-11-28)
 -------------------
 * Moodle 4.1 compatible version
