@@ -173,30 +173,33 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
     global $USER;
 
     $groupstr = "";
+    $novalidgroup = false;
     if (organizer_is_group_mode()) {
-        $group = organizer_fetch_user_group($USER->id, $organizer->id);
+        if (!$group = organizer_fetch_user_group($USER->id, $organizer->id)) {
+            $novalidgroup = true;
+        }
         $groupstr = "_group";
     }
     $output = html_writer::start_div('userslotsboard');
-    $a = new stdClass();
-    $a->booked = organizer_count_bookedslots($organizer->id,
-        isset($group->id) ? null : $USER->id,
-        isset($group->id) ? $group->id : null);
-    $userslotsstate = organizer_multiplebookings_status($a->booked, $organizer);
-    $a->max = $organizer->userslotsmax;
-    $a->min = $organizer->userslotsmin;
-    $a->left = $organizer->userslotsmax - $a->booked;
-    $userslotsboard = html_writer::div(get_string('infobox_myslot_userslots_status', 'organizer', $a));
-    if ($userslotsstate == USERSLOTS_MIN_NOT_REACHED) {
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_not_reached'.$groupstr, 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a));
-    } else if ($userslotsstate == USERSLOTS_MAX_REACHED) {
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_max_reached'.$groupstr, 'organizer', $a));
-    } else {
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_reached'.$groupstr, 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a));
+    if (!$novalidgroup) {
+        $a = new stdClass();
+        $a->booked = organizer_count_bookedslots($organizer->id, isset($group->id) ? null : $USER->id, $group->id ?? null);
+        $userslotsstate = organizer_multiplebookings_status($a->booked, $organizer);
+        $a->max = $organizer->userslotsmax;
+        $a->min = $organizer->userslotsmin;
+        $a->left = $organizer->userslotsmax - $a->booked;
+        $userslotsboard = html_writer::div(get_string('infobox_myslot_userslots_status', 'organizer', $a));
+        if ($userslotsstate == USERSLOTS_MIN_NOT_REACHED) {
+            $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_not_reached'.$groupstr, 'organizer', $a));
+            $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a));
+        } else if ($userslotsstate == USERSLOTS_MAX_REACHED) {
+            $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_max_reached'.$groupstr, 'organizer', $a));
+        } else {
+            $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_reached'.$groupstr, 'organizer', $a));
+            $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a));
+        }
+        $output .= $userslotsboard;
     }
-    $output .= $userslotsboard;
     if ($apps) {
         $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
         $align = array('left', 'left', 'left', 'left', 'center', 'center');
