@@ -1214,6 +1214,7 @@ $string['locationsettings'] = 'Slot location settings';
 
 $string['filtertable'] = '\'Searching this table\'';
 $string['filtertable_help'] = 'Search these slots for mutual strings here.';
+$string['slotoptionstable_help'] = 'Show past slots or hidden slots as well.';
 
 $string['userslots_mingreatermax'] = 'Minimum user slots is greater than maximum.';
 $string['gradeaggregationmethod'] = 'Aggregation method';
@@ -1223,6 +1224,8 @@ $string['gradeaggregationmethod_help'] = 'The aggregation determines how grades 
 * Lowest grade
 * Highest grade
 * Natural - The sum of all grade values';
+$string['searchfilter'] = 'Search / Filter';
+$string['showmore'] = 'Show more';
 
 // Deprecated
 $string['queuesubject'] = 'Moodle Organizer: Promoted from queue';

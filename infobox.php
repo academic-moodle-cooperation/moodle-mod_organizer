@@ -72,10 +72,10 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     $output .= organizer_make_messages_section($params);
     if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
         // Display section with predefined filter view options like "hidden slots only" etc..
-        $output .= organizer_make_slotoptions_section($params);
+        $output .= organizer_make_slotoptions_section($params['mode']);
     }
     // Display search field for fulltext search.
-    $output .= organizer_make_filtersection();
+    $output .= organizer_make_filtersection($params['mode']);
 
     $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams->studentview, $USER->id));
 
@@ -244,73 +244,73 @@ function organizer_make_minmax_section($organizer, $entries) {
     $output .= html_writer::end_div();
     return organizer_make_section('infobox_minmax', $output);
 }
-function organizer_make_filtersection() {
+function organizer_make_filtersection($mode) {
     global $OUTPUT;
 
-    $output = '<p class="organizer_filterblock">';
-    $output .= '<span id="organizer_filterfield">' . get_string('search') .
-        $OUTPUT->help_icon('filtertable', 'organizer', '');
-    $output .= html_writer::tag('input', null,
-        array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
-    $output .= '</span>';
-    $output .= '</p>';
-    $output .= '<div class="clearer">&nbsp;</div>';
+    // Display filter - options.
 
-    return $output;
-}
-function organizer_make_slotoptions_section($params) {
-    global $OUTPUT;
-
-    $output = '<div>';
-
-    $displaymyslotsonly = $displayhiddenslots = $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW;
-    $displayregistrationsonly = $displayfreeslots = $displaypastslots = true;
-
+    $displayhiddenslots = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
+    $displaypastslots = true;
     if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
-        $showmyslotsonly = substr($prefs, 0, 1) ? true : false;
-        $showfreeslotsonly = substr($prefs, 1, 1) ? true : false;
         $showhiddenslots = substr($prefs, 2, 1) ? true : false;
         $showpastslots = substr($prefs, 3, 1) ? true : false;
-        $showregistrationsonly = substr($prefs, 4, 1) ? true : false;
     } else {
-        $showmyslotsonly = $showfreeslotsonly = $showhiddenslots = $showpastslots = $showregistrationsonly = false;
+        $showhiddenslots = $showpastslots = false;
     }
-
-    $labelmarginstyles = array('style' => 'margin-right:1.5em;margin-left:0.3em;');
-
-    if ($displaymyslotsonly) {
-        $output .= html_writer::checkbox('show_my_slots_only', '1', $showmyslotsonly,
-            get_string('infobox_showmyslotsonly', 'organizer'), array('id' => 'show_my_slots_only'),
-            $labelmarginstyles);
-    }
-
-    if ($displayfreeslots) {
-        $output .= html_writer::checkbox('show_free_slots_only', '1', $showfreeslotsonly,
-            get_string('infobox_showfreeslots', 'organizer'), array('id' => 'show_free_slots_only'),
-            $labelmarginstyles);
-    }
-
+    $output = html_writer::start_div('organizer_filterblock');
+    $output .= html_writer::start_span('', array('id' => 'organizer_filterfield')).
+        get_string('searchfilter', 'organizer').$OUTPUT->help_icon('filtertable', 'organizer', '');
+    $output .= html_writer::tag('input', null,
+        array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
+    $output .= html_writer::end_span();
     if ($displayhiddenslots) {
         $output .= html_writer::checkbox('show_hidden_slots', '1', $showhiddenslots,
             get_string('infobox_showhiddenslots', 'organizer'), array('id' => 'show_hidden_slots'),
-            $labelmarginstyles);
+            'slotoptions');
     }
-
     if ($displaypastslots) {
         $output .= html_writer::checkbox('show_past_slots', '1', $showpastslots,
             get_string('infobox_showslots', 'organizer'), array('id' => 'show_past_slots'),
-            $labelmarginstyles);
+            'slotoptions');
     }
+    $output .= html_writer::end_div();
+    $output .= html_writer::div('', 'clearer');
 
+    return $output;
+}
+function organizer_make_slotoptions_section($mode) {
+    global $OUTPUT;
+
+    // Display show more - options.
+
+    $output = html_writer::start_div();
+
+    $output .= html_writer::span(get_string('showmore', 'organizer').
+        $OUTPUT->help_icon('slotoptionstable', 'organizer'));
+
+    $displaymyslotsonly = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
+    $displayregistrationsonly = $displayfreeslots = true;
+    if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
+        $showmyslotsonly = substr($prefs, 0, 1) ? true : false;
+        $showfreeslotsonly = substr($prefs, 1, 1) ? true : false;
+        $showregistrationsonly = substr($prefs, 4, 1) ? true : false;
+    } else {
+        $showmyslotsonly = $showfreeslotsonly = $showregistrationsonly = false;
+    }
+    if ($displaymyslotsonly) {
+        $output .= html_writer::checkbox('show_my_slots_only', '1', $showmyslotsonly,
+            get_string('infobox_showmyslotsonly', 'organizer'), array('id' => 'show_my_slots_only'), 'slotoptions');
+    }
+    if ($displayfreeslots) {
+        $output .= html_writer::checkbox('show_free_slots_only', '1', $showfreeslotsonly,
+            get_string('infobox_showfreeslots', 'organizer'), array('id' => 'show_free_slots_only'), 'slotoptions');
+    }
     if ($displayregistrationsonly) {
         $output .= html_writer::checkbox('show_registrations_only', '1', $showregistrationsonly,
             get_string('infobox_showregistrationsonly', 'organizer'), array('id' => 'show_registrations_only'),
-            $labelmarginstyles);
+            'slotoptions');
     }
-
-    $output .= $OUTPUT->help_icon('infobox_slotsviewoptions', 'organizer', '');
-
-    $output .= '</div>';
+    $output .= html_writer::end_div();;
 
     return organizer_make_section('infobox_slotoverview', $output);
 }
