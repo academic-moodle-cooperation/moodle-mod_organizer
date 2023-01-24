@@ -14,7 +14,7 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod
+ * @package
  * @subpackage organizer
  * @copyright 2020 Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -47,6 +47,10 @@ define(
             warningdiv.addClass('advanced');
             warningdiv.hide();
 
+            /**
+             * Display/Hide groupings if groupmode is selected.
+             * @param {object} e event of groupmode field
+             */
             function check_group_members_only(e) {
                 var isgrouporganizer = $(e.target);
 
@@ -72,6 +76,10 @@ define(
                 }
             }
 
+            /**
+             * Disable groupings if groupmode is deselected.
+             * @param {object} e event of groupmode field
+             */
             function check_group_mode(e) {
                 var groupmodeselect = $(e.target);
 

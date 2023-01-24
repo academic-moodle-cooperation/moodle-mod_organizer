@@ -14,7 +14,7 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod
+ * @package
  * @subpackage organizer
  * @copyright 2017 Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -44,6 +44,10 @@ define(
                 this.imagepaths = param.imagepaths;
             }
 
+            /**
+             * Check if input field has been changed.
+             * @param {number} e input element
+             */
             function detect_change(e) {
                 var element = $(e.target);
                 var name = element.attr('name').split("[")[0];
@@ -53,6 +57,10 @@ define(
                 }
             }
 
+            /**
+             * Display the icon for changed content.
+             * @param {string} name of the icon
+             */
             function set_icon_changed(name) {
                 var icon = $("[id^=mform1] img[id$=" + name + "_warning]");
                 if (icon.attr('src') != instance.imagepaths.changed) {
@@ -63,20 +71,15 @@ define(
 
             var initialstate;
 
+            /**
+             * Reset the edit form.
+             */
             function reset_edit_form() {
-                reset_modfields();
-                reset_icons_warning();
-                $('[id^=mform1] [name^=availablefrom]:not([name*=now])').attr('disabled', initialstate);
-            }
-
-            function reset_modfields() {
                 $("[id^=mform1] input[name^=mod_]").val(0);
-            }
-
-            function reset_icons_warning() {
                 var icons = $("[id^=mform1] img[name$=_warning]");
                 icons.attr('src', instance.imagepaths.warning);
                 icons.attr('title', $("[id^=mform1] [name=warningtext1]").val());
+                $('[id^=mform1] [name^=availablefrom]:not([name*=now])').attr('disabled', initialstate);
             }
 
             $('[id^=mform1]').find('select, input[type=checkbox]').on('change', detect_change);

@@ -1643,10 +1643,10 @@ function organizer_get_participant_list($params, $slot, $app) {
     } else { // If groupmode: .
 
         if ($count == 0) {
-            $content .= "<em>" . get_string('group_slot_available', 'organizer') . "</em>";
+            $content .= "<em>" . get_string('group_slot_available', 'organizer') . "&nbsp;</em>";
         } else {
             $content .= "<span style=\"color: red;\"><em>" . get_string('group_slot_full', 'organizer')
-                    . "</em></span>";
+                    . "&nbsp;</em></span>";
             if (organizer_is_queueable()) {
                 $sql = "SELECT COUNT(distinct q.groupid) FROM {organizer_slot_queues} q
                         WHERE q.slotid = :slotid";

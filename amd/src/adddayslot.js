@@ -14,7 +14,7 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod
+ * @package
  * @subpackage organizer
  * @copyright 2020 Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,7 +26,7 @@
 
 
 define(
-    ['jquery', 'core/log'], function($, log) {
+    ['jquery', 'core/log'], function($) {
 
         /**
          * @constructor
@@ -35,7 +35,7 @@ define(
         var Adddayslot = function() {
 
             this.totalslots = 0;
-            this.displayallslots = 0;
+            this.displayallslots = 9;
             this.totalday = "";
             this.totaltotal = "";
             this.current = "0";
@@ -95,6 +95,12 @@ define(
             }
 
             // Get index of changed row and start evaluation.
+
+            /**
+             * Get index of changed row and start evaluation.
+             *
+             * @param {number} e Index of row
+             */
             function startevaluation(e) {
                 var name = $(e.target).attr("name");
                 var i = parseInt(name.replace('newslots[', ''));
@@ -103,7 +109,7 @@ define(
                 var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[fromh\]']").val()) +
                     parseInt($("select[name='newslots\[" + i + "\]\[fromm\]']").val());
                 // Proposal for to-date's time when from-date's time has been changed.
-                if ((valdayfrom != -1 && valdayto == -1) || (name.indexOf("[fromh]") != -1 && name.indexOf("[fromm]") != -1)) {
+                if (valdayfrom != -1 || (name.indexOf("[fromh]") != -1 && name.indexOf("[fromm]") != -1)) {
                     var periodstartdate = getstartdate();
                     var periodenddate = getenddate();
                     for (var daydate = periodstartdate; daydate <= periodenddate; daydate = addDays(daydate * 1000, 1)) {
@@ -129,14 +135,17 @@ define(
                 }
                 if (valdayfrom != -1 && valdayto != -1) {
                     evaluaterow(i);
-                    shownextnewslot(i);
                 } else {
                     resetrowevaluation(i);
                 }
                 writetotal();
             }
 
-            // Evaluate a certain row to make forecast.
+            /**
+             * Evaluate a certain row to make forecast.
+             *
+             * @param {number} i Index of row
+             */
             function evaluaterow(i) {
                 var howmanyslots = getslots(i);
                 var slots = howmanyslots[0];
@@ -158,7 +167,11 @@ define(
                 $("span[name='newpax_" + i + "']").html(pax.toString());
             }
 
-            // Set row evaluation to zero.
+            /**
+             * Set row evaluation to zero.
+             *
+             * @param {number} i Index of row
+             */
             function resetrowevaluation(i) {
                 var slots = 0;
                 var pax = 0;
@@ -168,7 +181,9 @@ define(
                 $("span[name='newpax_" + i + "']").html(pax.toString());
             }
 
-            // Reevaluate all rows and write the totals.
+            /**
+             * Reevaluate all rows and write the totals.
+             */
             function evaluateallrows() {
                 for (var i = 0; i < instance.current; i++) {
                     evaluaterow(i);
@@ -176,7 +191,11 @@ define(
                 writetotal();
             }
 
-            // Get amount of slots of row i.
+            /**
+             * Get amount of slots of row i.
+             *
+             * @param {number} i Index of row
+             */
             function getslots(i) {
                 // No selected day-from: return 0.
                 var dayfromvalue = parseInt($("select[name^='newslots\[" + i + "\]\[day\]']").val());
@@ -234,6 +253,10 @@ define(
                 return returnvalues;
             }
 
+            /**
+             * Get max amount of participants of this slot.
+             * @return {int} pax
+             */
             function getpax() {
                 var pax = $('input[name=maxparticipants]').val();
                 if ($.isNumeric(pax)) {
@@ -243,6 +266,9 @@ define(
                 }
             }
 
+            /**
+             * Write out overall sums of forecast bookings.
+             */
             function writetotal() {
                 var totalslots = 0;
                 var totalpax = 0;
@@ -262,6 +288,10 @@ define(
                 $("div[name='organizer_newslots_forecasttotal']").html(forecaststring);
             }
 
+            /**
+             * Get the startdate for the series of dates.
+             * @return {number}
+             */
             function getstartdate() {
                 var startdateday = $("select[name='startdate\[day\]']").val();
                 var startdatemonth = $("select[name='startdate\[month\]']").val() - 1;
@@ -270,6 +300,10 @@ define(
                 return startdatedate.getTime() / 1000;
             }
 
+            /**
+             * Get the enddate for the series of dates.
+             * @return {number}
+             */
             function getenddate() {
                 var enddateday = $("select[name='enddate\[day\]']").val();
                 var enddatemonth = $("select[name='enddate\[month\]']").val() - 1;
@@ -278,6 +312,10 @@ define(
                 return enddatedate.getTime() / 1000 + 86399; // Include last day of period.
             }
 
+            /**
+             * Get the duration of a slot.
+             * @return {number} in seconds
+             */
             function getduration() {
                 var durationnumber = parseInt($("input[name='duration\[number\]']").val());
                 var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
@@ -289,6 +327,10 @@ define(
                 return duration;
             }
 
+            /**
+             * Get the gap between the dates, if any.
+             * @return {number} in seconds
+             */
             function getgap() {
                 var gapnumber = parseInt($("input[name='gap\[number\]']").val());
                 var gaptimeunit = parseInt($("select[name='gap\[timeunit\]']").val());
@@ -300,23 +342,16 @@ define(
                 return gap;
             }
 
+            /**
+             * Function to add a day to a given date.
+             * @param {string} date to add a day to
+             * @param { number } days to add to the date
+             * @return {number} the new date
+             */
             function addDays(date, days) {
                 var result = new Date(date);
                 result.setDate(result.getDate() + days);
                 return result.getTime() / 1000;
-            }
-
-            function shownextnewslot(id) {
-                // As soon as a to time is edited, display the next day.
-                let nextindex = parseInt(id) + 1;
-                if (nextindex > instance.current) {
-                    $("#id_newslots_" + String(nextindex) + "_day").closest(".form-group.row.fitem").show(); // Boost-theme.
-                    $("#fgroup_id_slotgroup" + String(nextindex)).show(); // Clean-theme.
-                    if (nextindex == instance.totalslots) {
-                        $('#id_addday').show();
-                    }
-                    instance.current++;
-                }
             }
 
         };

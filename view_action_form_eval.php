@@ -96,7 +96,7 @@ class organizer_evaluate_slots_form extends moodleform
                     . userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
             $slotdatetime = " <strong>$date, $time</strong>";
             if ($slot->starttime > $now) {
-                $slotdatetime .= ' <em>(' . get_string('eval_not_occured', 'organizer') . ')</em>';
+                $slotdatetime .= ' <em>&nbsp;(' . get_string('eval_not_occured', 'organizer') . ')</em>';
             }
             $appgroup = array();
             // Slot checkbox.
