@@ -312,13 +312,13 @@ function organizer_participants_action_allowed($action, $slot, $organizer, $cont
         $allowedaction = ORGANIZER_ACTION_UNREGISTER;
         $notavailable |= !$rightunreg;
     } else {
-        $allowedaction = ORGANIZER_ACTION_REGISTER;
         $slotsleft = organizer_multiplebookings_slotslefttobook($organizer,
-            isset($group->id) ? null : $USER->id, isset($group->id) ? $group->id : null);
+            isset($group->id) ? null : $USER->id, $group->id ?? null);
+        $notavailable |= $slotfull || !$rightreg;
         if ($slotsleft) {
-            $notavailable |= $slotfull || !$rightreg;
+            $allowedaction = ORGANIZER_ACTION_REGISTER;
         } else {
-            $notavailable = true;
+            $allowedaction = ORGANIZER_ACTION_REREGISTER;
         }
     }
     if (!$userslot && $slotfull && $rightreg && $queueable && !$alreadyinqueue && !$notavailable) {

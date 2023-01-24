@@ -1965,7 +1965,7 @@ function organizer_participants_action($params, $slot) {
         $disabled |= !$rightunregister;
     } else {
         $slotsleft = organizer_multiplebookings_slotslefttobook($organizer,
-            isset($group->id) ? null : $USER->id, isset($group->id) ? $group->id : null);
+            !isset($group->id) ? null : $USER->id, $group->id ?? null);
         $disabled |= $slotfull || !$rightregister;
         if ($slotsleft) {
             $action = 'register';

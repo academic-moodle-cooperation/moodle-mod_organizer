@@ -2078,7 +2078,7 @@ function organizer_multiplebookings_status($slotsbooked, $organizer) {
 function organizer_multiplebookings_slotslefttobook($organizer, $userid = null, $groupid = null) {
     global $DB, $USER;
 
-    if ($userid == null && $groupid = null) {
+    if ($userid == null && $groupid == null) {
         $userid = $USER->id;
     }
 
@@ -2089,13 +2089,13 @@ function organizer_multiplebookings_slotslefttobook($organizer, $userid = null, 
             WHERE s.organizerid = :organizerid AND a.userid = :userid";
     } else {
         $paramssql = array('groupid' => $groupid, 'organizerid' => $organizer->id);
-        $query = "SELECT count(*) FROM {organizer_slot_appointments} a
+        $query = "SELECT count(DISTINCT s.id) FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.organizerid = :organizerid AND a.groupid = :groupid";
     }
-    $userslots = $DB->count_records_sql($query, $paramssql);
+    $bookedslots = $DB->count_records_sql($query, $paramssql);
 
-    $slotsleft = $organizer->userslotsmax - $userslots;
+    $slotsleft = $organizer->userslotsmax - $bookedslots;
 
     return $slotsleft;
 }

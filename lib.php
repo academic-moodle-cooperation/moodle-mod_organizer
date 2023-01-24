@@ -413,7 +413,16 @@ function organizer_update_grades($organizer, $userid = 0) {
                         $grade->rawgrade = $min;
                         break;
                     default:
-                        raise_error('No valid gradeaggregationmethod!');
+                        // If no grade method is selected take average method.
+                        $sum = 0;
+                        $i = 0;
+                        foreach ($grades as $value) {
+                            if ($value->rawgrade) {
+                                $i++;
+                                $sum += $value->rawgrade;
+                            }
+                        }
+                        $grade->rawgrade = $sum / $i;
                 }
             }
             return organizer_grade_item_update($organizer, $grade);
