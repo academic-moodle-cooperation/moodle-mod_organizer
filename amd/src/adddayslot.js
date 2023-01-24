@@ -82,7 +82,7 @@ define(
             /**
              * Get index of changed row and start evaluation.
              *
-             * @param {number} e Index of row
+             * @param {object} e event of changed row element
              */
             function startevaluation(e) {
                 var name = $(e.target).attr("name");
@@ -92,7 +92,7 @@ define(
                 var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[fromh\]']").val()) +
                     parseInt($("select[name='newslots\[" + i + "\]\[fromm\]']").val());
                 // Proposal for to-date's time when from-date's time has been changed.
-                if (valdayfrom != -1) {
+                if (valdayfrom != -1 && name.indexOf('dayto') == -1 && name.indexOf('toh') == -1 && name.indexOf('tom') == -1) {
                     var periodstartdate = getstartdate();
                     var periodenddate = getenddate();
                     for (var daydate = periodstartdate; daydate <= periodenddate; daydate = addDays(daydate * 1000, 1)) {
