@@ -145,34 +145,26 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
     ORDER BY a.id DESC";
     $apps = $DB->get_records_sql($query, $paramssql);
 
-    $app = reset($apps);
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
-        $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
-        $query = "SELECT a.* FROM {organizer_slot_appointments} a
-        INNER JOIN {organizer_slots} s ON a.slotid = s.id
-        WHERE s.organizerid = :organizerid AND s.id = :slotid
-        ORDER BY a.id DESC";
-        $groupapps = $DB->get_records_sql($query, $paramssql);
-
-        $appcount = 0;
-        $someoneattended = false;
-        foreach ($groupapps as $groupapp) {
-            if ($groupapp->userid == $userid) {
-                $app = $groupapp;
-            }
-            if (isset($groupapp->attended)) {
-                $appcount++;
-                if ($groupapp->attended == 1) {
-                    $someoneattended = true;
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && count($apps) > 0) {
+        foreach ($apps as &$app) {
+            $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
+            $query = "SELECT a.* FROM {organizer_slot_appointments} a
+                        INNER JOIN {organizer_slots} s ON a.slotid = s.id
+                        WHERE s.organizerid = :organizerid AND s.id = :slotid
+                        ORDER BY a.id DESC";
+            $groupapps = $DB->get_records_sql($query, $paramssql);
+            $appcount = 0;
+            $someoneattended = false;
+            foreach ($groupapps as $groupapp) {
+                if (isset($groupapp->attended)) {
+                    $appcount++;
+                    if ($groupapp->attended == 1) {
+                        $someoneattended = true;
+                    }
                 }
             }
-        }
-
-        if ($app) {
             $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
         }
-
-        $apps = $groupapps;
     }
 
     return $apps;

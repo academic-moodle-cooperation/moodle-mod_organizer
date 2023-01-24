@@ -150,7 +150,7 @@ function organizer_make_description_section($organizer, $cmid) {
             $a->groupname = $group->name;
             $output .= '<p> ' . get_string('grouporganizer_desc_hasgroup', 'organizer', $a) . '</p>';
         } else {
-            $output .= '<p> ' . get_string('grouporganizer_desc_nogroup', 'organizer') . '</p>';
+            $output .= '<p> ' . get_string('grouporganizer_desc_novalidgroup', 'organizer') . '</p>';
         }
     }
     if (isset($organizer->duedate)) {
@@ -172,6 +172,7 @@ function organizer_make_description_section($organizer, $cmid) {
 function organizer_make_myapp_section($params, $organizer, $apps) {
     global $USER;
 
+    $output = "";
     $groupstr = "";
     $novalidgroup = false;
     if (organizer_is_group_mode()) {
@@ -180,7 +181,6 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
         }
         $groupstr = "_group";
     }
-    $output = html_writer::start_div('userslotsboard');
     if (!$novalidgroup) {
         $a = new stdClass();
         $a->booked = organizer_count_bookedslots($organizer->id, isset($group->id) ? null : $USER->id, $group->id ?? null);
@@ -200,7 +200,7 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
         }
         $output .= $userslotsboard;
     }
-    if ($apps) {
+    if (count($apps) > 0) {
         $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
         $align = array('left', 'left', 'left', 'left', 'center', 'center');
         $sortable = array();
@@ -212,7 +212,9 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
         $table->align = $align;
         $output .= organizer_render_table_with_footer($table, false);
     }
-    $output .= html_writer::end_div();
+    if ($output) {
+        $output = html_writer::div($output, 'userslotsboard');
+    }
     return organizer_make_section('infobox_myslot', $output);
 }
 function organizer_make_minmax_section($organizer, $entries) {

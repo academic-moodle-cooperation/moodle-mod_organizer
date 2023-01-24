@@ -394,7 +394,7 @@ $string['message_info_available_group'] = 'There are {$a->freeslots} empty slots
 $string['message_warning_available'] = '<span style="color:red;">Warning</span> There are {$a->freeslots} empty slots available for {$a->notregistered} users without any appointment.';
 $string['message_warning_available_group'] = '<span style="color:red;">Warning</span> There are {$a->freeslots} empty slots available for {$a->notregistered} groups without any appointment.';
 
-$string['grouporganizer_desc_nogroup'] = 'This is a group organizer. You are not member of a group included in this organizer instance!';
+$string['grouporganizer_desc_novalidgroup'] = 'This is a group organizer. You are not member of a group included in this organizer instance!';
 $string['grouporganizer_desc_hasgroup'] = 'This is a group organizer. Clicking the register button will register you and all members of your group {$a->groupname} to this slot. All group members may change and comment the registration.';
 $string['status_no_entries'] = 'This organizer has no registered students.';
 $string['infobox_link'] = 'Show/Hide';
