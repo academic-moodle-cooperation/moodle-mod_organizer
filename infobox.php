@@ -257,7 +257,7 @@ function organizer_make_filtersection($mode) {
     $output .= html_writer::end_span();
 
     $displaymyslotsonly = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
-    $displayregistrationsonly = $displayfreeslots = true;
+    $displayregistrationsonly = $displayfreeslots = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
     if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
         $showmyslotsonly = substr($prefs, 0, 1) ? true : false;
         $showfreeslotsonly = substr($prefs, 1, 1) ? true : false;

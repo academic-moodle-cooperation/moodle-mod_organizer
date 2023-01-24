@@ -362,9 +362,9 @@ $string['infobox_deadline_passed_slot'] = 'xxx slots could not be created becaus
 
 $string['fullname_template'] = '{$a->firstname} {$a->lastname}';
 
-$string['infobox_showfreeslots'] = 'Free slots';
+$string['infobox_showfreeslots'] = 'Free slots only';
 $string['infobox_showslots'] = 'Also past time slots';
-$string['infobox_showregistrationsonly'] = 'Booked slots';
+$string['infobox_showregistrationsonly'] = 'Booked slots only';
 $string['infobox_showlegend'] = 'Show legend';
 $string['infobox_hidelegend'] = 'Hide legend';
 $string['infobox_slotoverview_title'] = 'Slot overview';
