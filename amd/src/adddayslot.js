@@ -35,7 +35,7 @@ define(
         var Adddayslot = function() {
 
             this.totalslots = 0;
-            this.displayallslots = 9;
+            this.displayallslots = 0;
             this.totalday = "";
             this.totaltotal = "";
             this.current = "0";
@@ -55,23 +55,8 @@ define(
             instance.allowcreationofpasttimeslots = param.allowcreationofpasttimeslots;// Deadline for registrations(s).
             instance.pasttimeslotsstring = param.pasttimeslotsstring; // String warning message if slots had
 
-            if (instance.displayallslots == 0) { // So the form is loaded initially.
+            if (!instance.displayallslots == 0) { // So the form is loaded with new slots to fill in.
 
-                // Hide all days except the first one.
-                for (var i = instance.totalslots - 1; i > 0; i--) {
-                    if ($('#id_newslots_' + String(i) + '_day').val() == -1) {
-                        $("#id_newslots_" + String(i) + "_day").closest(".form-group.row.fitem").hide(); // Boost-theme.
-                        $("#fgroup_id_slotgroup" + String(i)).hide(); // Clean-theme.
-                    } else {
-                        break;
-                    }
-                }
-                // As long as not all slots are visible hide the add day button.
-                if (i < instance.totalslots - 1) {
-                    $('#id_addday').hide();
-                }
-
-            } else {
                 instance.current = instance.totalslots;
                 evaluateallrows();
             }
@@ -93,8 +78,6 @@ define(
                 $('[name^=availablefrom]').prop("disabled", true);
                 $('#id_availablefrom_timeunit').prop("disabled", true);
             }
-
-            // Get index of changed row and start evaluation.
 
             /**
              * Get index of changed row and start evaluation.
@@ -195,6 +178,7 @@ define(
              * Get amount of slots of row i.
              *
              * @param {number} i Index of row
+             * @returns {array} returnvalues slots, slotsnotcreated1, slotsnotcreated2
              */
             function getslots(i) {
                 // No selected day-from: return 0.

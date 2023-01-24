@@ -46,7 +46,7 @@ define(
 
             /**
              * Check if input field has been changed.
-             * @param {number} e input element
+             * @param {object} e input element
              */
             function detect_change(e) {
                 var element = $(e.target);
