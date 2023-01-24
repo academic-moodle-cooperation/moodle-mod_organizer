@@ -1212,8 +1212,9 @@ $string['configlocationslist_desc'] = 'Each location has to be inserted in a sep
 $string['locationmandatory'] = 'Slot Location entry is mandatory';
 $string['locationsettings'] = 'Slot location settings';
 
-$string['filtertable'] = '\'Searching this table\'';
+$string['filtertable'] = '\'Filterting this table\'';
 $string['filtertable_help'] = 'Search these slots for mutual strings here.';
+$string['slotoptionstable'] = '\'Extending this table\'';
 $string['slotoptionstable_help'] = 'Show past slots or hidden slots as well.';
 
 $string['userslots_mingreatermax'] = 'Minimum user slots is greater than maximum.';
