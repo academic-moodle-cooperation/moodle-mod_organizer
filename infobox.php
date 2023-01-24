@@ -265,13 +265,13 @@ function organizer_make_filtersection($mode) {
     $output .= html_writer::end_span();
     if ($displayhiddenslots) {
         $output .= html_writer::checkbox('show_hidden_slots', '1', $showhiddenslots,
-            get_string('infobox_showhiddenslots', 'organizer'), array('id' => 'show_hidden_slots'),
-            'slotoptions');
+            get_string('infobox_showhiddenslots', 'organizer'),
+            array('id' => 'show_hidden_slots', 'class' => 'slotoptions'));
     }
     if ($displaypastslots) {
         $output .= html_writer::checkbox('show_past_slots', '1', $showpastslots,
-            get_string('infobox_showslots', 'organizer'), array('id' => 'show_past_slots'),
-            'slotoptions');
+            get_string('infobox_showslots', 'organizer'),
+            array('id' => 'show_past_slots', 'class' => 'slotoptions'));
     }
     $output .= html_writer::end_div();
     $output .= html_writer::div('', 'clearer');
@@ -299,16 +299,18 @@ function organizer_make_slotoptions_section($mode) {
     }
     if ($displaymyslotsonly) {
         $output .= html_writer::checkbox('show_my_slots_only', '1', $showmyslotsonly,
-            get_string('infobox_showmyslotsonly', 'organizer'), array('id' => 'show_my_slots_only'), 'slotoptions');
+            get_string('infobox_showmyslotsonly', 'organizer'),
+            array('id' => 'show_my_slots_only', 'class' => 'slotoptions'));
     }
     if ($displayfreeslots) {
         $output .= html_writer::checkbox('show_free_slots_only', '1', $showfreeslotsonly,
-            get_string('infobox_showfreeslots', 'organizer'), array('id' => 'show_free_slots_only'), 'slotoptions');
+            get_string('infobox_showfreeslots', 'organizer'),
+            array('id' => 'show_free_slots_only', 'class' => 'slotoptions'));
     }
     if ($displayregistrationsonly) {
         $output .= html_writer::checkbox('show_registrations_only', '1', $showregistrationsonly,
-            get_string('infobox_showregistrationsonly', 'organizer'), array('id' => 'show_registrations_only'),
-            'slotoptions');
+            get_string('infobox_showregistrationsonly', 'organizer'),
+            array('id' => 'show_registrations_only', 'class' => 'slotoptions'));
     }
     $output .= html_writer::end_div();;
 
