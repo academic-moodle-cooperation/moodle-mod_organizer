@@ -92,7 +92,7 @@ define(
                 var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[fromh\]']").val()) +
                     parseInt($("select[name='newslots\[" + i + "\]\[fromm\]']").val());
                 // Proposal for to-date's time when from-date's time has been changed.
-                if (valdayfrom != -1 || (name.indexOf("[fromh]") != -1 && name.indexOf("[fromm]") != -1)) {
+                if (valdayfrom != -1) {
                     var periodstartdate = getstartdate();
                     var periodenddate = getenddate();
                     for (var daydate = periodstartdate; daydate <= periodenddate; daydate = addDays(daydate * 1000, 1)) {
