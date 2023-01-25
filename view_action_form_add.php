@@ -217,10 +217,9 @@ class organizer_add_slots_form extends moodleform
 
         if (isset($_POST['addday'])) {
             $totalslots = $this->_add_slot_fields($newslotindex);
-            $displayallslots = 1;
-        } else {
-            $displayallslots = 0;
         }
+        $displayallslots = 1;
+
         $forecasttotalgroup[] = $mform->createElement("html",
                 "<div name='organizer_newslots_forecasttotal' class='col-md-9 form-inline felement'></div>");
         $mform->insertElementBefore(

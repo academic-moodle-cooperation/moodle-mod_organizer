@@ -50,12 +50,12 @@ define(
             instance.totalday = param.totalday; // String for new slots amount status message for a day.
             instance.totaltotal = param.totaltotal; // String for new slots amount total status message.
             instance.relativedeadline = param.relativedeadline; // Relative deadline for slot registrations in seconds.
-            instance.relativedeadlinestring = param.relativedeadlinestring; // String warning message if slots had
-            // not been created due to registration deadline. "xxx" is replaced by the number of not created slots.
+            instance.relativedeadlinestring = param.relativedeadlinestring; /* String warning message if slots had
+            not been created due to registration deadline. "xxx" is replaced by the number of not created slots. */
             instance.allowcreationofpasttimeslots = param.allowcreationofpasttimeslots;// Deadline for registrations(s).
             instance.pasttimeslotsstring = param.pasttimeslotsstring; // String warning message if slots had
 
-            if (!instance.displayallslots == 0) { // So the form is loaded with new slots to fill in.
+            if (instance.displayallslots) { // So the form is loaded with new slots to fill in.
 
                 instance.current = instance.totalslots;
                 evaluateallrows();
