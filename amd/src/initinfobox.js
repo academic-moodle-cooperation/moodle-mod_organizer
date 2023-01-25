@@ -14,7 +14,7 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod
+ * @package
  * @subpackage organizer
  * @copyright 2020 Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,9 +28,9 @@
 define(['jquery', 'core/config'], function($, config) {
 
         /**
-     * @constructor
-     * @alias module:mod_organizer/initinfobox
-     */
+         * @constructor
+         * @alias module:mod_organizer/initinfobox
+         */
         var Initinfobox = function() {
             this.student = 0;
             this.userid = 0;
@@ -43,7 +43,10 @@ define(['jquery', 'core/config'], function($, config) {
             instance.student = participant; // Is user student or not?
             instance.userid = userid; // This user ID.
 
-            // What happens when a view option checkbox is clicked or the filter field has been changed.
+            /**
+             * What happens when a view option checkbox is clicked or the filter field has been changed.
+             * @param {object} event element which has been clicked
+             */
             function toggle_all_slots(event) {
                 if (event!=undefined) {
                     saveuserpreference();
@@ -114,12 +117,14 @@ define(['jquery', 'core/config'], function($, config) {
                 toggle_info();
             }
 
+            /**
+             * Check or uncheck the info row(s).
+             */
             function toggle_info() {
                 var tablebody = $('#slot_overview tbody');
                 var noninforows = tablebody.find('tr:not(.info)');
                 var noneexist = noninforows.length === 0;
                 var anyvisible = false;
-
                 noninforows.each(
                     function() {
                         if ($(this).css('display') !== 'none') {
@@ -127,10 +132,8 @@ define(['jquery', 'core/config'], function($, config) {
                         }
                     }
                 );
-
                 var showpastslots = $('#show_past_slots').is(':checked');
                 var showmyslotsonly = $('#show_my_slots_only').is(':checked');
-
                 tablebody.find('tr.info').hide();
                 if (!anyvisible) {
                     if (noneexist) {
@@ -145,7 +148,11 @@ define(['jquery', 'core/config'], function($, config) {
                 }
             }
 
-            // Extract visible text from 'element' down thru DOM tree.
+            /**
+             * Extract visible text from 'element' down thru DOM tree.
+             * @param {object} element element in which to search the text
+             * @return {string} text
+             */
             function extracttext(element) {
                 var text, last, img;
 
@@ -161,7 +168,9 @@ define(['jquery', 'core/config'], function($, config) {
                 return text;
             }
 
-            // Save userpreference to server.
+            /**
+             * Save userpreference to server.
+             */
             function saveuserpreference() {
                 let slotsviewoptions = '';
 
