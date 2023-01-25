@@ -26,7 +26,7 @@
 
 
 define(
-    ['jquery', 'core/log'], function($, log) {
+    ['jquery'], function($) {
 
         /**
          * @constructor
@@ -197,16 +197,13 @@ define(
              * @returns {array} returnvalues slots, slotsnotcreated1, slotsnotcreated2
              */
             function getslots(i) {
-                log.info(i);
                 // No selected day-from: return 0.
                 var dayfromvalue = parseInt($("select[name^='newslots\[" + i + "\]\[day\]']").val());
-                log.info(dayfromvalue);
                 if (dayfromvalue == -1) {
                     return [0, 0, 0];
                 }
                 // No selected day to: return 0.
                 var daytovalue = parseInt($("select[name^='newslots\[" + i + "\]\[dayto\]']").val());
-                log.info(daytovalue);
                 if (daytovalue == -1) {
                     return [0, 0, 0];
                 }
