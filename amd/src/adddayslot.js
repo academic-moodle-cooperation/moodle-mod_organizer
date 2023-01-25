@@ -240,6 +240,7 @@ define(
                     var now = new Date();
                     var date = now.getTime() / 1000;
                     dateto = periodenddate < dateto ? periodenddate : dateto;
+                    alert(dateto);
                     for (itime = datefrom; itime + duration <= dateto; itime += iteration) {
                         if (itime - date < instance.relativedeadline && itime - date > 0) {
                             slotsnotcreatedduetodeadline++;
