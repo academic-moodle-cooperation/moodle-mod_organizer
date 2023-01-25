@@ -55,8 +55,23 @@ define(
             instance.allowcreationofpasttimeslots = param.allowcreationofpasttimeslots;// Deadline for registrations(s).
             instance.pasttimeslotsstring = param.pasttimeslotsstring; // String warning message if slots had
 
-            if (instance.displayallslots) { // So the form is loaded with new slots to fill in.
+            if (instance.displayallslots == 0) { // So the form is loaded initially.
 
+                // Hide all days except the first one.
+                for (var i = instance.totalslots - 1; i > 0; i--) {
+                    if ($('#id_newslots_' + String(i) + '_day').val() == -1) {
+                        $("#id_newslots_" + String(i) + "_day").closest(".form-group.row.fitem").hide(); // Boost-theme.
+                        $("#fgroup_id_slotgroup" + String(i)).hide(); // Clean-theme.
+                    } else {
+                        break;
+                    }
+                }
+                // As long as not all slots are visible hide the add day button.
+                if (i < instance.totalslots - 1) {
+                    $('#id_addday').hide();
+                }
+
+            } else {
                 instance.current = instance.totalslots;
                 evaluateallrows();
             }
@@ -118,6 +133,7 @@ define(
                 }
                 if (valdayfrom != -1 && valdayto != -1) {
                     evaluaterow(i);
+                    shownextnewslot(i);
                 } else {
                     resetrowevaluation(i);
                 }
@@ -336,6 +352,23 @@ define(
                 var result = new Date(date);
                 result.setDate(result.getDate() + days);
                 return result.getTime() / 1000;
+            }
+
+            /**
+             * Function to add a day to a given date.
+             * @param {string} id contains the index of the current slot
+             */
+            function shownextnewslot(id) {
+                // As soon as a to time is edited, display the next day.
+                let nextindex = parseInt(id) + 1;
+                if (nextindex > instance.current) {
+                    $("#id_newslots_" + String(nextindex) + "_day").closest(".form-group.row.fitem").show(); // Boost-theme.
+                    $("#fgroup_id_slotgroup" + String(nextindex)).show(); // Clean-theme.
+                    if (nextindex == instance.totalslots) {
+                        $('#id_addday').show();
+                    }
+                    instance.current++;
+                }
             }
 
         };
