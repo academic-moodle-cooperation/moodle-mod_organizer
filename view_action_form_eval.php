@@ -107,7 +107,23 @@ class organizer_evaluate_slots_form extends moodleform
             $mform->insertElementBefore($mform->createElement('group', '', '', $appgroup, '', false), 'buttonar');
 
             // Get apps (participants or groups).
-            $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slotid));
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                $query = "SELECT DISTINCT a.*
+                        FROM {organizer_slot_appointments} a
+                        INNER JOIN {groups} g ON g.id = a.groupid
+                        INNER JOIN {groups_members} gm ON gm.groupid = g.id
+                        INNER JOIN {user} u ON gm.userid = u.id
+                        WHERE a.slotid = :slotid
+                        ORDER BY g.name ASC, u.lastname ASC, u.firstname ASC";
+            } else {
+                $query = "SELECT DISTINCT a.*
+                        FROM {organizer_slot_appointments} a
+                        INNER JOIN {user} u ON a.userid = u.id
+                        WHERE a.slotid = :slotid
+                        ORDER BY u.lastname ASC, u.firstname ASC";
+            }
+            $param = array('slotid' => $slot->id);
+            $apps = $DB->get_records_sql($query, $param);
 
             // If groupmode write groupname.
             if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && count($apps) != 0) {
