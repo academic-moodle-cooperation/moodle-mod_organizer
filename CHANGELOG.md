@@ -5,6 +5,7 @@ CHANGELOG
 -------------------
 * [FIXED] #7431: evaluation form sort order by participants name
 * [FIXED] #7444: github #110 remove double module description appearance at view.php
+* [FIXED] #7449: github #109 add slots: wrong forecast if dateto time is less than datefrom time
 
 4.1.0 (2022-11-28)
 -------------------

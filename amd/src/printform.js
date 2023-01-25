@@ -14,7 +14,7 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod
+ * @package
  * @subpackage organizer
  * @copyright 2020 Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,9 +29,9 @@ define(
     ['jquery', 'core/config', 'core/log'], function($, config, log) {
 
         /**
-     * @constructor
-     * @alias module:mod_organizer/printform
-     */
+         * @constructor
+         * @alias module:mod_organizer/printform
+         */
         var Printform = function() {
             this.iconminus = "";
             this.iconplus = "";
@@ -105,7 +105,7 @@ define(
 
             /**
              * Hide a former visible column or show a former hidden column here.
-             * @param e the click event of the + or - icon
+             * @param {object} e the click event of the + or - icon
              */
             function toggle_column(e) {
                 var target = $(e.target);
