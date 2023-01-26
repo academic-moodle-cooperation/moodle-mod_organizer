@@ -1954,8 +1954,10 @@ function organizer_participants_action($params, $slot) {
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $isalreadyinqueue = $slotx->is_group_in_queue();
         $group = organizer_fetch_user_group($USER->id, $organizer->id);
+        $lefttobook = organizer_multiplebookings_slotslefttobook($organizer, null, $group->id);
     } else {
         $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
+        $lefttobook = organizer_multiplebookings_slotslefttobook($organizer, $USER->id);
     }
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$disabled;
 
@@ -1963,17 +1965,15 @@ function organizer_participants_action($params, $slot) {
         $action = 'unregister';
         $disabled |= !$rightunregister;
     } else {
-        $slotsleft = organizer_multiplebookings_slotslefttobook($organizer,
-            !isset($group->id) ? null : $USER->id, $group->id ?? null);
         $disabled |= $slotfull || !$rightregister;
-        if ($slotsleft) {
+        if ($lefttobook) {
             $action = 'register';
         } else {
             $action = 'reregister';
         }
     }
 
-    if (!$isuserslot && $slotfull && $rightregister && $isqueueable) {
+    if ($lefttobook && !$isuserslot && $slotfull && $rightregister && $isqueueable) {
         $action = 'queue';
         $disabled = false;
     }
