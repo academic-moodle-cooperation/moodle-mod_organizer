@@ -839,7 +839,7 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
 
 function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
                                         $sendmessage = false, $teacherapplicantid = null, $slotnotfull = false) {
-    global $DB, $USER, $CFG;
+    global $DB, $USER;
 
     if (!$userid) {
         $userid = $USER->id;
@@ -933,7 +933,7 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
         } else {
             $booked = organizer_count_bookedslots($organizer->id, $userid, null);
         }
-        if (organizer_multiplebookings_status($booked, $organizer) != USERSLOTS_MAX_REACHED) {
+        if (organizer_multiplebookings_status($booked, $organizer) == USERSLOTS_MAX_REACHED) {
             organizer_delete_user_from_any_queue($organizer->id, $userid);
         }
     }
@@ -1084,11 +1084,19 @@ function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
             if ($next = $slotx->get_next_in_queue_group()) {
                 organizer_register_appointment($slotid, $next->groupid, 0, true);
                 organizer_delete_from_queue($slotid, null, $next->groupid);
+                $booked = organizer_count_bookedslots($organizerid, null, $next->groupid);
+                if (organizer_multiplebookings_status($booked, $organizerid) == USERSLOTS_MAX_REACHED) {
+                    organizer_delete_user_from_any_queue($organizerid, null, $next->groupid);
+                }
             }
         } else {
             if ($next = $slotx->get_next_in_queue()) {
                 organizer_register_appointment($slotid, 0, $next->userid, true);
                 organizer_delete_from_queue($slotid, $next->userid);
+                $booked = organizer_count_bookedslots($organizerid, $next->userid, null);
+                if (organizer_multiplebookings_status($booked, $organizerid) == USERSLOTS_MAX_REACHED) {
+                    organizer_delete_user_from_any_queue($organizerid, $next->userid, null);
+                }
             }
         }
     }
@@ -2059,6 +2067,11 @@ function organizer_count_bookedslots($organizerid, $userid = null, $groupid = nu
  * @return int $status 0 for min not reached, 1 for min reached, 2 for max_reached
  */
 function organizer_multiplebookings_status($slotsbooked, $organizer) {
+    global $DB;
+
+    if (is_number($organizer)) {
+        $organizer = $DB->get_record('organizer', array('id' => $organizer), 'userslotsmin, userslotsmax', MUST_EXIST);
+    }
 
     if ($slotsbooked >= $organizer->userslotsmax) {
         $status = USERSLOTS_MAX_REACHED;
