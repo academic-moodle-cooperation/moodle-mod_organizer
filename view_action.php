@@ -306,8 +306,7 @@ function organizer_participants_action_allowed($action, $slot, $organizer, $cont
     } else {
         $alreadyinqueue = $slotx->is_user_in_queue($USER->id);
     }
-    $queueable = $organizer->queue && !$alreadyinqueue && !$slotevalpending && !$instancedisabled
-        && !$slotexpired && $slotx->organizer_groupmode_user_has_access() && !$slotx->is_evaluated();
+    $queueable = $organizer->queue && !$alreadyinqueue && !$notavailable;
     if ($userslot) {
         $allowedaction = ORGANIZER_ACTION_UNREGISTER;
         $notavailable |= !$rightunreg;
@@ -321,7 +320,7 @@ function organizer_participants_action_allowed($action, $slot, $organizer, $cont
             $allowedaction = ORGANIZER_ACTION_REREGISTER;
         }
     }
-    if (!$userslot && $slotfull && $rightreg && $queueable && !$alreadyinqueue && !$notavailable) {
+    if (!$userslot && $slotfull && $rightreg && $queueable) {
         $allowedaction = ORGANIZER_ACTION_QUEUE;
         $notavailable = false;
     }
