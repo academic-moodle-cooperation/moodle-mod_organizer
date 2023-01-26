@@ -195,7 +195,8 @@ function organizer_add_new_slots($data) {
                 print_error('Gap is invalid (not set or < 0). No slots will be added. Contact support!');
             }
 
-            for ($time = $slot['datefrom']; $time + $data->duration <= $slot['dateto']; $time += ($data->duration + $data->gap)) {
+            $dateto = $enddate < $slot['dateto'] ? $enddate : $slot['dateto'];
+            for ($time = $slot['datefrom']; $time + $data->duration <= $dateto; $time += ($data->duration + $data->gap)) {
 
                 if ($time - $date < $relativedeadline && $time - $date > 0 ) {
                     $slotsnotcreatedduetodeadline++;
