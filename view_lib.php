@@ -1957,8 +1957,7 @@ function organizer_participants_action($params, $slot) {
     } else {
         $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
     }
-    $isqueueable = $organizer->queue && !$isalreadyinqueue && !$slotevalpending && !$organizerdisabled
-        && !$slotexpired && $slotx->organizer_groupmode_user_has_access() && !$slotx->is_evaluated();
+    $isqueueable = $organizer->queue && !$isalreadyinqueue && !$disabled;
 
     if ($isuserslot) {
         $action = 'unregister';
@@ -1974,7 +1973,7 @@ function organizer_participants_action($params, $slot) {
         }
     }
 
-    if (!$isuserslot && $slotfull && $rightregister && $isqueueable && !$isalreadyinqueue && !$disabled) {
+    if (!$isuserslot && $slotfull && $rightregister && $isqueueable) {
         $action = 'queue';
         $disabled = false;
     }
