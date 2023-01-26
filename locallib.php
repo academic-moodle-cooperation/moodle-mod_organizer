@@ -170,6 +170,9 @@ function organizer_add_new_slots($data) {
             if ($slot['datefrom'] < $startdate || $slot['datefrom'] > $enddate) {
                 continue;
             }
+            while ($slot['dateto'] < $slot['datefrom']) {
+                $slot['dateto'] += (7 * 86400);
+            }
 
             $newslot = new stdClass();
             $newslot->maxparticipants = $data->maxparticipants;
