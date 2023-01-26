@@ -150,7 +150,7 @@ function organizer_add_new_slots($data) {
 
     $collisionmessages = "";
     $startdate = $data->startdate;
-    $enddate = $data->enddate + 86399;
+    $enddate = $data->enddate + 86400;
     $date = time();
     $slotsnotcreatedduetodeadline = 0;
     $slotsnotcreatedduetopasttime = 0;
@@ -167,7 +167,7 @@ function organizer_add_new_slots($data) {
             $slot['datefrom'] = $daydate + $slot['from'];
             $slot['dateto'] = organizer_get_dayto($slot['dayto'], $daydate);
             $slot['dateto'] = $slot['dateto'] + $slot['to'];
-            if ($slot['datefrom'] < $startdate || $slot['datefrom'] > $enddate || $slot['dateto'] > $enddate) {
+            if ($slot['datefrom'] < $startdate || $slot['datefrom'] > $enddate) {
                 continue;
             }
 

@@ -310,7 +310,7 @@ define(
                 var enddatemonth = $("select[name='enddate\[month\]']").val() - 1;
                 var enddateyear = $("select[name='enddate\[year\]']").val();
                 var enddatedate = new Date(enddateyear, enddatemonth, enddateday);
-                return enddatedate.getTime() / 1000 + 86399; // Include last day of period.
+                return enddatedate.getTime() / 1000 + 86400; // Include last day of period.
             }
 
             /**
