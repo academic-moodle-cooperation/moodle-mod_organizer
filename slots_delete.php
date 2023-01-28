@@ -101,7 +101,7 @@ if ($data = $mform->get_data()) {
         }
 
         $freetotal = $placestotal - $appointmentstotal;
-        $notregistered = ($registrantstotal * $organizer->userslotsmin )- $appointmentstotal;
+        $notregistered = ($registrantstotal * $organizer->userslotsmin) - $appointmentstotal;
         $notregistered = $notregistered < 0 ? 0 : $notregistered;
 
         $redirecturl->param('data[deleted]', $slotsdeleted);
