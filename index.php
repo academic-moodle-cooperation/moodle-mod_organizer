@@ -123,11 +123,9 @@ foreach ($organizers as $organizer) {
         $row[] = '-';
     } else {
         $row[] = organizer_get_eventaction_instance_student($organizer);
-        $app = organizer_get_last_user_appointment($organizer, null, false);
-        if ($app) {
+        $apps = organizer_get_all_user_appointments($organizer, $USER->id, false);
+        foreach ($apps as $app) {
             $row[] = organizer_display_grade($organizer, $app->grade, $app->userid);
-        } else {
-            $row[] = '-';
         }
     }
 

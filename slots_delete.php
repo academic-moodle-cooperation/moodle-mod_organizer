@@ -97,17 +97,17 @@ if ($data = $mform->get_data()) {
             foreach ($slots as $slot) {
                 $placestotal += $slot->maxparticipants;
             }
-            $registrantstotal = count(get_enrolled_users($context, 'mod/organizer:register'));
+            $entries = get_enrolled_users($context, 'mod/organizer:register');
+            list($registrantstotal, $notreachedmin, ) =
+                organizer_multiplebookings_statistics($organizer, null, $entries);
         }
 
         $freetotal = $placestotal - $appointmentstotal;
-        $notregistered = ($registrantstotal * $organizer->userslotsmin) - $appointmentstotal;
-        $notregistered = $notregistered < 0 ? 0 : $notregistered;
 
         $redirecturl->param('data[deleted]', $slotsdeleted);
         $redirecturl->param('data[notified]', $notified); // Amount notified participants.
         $redirecturl->param('data[freeslots]', $freetotal); // Free places.
-        $redirecturl->param('data[notregistered]', $notregistered); // Amount outstanding bookings.
+        $redirecturl->param('data[notreachedmin]', $notreachedmin); // Amount outstanding bookings.
 
         $prefix = ($notregistered > $freetotal) ? 'warning' : 'info';
         $suffix = ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) ? '_group' : '';

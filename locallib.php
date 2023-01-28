@@ -2171,3 +2171,70 @@ function organizer_multiplebookings_statistics($organizer, $groupmode, $entries)
 
     return [$countentries, $underminimum, $maxreached];
 }
+
+/**
+ * Returns amount of course participants who have not booked the minimum of slots yet.
+ *
+ * @param object $organizer organizer instance
+ * @param object $cm course module data of instance
+ *
+ * @return object $allparticipants, $participantsreachedminimum, $attendedparticipants
+ */
+function organizer_get_counters($organizer, $cm = null) {
+    global $DB;
+
+    if (!$cm) {
+        $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
+    }
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $params = array('groupingid' => $cm->groupingid);
+        $query = 'SELECT {groups}.* FROM {groups}
+                INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
+                WHERE {groupings_groups}.groupingid = :groupingid
+                ORDER BY {groups}.name ASC';
+        $groups = $DB->get_records_sql($query, $params);
+        $attended = 0;
+        $registered = 0;
+        foreach ($groups as $group) {
+            $apps = organizer_get_all_group_appointments($organizer, $group->id);
+            if (organizer_multiplebookings_status(count($apps), $organizer) != USERSLOTS_MIN_NOT_REACHED) {
+                $registered ++;
+            }
+            foreach ($apps as $app) {
+                if ($app->attended == 1) {
+                    $attended++;
+                    break;
+                }
+            }
+        }
+        $total = count($groups);
+        $a = new stdClass();
+        $a->registered = $registered;
+        $a->attended = $attended;
+        $a->total = $total;
+    } else {
+        $context = context_module::instance($cm->id, MUST_EXIST);
+        $participants = get_enrolled_users($context, 'mod/organizer:register');
+        $attended = 0;
+        $registered = 0;
+        foreach ($participants as $participant) {
+            $apps = organizer_get_all_user_appointments($organizer, $participant->id);
+            if (organizer_multiplebookings_status(count($apps), $organizer) != USERSLOTS_MIN_NOT_REACHED) {
+                $registered ++;
+            }
+            foreach ($apps as $app) {
+                if ($app->attended == 1) {
+                    $attended++;
+                    break;
+                }
+            }
+        }
+        $total = count($participants);
+        $a = new stdClass();
+        $a->registered = $registered;
+        $a->attended = $attended;
+        $a->total = $total;
+    }
+
+    return $a;
+}
