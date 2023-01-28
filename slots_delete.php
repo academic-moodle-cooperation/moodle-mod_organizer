@@ -80,6 +80,8 @@ if ($data = $mform->get_data()) {
         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $redirecturl->param('messages[]', 'message_info_slots_deleted_group');
             $groups = groups_get_all_groups($course->id, 0, $cm->groupingid);
+            list($registrantstotal, $notreachedmin, ) =
+                organizer_multiplebookings_statistics($organizer, $groups);
             $sql = 'SELECT COUNT(DISTINCT app.id) as total
                 FROM {organizer_slots} org
                 JOIN {organizer_slot_appointments} app ON org.id = app.slotid
@@ -90,7 +92,6 @@ if ($data = $mform->get_data()) {
                 $params['groupid'] = $group->id;
                 $appointmentstotal += $DB->count_records_sql($sql, $params);
             }
-            $registrantstotal = count($groups);
             $placestotal = count($slots);
         } else {
             $redirecturl->param('messages[0]', 'message_info_slots_deleted');
