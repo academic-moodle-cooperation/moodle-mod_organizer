@@ -81,7 +81,7 @@ if ($data = $mform->get_data()) {
             $redirecturl->param('messages[]', 'message_info_slots_deleted_group');
             $groups = groups_get_all_groups($course->id, 0, $cm->groupingid);
             list($registrantstotal, $notreachedmin, ) =
-                organizer_multiplebookings_statistics($organizer, $groups);
+                organizer_multiplebookings_statistics($organizer, true, $groups);
             $sql = 'SELECT COUNT(DISTINCT app.id) as total
                 FROM {organizer_slots} org
                 JOIN {organizer_slot_appointments} app ON org.id = app.slotid
