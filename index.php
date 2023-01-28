@@ -35,7 +35,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 $id = required_param('id', PARAM_INT);   // Course.
 
 if (! $course = $DB->get_record('course', array('id' => $id))) {
-    error('Course ID is incorrect');
+    print_error('Course ID is incorrect');
 }
 
 require_course_login($course);
@@ -109,16 +109,14 @@ foreach ($organizers as $organizer) {
 
     $row[] = format_module_intro('organizer', $organizer, $cm->id);
     if (has_capability('mod/organizer:viewregistrations', $context)) {
-        $a = organizer_get_counters($organizer);
+        $a = organizer_get_counters($organizer, $cm);
         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $reg = get_string('mymoodle_registered_group_short', 'organizer', $a);
             $att = get_string('mymoodle_attended_group_short', 'organizer', $a);
-
             $str = '<p>'.$reg.'</p><p>'.$att.'</p>';
         } else {
             $reg = get_string('mymoodle_registered_short', 'organizer', $a);
             $att = get_string('mymoodle_attended_short', 'organizer', $a);
-
             $str = '<p>'.$reg.'</p><p>'.$att.'</p>';
         }
         $row[] = $str;

@@ -610,86 +610,52 @@ function organizer_clean_num($num) {
     }
 }
 
-function organizer_get_last_group_appointment($organizer, $groupid) {
-    global $DB;
-    $params = array('groupid' => $groupid, 'organizerid' => $organizer->id);
-    $groupapps = $DB->get_records_sql(
-        'SELECT a.* FROM {organizer_slot_appointments} a
-            INNER JOIN {organizer_slots} s ON a.slotid = s.id
-            WHERE a.groupid = :groupid AND s.organizerid = :organizerid
-            ORDER BY a.id DESC', $params
-    );
-
-    $app = null;
-
-    $appcount = 0;
-    $someoneattended = 0;
-    foreach ($groupapps as $groupapp) {
-        if ($groupapp->groupid == $groupid) {
-            $app = $groupapp;
-        }
-        if (isset($groupapp->attended)) {
-            $appcount++;
-            if ($groupapp->attended == 1) {
-                $someoneattended = 1;
-            }
-        }
-    }
-
-    if ($app) {
-        $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
-    }
-
-    return $app;
-}
-
-function organizer_get_counters($organizer) {
+function organizer_get_counters($organizer, $cm = null) {
     global $DB;
 
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+    if (!$cm) {
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
+    }
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $params = array('groupingid' => $cm->groupingid);
         $query = 'SELECT {groups}.* FROM {groups}
                 INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
                 WHERE {groupings_groups}.groupingid = :groupingid
                 ORDER BY {groups}.name ASC';
         $groups = $DB->get_records_sql($query, $params);
-
         $attended = 0;
         $registered = 0;
         foreach ($groups as $group) {
-            $app = organizer_get_last_group_appointment($organizer, $group->id);
-            if ($app && $app->attended == 1) {
-                $attended++;
-            } else if ($app && !isset($app->attended)) {
-                $registered++;
+            $apps = organizer_get_all_group_appointments($organizer, $group->id);
+            $registered += count($apps);
+            foreach ($apps as $app) {
+                if ($app->attended == 1) {
+                    $attended++;
+                    break;
+                }
             }
         }
         $total = count($groups);
-
         $a = new stdClass();
         $a->registered = $registered;
         $a->attended = $attended;
         $a->total = $total;
     } else {
-        $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
-        $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
         $context = context_module::instance($cm->id, MUST_EXIST);
-
-        $students = get_enrolled_users($context, 'mod/organizer:register');
-
+        $participants = get_enrolled_users($context, 'mod/organizer:register');
         $attended = 0;
         $registered = 0;
-        foreach ($students as $student) {
-            $app = organizer_get_last_user_appointment($organizer, $student->id);
-            if ($app && $app->attended == 1) {
-                $attended++;
-            } else if ($app && !isset($app->attended)) {
-                $registered++;
+        foreach ($participants as $participant) {
+            $apps = organizer_get_all_user_appointments($organizer, $participant->id);
+            $registered += count($apps);
+            foreach ($apps as $app) {
+                if ($app->attended == 1) {
+                    $attended++;
+                    break;
+                }
             }
         }
-        $total = count($students);
-
+        $total = count($participants);
         $a = new stdClass();
         $a->registered = $registered;
         $a->attended = $attended;
@@ -1178,7 +1144,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $us
             $isvisible = false;
         } else {
             if (has_capability('mod/organizer:viewallslots', $context)) {
-                $a = organizer_get_counters($organizer);
+                $a = organizer_get_counters($organizer, $cm);
                 if ($a->total == 0) {
                     $isvisible = true;
                 } else if ($organizer->grade != 0 && $a->attended < $a->total) { // If grading is active.

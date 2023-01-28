@@ -170,6 +170,19 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
     return $apps;
 }
 
+function organizer_get_all_group_appointments($organizer, $groupid) {
+    global $DB;
+    $params = array('groupid' => $groupid, 'organizerid' => $organizer->id);
+    $groupapps = $DB->get_records_sql(
+        'SELECT a.* FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE a.groupid = :groupid AND s.organizerid = :organizerid
+            ORDER BY a.id DESC', $params
+    );
+
+    return $groupapps;
+}
+
 function organizer_get_next_user_appointment($organizer, $userid = null) {
     global $DB, $USER, $CFG;
 

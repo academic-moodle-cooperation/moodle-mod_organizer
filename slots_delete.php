@@ -87,36 +87,32 @@ if ($data = $mform->get_data()) {
 
         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $redirecturl->param('messages[]', 'message_info_slots_deleted_group');
-
             $groups = groups_get_all_groups($course->id, 0, $cm->groupingid);
             $registrantstotal = count($groups);
-
             $placestotal = count($slots);
-
         } else {
             $redirecturl->param('messages[0]', 'message_info_slots_deleted');
-
             $slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
             $placestotal = 0;
             foreach ($slots as $slot) {
                 $placestotal += $slot->maxparticipants;
             }
-
             $registrantstotal = count(get_enrolled_users($context, 'mod/organizer:register'));
         }
 
         $freetotal = $placestotal - $appointmentstotal;
-        $notregistered = $registrantstotal - $appointmentstotal;
+        $notregistered = ($registrantstotal * $organizer->userslotsmin )- $appointmentstotal;
+        $notregistered = $notregistered < 0 ? 0 : $notregistered;
 
         $redirecturl->param('data[deleted]', $slotsdeleted);
-        $redirecturl->param('data[notified]', $notified); // Anzahl benachrichtigter studenten.
-        $redirecturl->param('data[freeslots]', $freetotal); // Freie slots.
-        $redirecturl->param('data[notregistered]', $notregistered); // Anzahl noch nicht angemeldeter studenten.
+        $redirecturl->param('data[notified]', $notified); // Amount notified participants.
+        $redirecturl->param('data[freeslots]', $freetotal); // Free places.
+        $redirecturl->param('data[notregistered]', $notregistered); // Amount outstanding bookings.
 
         $prefix = ($notregistered > $freetotal) ? 'warning' : 'info';
         $suffix = ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) ? '_group' : '';
 
-        $redirecturl->param('messages[1]', 'message_' . $prefix . '_available' . $suffix);
+        $redirecturl->param('messages[1]', 'message_info_available' . $suffix);
 
     }
     redirect($redirecturl);
