@@ -87,8 +87,8 @@ if ($data = $mform->get_data()) {
             $params = array('organizerid' => $organizer->id);
             $appointmentstotal = 0;
             foreach ($groups as $group) {
-               $params['groupid'] = $group->id;
-               $appointmentstotal += $DB->count_records_sql($sql, $params);
+                $params['groupid'] = $group->id;
+                $appointmentstotal += $DB->count_records_sql($sql, $params);
             }
             $registrantstotal = count($groups);
             $placestotal = count($slots);
