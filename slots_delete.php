@@ -76,18 +76,20 @@ if ($data = $mform->get_data()) {
         );
         $event->trigger();
 
-        // Count_records_sql doesnt work.
-           $appointmentstotal = $DB->get_record_sql(
-               'SELECT COUNT(*) as total
-            FROM {organizer_slots} org
-            JOIN {organizer_slot_appointments} app ON org.id = app.slotid
-            WHERE org.organizerid=?', array($organizer->id)
-           );
-           $appointmentstotal = $appointmentstotal->total;
 
         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $redirecturl->param('messages[]', 'message_info_slots_deleted_group');
-            $groups = groups_get_all_groups($course->id, 0, $cm->groupingid);
+            $groups = groups_get_all_groups($course->id, 0, $cm->groupingid, 'id');
+            $sql = 'SELECT COUNT(DISTINCT app.id) as total
+                FROM {organizer_slots} org
+                JOIN {organizer_slot_appointments} app ON org.id = app.slotid
+                WHERE org.organizerid = :organizerid and app.groupid = :groupid';
+            $params = array('organizerid' => $organizer->id);
+            $appointmentstotal = 0;
+            foreach ($groups as $group) {
+               $params['groupid'] = $group->id;
+               $appointmentstotal += $DB->count_records_sql($sql, $params);
+            }
             $registrantstotal = count($groups);
             $placestotal = count($slots);
         } else {
@@ -100,6 +102,12 @@ if ($data = $mform->get_data()) {
             $entries = get_enrolled_users($context, 'mod/organizer:register');
             list($registrantstotal, $notreachedmin, ) =
                 organizer_multiplebookings_statistics($organizer, null, $entries);
+            $sql = 'SELECT COUNT(DISTINCT app.id) as total
+                FROM {organizer_slots} org
+                JOIN {organizer_slot_appointments} app ON org.id = app.slotid
+                WHERE org.organizerid = :organizerid';
+            $params = array('organizerid' => $organizer->id);
+            $appointmentstotal = $DB->count_records_sql($sql, $params);
         }
 
         $freetotal = $placestotal - $appointmentstotal;
@@ -108,11 +116,11 @@ if ($data = $mform->get_data()) {
         $redirecturl->param('data[notified]', $notified); // Amount notified participants.
         $redirecturl->param('data[freeslots]', $freetotal); // Free places.
         $redirecturl->param('data[notreachedmin]', $notreachedmin); // Amount outstanding bookings.
-
-        $prefix = ($notregistered > $freetotal) ? 'warning' : 'info';
-        $suffix = ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) ? '_group' : '';
-
-        $redirecturl->param('messages[1]', 'message_info_available' . $suffix);
+        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+            $redirecturl->param('messages[1]', 'message_info_available_group');
+        } else {
+            $redirecturl->param('messages[1]', 'message_info_available');
+        }
 
     }
     redirect($redirecturl);
