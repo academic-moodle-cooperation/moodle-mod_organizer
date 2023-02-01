@@ -759,6 +759,44 @@ function organizer_delete_appointment_slot($id) {
     return $notifiedusers;
 }
 
+function organizer_delete_appointment($id) {
+    global $DB, $USER;
+
+    if (!$appointment = $DB->get_record('organizer_slots_appointments', array('id' => $id))) {
+        return false;
+    }
+
+    // Send a message to the participant.
+    $slot = new organizer_slot($id);
+    $reciever = intval($appointment->userid);
+    organizer_send_message($USER, $reciever, $slot, 'appointmentdeleted_notify_student');
+    $DB->delete_records('event', array('id' => $appointment->eventid));
+    $DB->delete_records('organizer_slot_appointments', array('id' => $id));
+
+    return true;
+}
+
+function organizer_delete_appointment_group($slotid, $groupid) {
+    global $DB, $USER;
+
+    $slot = new organizer_slot($slotid);
+
+    if (!$appointments = $DB->get_records('organizer_slots_appointments',
+        array('slotid' => $slotid, 'groupid' => $groupid))) {
+        return false;
+    }
+
+    foreach ($appointments as $appointment) {
+        // Send a message to the participant.
+        $receiver = intval($appointment->userid);
+        organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
+        $DB->delete_records('event', array('id' => $appointment->eventid));
+        $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
+    }
+
+    return true;
+}
+
 function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
     global $DB;
 

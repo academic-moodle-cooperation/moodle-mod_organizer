@@ -1432,6 +1432,10 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
         '/mod/organizer/view.php',
         array('id' => $params['id'], 'sort' => 'datetime', 'mode' => '4', 'assignid' => $entry->id)
     );
+    $deleteurl = new moodle_url(
+        '/mod/organizer/appointment_delete.php',
+        array('id' => $params['id'], 'appid' => $entry->appid)
+    );
 
     $buttons = array();
 
@@ -1458,6 +1462,14 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
         $button = new stdClass();
         $button->text = get_string("btn_assign", 'organizer');
         $button->url = $assignurl;
+        $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
+        $buttons[] = $button;
+    }
+    // If it is a trainer assigned slot show button for deleting the appointment.
+    if ($entry->teacherapplicantid && has_capability('mod/organizer:deleteslots', $context, null, true)) {
+        $button = new stdClass();
+        $button->text = get_string("btn_unregister", 'organizer');
+        $button->url = $deleteurl;
         $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
         $buttons[] = $button;
     }

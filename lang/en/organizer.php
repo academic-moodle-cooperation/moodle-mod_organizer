@@ -81,6 +81,7 @@ $string['eventappointmentcommented'] = 'Appoinement has been commented.';
 $string['eventappointmentevaluated'] = 'Appointment has been evaluated.';
 $string['eventappointmentassigned'] = 'Appointment has been assigned by teacher.';
 $string['eventappointmentremoved'] = 'Student unregistered from a slot.';
+$string['eventappointmentdeleted'] = 'Appointment was deleted by teacher.';
 $string['eventappointmentremindersent'] = 'Appointment reminder sent.';
 $string['eventappointmentlistprinted'] = 'Appoinement list has been printed.';
 
@@ -468,6 +469,7 @@ $string['messageprovider:edit_notify_teacher'] = 'Organizer changes (Teacher)';
 $string['messageprovider:slotdeleted_notify_student'] = 'Organizer slots cancelled';
 $string['messageprovider:assign_notify_student'] = 'Organizer assignment by teacher';
 $string['messageprovider:assign_notify_teacher'] = 'Organizer assignment';
+$string['messageprovider:appointmentdeleted_notify_student'] = 'Organizer appointment cancelled';
 $string['messageprovider:register_notify_teacher_queue'] = 'Organizer queueing notification';
 $string['messageprovider:register_notify_teacher_unqueue'] = 'Organizer unqueueing notification';
 
@@ -1224,6 +1226,11 @@ $string['gradeaggregationmethod_help'] = 'The aggregation determines how grades 
 * Natural - The sum of all grade values';
 $string['searchfilter'] = 'Search / Filter';
 $string['showmore'] = 'Show more';
+
+$string['message_info_appointment_deleted'] = 'The appointment was deleted. The participant has been notified.';
+$string['message_info_appointment_deleted_group'] = 'The appointments of group {a->group} was deleted. The participants have been notified.';
+$string['message_info_appointment_not_deleted'] = 'A problem occured when deleting the appointment(s)...';
+$string['deleteappointmentheader'] = 'Delete this appointment';
 
 // Deprecated
 $string['queuesubject'] = 'Moodle Organizer: Promoted from queue';
