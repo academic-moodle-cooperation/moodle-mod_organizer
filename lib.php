@@ -629,40 +629,35 @@ function organizer_get_eventaction_instance_trainer($organizer) {
 
 function organizer_get_eventaction_instance_student($organizer) {
 
-    $app = organizer_get_next_user_appointment($organizer);
-    if ($app) {
-        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-            $group = organizer_fetch_group($organizer);
-            $a = new stdClass();
-            $a->groupname = $group->name;
+    $a = new stdClass();
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $group = organizer_fetch_group($organizer);
+        $a->booked = organizer_count_bookedslots($organizer->id, null, $group->id);
+        $a->groupname = $group->name;
+        $a->slotsmin = $organizer->userslotsmin;
+        if (organizer_multiplebookings_status($a->booked, $organizer) != USERSLOTS_MIN_NOT_REACHED) {
             $str = get_string('mymoodle_reg_slot_group', 'organizer', $a);
         } else {
-            $str = get_string('mymoodle_reg_slot', 'organizer');
+            $str = get_string('mymoodle_no_reg_slot_group', 'organizer');
         }
     } else {
-        if (!$app = organizer_get_last_user_appointment($organizer)) {
-            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                $group = organizer_fetch_group($organizer);
-                $a = new stdClass();
-                $a->groupname = $group->name;
-                $str = get_string('mymoodle_no_reg_slot_group', 'organizer', $a);
-            } else {
-                $str = get_string('mymoodle_no_reg_slot', 'organizer');
-            }
+        $a->booked = organizer_count_bookedslots($organizer->id);
+        $a->slotsmin = $organizer->userslotsmin;
+        if (organizer_multiplebookings_status($a->booked, $organizer) != USERSLOTS_MIN_NOT_REACHED) {
+            $str = get_string('mymoodle_reg_slot', 'organizer', $a);
         } else {
-            $regslot = get_string('mymoodle_reg_slot', 'organizer');
-            $str = " " . $regslot;
-            if (isset($organizer->duedate)) {
-                $a = new stdClass();
-                $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
-                $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
-                if ($organizer->duedate > time()) {
-                    $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
-                } else {
-                    $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
-                }
-                $str .= " " . $orgexpires;
+            $str = get_string('mymoodle_no_reg_slot', 'organizer');
+        }
+        if (isset($organizer->duedate)) {
+            $a = new stdClass();
+            $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
+            $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
+            if ($organizer->duedate > time()) {
+                $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
+            } else {
+                $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
             }
+            $str .= " " . $orgexpires;
         }
     }
 

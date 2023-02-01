@@ -38,6 +38,10 @@
     color: gray !important;
 }
 
+#organizer_main_cointainer table tr.unavailable td.c2 {
+    font-style: italic;
+}
+
 #organizer_main_cointainer table.overview {
     width: 99% !important;
 }

@@ -299,10 +299,10 @@ $string['mymoodle_attended'] = '{$a->attended}/{$a->total} students have complet
 $string['mymoodle_registered_group'] = '{$a->registered}/{$a->total} groups have registered for an appointment';
 $string['mymoodle_attended_group'] = '{$a->attended}/{$a->total} groups have completed an appointment';
 
-$string['mymoodle_registered_short'] = '{$a->registered}/{$a->total} participants have booked the minumum of slots';
-$string['mymoodle_attended_short'] = '{$a->attended}/{$a->total} participants attended';
-$string['mymoodle_registered_group_short'] = '{$a->registered}/{$a->total} groups have booked the minimum of slots';
-$string['mymoodle_attended_group_short'] = '{$a->attended}/{$a->total} groups attended';
+$string['mymoodle_registered_short'] = '{$a->registered} of {$a->total} participants have booked the minumum of {a->slotsmin} slots';
+$string['mymoodle_attended_short'] = '{$a->attended} of {$a->total} participants have attended one appointment at least';
+$string['mymoodle_registered_group_short'] = '{$a->registered} of {$a->total} groups have booked the minimum of {a->slotsmin} slots';
+$string['mymoodle_attended_group_short'] = '{$a->attended} of {$a->total} groups have attended one appointment at least';
 
 $string['mymoodle_next_slot'] = 'Next slot on {$a->date} at {$a->time}';
 $string['mymoodle_app_slot'] = 'Appointment on {$a->date} at {$a->time}';
@@ -317,10 +317,10 @@ $string['mymoodle_pending_app_group'] = 'Your group {$a->groupname} appointment 
 $string['mymoodle_upcoming_app'] = 'Your appointment will take place on {$a->date} at {$a->time} at {$a->location}';
 $string['mymoodle_upcoming_app_group'] = 'Appointment of your group, {$a->groupname}, will take place on {$a->date} at {$a->time} at {$a->location}';
 $string['mymoodle_organizer_expired'] = 'This organizer expired on {$a->date} at {$a->time}. You can no longer use it';
-$string['mymoodle_reg_slot'] = 'You have already registered to a time slot';
-$string['mymoodle_reg_slot_group'] = 'Your group {$a->groupname} has already registered to a time slot';
-$string['mymoodle_no_reg_slot'] = 'You have not registered to a time slot yet';
-$string['mymoodle_no_reg_slot_group'] = 'Your group {$a->groupname} has not registered to a time slot yet';
+$string['mymoodle_reg_slot'] = 'You have booked {a->booked} time slots and therefore reached the minumum of {a->slotsmin} bookings.';
+$string['mymoodle_reg_slot_group'] = 'Your group {$a->groupname} has booked {a->booked} time slots and therfore reached the minumum of {a->slotsmin} bookings.';
+$string['mymoodle_no_reg_slot'] = 'You have booked {a->booked} time slots and not reached the minumum of {a->slotsmin} time slots yet.';
+$string['mymoodle_no_reg_slot_group'] = 'Your group {$a->groupname} has booked {a->booked} time slots and not reached the minumum of {a->slotsmin} time slots yet.';
 
 $string['infobox_title'] = 'Infobox';
 $string['infobox_myslot_title'] = 'My slots';
