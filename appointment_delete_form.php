@@ -32,6 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/view_lib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
 class organizer_delete_appointment_form extends \moodleform
 {
@@ -47,11 +48,28 @@ class organizer_delete_appointment_form extends \moodleform
         $mform->addElement('hidden', 'appid', $data['appid']);
         $mform->setType('appid', PARAM_INT);
 
-        $mform->addElement('static', '', '', '<b>' . get_string('deleteappointmentheader', 'organizer') . '</b>');
-
+        $list = '<span style="display:table-row">';
+        $list .= '<span style="display:table-cell">';
+        $identity = organizer_get_user_identity($appointment->userid);
+        $identity = $identity != "" ? " ({$identity})" : "";
+        $list .= organizer_get_name_link($appointment->userid) . $identity;
+        if (organizer_is_group_mode()) {
+            if ($appointment->userid == $appointment->applicantid) {
+                $list .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
+            }
+        } else {
+            $list .= organizer_get_teacherapplicant_output(
+                $appointment->teacherapplicantid,
+                $appointment->teacherapplicanttimemodified
+            );
+        }
+        $list .= '</span>';
+        $list .= organizer_app_details($appointment);
+        $list .= '</span>';
+        
         $app = $DB->get_record('organizer_slot_appointments', array('id' => $data['appid']));
 
-        $mform->addElement('static', '', '', organizer_app_details($app));
+        $mform->addElement('static', '', '', $list);
 
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_delete', 'organizer'));
