@@ -28,10 +28,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['organizername'] = 'Organizer name';
 $string['modulename'] = 'Organizer';
 $string['modulenameplural'] = 'Organizers';
 $string['modulename_help'] = 'Organizers enable teachers to make appointments with students by creating time slots which students can register to.';
-$string['organizername'] = 'Organizer name';
 $string['organizer'] = 'Organizer';
 $string['pluginadministration'] = 'Organizer administration';
 $string['pluginname'] = 'Organizer';
@@ -931,8 +931,6 @@ $string['actionlink_print'] = 'print';
 $string['btn_start'] = 'Start';
 $string['noslotsselected'] = 'No slots selected!';
 $string['norightpage'] = 'You are not allowed to call up this page.';
-$string['Info'] = 'Info';
-$string['Error'] = 'Error';
 $string['visible'] = ' Slot visible';
 $string['totalday'] = 'xxx slots for yyy persons';
 $string['totalday_groups'] = 'xxx slots for yyy groups';
