@@ -204,7 +204,7 @@ $string['th_datetimedeadline'] = 'Date & time';
 $string['th_evaluated'] = 'Eval';
 $string['th_status'] = 'Status';
 $string['th_groupname'] = 'Group';
-$string['th_bookings'] = '&#8721; Bookings';
+$string['th_bookings'] = 'Total Bookings';
 $string['teacher_unchanged'] = '-- unchanged --';
 $string['warningtext1'] = 'Selected slots contain different values in this field!';
 $string['warningtext2'] = 'WARNING! The contents of this field have been changed!';
@@ -507,7 +507,7 @@ $string['legend_section_details'] = 'Slot details icons';
 
 $string['reg_status'] = 'Registration status';
 
-$string['recipientname'] = '&lt;recipient name&gt;';
+$string['recipientname'] = '<recipient name>';
 $string['modformwarningsingular'] = 'This field cannot be edited as there are appointments already made in this organizer!';
 $string['modformwarningplural'] = 'These fields cannot be edited as there are appointments already made in this organizer!';
 $string['with'] = 'with';
@@ -966,7 +966,6 @@ $string['actionlink_print'] = 'print';
 $string['btn_start'] = 'Start';
 $string['noslotsselected'] = 'No slots selected!';
 $string['norightpage'] = 'You are not allowed to call up this page.';
-$string['Warning'] = 'Warning';
 $string['Info'] = 'Info';
 $string['Error'] = 'Error';
 $string['visible'] = ' Slot visible';
