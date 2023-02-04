@@ -31,7 +31,7 @@ $lineseparator = "';";
 $fieldseparator = " = '";
 $inarr = array();
 $outstr = "";
-$linebreak = '\n';
+$linebreak = PHP_EOL;
 
 $filecontent = file_get_contents($location);
 $filecontent = str_replace('"', "'", $filecontent);
@@ -60,7 +60,7 @@ ksort($inarr);
 $i = 0;
 foreach ($inarr as $key => $value) {
     echo $key.$fieldseparator.$value.$lineseparator.$linebreak;
-    if ($i++ == 20) {
+    if ($i++ == 30) {
         break;
     }
 }

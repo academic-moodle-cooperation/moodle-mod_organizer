@@ -41,11 +41,9 @@ $string['isgrouporganizer'] = 'Group appointments';
 $string['isgrouporganizer_help'] = 'Check this if you want this organizer to deal with groups instead of individual users.
 "Use existing groups": A single groupmember books a slot for the group.
 "Group creation per empty slot": A course group is created for every new slot.
-"Group creation per booked slot": A course group is created for every booked slot.
-';
+"Group creation per booked slot": A course group is created for every booked slot.';
 $string['includetraineringroups'] = 'Include trainer in groups';
 $string['includetraineringroups_help'] = 'If you check the checkbox not only the slot\'s participants but also its trainers are included in the groups.';
-
 $string['groupmodenogroups'] = 'No group appointments';
 $string['groupmodeexistingcoursegroups'] = 'Use existing course groups';
 $string['groupmodeslotgroups'] = 'Group creation per empty slot';
@@ -69,7 +67,6 @@ $string['allowsubmissionsanddescriptionfromdatesummary'] = 'The organizer detail
 $string['duedate'] = 'Due date';
 $string['availability'] = 'Availability';
 $string['allowsubmissionstodate'] = 'Registration end';
-
 $string['eventslotviewed'] = 'Appointments tab viewed.';
 $string['eventregistrationsviewed'] = 'Registrations tab viewed.';
 $string['eventslotcreated'] = 'New slots created.';
@@ -84,7 +81,6 @@ $string['eventappointmentremoved'] = 'Student unregistered from a slot.';
 $string['eventappointmentdeleted'] = 'Appointment was deleted by teacher.';
 $string['eventappointmentremindersent'] = 'Appointment reminder sent.';
 $string['eventappointmentlistprinted'] = 'Appoinement list has been printed.';
-
 $string['alwaysshowdescription'] = 'Always show description';
 $string['alwaysshowdescription_help'] = 'If disabled, the Assignment Description above will only become visible to students at the "Registration start" date.';
 $string['warning_groupingid'] = 'Group mode enabled. You must select a valid grouping.';
@@ -212,14 +208,11 @@ $string['teacher'] = 'Teacher';
 $string['tabstatus'] = 'Registration status';
 $string['title_edit'] = 'Edit selected time slots';
 $string['select_all_slots'] = 'Select all visible slots';
-
 $string['no_slots'] = 'There are no time slots created in this organizer';
 $string['no_due_slots'] = 'All time slots created in this organizer have expired';
 $string['no_my_slots'] = 'You have no slots created in this organizer';
 $string['no_due_my_slots'] = 'All of your time slots in this organizer have expired and/or are hidden';
-
 $string['id'] = 'ID';
-
 $string['cannot_eval'] = 'Cannot evaluate, the student has a ';
 $string['eval_link'] = 'new appointment';
 $string['title_eval'] = 'Evaluate selected time slots';
@@ -227,20 +220,17 @@ $string['eval_attended'] = 'Attended';
 $string['eval_grade'] = 'Grade';
 $string['eval_feedback'] = 'Feedback';
 $string['eval_allow_new_appointments'] = 'Allow reappointment';
-
 $string['assign_title'] = 'Assign appointment';
 $string['assign'] = 'Assign';
 $string['slotassignedby'] = 'Slot assigned by';
 $string['slotlistempty'] = 'No slots were found.';
 $string['assignsuccess'] = 'The slot has been assigned successfully and the participant(s) has been notified.';
 $string['assignsuccessnotsent'] = 'The slot has been assigned successfully BUT the participant(s) has NOT been notified.';
-
 $string['evaluate'] = 'Evaluate';
 $string['eval_header'] = 'Selected time slots';
 $string['collision'] = 'Warning! Collision detected with following event(s) and/or slot(s):';
 $string['nofreeslots'] = 'No free slots available.';
 $string['availableslotsfor'] = 'Available slots for';
-
 $string['btn_add'] = 'Add new slots';
 $string['btn_edit'] = 'Edit selected slots';
 $string['btn_editsingle'] = 'Edit selected slot';
@@ -253,7 +243,6 @@ $string['btn_print'] = 'Print selected slots';
 $string['btn_printsingle'] = 'Print selected slot';
 $string['printsubmit'] = 'Display printable table';
 $string['title_print'] = 'Print slots';
-
 $string['btn_register'] = 'Register';
 $string['btn_unregister'] = 'Unregister';
 $string['btn_reregister'] = 'Re-register';
@@ -269,19 +258,15 @@ $string['btn_sendall'] = 'Send reminders to all students without an appointment'
 $string['btn_sendallmultiple'] = 'Send reminders to all students without enough appointments';
 $string['downloadfile'] = 'Download file';
 $string['teacherinvisible'] = 'Teacher invisible';
-
 $string['img_title_evaluated'] = 'The slot is evaluated';
 $string['img_title_pending'] = 'The slot is pending evaluation';
 $string['img_title_no_participants'] = 'The slot had no participants';
 $string['img_title_past_deadline'] = 'The slot is past its deadline';
 $string['img_title_due'] = 'The slot is due';
-
 $string['no_slots_defined'] = 'There are no appointments slots available at the moment.';
 $string['no_slots_defined_teacher'] = 'There are no appointments slots present at the moment. Click <a href="{$a->link}">here</a> to create some now.';
-
 $string['err_availablepastdeadline'] = 'This slot cannot be made available past the scheduler\'s deadline ({$a->deadline})!';
 $string['err_isgrouporganizer_app'] = 'Cannot change group mode as there already exist scheduled appointments in this organizer!';
-
 $string['places_taken_pl'] = '{$a->numtakenplaces}/{$a->totalplaces} places taken';
 $string['places_taken_sg'] = '{$a->numtakenplaces}/{$a->totalplaces} place taken';
 $string['places_inqueue'] = '{$a->inqueue} on waiting list';
@@ -293,20 +278,16 @@ $string['slot_slotvisible'] = "Members only visible if own slot";
 $string['slot_visible'] = "Members of slot always visible";
 $string['inwaitingqueue'] = "Waitinglist";
 $string['position'] = 'Position in queue';
-
 $string['addslots_placesinfo'] = 'This action will create {$a->numplaces} new possible places, making a total of {$a->totalplaces} possible places for {$a->numstudents} students.';
 $string['addslots_placesinfo_group'] = 'This action will create {$a->numplaces} new possible places, making a total of {$a->totalplaces} possible places for {$a->numgroups} groups.';
-
 $string['mymoodle_registered'] = '{$a->registered}/{$a->total} students have registered for an appointment';
 $string['mymoodle_attended'] = '{$a->attended}/{$a->total} students have completed an appointment';
 $string['mymoodle_registered_group'] = '{$a->registered}/{$a->total} groups have registered for an appointment';
 $string['mymoodle_attended_group'] = '{$a->attended}/{$a->total} groups have completed an appointment';
-
 $string['mymoodle_registered_short'] = '{$a->registered} of {$a->total} participants have booked the minumum of {a->slotsmin} slots';
 $string['mymoodle_attended_short'] = '{$a->attended} of {$a->total} participants have attended one appointment at least';
 $string['mymoodle_registered_group_short'] = '{$a->registered} of {$a->total} groups have booked the minimum of {a->slotsmin} slots';
 $string['mymoodle_attended_group_short'] = '{$a->attended} of {$a->total} groups have attended one appointment at least';
-
 $string['mymoodle_next_slot'] = 'Next slot on {$a->date} at {$a->time}';
 $string['mymoodle_app_slot'] = 'Appointment on {$a->date} at {$a->time}';
 $string['mymoodle_no_slots'] = 'No upcoming slots';
@@ -324,7 +305,6 @@ $string['mymoodle_reg_slot'] = 'You have booked {a->booked} time slots and there
 $string['mymoodle_reg_slot_group'] = 'Your group {$a->groupname} has booked {a->booked} time slots and therfore reached the minumum of {a->slotsmin} bookings.';
 $string['mymoodle_no_reg_slot'] = 'You have booked {a->booked} time slots and not reached the minumum of {a->slotsmin} time slots yet.';
 $string['mymoodle_no_reg_slot_group'] = 'Your group {$a->groupname} has booked {a->booked} time slots and not reached the minumum of {a->slotsmin} time slots yet.';
-
 $string['infobox_title'] = 'Infobox';
 $string['infobox_myslot_title'] = 'My slots';
 $string['infobox_myslot_userslots_status'] = '{$a->booked} of {$a->max} slots booked.';
@@ -362,9 +342,7 @@ $string['infobox_feedback_title'] = 'Feedback';
 $string['infobox_group'] = 'My group: {$a->groupname}';
 $string['infobox_deadlines_title'] = 'Deadlines';
 $string['infobox_deadline_passed_slot'] = 'xxx slots could not be created because registration deadline has passed.';
-
 $string['fullname_template'] = '{$a->firstname} {$a->lastname}';
-
 $string['infobox_showfreeslots'] = 'Free slots only';
 $string['infobox_showslots'] = 'Also past time slots';
 $string['infobox_showregistrationsonly'] = 'Booked slots only';
@@ -386,25 +364,20 @@ $string['message_info_slots_deleted'] = 'The following slots were deleted:<br/>
 $string['message_info_slots_deleted_group'] = 'The following slots were deleted:<br/>
 {$a->deleted} slot(s) deleted.<br/>
 {$a->notified} participant(s) have been notified.';
-
 $string['message_autogenerated2'] = 'Auto-generated message';
 $string['message_custommessage'] = 'Custom message';
 $string['message_custommessage_help'] = 'Use this field to enter a personal text into the auto-generated message.';
-
 $string['message_info_available'] = 'There are {$a->freeslots} places available for {$a->notreachedmin} outstanding bookings.';
 $string['message_info_available_group'] = 'There are {$a->freeslots} places available for {$a->notreachedmin} outstanding bookings.';
-
 $string['grouporganizer_desc_novalidgroup'] = 'This is a group organizer. You are not member of a group included in this organizer instance!';
 $string['grouporganizer_desc_hasgroup'] = 'This is a group organizer. Clicking the register button will register you and all members of your group {$a->groupname} to this slot. All group members may change and comment the registration.';
 $string['status_no_entries'] = 'This organizer has no registered students.';
 $string['infobox_link'] = 'Show/Hide';
 $string['eval_not_occured'] = 'This slot has not occurred yet';
 $string['eval_no_participants'] = 'This slot had no participants';
-
 $string['infobox_myslot_noslot'] = 'You are not registered to any slot at the time.';
 $string['resetorganizerall'] = 'Clear all organizer data (slots & appointments)';
 $string['deleteorganizergrades'] = 'Delete grades from gradebook';
-
 $string['configintro'] = 'The values you set here define the default values that are used in the settings form when you create a new organizer.';
 $string['requiremodintro'] = 'Require activity description';
 $string['configrequiremodintro'] = 'Disable this option if you do not want to force users to enter description of each activity.';
@@ -434,7 +407,6 @@ $string['configahead'] = 'ahead';
 $string['configemailteachers_label'] = 'Send E-mail notifications to teachers';
 $string['configdigest_label'] = 'Send appointment digest to teachers';
 $string['configsingleslotprintfield'] = 'user field to be printed out when single slot is printed';
-
 $string['organizer:addinstance'] = 'Add a new organizer';
 $string['organizer:comment'] = 'Add comments';
 $string['organizer:addslots'] = 'Add new time slots';
@@ -453,7 +425,6 @@ $string['organizer:viewmyslots'] = 'View own time slots as a teacher';
 $string['organizer:viewstudentview'] = 'View all time slots as a student';
 $string['organizer:viewregistrations'] = 'View status of student registrations';
 $string['organizer:assignslots'] = 'Assign time slot to a student';
-
 $string['messageprovider:test'] = 'Organizer Test Message';
 $string['messageprovider:appointment_reminder_student'] = 'Organizer appointment reminder';
 $string['messageprovider:appointment_reminder_teacher'] = 'Organizer appointment reminder (Teacher)';
@@ -474,7 +445,6 @@ $string['messageprovider:assign_notify_teacher'] = 'Organizer assignment';
 $string['messageprovider:appointmentdeleted_notify_student'] = 'Organizer appointment deleted';
 $string['messageprovider:register_notify_teacher_queue'] = 'Organizer queueing notification';
 $string['messageprovider:register_notify_teacher_unqueue'] = 'Organizer unqueueing notification';
-
 $string['reg_status_organizer_expired'] = 'Organizer expired';
 $string['reg_status_slot_expired'] = 'Slot expired';
 $string['reg_status_slot_pending'] = 'Slot pending evaluation';
@@ -487,7 +457,6 @@ $string['reg_status_slot_full'] = 'Slot full';
 $string['reg_status_slot_available'] = 'Slot available';
 $string['reg_status_registered'] = 'Registered';
 $string['reg_status_not_registered'] = 'Not registered';
-
 $string['legend_evaluated'] = 'Slot evaluated';
 $string['legend_pending'] = 'Slot pending evaluation';
 $string['legend_no_participants'] = 'Slot had no participants';
@@ -496,17 +465,13 @@ $string['legend_due'] = 'Slot due';
 $string['legend_organizer_expired'] = 'Organizer expired';
 $string['legend_anonymous'] = 'Anonymous slot';
 $string['legend_halfanonymous'] = 'Only participants of own slot visible';
-
 $string['legend_group_applicant'] = 'Applicant of the group';
 $string['legend_comments'] = 'Student/Teacher comments';
 $string['legend_feedback'] = 'Teacher feedback';
 $string['legend_not_occured'] = 'Appointment has not occured yet';
-
 $string['legend_section_status'] = 'Status icons';
 $string['legend_section_details'] = 'Slot details icons';
-
 $string['reg_status'] = 'Registration status';
-
 $string['recipientname'] = '<recipient name>';
 $string['modformwarningsingular'] = 'This field cannot be edited as there are appointments already made in this organizer!';
 $string['modformwarningplural'] = 'These fields cannot be edited as there are appointments already made in this organizer!';
