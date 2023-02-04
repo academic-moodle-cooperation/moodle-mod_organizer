@@ -31,7 +31,7 @@ $lineseparator = "';";
 $fieldseparator = " = '";
 $inarr = array();
 $outstr = "";
-$linebreak = PHP_EOL;
+$linebreak = "\n";
 
 $filecontent = file_get_contents($location);
 $filecontent = str_replace('"', "'", $filecontent);
@@ -40,7 +40,7 @@ if (count($arr) != 2) {
     echo "No first separator found or empty file.";
     die();
 }
-$outstr = $arr[0].$linebreak.$firstseparator.$linebreak;
+
 $entries = explode($lineseparator, $arr[1]);
 
 $entrybefore = "";
