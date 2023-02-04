@@ -48,7 +48,7 @@ foreach ($entries as $entry) {
     $arr = explode($fieldseparator, $entry);
     if (count($arr) == 2) {
         $inarr[$arr[0]] = $arr[1];
-    } elseif ($entry == PHP_EOL) {
+    } else if ($entry == PHP_EOL) {
         continue;
     } else {
         echo "*".$entrybefore."*<br>";
