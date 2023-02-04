@@ -48,26 +48,40 @@ class organizer_delete_appointment_form extends \moodleform
         $mform->addElement('hidden', 'appid', $data['appid']);
         $mform->setType('appid', PARAM_INT);
 
-        $list = '<span style="display:table-row">';
-        $list .= '<span style="display:table-cell">';
-        $identity = organizer_get_user_identity($appointment->userid);
-        $identity = $identity != "" ? " ({$identity})" : "";
-        $list .= organizer_get_name_link($appointment->userid) . $identity;
+        $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $data['appid']));
+        $slot = $DB->get_record('organizer_slots', array('id' => $appointment->slotid));
+
+        $text = organizer_date_time($slot);
+
+        $list = '<span style="display: table-row;">';
+        $list .= '<span style="display: table-cell;">';
+        $list .= $text;
+        $list .= '</span>';
+        $list .= '</span>';
+        $list .= '<span style="display: table-row;">';
+        $list .= '<span style="display: table-cell;">';
+
         if (organizer_is_group_mode()) {
-            if ($appointment->userid == $appointment->applicantid) {
-                $list .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
-            }
+            $params['mode'] = null;
+            $list .= organizer_get_participant_list($params, $slot, null);
         } else {
-            $list .= organizer_get_teacherapplicant_output(
-                $appointment->teacherapplicantid,
-                $appointment->teacherapplicanttimemodified
-            );
+            $identity = organizer_get_user_identity($appointment->userid);
+            $identity = $identity != "" ? " ({$identity})" : "";
+            $list .= organizer_get_name_link($appointment->userid) . $identity;
+            if (organizer_is_group_mode()) {
+                if ($appointment->userid == $appointment->applicantid) {
+                    $list .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
+                }
+            } else {
+                $list .= organizer_get_teacherapplicant_output(
+                    $appointment->teacherapplicantid,
+                    $appointment->teacherapplicanttimemodified
+                );
+            }
+            $list .= organizer_app_details($appointment);
         }
         $list .= '</span>';
-        $list .= organizer_app_details($appointment);
         $list .= '</span>';
-        
-        $app = $DB->get_record('organizer_slot_appointments', array('id' => $data['appid']));
 
         $mform->addElement('static', '', '', $list);
 

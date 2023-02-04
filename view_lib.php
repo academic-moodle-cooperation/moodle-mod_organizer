@@ -1208,7 +1208,7 @@ function organizer_app_details($appointment) {
         return '';
     }
 
-    $list = '<span style="display:table-cell">';
+    $list = '<span style="display: table-cell;">';
     if ($appointment->comments) {
         $list .= organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, organizer_filter_text($appointment->comments));
     } else {
@@ -1216,7 +1216,7 @@ function organizer_app_details($appointment) {
     }
     $list .= '</span>';
 
-    $list .= '<span style="display:table-cell">';
+    $list .= '<span style="display: table-cell;">';
     $list .= '&nbsp;' . organizer_get_attended_icon($appointment);
     $list .= '</span>';
 
@@ -1224,7 +1224,7 @@ function organizer_app_details($appointment) {
     if ($organizer->grade != 0) {
         $grade = organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
         if ($grade != get_string("nograde")) {
-            $list .= '<span style="display:table-cell;text-align:right;padding-right:6px;">';
+            $list .= '<span style="display: table-cell; text-align: right; padding-right: 6px;">';
             $list .= $grade;
             $list .= '</span>';
         }
@@ -1468,7 +1468,7 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     // If it is a trainer assigned slot show button for deleting the appointment.
     if ($entry->teacherapplicantid && has_capability('mod/organizer:deleteslots', $context, null, true)) {
         $button = new stdClass();
-        $button->text = get_string("btn_unregister", 'organizer');
+        $button->text = get_string("btn_deleteappointment", 'organizer');
         $button->url = $deleteurl;
         $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
         $buttons[] = $button;
@@ -1554,10 +1554,10 @@ function organizer_get_participant_list($params, $slot, $app) {
 
             $showparticipants = ($slot->visibility == ORGANIZER_VISIBILITY_ALL) || $ismyslot;
             if ($showparticipants) {
-                $content .= "<span style='display:table'>";
+                $content .= "<span style='display: table;'>";
                 foreach ($appointments as $appointment) {
-                    $content .= "<span style='display:table-row'>";
-                    $content .= "<span style='display:table-cell'>";
+                    $content .= "<span style='display: table-row;'>";
+                    $content .= "<span style='display: table-cell;'>";
                     $content .= organizer_get_name_link($appointment->userid);
                     if ($groupmode) {
                         if ($appointment->userid == $appointment->applicantid) {
@@ -1593,10 +1593,10 @@ function organizer_get_participant_list($params, $slot, $app) {
                 }
             }
 
-            $list .= '<span style="display:table">';
+            $list .= '<span style="display: table;">';
             foreach ($appointments as $appointment) {
-                $list .= '<span style="display:table-row">';
-                $list .= '<span style="display:table-cell">';
+                $list .= '<span style="display: table-row;">';
+                $list .= '<span style="display: table-cell;">';
                 $identity = organizer_get_user_identity($appointment->userid);
                 $identity = $identity != "" ? " ({$identity})" : "";
                 $list .= organizer_get_name_link($appointment->userid) . $identity;

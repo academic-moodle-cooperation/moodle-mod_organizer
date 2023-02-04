@@ -762,14 +762,14 @@ function organizer_delete_appointment_slot($id) {
 function organizer_delete_appointment($id) {
     global $DB, $USER;
 
-    if (!$appointment = $DB->get_record('organizer_slots_appointments', array('id' => $id))) {
+    if (!$appointment = $DB->get_record('organizer_slot_appointments', array('id' => $id))) {
         return false;
     }
 
     // Send a message to the participant.
-    $slot = new organizer_slot($id);
-    $reciever = intval($appointment->userid);
-    organizer_send_message($USER, $reciever, $slot, 'appointmentdeleted_notify_student');
+    $slot = new organizer_slot($appointment->slotid);
+    $receiver = intval($appointment->userid);
+    organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
     $DB->delete_records('event', array('id' => $appointment->eventid));
     $DB->delete_records('organizer_slot_appointments', array('id' => $id));
 
@@ -781,7 +781,7 @@ function organizer_delete_appointment_group($slotid, $groupid) {
 
     $slot = new organizer_slot($slotid);
 
-    if (!$appointments = $DB->get_records('organizer_slots_appointments',
+    if (!$appointments = $DB->get_records('organizer_slot_appointments',
         array('slotid' => $slotid, 'groupid' => $groupid))) {
         return false;
     }

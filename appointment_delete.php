@@ -26,6 +26,7 @@
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+define("ORGANIZER_TAB_STUDENT_VIEW", 2);
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
@@ -34,6 +35,7 @@ require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
 $appid = optional_param('appid', null, PARAM_INT);
+$id = optional_param('id', null, PARAM_INT);
 
 list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
@@ -46,11 +48,17 @@ $redirecturl = new moodle_url('/mod/organizer/view.php');
 $redirecturl->param('id', $cm->id);
 $redirecturl->param('mode', '3');
 
-$mform = new organizer_delete_appointment_form(null, array('id' => $cm->id, 'app' => $appid));
+$url = new moodle_url(
+    '/mod/organizer/appointment_delete.php',
+    array('id' => $id, 'appid' => $appid)
+);
+$PAGE->set_url($url);
+
+$mform = new organizer_delete_appointment_form(null, array('id' => $cm->id, 'appid' => $appid));
 
 if ($data = $mform->get_data()) {
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $app = $DB->get_record('organizer_slot_appointment', array('id' => $data->appid), 'slotid, groupid');
+        $app = $DB->get_record('organizer_slot_appointments', array('id' => $data->appid), 'slotid, groupid');
         if (organizer_delete_appointment_group($app->slotid, $app->groupid)) {
             $event = \mod_organizer\event\appointment_deleted::create(
                 array(
@@ -58,13 +66,14 @@ if ($data = $mform->get_data()) {
                     'context' => $context
                 )
             );
+            $groupname = organizer_fetch_groupname($app->groupid);
             $redirecturl->param('messages[]', 'message_info_appointment_deleted_group');
         } else {
             $redirecturl->param('messages[]', 'message_info_appointment_not_deleted');
         }
     } else {
         if (organizer_delete_appointment($data->appid)) {
-            $event = \mod_organizer\event\appointment_removed::create(
+            $event = \mod_organizer\event\appointment_deleted::create(
                 array(
                     'objectid' => $cm->id,
                     'context' => $context
@@ -75,11 +84,12 @@ if ($data = $mform->get_data()) {
             $redirecturl->param('messages[]', 'message_info_appointment_not_deleted');
         }
     }
+    $event->trigger();
     redirect($redirecturl);
 } else if ($mform->is_cancelled()) {
     redirect($redirecturl);
 } else {
-    organizer_display_form($mform, get_string('title_delete', 'organizer'));
+    organizer_display_form($mform, get_string('title_delete_appointment', 'organizer'));
 }
 print_error('If you see this, something went wrong with delete action!');
 

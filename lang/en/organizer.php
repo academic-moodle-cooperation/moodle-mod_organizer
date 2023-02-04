@@ -165,6 +165,7 @@ $string['notificationtime_help'] = 'Defines how far before the registered appoin
 $string['title_add'] = 'Add new appointment slots';
 $string['title_comment'] = 'Edit your comments';
 $string['title_delete'] = 'Delete selected time slots';
+$string['title_delete_appointment'] = 'Delete assigned appointment';
 $string['createsubmit'] = 'Create time slots';
 $string['confirm_conflicts'] = 'Are you sure that you want to ignore the collisions and want to create the time slots?';
 $string['reviewsubmit'] = 'Review time slots';
@@ -244,6 +245,7 @@ $string['btn_add'] = 'Add new slots';
 $string['btn_edit'] = 'Edit selected slots';
 $string['btn_editsingle'] = 'Edit selected slot';
 $string['btn_delete'] = 'Remove selected slots';
+$string['btn_deleteappointment'] = 'Delete appointment';
 $string['btn_deletesingle'] = 'Remove selected slot';
 $string['btn_eval'] = 'Grade selected slots';
 $string['btn_evalsingle'] = 'Grade selected slot';
@@ -469,7 +471,7 @@ $string['messageprovider:edit_notify_teacher'] = 'Organizer changes (Teacher)';
 $string['messageprovider:slotdeleted_notify_student'] = 'Organizer slots cancelled';
 $string['messageprovider:assign_notify_student'] = 'Organizer assignment by teacher';
 $string['messageprovider:assign_notify_teacher'] = 'Organizer assignment';
-$string['messageprovider:appointmentdeleted_notify_student'] = 'Organizer appointment cancelled';
+$string['messageprovider:appointmentdeleted_notify_student'] = 'Organizer appointment deleted';
 $string['messageprovider:register_notify_teacher_queue'] = 'Organizer queueing notification';
 $string['messageprovider:register_notify_teacher_unqueue'] = 'Organizer unqueueing notification';
 
@@ -506,41 +508,29 @@ $string['legend_section_details'] = 'Slot details icons';
 $string['reg_status'] = 'Registration status';
 
 $string['recipientname'] = '&lt;recipient name&gt;';
-
 $string['modformwarningsingular'] = 'This field cannot be edited as there are appointments already made in this organizer!';
 $string['modformwarningplural'] = 'These fields cannot be edited as there are appointments already made in this organizer!';
-
-
 $string['with'] = 'with';
-/* Message templates following.
- * Please note that the following strings are available:
- *     sendername, receivername, courseshortname, courselongname, courseid, organizername,
- *     date, time, location, groupname, courselink
- * If more strings are required, add them to the $strings object in messaging.php
- */
+$string['appointmentdeleted_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment deleted';
+$string['appointmentdeleted_notify_student:fullmessage'] = 'Hello {$a->receivername}!
 
-// Slotdeleted student.
+Your appointment in the course {$a->courseshortname} on {$a->date} at {$a->time} in {$a->location} was deleted.';
+$string['appointmentdeleted_notify_student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in organizer "{$a->organizername}" was deleted.';
+$string['appointmentdeleted_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment deleted';
+$string['appointmentdeleted_notify_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
+Your appointment in the course {$a->courseshortname} on {$a->date} at {$a->time} in {$a->location} was deleted.';
+$string['appointmentdeleted_notify_student:group:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in organizer "{$a->organizername}" was deleted.';
 $string['slotdeleted_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment cancelled';
 $string['slotdeleted_notify_student:fullmessage'] = 'Hello {$a->receivername}!
 
-Your appointment in the course {$a->courseshortname} on {$a->date} at {$a->time} in {$a->location} was cancelled.
-Note that you have no longer an appointment in the organizer {$a->organizername}.
-Please follow the link to make a new appointment: {$a->courselink}';
+Your appointment in the course {$a->courseshortname} on {$a->date} at {$a->time} in {$a->location} was cancelled.';
 $string['slotdeleted_notify_student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in organizer "{$a->organizername}" was cancelled.';
-
-// Slotdeleted student group.
-
 $string['slotdeleted_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment cancelled';
 $string['slotdeleted_notify_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
-Your appointment in the course {$a->courseshortname} on {$a->date} at {$a->time} in {$a->location} was cancelled.
-Note that you have no longer an appointment in the organizer {$a->organizername}.
-Please follow the link to make a new appointment: {$a->courselink}';
+Your appointment in the course {$a->courseshortname} on {$a->date} at {$a->time} in {$a->location} was cancelled.';
 $string['slotdeleted_notify_student:group:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in organizer "{$a->organizername}" was cancelled.';
-
-// Register teacher register.
-
 $string['register_notify_teacher:register:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student registered';
 $string['register_notify_teacher:register:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -548,9 +538,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sender
 
 Moodle Messaging System';
 $string['register_notify_teacher:register:smallmessage'] = 'Student {$a->sendername} has registered for the time slot on {$a->date} at {$a->time} in {$a->location}.';
-
-// Register teacher queue.
-
 $string['register_notify_teacher:queue:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student queued';
 $string['register_notify_teacher:queue:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -558,9 +545,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sender
 
 Moodle Messaging System';
 $string['register_notify_teacher:queue:smallmessage'] = 'Student {$a->sendername} has queued for the time slot on {$a->date} at {$a->time} in {$a->location}.';
-
-// Register teacher reregister.
-
 $string['register_notify_teacher:reregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student re-registered';
 $string['register_notify_teacher:reregister:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -568,9 +552,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sender
 
 Moodle Messaging System';
 $string['register_notify_teacher:reregister:smallmessage'] = 'Student {$a->sendername} has re-registered for the time slot on {$a->date} at {$a->time} in {$a->location}.';
-
-// Register teacher unregister.
-
 $string['register_notify_teacher:unregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student unregistered';
 $string['register_notify_teacher:unregister:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -578,9 +559,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sender
 
 Moodle Messaging System';
 $string['register_notify_teacher:unregister:smallmessage'] = 'Student {$a->sendername} has unregistered from the time slot on {$a->date} at {$a->time} in {$a->location}.';
-
-// Register teacher unqueue.
-
 $string['register_notify_teacher:unqueue:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Student removed from waiting list';
 $string['register_notify_teacher:unqueue:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -588,9 +566,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sender
 
 Moodle Messaging System';
 $string['register_notify_teacher:unqueue:smallmessage'] = 'Student {$a->sendername} has took himself off the waiting list of the time slot on {$a->date} at {$a->time} in {$a->location}.';
-
-// Register teacher register group.
-
 $string['register_notify_teacher:register:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group registered';
 $string['register_notify_teacher:register:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -598,9 +573,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sender
 
 Moodle Messaging System';
 $string['register_notify_teacher:register:group:smallmessage'] = 'Student {$a->sendername} has registered the group {$a->groupname} for the time slot on {$a->date} at {$a->time} in {$a->location}.';
-
-// Register teacher queue group.
-
 $string['register_notify_teacher:queue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group wait-listed';
 $string['register_notify_teacher:queue:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -608,9 +580,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sender
 
 Moodle Messaging System';
 $string['register_notify_teacher:queue:group:smallmessage'] = 'Student {$a->sendername} has wait-listed the group {$a->groupname} for the time slot on {$a->date} at {$a->time} in {$a->location}.';
-
-// Register teacher reregister group.
-
 $string['register_notify_teacher:reregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group re-registered';
 $string['register_notify_teacher:reregister:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -618,9 +587,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sender
 
 Moodle Messaging System';
 $string['register_notify_teacher:reregister:group:smallmessage'] = 'Student {$a->sendername} has re-registered the group {$a->groupname} for the time slot on {$a->date} at {$a->time} in {$a->location}.';
-
-// Register teacher unregister group.
-
 $string['register_notify_teacher:unregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group unregistered';
 $string['register_notify_teacher:unregister:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -628,9 +594,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sender
 
 Moodle Messaging System';
 $string['register_notify_teacher:unregister:group:smallmessage'] = 'Student {$a->sendername} has unregistered the group {$a->groupname} from the time slot on {$a->date} at {$a->time} in {$a->location}.';
-
-// Register teacher unqueue group.
-
 $string['register_notify_teacher:unqueue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group removed from waiting list';
 $string['register_notify_teacher:unqueue:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -638,22 +601,14 @@ As a part of the course {$a->courseid} {$a->coursefullname}, student {$a->sender
 
 Moodle Messaging System';
 $string['register_notify_teacher:unqueue:group:smallmessage'] = 'Student {$a->sendername} has removed the group {$a->groupname} from the waiting list of the time slot on {$a->date} at {$a->time} in {$a->location}.';
-
-// Eval student.
-
 $string['eval_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify_student:fullmessage'] = 'Hello {$a->receivername}!
 
 As a part of the course {$a->courseid} {$a->coursefullname}, your appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
 
 Moodle Messaging System';
-
 $string['eval_notify_student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
-
-// Eval newappointment student.
-
 $string['eval_notify_newappointment:student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
-
 $string['eval_notify_newappointment:student:fullmessage'] = 'Hello {$a->receivername}!
 
 As a part of the course {$a->courseid} {$a->coursefullname}, your appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location} has been evaluated.
@@ -661,11 +616,7 @@ As a part of the course {$a->courseid} {$a->coursefullname}, your appointment {$
 Teachers of the course enable you to re-register to any available slot in the organizer {$a->organizername}.
 
 Moodle Messaging System';
-
 $string['eval_notify_newappointment:student:smallmessage'] = 'Your appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
-
-// Eval student group.
-
 $string['eval_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -673,9 +624,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, your group appointm
 
 Moodle Messaging System';
 $string['eval_notify_student:group:smallmessage'] = 'Your group appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
-
-// Eval newappointment student group.
-
 $string['eval_notify_newappointment:student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment evaluated';
 $string['eval_notify_newappointment:student:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -685,9 +633,6 @@ Teachers of the course enable you to re-register to any available slot in the or
 
 Moodle Messaging System';
 $string['eval_notify_newappointment:student:group:smallmessage'] = 'Your group appointment on {$a->date} at {$a->time} in {$a->location} has been evaluated.';
-
-// Edit student.
-
 $string['edit_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify_student:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -701,9 +646,6 @@ Comments:
 
 Moodle Messaging System';
 $string['edit_notify_student:smallmessage'] = 'The details of the appointment {$a->sendername} on {$a->date} at {$a->time} have been changed.';
-
-// Edit student group.
-
 $string['edit_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -717,9 +659,6 @@ Comments:
 
 Moodle Messaging System';
 $string['edit_notify_student:group:smallmessage'] = 'The details of the group appointment {$a->sendername} on {$a->date} at {$a->time} have been changed.';
-
-// Edit teacher.
-
 $string['edit_notify_teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify_teacher:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -733,9 +672,6 @@ Comments:
 
 Moodle Messaging System';
 $string['edit_notify_teacher:smallmessage'] = 'The details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.';
-
-// Edit teacher group.
-
 $string['edit_notify_teacher:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment details changed';
 $string['edit_notify_teacher:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -749,14 +685,9 @@ Comments:
 
 Moodle Messaging System';
 $string['edit_notify_teacher:group:smallmessage'] = 'The details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.';
-
-// Registered by promotion from queue.
 $string['register_promotion_student:subject'] = 'Moodle Organizer: Promoted from queue';
 $string['register_promotion_student:fullmessage'] = 'Your registration for a timeslot has been promoted from status "waiting list" to status "booked".';
 $string['register_promotion_student:smallmessage'] = 'Your registration for a timeslot has been promoted from status "waiting list" to status "booked".';
-
-// Register reminder student.
-
 $string['register_reminder_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
 $string['register_reminder_student:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -766,9 +697,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, you haven\'t regist
 
 Moodle Messaging System';
 $string['register_reminder_student:smallmessage'] = 'Please register to the requested amounts of time slots.';
-
-// Register reminder ??? group.
-
 $string['register_reminder_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
 $string['register_reminder_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -778,9 +706,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, your group {$a->gro
 
 Moodle Messaging System';
 $string['register_reminder_student:group:smallmessage'] = 'Please register your group to the requested amount of time slots.';
-
-// Register reminder student group.
-
 $string['register_reminder_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Registration reminder';
 $string['register_reminder_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -790,9 +715,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, your group {$a->gro
 
 Moodle Messaging System';
 $string['register_reminder_student:group:smallmessage'] = 'Please register your group to the requested amount of time slots.';
-
-// Group registration student register group.
-
 $string['group_registration_notify:student:register:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group registered';
 $string['group_registration_notify:student:register:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -800,9 +722,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} ha
 
 Moodle Messaging System';
 $string['group_registration_notify:student:register:group:smallmessage'] = '{$a->sendername} has registered your group {$a->groupname} to the time slot on {$a->date} at {$a->time}.';
-
-// Group registration student queue group.
-
 $string['group_registration_notify:student:queue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group wait-listed';
 $string['group_registration_notify:student:queue:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -810,9 +729,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} ha
 
 Moodle Messaging System';
 $string['group_registration_notify:student:queue:group:smallmessage'] = '{$a->sendername} has added your group {$a->groupname} to the waiting list of the time slot on {$a->date} at {$a->time}.';
-
-// Group registration student reregister group.
-
 $string['group_registration_notify:student:reregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group re-registered';
 $string['group_registration_notify:student:reregister:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -820,9 +736,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} ha
 
 Moodle Messaging System';
 $string['group_registration_notify:student:reregister:group:smallmessage'] = '{$a->sendername} has re-registered your group {$a->groupname} to a new time slot on {$a->date} at {$a->time}.';
-
-// Group registration student unregister group.
-
 $string['group_registration_notify:student:unregister:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group unregistered';
 $string['group_registration_notify:student:unregister:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -830,9 +743,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} ha
 
 Moodle Messaging System';
 $string['group_registration_notify:student:unregister:group:smallmessage'] = '{$a->sendername} has unregistered your group {$a->groupname} from the time slot on {$a->date} at {$a->time}.';
-
-// Group registration student unqueue group.
-
 $string['group_registration_notify:student:unqueue:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group removed from waiting list';
 $string['group_registration_notify:student:unqueue:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -840,9 +750,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} ha
 
 Moodle Messaging System';
 $string['group_registration_notify:student:unqueue:group:smallmessage'] = '{$a->sendername} has removed your group {$a->groupname} from the waiting list of the time slot on {$a->date} at {$a->time}.';
-
-// Group registration student register.
-
 $string['group_registration_notify:student:register:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group registered';
 $string['group_registration_notify:student:register:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -850,9 +757,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} ha
 
 Moodle Messaging System';
 $string['group_registration_notify:student:register:smallmessage'] = '{$a->sendername} has registered your group {$a->groupname} to the time slot on {$a->date} at {$a->time}.';
-
-// Group registration student reregister.
-
 $string['group_registration_notify:student:reregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group re-registered';
 $string['group_registration_notify:student:reregister:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -860,9 +764,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} ha
 
 Moodle Messaging System';
 $string['group_registration_notify:student:reregister:smallmessage'] = '{$a->sendername} has re-registered your group {$a->groupname} to a new time slot on {$a->date} at {$a->time}.';
-
-// Group registration student unregister.
-
 $string['group_registration_notify:student:unregister:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group unregistered';
 $string['group_registration_notify:student:unregister:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -870,9 +771,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, {$a->sendername} ha
 
 Moodle Messaging System';
 $string['group_registration_notify:student:unregister:smallmessage'] = '{$a->sendername} has unregistered your group {$a->groupname} from the time slot on {$a->date} at {$a->time}.';
-
-// Assign student.
-
 $string['assign_notify_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment assigned by teacher';
 $string['assign_notify_student:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -884,9 +782,6 @@ Date: {$a->date} at {$a->time}
 
 Moodle Messaging System';
 $string['assign_notify_student:smallmessage'] = 'An appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to you by {$a->sendername}.';
-
-// Assign student group.
-
 $string['assign_notify_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment assigned by teacher';
 $string['assign_notify_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -898,9 +793,6 @@ Date: {$a->date} at {$a->time}
 
 Moodle Messaging System';
 $string['assign_notify_student:group:smallmessage'] = 'An appointment with {$a->slot_teacher} on {$a->date} at {$a->time} has been assigned to your group {$a->groupname} by {$a->sendername}.';
-
-// Assign teacher.
-
 $string['assign_notify_teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment assigned';
 $string['assign_notify_teacher:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -912,9 +804,6 @@ Date: {$a->date} at {$a->time}
 
 Moodle Messaging System';
 $string['assign_notify_teacher:smallmessage'] = 'An appointment with {$a->sendername} on {$a->date} at {$a->time} has been assigned by you by {$a->sendername}';
-
-// Assign teacher group.
-
 $string['assign_notify_teacher:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment assigned';
 $string['assign_notify_teacher:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -926,9 +815,6 @@ Date: {$a->date} at {$a->time}
 
 Moodle Messaging System';
 $string['assign_notify_teacher:group:smallmessage'] = 'An appointment with group {$a->groupname} on {$a->date} at {$a->time} has been assigned to you by {$a->sendername}.';
-
-// Appointment reminder teacher.
-
 $string['appointment_reminder_teacher:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment reminder';
 $string['appointment_reminder_teacher:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -936,9 +822,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, you have an appoint
 
 Moodle Messaging System';
 $string['appointment_reminder_teacher:smallmessage'] = 'You have an appointment with students on {$a->date} at {$a->time} in {$a->location}.';
-
-// Appointment reminder teacher digest.
-
 $string['appointment_reminder_teacher:digest:subject'] = 'Appointment digest';
 $string['appointment_reminder_teacher:digest:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -948,9 +831,6 @@ Tomorrow you have the following appointments:
 
 Moodle Messaging System';
 $string['appointment_reminder_teacher:digest:smallmessage'] = 'You have received a digest message of your appointments tomorrow.';
-
-// Appointment reminder teacher group digest.
-
 $string['appointment_reminder_teacher:group:digest:subject'] = 'Appointment digest';
 $string['appointment_reminder_teacher:group:digest:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -960,9 +840,6 @@ Tomorrow you have the following appointments:
 
 Moodle Messaging System';
 $string['appointment_reminder_teacher:group:digest:smallmessage'] = 'You have received a digest message of your appointments tomorrow.';
-
-// Appointment reminder student.
-
 $string['appointment_reminder_student:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Appointment reminder';
 $string['appointment_reminder_student:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -970,9 +847,6 @@ As a part of the course {$a->courseid} {$a->coursefullname}, you have an appoint
 
 Moodle Messaging System';
 $string['appointment_reminder_student:smallmessage'] = 'You have an appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.';
-
-// Appointment reminder student group.
-
 $string['appointment_reminder_student:group:subject'] = '[{$a->courseid}{$a->courseshortname} / {$a->organizername}] - Group appointment reminder';
 $string['appointment_reminder_student:group:fullmessage'] = 'Hello {$a->receivername}!
 
@@ -980,25 +854,20 @@ As a part of the course {$a->courseid} {$a->coursefullname}, you have a group ap
 
 Moodle Messaging System';
 $string['appointment_reminder_student:group:smallmessage'] = 'You have a group appointment {$a->sendername} on {$a->date} at {$a->time} in {$a->location}.';
-
 $string['teachercomment_title'] = 'Teacher comments';
 $string['studentcomment_title'] = 'Student comments';
 $string['teacherfeedback_title'] = 'Teacher feedback';
 $string['relative_deadline_before'] = 'before the appointment';
 $string['relative_deadline_now'] = 'Starting now';
-
 $string['nogroup'] = 'No group';
 $string['noparticipants'] = 'No participants';
 $string['novalidparticipants'] = 'No valid participants';
 $string['unavailableslot'] = 'This slot is available from';
 $string['applicant'] = 'This is the person that registered the group';
-
 $string['deleteheader'] = 'Deleting following slots:';
 $string['deletenoslots'] = 'No deletable slots selected';
 $string['deletekeep'] = 'The following appointments will be cancelled. Registered students will be notified and the slots will be deleted:';
-
 $string['atlocation'] = 'at';
-
 $string['exportsettings'] = 'Export settings';
 $string['format'] = 'Format';
 $string['format_pdf'] = 'PDF';
@@ -1016,112 +885,79 @@ $string['pageorientation'] = 'Page orientation';
 $string['orientationportrait'] = 'portrait';
 $string['orientationlandscape'] = 'landscape';
 $string['pdf_notactive'] = 'not active';
-
 $string['headerfooter'] = 'Print header/footer';
 $string['headerfooter_help'] = 'Print header/footer if checked';
 $string['printpreview'] = 'Print preview (first 10 entries)';
-
 $string['datapreviewtitle'] = "Data Preview";
 $string['datapreviewtitle_help'] = "Click on [+] or [-] for showing or hiding columns.";
-
 $string['unknown'] = 'Unknown';
-
 $string['totalslots'] = 'from {$a->starttime} to {$a->endtime}, {$a->duration} {$a->unit} each, {$a->totalslots} slot(s) in total';
-
 $string['warninggroupmode'] = 'You must enable the group mode and select a grouping to create a group organizer!';
-
 $string['multimember'] = 'Users cannot belong to multiple groups within the same grouping!';
 $string['multimemberspecific'] = 'User {$a->username} {$a->idnumber} is registered in more than one group! ({$a->groups})';
 $string['groupwarning'] = 'Check the group options below!';
-
 $string['duedateerror'] = 'Absolute deadline cannot be set before the availability date!';
 $string['invalidgrouping'] = 'You must select a valid grouping!';
-
 $string['maillink'] = 'The organizer is available <a href="{$a}">here</a>.';
-
-// Section.
-
 $string['eventnoparticipants'] = 'No participants';
 $string['eventteacheranonymous'] = 'an anonymous teacher';
-
 $string['eventwith'] = 'with';
 $string['eventwithout'] = 'with';
-
 $string['eventappwith:single'] = 'Appointment';
 $string['eventappwith:group'] = 'Group appointment';
-
 $string['eventtitle'] = '{$a->coursename} / {$a->organizername}: {$a->appwith}';
-
 $string['eventtemplate'] = '{$a->courselink} / {$a->organizerlink}: {$a->appwith} {$a->with} {$a->participants}<br />Location: {$a->location}<br />';
 $string['eventtemplatewithoutlinks'] = '{$a->coursename} / {$a->organizername}: {$a->appwith} {$a->with} {$a->participants}<br />Location: {$a->location}<br />';
 $string['eventtemplatecomment'] = 'Comment:<br />{$a}<br />';
-
 $string['fulldatetimelongtemplate'] = '%A %d. %B %Y %H:%M';
 $string['fulldatetimetemplate'] = '%a %d.%m.%Y %H:%M';
 $string['fulldatelongtemplate'] = '%A %d. %B %Y';
 $string['fulldatetemplate'] = '%a %d.%m.%Y';
 $string['datetemplate'] = '%d.%m.%Y';
 $string['timetemplate'] = '%H:%M';
-
 $string['font_small'] = 'small';
 $string['font_medium'] = 'medium';
 $string['font_large'] = 'large';
-
 $string['printout'] = 'Printout';
 $string['confirm_organizer_remind_all'] = 'Send';
-
 $string['message_info_reminders_sent_sg'] = '{$a->count} reminder was sent.';
 $string['message_info_reminders_sent_pl'] = '{$a->count} reminders were sent.';
-
 $string['organizer_remind_all_recepients_sg'] = 'A total of {$a->count} message will be sent to the following recepients:';
 $string['organizer_remind_all_recepients_pl'] = 'A total of {$a->count} messages will be sent to the following recepients:';
-
 $string['organizer_remind_all_no_recepients'] = 'There are no valid recepients.';
-
 $string['print_return'] = 'Return to slot overview';
-
 $string['message_error_slot_full_single'] = 'This timeslot has no free places left!';
 $string['message_error_slot_full_group'] = 'This timeslot is already taken!';
 $string['message_error_groupsynchronization'] = 'Slotgroup synchronization failed!';
-
 $string['message_error_unknown_unqueue'] = 'Your waiting list entry could not be removed! Unknown error.';
 $string['message_error_unknown_unregister'] = 'Your registration could not be removed! Unknown error.';
 $string['message_error_noactionchosen'] = 'Please choose an action before pressing the Start button.';
-
 $string['organizer_remind_all_title'] = 'Send reminders';
 $string['can_reregister'] = 'You can re-registed to another appointment.';
-
 $string['messages_none'] = 'No registration notifications';
 $string['messages_re_unreg'] = 'Re-registrations and unregistrations only';
 $string['messages_all'] = 'All registration, re-registrations and unregistrations';
-
 $string['reset_organizer_all'] = 'Deleting slots, appointments and related events';
 $string['delete_organizer_grades'] = 'Deleting grades of all organizers';
 $string['timeshift'] = 'Shifting absolute deadline';
-
 $string['queue'] = 'Waiting queues';
 $string['queue_help'] = 'Waiting queues allow users to register to a time slot even if the maximum number of participants is already reached.
 		Users are added to a waiting queue and assigned to the slot (in order) as soon as a slot becomes available.';
 $string['eventqueueadded'] = 'Added to waiting list';
 $string['eventqueueremoved'] = 'Removed from waiting list';
-
 $string['visibility_anonymous'] = 'Anonymous';
 $string['visibility_slot'] = 'Only visible to slot members';
 $string['visibility_all'] = 'Visible';
-
 $string['calendarsettings'] = 'Calendar settings';
 $string['hidecalendar'] = 'Hide calendar';
 $string['hidecalendar_help'] = 'Check to hide the calendar in this organizer';
 $string['nocalendareventslotcreation'] = 'No calendar events for empty slots';
 $string['nocalendareventslotcreation_help'] = 'If you check this option no calendar events will be created when creating slots. Only appointments will create slot calendar events.';
-
 $string['userslotsmin'] = 'Minimum of slots per participant or group';
 $string['userslotsmin_help'] = 'Minimum of slots a participant or group has to book.';
 $string['userslotsmax'] = 'Maximum of slots per participant or group';
 $string['userslotsmax_help'] = 'Amount of slots a participant or group is allowed to book.';
-
 $string['finalgrade'] = 'This value has been set in the gradebook and can not be changed with the organizer.';
-
 $string['selectedslots'] = 'Selected slots';
 $string['actionlink_edit'] = 'edit';
 $string['actionlink_delete'] = 'delete';
@@ -1130,7 +966,6 @@ $string['actionlink_print'] = 'print';
 $string['btn_start'] = 'Start';
 $string['noslotsselected'] = 'No slots selected!';
 $string['norightpage'] = 'You are not allowed to call up this page.';
-
 $string['Warning'] = 'Warning';
 $string['Info'] = 'Info';
 $string['Error'] = 'Error';
@@ -1139,7 +974,6 @@ $string['totalday'] = 'xxx slots for yyy persons';
 $string['totalday_groups'] = 'xxx slots for yyy groups';
 $string['totaltotal'] = 'Total: xxx slots for yyy persons';
 $string['totaltotal_groups'] = 'Total: xxx slots for yyy groups';
-
 $string['enableprintslotuserfields'] = 'Allow change in user profile fields';
 $string['enableprintslotuserfieldsdesc'] = 'Controls whether teachers are allowed to change the default selected user profile fields below';
 $string['printslotuserfieldsnotenabled'] = 'The feature Print Slot user Fields is not enabled by the administrator.';
@@ -1159,8 +993,6 @@ $string['dbid'] = 'DB ID';
 $string['auth'] = 'Authentification method';
 $string['allowedprofilefieldsprint'] = 'Allowed user profile fields';
 $string['allowedprofilefieldsprint2'] = 'Allowed user profile fields for printing single organizer slots';
-
-// Privacy strings...
 $string['privacy:metadata:showhiddenslots'] = 'User preference: Shall slot table display hidden slots.';
 $string['privacy:metadata:showmyslotsonly'] = 'User preference: Shall slot table display my slots only.';
 $string['privacy:metadata:showfreeslotsonly'] = 'User preference: Shall slot table display free slots only.';
@@ -1182,8 +1014,6 @@ $string['privacy:metadata:useridqueue'] = 'Identifier of the user who made this 
 $string['privacy:metadata:groupidqueue'] = 'Identifier of the group who made this entry in the waiting queue for a slot.';
 $string['privacy:metadata:applicantidqueue'] = 'Identifier of the user who made this entry in the waiting queue for the group.';
 $string['privacy:metadata:trainerid'] = 'Identifier of a trainer of a slot.';
-
-// Column header helpicons.
 $string['select'] = 'Select slots';
 $string['select_help'] = 'Select one ore more slots you want to work with.';
 $string['singleslotcommands'] = 'Single slot action';
@@ -1202,20 +1032,16 @@ $string['actions'] = 'Action';
 $string['actions_help'] = 'Action to take.';
 $string['teacherid'] = 'Trainer';
 $string['teacherid_help'] = 'Select the trainer you want to lead the appointments';
-
 $string['timeslot'] = 'Organizer Slot';
 $string['event'] = 'Calendar event';
-
 $string['configlocationslist'] = 'Locations for autocomplete field';
 $string['configlocationslist_desc'] = 'Each location has to be inserted in a separate row!';
 $string['locationmandatory'] = 'Slot Location entry is mandatory';
 $string['locationsettings'] = 'Slot location settings';
-
 $string['filtertable'] = '\'Filterting this table\'';
 $string['filtertable_help'] = 'Search these slots for mutual strings here.';
 $string['slotoptionstable'] = '\'Extending this table\'';
 $string['slotoptionstable_help'] = 'Show past slots or hidden slots as well.';
-
 $string['userslots_mingreatermax'] = 'Minimum user slots is greater than maximum.';
 $string['gradeaggregationmethod'] = 'Aggregation method';
 $string['gradeaggregationmethod_help'] = 'The aggregation determines how grades in a category are combined, such as
@@ -1226,12 +1052,7 @@ $string['gradeaggregationmethod_help'] = 'The aggregation determines how grades 
 * Natural - The sum of all grade values';
 $string['searchfilter'] = 'Search / Filter';
 $string['showmore'] = 'Show more';
-
 $string['message_info_appointment_deleted'] = 'The appointment was deleted. The participant has been notified.';
-$string['message_info_appointment_deleted_group'] = 'The appointments of group {a->group} was deleted. The participants have been notified.';
-$string['message_info_appointment_not_deleted'] = 'A problem occured when deleting the appointment(s)...';
+$string['message_info_appointment_deleted_group'] = 'The appointments of one group have been deleted. The participants have been notified.';
+$string['message_info_appointment_not_deleted'] = 'A problem occured when deleting the appointment(s).';
 $string['deleteappointmentheader'] = 'Delete this appointment';
-
-// Deprecated
-$string['queuesubject'] = 'Moodle Organizer: Promoted from queue';
-$string['queuebody'] = 'Your registration for a timeslot has been promoted from status "waiting list" to status "booked".';
