@@ -48,6 +48,8 @@ foreach ($entries as $entry) {
     $arr = explode($fieldseparator, $entry);
     if (count($arr) == 2) {
         $inarr[$arr[0]] = $arr[1];
+    } elseif ($entry == PHP_EOL) {
+        continue;
     } else {
         echo "*".$entrybefore."*<br>";
         echo "*".$entry."*<br>";
@@ -57,10 +59,8 @@ foreach ($entries as $entry) {
 
 ksort($inarr);
 
-$i = 0;
 foreach ($inarr as $key => $value) {
-    echo $key.$fieldseparator.$value.$lineseparator.$linebreak;
-    if ($i++ == 30) {
-        break;
-    }
+    $outstr .= $key.$fieldseparator.$value.$lineseparator.$linebreak;
 }
+
+echo $outstr;
