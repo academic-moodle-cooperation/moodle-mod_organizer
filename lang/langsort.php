@@ -60,7 +60,7 @@ foreach ($entries as $entry) {
 ksort($inarr);
 
 foreach ($inarr as $key => $value) {
-    $outstr .= $key.$fieldseparator.$value.$lineseparator.$linebreak;
+    $outstr .= $key.$fieldseparator.$value.$lineseparator;
 }
 
 echo $outstr;
