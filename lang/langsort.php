@@ -1,5 +1,4 @@
 <?php
-
 require_once(dirname(__FILE__, 4) .'/config.php');
 
 $location = $CFG->dirroot . '/mod/organizer/lang/en/organizer.php';
@@ -20,7 +19,7 @@ if (count($arr) != 2) {
 $outstr = $arr[0].$linebreak.$firstseparator.$linebreak;
 $entries = explode($lineseparator, $arr[1]);
 
-foreach($entries as $entry) {
+foreach ($entries as $entry) {
     $arr = explode($fieldseparator, $entry);
     if (count($arr) == 2) {
         $inarr[$arr[0]] = $arr[1];
