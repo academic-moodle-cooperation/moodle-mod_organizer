@@ -2276,3 +2276,33 @@ function organizer_get_counters($organizer, $cm = null) {
 
     return $a;
 }
+
+/**
+ * Returns amount of course participants who have not booked the minimum of slots yet.
+ *
+ * @param int $bookings amount of user bookings
+ * @param int $max max amount of bookings per user
+ * @param string $color for the status bar
+ * @param string $statusmsg to be written
+ * @param string $msg for the tooltip
+ *
+ * @return object $out html output of status bar
+ */
+function organizer_statusbar($bookings, $max, $color, $statusmsg, $msg) {
+
+    $out = html_writer::start_div('statusbar_tr', array('title' => $msg));
+    $i = 1;
+    while ($i <= (int) $bookings) {
+        $out .= html_writer::div(' ', 'statusbar_td_full_'.$color);
+        $i++;
+    }
+    while ($i <= (int) $max) {
+        $out .= html_writer::div(' ', 'statusbar_td_empty_'.$color);
+        $i++;
+    }
+    $out .= html_writer::span($statusmsg, 'statusbar_statusmsg');
+    $out .= html_writer::end_div();
+
+    return $out;
+
+}

@@ -112,7 +112,7 @@ function organizer_make_messages_section($params) {
         if (isset($params['messages'])) {
             $a = new stdClass();
             if (isset($params['data'])) {
-                foreach($params['data'] as $key => $value) {
+                foreach ($params['data'] as $key => $value) {
                     $a->{$key} = $value;
                 }
             }
@@ -187,17 +187,20 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
         $a->max = $organizer->userslotsmax;
         $a->min = $organizer->userslotsmin;
         $a->left = $organizer->userslotsmax - $a->booked;
-        $userslotsboard = html_writer::div(get_string('infobox_myslot_userslots_status', 'organizer', $a));
+        $statusbarmsg = "";
+        $color = 'green';
+        $statusbarstatusmsg = get_string('infobox_myslot_userslots_status', 'organizer', $a);
         if ($userslotsstate == USERSLOTS_MIN_NOT_REACHED) {
-            $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_not_reached'.$groupstr, 'organizer', $a));
-            $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a));
+            $color = 'grey';
+            $statusbarmsg .= get_string('infobox_myslot_userslots_min_not_reached'.$groupstr, 'organizer', $a);
         } else if ($userslotsstate == USERSLOTS_MAX_REACHED) {
-            $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_max_reached'.$groupstr, 'organizer', $a));
+            $statusbarmsg .= get_string('infobox_myslot_userslots_max_reached'.$groupstr, 'organizer', $a);
         } else {
-            $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_min_reached'.$groupstr, 'organizer', $a));
-            $userslotsboard .= html_writer::div(get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a));
+            $statusbarmsg .= get_string('infobox_myslot_userslots_min_reached'.$groupstr, 'organizer', $a).
+                ' '.get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a);
         }
-        $output .= $userslotsboard;
+        $statusbar = organizer_statusbar($a->min, $a->max, $color, $statusbarstatusmsg, $statusbarmsg);
+        $output .= $statusbar;
     }
     if (count($apps) > 0) {
         $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
@@ -210,9 +213,6 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
         $table->data = organizer_generate_table_content($columns, $params, $organizer, true);
         $table->align = $align;
         $output .= organizer_render_table_with_footer($table, false);
-    }
-    if ($output) {
-        $output = html_writer::div($output, 'userslotsboard');
     }
     return organizer_make_section('infobox_myslot', $output);
 }

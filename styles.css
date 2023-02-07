@@ -199,3 +199,48 @@
     margin-left: 0.9em;
 }
 
+.path-mod-organizer .statusbar_tr {
+    max-width: 90%;
+    margin-bottom: 1em;
+}
+
+.path-mod-organizer .statusbar_td_empty_green {
+    width: 2rem;
+    height: 3.3rem;
+    display: inline-block;
+    border: 1px solid green;
+    margin: 0.1rem;
+}
+
+.path-mod-organizer .statusbar_td_full_green {
+    width: 2rem;
+    height: 3.3rem;
+    display: inline-block;
+    border: 1px solid green;
+    background-color: green;
+    margin: 0.1rem;
+}
+
+.path-mod-organizer .statusbar_td_empty_grey {
+    width: 2rem;
+    height: 3.3rem;
+    display: inline-block;
+    border: 1px solid grey;
+    margin: 0.1rem;
+}
+
+.path-mod-organizer .statusbar_td_full_grey {
+    width: 2rem;
+    height: 3.3rem;
+    display: inline-block;
+    border: 1px solid grey;
+    background-color: grey;
+    margin: 0.1rem;
+}
+
+.path-mod-organizer .statusbar_statusmsg {
+    height: 100%;
+    display: inline-block;
+    vertical-align: center;
+    margin-left: 1rem;
+}
