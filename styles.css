@@ -241,6 +241,6 @@
 .path-mod-organizer .statusbar_statusmsg {
     height: 100%;
     display: inline-block;
-    vertical-align: center;
+    vertical-align: middle;
     margin-left: 1rem;
 }

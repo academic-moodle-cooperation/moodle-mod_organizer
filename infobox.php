@@ -199,7 +199,7 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
             $statusbarmsg .= get_string('infobox_myslot_userslots_min_reached'.$groupstr, 'organizer', $a).
                 ' '.get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a);
         }
-        $statusbar = organizer_statusbar($a->min, $a->max, $color, $statusbarstatusmsg, $statusbarmsg);
+        $statusbar = organizer_statusbar($a->booked, $a->max, $color, $statusbarstatusmsg, $statusbarmsg);
         $output .= $statusbar;
     }
     if (count($apps) > 0) {
