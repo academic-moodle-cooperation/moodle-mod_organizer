@@ -2293,11 +2293,11 @@ function organizer_statusbar($bookings, $max, $color, $statusmsg, $msg) {
     $out = html_writer::start_div('statusbar_tr', array('title' => $msg));
     $i = 1;
     while ($i <= (int) $bookings) {
-        $out .= html_writer::div(' ', 'statusbar_td_full_'.$color);
+        $out .= html_writer::div(' ', 'statusbar_td_full_'.$color.' align-middle');
         $i++;
     }
     while ($i <= (int) $max) {
-        $out .= html_writer::div(' ', 'statusbar_td_empty_'.$color);
+        $out .= html_writer::div(' ', 'statusbar_td_empty_'.$color.' align-middle');
         $i++;
     }
     $out .= html_writer::span($statusmsg, 'statusbar_statusmsg');
