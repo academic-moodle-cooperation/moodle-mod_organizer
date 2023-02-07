@@ -2303,7 +2303,7 @@ function organizer_statusbar($bookings, $max, $color, $statusmsg, $msg) {
     }
     $pix =
     $out .= html_writer::span($statusmsg, 'statusbar_statusmsg');
-    $out .= $OUTPUT->pix_icon('i/info', $msg);
+    $out .= $OUTPUT->pix_icon('t/message', $msg, null, array('class' => 'icon-size-3'));
     $out .= html_writer::end_div();
 
     return $out;
