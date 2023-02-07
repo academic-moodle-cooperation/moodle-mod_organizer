@@ -57,6 +57,7 @@ $PAGE->set_url($url);
 $mform = new organizer_delete_appointment_form(null, array('id' => $cm->id, 'appid' => $appid));
 
 if ($data = $mform->get_data()) {
+    $infoboxmessage = "";
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $app = $DB->get_record('organizer_slot_appointments', array('id' => $data->appid), 'slotid, groupid');
         if (organizer_delete_appointment_group($app->slotid, $app->groupid)) {
@@ -67,9 +68,11 @@ if ($data = $mform->get_data()) {
                 )
             );
             $groupname = organizer_fetch_groupname($app->groupid);
-            $redirecturl->param('messages[]', 'message_info_appointment_deleted_group');
+            $infoboxmessage .= $OUTPUT->notification(get_string('message_info_appointment_deleted_group', 'organizer'),
+                'success');
         } else {
-            $redirecturl->param('messages[]', 'message_info_appointment_not_deleted');
+            $infoboxmessage .= $OUTPUT->notification(get_string('message_info_appointment_not_deleted', 'organizer'),
+                'error');
         }
     } else {
         if (organizer_delete_appointment($data->appid)) {
@@ -79,12 +82,16 @@ if ($data = $mform->get_data()) {
                     'context' => $context
                 )
             );
+            $infoboxmessage .= $OUTPUT->notification(get_string('message_info_appointment_deleted', 'organizer'),
+                'success');
             $redirecturl->param('messages[]', 'message_info_appointment_deleted');
         } else {
-            $redirecturl->param('messages[]', 'message_info_appointment_not_deleted');
+            $infoboxmessage .= $OUTPUT->notification(get_string('message_info_appointment_not_deleted', 'organizer'),
+                'error');
         }
     }
     $event->trigger();
+    $_SESSION["infoboxmessage"] = $infoboxmessage;
     redirect($redirecturl);
 } else if ($mform->is_cancelled()) {
     redirect($redirecturl);

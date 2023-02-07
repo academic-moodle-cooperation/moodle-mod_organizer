@@ -60,13 +60,15 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 
 require_capability('mod/organizer:printslots', $context);
 
 if (!$slot) {
-    $redirecturl->param('messages[]', 'message_warning_no_visible_slots_selected');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_visible_slots_selected',
+        'organizer'), 'error');
     redirect($redirecturl);
 } else {
     $_SESSION['organizer_slot'] = $slot;
 }
 
-$mform = new organizer_print_slotdetail_form(null, array('id' => $cm->id, 'mode' => $mode, 'slot' => $slot), 'post', '_blank');
+$mform = new organizer_print_slotdetail_form(null, array('id' => $cm->id, 'mode' => $mode, 'slot' => $slot),
+    'post', '_blank');
 
 if ($data = $mform->get_data()) {
     // Create pdf.
@@ -76,14 +78,16 @@ if ($data = $mform->get_data()) {
     }
 
     if (!$slot) {
-        $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected',
+            'organizer'), 'error');
         redirect($redirecturl);
     }
 
     $ppp = organizer_print_setuserprefs_and_triggerevent($data, $cm, $context);
 
     if (!isset($data->cols)) {
-        redirect($redirecturl, get_string('nosingleslotprintfields', 'organizer'), null, \core\output\notification::NOTIFY_ERROR);
+        redirect($redirecturl, get_string('nosingleslotprintfields', 'organizer'), null,
+            \core\output\notification::NOTIFY_ERROR);
     } else {
         organizer_display_printable_slotdetail_table($data->cols, $data->slot, $ppp, $data->textsize,
             $data->pageorientation, $data->headerfooter
@@ -99,7 +103,8 @@ if ($data = $mform->get_data()) {
 } else {
     // Display printpreview.
     if (!$slot) {
-        $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected',
+            'organizer'), 'error');
         redirect($redirecturl);
     }
 
@@ -320,8 +325,17 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                     $row[] = array('data' => $content);
                     break;
                 case 'attended':
-                    $attended = isset($entry->attended) ? ($entry->attended == 1 ? get_string('yes') : get_string('no')) : '';
-                    $content = $attended;
+                    $attended = $entry->attended ?? -1;
+                    switch ($attended) {
+                        case -1:
+                            $content = '';
+                            break;
+                        case 0:
+                            $content = get_string('no');
+                            break;
+                        case 1:
+                            $content = get_string('yes');
+                    }
                     $row[] = array('data' => $content);
                     break;
                 case 'grade':
@@ -375,7 +389,8 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                             case 'lang':
                             case 'timezone':
                             case 'description':
-                                $content = (isset($entry->{$column}) && $entry->{$column} !== '') ? $entry->{$column} : '';
+                                $content =
+                                    (isset($entry->{$column}) && $entry->{$column} !== '') ? $entry->{$column} : '';
                                 $row[] = array('data' => $content);
                         }
                     }

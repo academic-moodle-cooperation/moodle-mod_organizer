@@ -73,7 +73,9 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 if ($bulkaction) {
     if (!$slots) {
         // If an action is chosen but no slots were selected: redirect with message.
-        redirect($redirecturl->out(), get_string('message_warning_no_slots_selected', 'organizer'), 5);
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected', 'organizer'),
+            'error');
+        redirect($redirecturl->out());
     } else {
         $slotids = implode(',', array_values($slots));
 
@@ -81,35 +83,27 @@ if ($bulkaction) {
         switch($bulkaction) {
             case 'edit':
                 require_capability('mod/organizer:editslots', $context);
-                $redirecturl = new moodle_url(
-                '/mod/organizer/slots_edit.php',
-                array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids)
-                    );
-                    redirect($redirecturl);
+                $redirecturl = new moodle_url('/mod/organizer/slots_edit.php',
+                    array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids));
+                redirect($redirecturl);
             break;
             case 'delete':
                 require_capability('mod/organizer:deleteslots', $context);
-                $redirecturl = new moodle_url(
-                '/mod/organizer/slots_delete.php',
-                array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids)
-                    );
-                    redirect($redirecturl);
+                $redirecturl = new moodle_url('/mod/organizer/slots_delete.php',
+                    array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids));
+                redirect($redirecturl);
             break;
             case 'print':
                 require_capability('mod/organizer:printslots', $context);
-                $redirecturl = new moodle_url(
-                '/mod/organizer/slots_print.php',
-                array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids)
-                    );
-                    redirect($redirecturl);
+                $redirecturl = new moodle_url('/mod/organizer/slots_print.php',
+                    array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids));
+                redirect($redirecturl);
             break;
             case 'eval':
                 require_capability('mod/organizer:evalslots', $context);
-                $redirecturl = new moodle_url(
-                '/mod/organizer/slots_eval.php',
-                array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids)
-                    );
-                    redirect($redirecturl);
+                $redirecturl = new moodle_url('/mod/organizer/slots_eval.php',
+                    array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids));
+                redirect($redirecturl);
             break;
             default:
                 print_error('Unknown bulkaction!');
@@ -158,9 +152,11 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
         $event->trigger();
     } else {
         if (organizer_is_group_mode()) {
-            $redirecturl->param('messages[]', 'message_error_slot_full_group');
+            $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_slot_full_group',
+                'organizer'), 'error');
         } else {
-            $redirecturl->param('messages[]', 'message_error_slot_full_single');
+            $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_slot_full_single',
+                'organizer'), 'error');
         }
     }
 
@@ -212,9 +208,11 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
         $event->trigger();
     } else {
         if ($action == ORGANIZER_ACTION_UNREGISTER) {
-            $redirecturl->param('messages[]', 'message_error_unknown_unregister');
+            $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_unknown_unregister',
+                'organizer'), 'error');
         } else {
-            $redirecturl->param('messages[]', 'message_error_unknown_unqueue');
+            $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_unknown_unqueue',
+                'organizer'), 'error');
         }
     }
 
@@ -256,9 +254,11 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
         }
     } else {
         if (organizer_is_group_mode()) {
-            $redirecturl->param('messages[]', 'message_error_slot_full_group');
+            $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_slot_full_group',
+                'organizer'), 'error');
         } else {
-            $redirecturl->param('messages[]', 'message_error_slot_full_single');
+            $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_slot_full_single',
+                'organizer'), 'error');
         }
     }
 

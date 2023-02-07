@@ -45,7 +45,8 @@ require_login($course, false, $cm);
 $slots = organizer_sortout_hiddenslots($slots);
 
 if (count($slots) == 0) {
-    $redirecturl->param('messages[]', 'message_warning_no_visible_slots_selected');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_visible_slots_selected',
+        'organizer'), 'error');
     redirect($redirecturl);
 }
 
@@ -70,7 +71,8 @@ if ($data = $mform->get_data()) {
     $slots = $_SESSION['organizer_slots'];
 
     if (count($slots) == 0) {
-        $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected',
+            'organizer'), 'error');
         redirect($redirecturl);
     }
 
@@ -91,7 +93,8 @@ if ($data = $mform->get_data()) {
 } else {
     // Display printpreview.
     if ($slots == null || count($slots) == 0) {
-        $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected',
+            'organizer'), 'error');
         redirect($redirecturl);
     }
 
@@ -253,7 +256,8 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
         $dosort = "";
     }
 
-    $registrationsfromdate = $registrationsfromdate ? userdate($registrationsfromdate) : get_string('pdf_notactive', 'organizer');
+    $registrationsfromdate = $registrationsfromdate ? userdate($registrationsfromdate) : get_string('pdf_notactive',
+        'organizer');
     $timedue = $timedue ? userdate($timedue) : get_string('pdf_notactive', 'organizer');
 
     $mpdftable = new \mod_organizer\MTablePDF($orientation, $columnwidth);
@@ -360,8 +364,18 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     $row[] = array('data' => $idnumber, 'rowspan' => 0);
                 break;
                 case 'attended':
-                    $attended = isset($entry->attended) ? ($entry->attended == 1 ? get_string('yes') : get_string('no')) : '';
-                    $row[] = array('data' => $attended, 'rowspan' => 0);
+                    $attended = $entry->attended ?? -1;
+                    switch ($attended) {
+                        case -1:
+                            $content = '';
+                            break;
+                        case 0:
+                            $content = get_string('no');
+                            break;
+                        case 1:
+                            $content = get_string('yes');
+                    }
+                    $row[] = array('data' => $content, 'rowspan' => 0);
                 break;
                 case 'grade':
                     $grade = isset($entry->grade) && $entry->grade >= 0 ? sprintf("%01.2f", $entry->grade) : '';

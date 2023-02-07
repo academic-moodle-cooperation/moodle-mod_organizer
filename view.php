@@ -190,6 +190,7 @@ function organizer_load_params($instance) {
     $params['dir'] = optional_param('dir', 'ASC', PARAM_ALPHA);
     $params['data'] = optional_param_array('data', array(), PARAM_INT);
     $params['messages'] = optional_param_array('messages', array(), PARAM_ALPHAEXT);
+    $params['xmessages'] = optional_param_array('xmessages', array(), PARAM_ALPHAEXT);
     $params['usersort'] = optional_param('usersort', 'name', PARAM_ALPHA);
 
     return $params;

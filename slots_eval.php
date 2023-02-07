@@ -50,14 +50,16 @@ if (!is_null($slot)) {
 }
 
 if (!$slots) {
-    $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected', 'organizer'),
+        'error');
     redirect($redirecturl);
 }
 
 $slots = organizer_sortout_hiddenslots($slots);
 
 if (count($slots) == 0) {
-    $redirecturl->param('messages[]', 'message_warning_no_visible_slots_selected');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_visible_slots_selected',
+        'organizer'), 'error');
     redirect($redirecturl);
 }
 
@@ -65,6 +67,16 @@ $mform = new organizer_evaluate_slots_form(null, array('id' => $cm->id, 'mode' =
 
 if ($data = $mform->get_data()) {
     $slotids = organizer_evaluate_slots($data);
+
+    $a = new stdClass();
+    $a->count = count($slotids);
+    if ($a->count == 1) {
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_slots_evaluated_sg',
+            'organizer', $a), 'success');
+    } else {
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_slots_evaluated_pl',
+            'organizer', $a), 'success');
+    }
 
     organizer_prepare_and_send_message($data, 'eval_notify_student'); // Message.
 

@@ -103,18 +103,18 @@ $mform = new organizer_remind_all_form(
 );
 
 if ($data = $mform->get_data()) {
-
+    $infoboxmessage = "";
+    $a = new stdClass();
     $recipient = $data->user;
-
     $count = organizer_remind_all($recipient, $data->message_custommessage['text']);
-
-    $redirecturl->param('data[count]', $count);
+    $a->count = $count;
     if ($count == 1) {
-        $redirecturl->param('messages[]', 'message_info_reminders_sent_sg');
+        $infoboxmessage .= $OUTPUT->notification(get_string('message_info_reminders_sent_sg', 'organizer', $a),
+            'success');
     } else {
-        $redirecturl->param('messages[]', 'message_info_reminders_sent_pl');
+        $infoboxmessage .= $OUTPUT->notification(get_string('message_info_reminders_sent_pl', 'organizer', $a),
+            'success');
     }
-
     $event = \mod_organizer\event\appointment_reminder_sent::create(
         array(
             'objectid' => $PAGE->cm->id,
@@ -122,7 +122,7 @@ if ($data = $mform->get_data()) {
         )
     );
     $event->trigger();
-
+    $_SESSION["infoboxmessage"] = $infoboxmessage;
     $redirecturl = $redirecturl->out();
     redirect($redirecturl);
 } else if ($mform->is_cancelled()) {

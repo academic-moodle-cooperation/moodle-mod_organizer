@@ -232,7 +232,7 @@ function organizer_add_new_slots($data) {
                             $collisionmessage = "";
                             foreach ($collisions as $collision) {
                                 if ($head) {
-                                    $collisionmessage .= '<span class="error">' .
+                                    $collisionmessage .= '<span class="warning">' .
                                         get_string('collision', 'organizer') . '</span><br />';
                                     $head = false;
                                 }

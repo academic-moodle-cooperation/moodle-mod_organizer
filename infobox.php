@@ -37,9 +37,14 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     global $PAGE, $USER;
 
     $output = '';
+
+    // Display messages here.
+    $output .= organizer_make_messages_section($params);
+
+    // Module description section
     if ($organizer->alwaysshowdescription ||  time() > $organizer->allowregistrationsfromdate) {
         // Module description, group and duedate informations.
-        $output = organizer_make_description_section($organizer, $params['id']);
+        $output .= organizer_make_description_section($organizer, $params['id']);
     }
 
     $jsparams = new stdClass();
@@ -68,8 +73,6 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
         default:
             print_error("Wrong view mode: {$params['mode']}");
     }
-    // Display messages here.
-    $output .= organizer_make_messages_section($params);
     if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
         // Display section with predefined filter view options like "hidden slots only" etc..
         $output .= organizer_make_slotoptions_section($params['mode']);
@@ -97,30 +100,28 @@ function organizer_make_section($name, $content, $hidden = false) {
     $output .= '</div>';
     return $output;
 }
-
-function organizer_add_message_icon($message) {
-    if (strpos($message, 'warning') !== false) {
-        return organizer_get_icon('message_warning', get_string('warning'));
-    } else if (strpos($message, 'info') !== false) {
-        return organizer_get_icon('message_info', get_string('info'));
-    } else if (strpos($message, 'error') !== false) {
-        return organizer_get_icon('message_error', get_string('error'));
-    } else {
-        return '';
-    }
-}
 function organizer_make_messages_section($params) {
-    if ($params['messages']) {
-        $output = '<div style="overflow: auto;">';
-        $a = new stdClass();
-        foreach ($params['data'] as $key => $value) {
-            $a->$key = $value;
+    global $OUTPUT;
+
+    $output = '';
+    $infoboxmessage = $_SESSION["infoboxmessage"] ?? '';
+    if ($infoboxmessage) {
+        $output .= $infoboxmessage;
+        $_SESSION["infoboxmessage"] = "";
+    } else {
+        if (isset($params['messages'])) {
+            $a = new stdClass();
+            if (isset($params['data'])) {
+                foreach($params['data'] as $key => $value) {
+                    $a->{$key} = $value;
+                }
+            }
+            foreach ($params['messages'] as $message) {
+                $output .= $OUTPUT->notification(get_string($message, 'organizer', $a), 'info');
+            }
         }
-        foreach ($params['messages'] as $message) {
-            $output .= '<p>' . organizer_add_message_icon($message);
-            $output .= ' ' . get_string($message, 'organizer', $a) . '</p>';
-        }
-        $output .= '</div>';
+    }
+    if ($output) {
         return organizer_make_section('infobox_messages', $output);
     } else {
         return '';
@@ -130,9 +131,7 @@ function organizer_make_sendreminder_section($params, $context) {
     global $OUTPUT;
     if (has_capability("mod/organizer:sendreminders", $context, null, true)) {
         $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id']));
-        $output = '<div name="button_bar" class="organizer_addbutton_div">';
-        $output .= $OUTPUT->single_button($sendurl, get_string("btn_sendallmultiple", 'organizer'), 'post');
-        $output .= '</div>';
+        $output = $OUTPUT->single_button($sendurl, get_string("btn_sendall", 'organizer'), true);
         return organizer_make_section('infobox_messaging', $output);
     } else {
         return '';
@@ -148,9 +147,9 @@ function organizer_make_description_section($organizer, $cmid) {
         if ($group) {
             $a = new stdClass();
             $a->groupname = $group->name;
-            $output .= '<p> ' . get_string('grouporganizer_desc_hasgroup', 'organizer', $a) . '</p>';
+            $output .= $OUTPUT->notification(get_string('grouporganizer_desc_hasgroup', 'organizer', $a), 'success');
         } else {
-            $output .= '<p> ' . get_string('grouporganizer_desc_novalidgroup', 'organizer') . '</p>';
+            $output .= $OUTPUT->notification(get_string('grouporganizer_desc_novalidgroup', 'organizer'), 'warning');
         }
     }
     if (isset($organizer->duedate)) {
@@ -158,12 +157,12 @@ function organizer_make_description_section($organizer, $cmid) {
         $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
         $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
         if ($organizer->duedate > time()) {
-            $output .= '<p>' . get_string('infobox_organizer_expires', 'organizer', $a) . '</p>';
+            $output .= $OUTPUT->notification(get_string('infobox_organizer_expires', 'organizer', $a), 'info');
         } else {
-            $output .= '<p>' . get_string('infobox_organizer_expired', 'organizer', $a) . '</p>';
+            $output .= $OUTPUT->notification(get_string('infobox_organizer_expired', 'organizer', $a), 'warning');
         }
     } else {
-        $output .= '<p>' . get_string('infobox_organizer_never_expires', 'organizer') . '</p>';
+        $output .= $OUTPUT->notification(get_string('infobox_organizer_never_expires', 'organizer'), 'info');
     }
     $output .= '<br>';
 
