@@ -210,6 +210,7 @@
     display: inline-block;
     border: 1px solid green;
     margin: 0.1rem;
+    vertical-align: middle;
 }
 
 .path-mod-organizer .statusbar_td_full_green {
@@ -219,6 +220,7 @@
     border: 1px solid green;
     background-color: green;
     margin: 0.1rem;
+    vertical-align: middle;
 }
 
 .path-mod-organizer .statusbar_td_empty_grey {
@@ -227,6 +229,7 @@
     display: inline-block;
     border: 1px solid grey;
     margin: 0.1rem;
+    vertical-align: middle;
 }
 
 .path-mod-organizer .statusbar_td_full_grey {
@@ -236,11 +239,11 @@
     border: 1px solid grey;
     background-color: grey;
     margin: 0.1rem;
+    vertical-align: middle;
 }
 
 .path-mod-organizer .statusbar_statusmsg {
     height: 100%;
     display: inline-block;
-    vertical-align: middle;
     margin-left: 1rem;
 }
