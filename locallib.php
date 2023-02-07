@@ -2289,6 +2289,7 @@ function organizer_get_counters($organizer, $cm = null) {
  * @return object $out html output of status bar
  */
 function organizer_statusbar($bookings, $max, $color, $statusmsg, $msg) {
+    global $OUTPUT;
 
     $out = html_writer::start_div('statusbar_tr', array('title' => $msg));
     $i = 1;
@@ -2300,7 +2301,9 @@ function organizer_statusbar($bookings, $max, $color, $statusmsg, $msg) {
         $out .= html_writer::div(' ', 'statusbar_td_empty_'.$color.' align-middle');
         $i++;
     }
+    $pix =
     $out .= html_writer::span($statusmsg, 'statusbar_statusmsg');
+    $out .= $OUTPUT->pix_icon('i/info', $msg);
     $out .= html_writer::end_div();
 
     return $out;
