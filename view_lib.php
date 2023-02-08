@@ -1961,7 +1961,7 @@ function organizer_participants_action($params, $slot) {
     $slotexpired = $slotx->is_past_due() || $slotx->is_past_deadline();
     $slotevalpending = $slotx->is_past_deadline() && !$slotx->is_evaluated();
     $slotfull = $slotx->is_full();
-    $disabled = $slotevalpending || $organizerdisabled || $slotexpired ||
+    $disabled = $slotevalpending || $organizerdisabled ||
         !$slotx->organizer_groupmode_user_has_access() || $slotx->is_evaluated();
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $isalreadyinqueue = $slotx->is_group_in_queue();
@@ -1975,9 +1975,9 @@ function organizer_participants_action($params, $slot) {
 
     if ($isuserslot) {
         $action = 'unregister';
-        $disabled |= !$rightunregister;
-    } else {
-        $disabled |= $slotfull || !$rightregister;
+        $disabled |= !$rightunregister || $slotexpired;
+    } else if (!$slotfull) {
+        $disabled |= !$rightregister || $slotexpired;
         if ($lefttobook) {
             $action = 'register';
         } else {
@@ -1987,12 +1987,12 @@ function organizer_participants_action($params, $slot) {
 
     if ($lefttobook && !$isuserslot && $slotfull && $rightregister && $isqueueable) {
         $action = 'queue';
-        $disabled = false;
+        $disabled |= $slotexpired;
     }
 
     if ($isalreadyinqueue) {
         $action = 'unqueue';
-        $disabled = false;
+        $disabled |= $slotexpired;
     }
 
     // Show slot comments if user is owner.
