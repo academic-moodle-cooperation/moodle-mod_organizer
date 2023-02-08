@@ -248,7 +248,7 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
             $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
                 array('style' => "width: $partialfullwidth%"));
         }
-        $out .= html_writer::div(" ', 'registrationstatusbarleg align-middle border border-warning',
+        $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-warning',
             array('style' => "width: $partialemptywidth%"));
     }
     $out .= html_writer::div($messageminreached, 'd-inline ml-3');
