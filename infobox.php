@@ -188,18 +188,19 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
         $a->min = $organizer->userslotsmin;
         $a->left = $organizer->userslotsmax - $a->booked;
         $statusbarmsg = "";
-        $color = 'green';
+        $minreached = false;
         $statusbarstatusmsg = get_string('infobox_myslot_userslots_status', 'organizer', $a);
         if ($userslotsstate == USERSLOTS_MIN_NOT_REACHED) {
-            $color = 'grey';
             $statusbarmsg .= get_string('infobox_myslot_userslots_min_not_reached'.$groupstr, 'organizer', $a);
         } else if ($userslotsstate == USERSLOTS_MAX_REACHED) {
+            $minreached = true;
             $statusbarmsg .= get_string('infobox_myslot_userslots_max_reached'.$groupstr, 'organizer', $a);
         } else {
+            $minreached = true;
             $statusbarmsg .= get_string('infobox_myslot_userslots_min_reached'.$groupstr, 'organizer', $a).
                 ' '.get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a);
         }
-        $statusbar = organizer_statusbar($a->booked, $a->max, $color, $statusbarstatusmsg, $statusbarmsg);
+        $statusbar = organizer_statusbar($a->booked, $a->max, $minreached, $statusbarstatusmsg, $statusbarmsg);
         $output .= $statusbar;
     }
     if (count($apps) > 0) {

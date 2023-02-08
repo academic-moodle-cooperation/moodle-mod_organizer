@@ -2282,28 +2282,32 @@ function organizer_get_counters($organizer, $cm = null) {
  *
  * @param int $bookings amount of user bookings
  * @param int $max max amount of bookings per user
- * @param string $color for the status bar
+ * @param boolean $minreached if user has reached minimum of bookings
  * @param string $statusmsg to be written
  * @param string $msg for the tooltip
  *
  * @return object $out html output of status bar
  */
-function organizer_statusbar($bookings, $max, $color, $statusmsg, $msg) {
+function organizer_statusbar($bookings, $max, $minreached, $statusmsg, $msg) {
     global $OUTPUT;
 
     $out = html_writer::start_div('statusbar_tr', array('title' => $msg));
+    if ($minreached) {
+        $classstr = 'statusbar_td align-middle border border-succuess bg-success';
+    } else {
+        $classstr = 'statusbar_td align-middle border border-warning bg-warning';
+    }
     $i = 1;
     while ($i <= (int) $bookings) {
-        $out .= html_writer::div(' ', 'statusbar_td_full_'.$color.' align-middle');
+        $out .= html_writer::div(' ', 'statusbar_td_full'.$classstr);
         $i++;
     }
     while ($i <= (int) $max) {
-        $out .= html_writer::div(' ', 'statusbar_td_empty_'.$color.' align-middle');
+        $out .= html_writer::div(' ', 'statusbar_td_empty'.$classstr);
         $i++;
     }
-    $pix =
-    $out .= html_writer::span($statusmsg, 'statusbar_statusmsg');
-    $out .= $OUTPUT->pix_icon('t/message', $msg, null, array('class' => 'icon-size-3 align-super'));
+    $out .= html_writer::span($statusmsg, 'ml-3');
+    $out .= $OUTPUT->pix_icon('t/message', $msg, null, array('class' => 'ml-1 icon-size-3 align-super'));
     $out .= html_writer::end_div();
 
     return $out;
