@@ -330,40 +330,38 @@ function organizer_participants_action_allowed($action, $slot, $organizer, $cont
     $rightreg = has_capability('mod/organizer:register', $context, null, false);
     $rightunreg = has_capability('mod/organizer:unregister', $context, null, false);
     $userslot = organizer_get_slot_user_appointment($slotx) ? true : false;
-    $instancedisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
     $slotexpired = $slotx->is_past_due() || $slotx->is_past_deadline();
-    $slotevalpending = $slotx->is_past_deadline() && !$slotx->is_evaluated();
+    $instancedisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
     $slotfull = $slotx->is_full();
-    $notavailable = $slotevalpending || $instancedisabled ||
-        !$slotx->organizer_groupmode_user_has_access() || $slotx->is_evaluated();
+    $notavailable = $instancedisabled || !$slotx->organizer_groupmode_user_has_access() || $slotx->is_evaluated();
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $alreadyinqueue = $slotx->is_group_in_queue();
         $group = organizer_fetch_user_group($USER->id, $organizer->id);
+        $lefttobook = organizer_multiplebookings_slotslefttobook($organizer, null, $group->id);
     } else {
         $alreadyinqueue = $slotx->is_user_in_queue($USER->id);
+        $lefttobook = organizer_multiplebookings_slotslefttobook($organizer, $USER->id);
     }
     $queueable = $organizer->queue && !$alreadyinqueue && !$notavailable;
     if ($userslot) {
         $allowedaction = ORGANIZER_ACTION_UNREGISTER;
-        $notavailable |= !$rightunreg || $slotexpired;
-    } else {
-        $slotsleft = organizer_multiplebookings_slotslefttobook($organizer,
-            isset($group->id) ? null : $USER->id, $group->id ?? null);
-        if ($slotsleft) {
+        $notavailable |= !$rightunreg || $slotexpired || $slotx->is_evaluated();
+    } else if (!$slotfull) {
+        $notavailable |= !$rightreg || $slotexpired;
+        if ($lefttobook) {
             $allowedaction = ORGANIZER_ACTION_REGISTER;
-            $notavailable |= $slotexpired;
         } else {
             $allowedaction = ORGANIZER_ACTION_REREGISTER;
-            $notavailable |= $slotexpired;
         }
-    }
-    if (!$userslot && $slotfull && $rightreg && $queueable) {
-        $allowedaction = ORGANIZER_ACTION_QUEUE;
-        $notavailable |= $slotexpired;
+    } else if ($slotfull) {
+        if ($queueable) {
+            $allowedaction = ORGANIZER_ACTION_QUEUE;
+            $notavailable |= !$rightreg || $slotexpired || !$lefttobook;
+        }
     }
     if ($alreadyinqueue) {
         $allowedaction = ORGANIZER_ACTION_UNQUEUE;
-        $notavailable |= $slotexpired;
+        $notavailable |= !$rightunreg || $slotexpired;
     }
     return ($allowedaction == $action) && !$notavailable;
 }

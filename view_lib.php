@@ -1959,7 +1959,6 @@ function organizer_participants_action($params, $slot) {
     $isuserslot = organizer_get_slot_user_appointment($slotx) ? true : false;
     $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
     $slotexpired = $slotx->is_past_due() || $slotx->is_past_deadline();
-    $slotpastdeadline = $slotx->is_past_deadline();
     $slotfull = $slotx->is_full();
     $disabled = $organizerdisabled || !$slotx->organizer_groupmode_user_has_access() || $slotx->is_evaluated();
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
@@ -1971,12 +1970,11 @@ function organizer_participants_action($params, $slot) {
         $lefttobook = organizer_multiplebookings_slotslefttobook($organizer, $USER->id);
     }
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$disabled;
-
     if ($isuserslot) {
         $action = 'unregister';
-        $disabled |= !$rightunregister || $slotexpired || $slotx->is_evaluated() || $slotpastdeadline;
+        $disabled |= !$rightunregister || $slotexpired || $slotx->is_evaluated();
     } else if (!$slotfull) {
-        $disabled |= !$rightregister || $slotexpired || $slotpastdeadline;
+        $disabled |= !$rightregister || $slotexpired;
         if ($lefttobook) {
             $action = 'register';
         } else {
@@ -1985,7 +1983,7 @@ function organizer_participants_action($params, $slot) {
     } else if ($slotfull) {
         if ($isqueueable) {
             $action = 'queue';
-            $disabled |= !$rightregister || $slotexpired || !$lefttobook || $slotpastdeadline;
+            $disabled |= !$rightregister || $slotexpired || !$lefttobook;
         }
     }
     if ($isalreadyinqueue) {
