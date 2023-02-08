@@ -232,18 +232,18 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
         $messageminreached = get_string('infobox_statistic_minreached', 'organizer', $a);
         $messagemaxreached = get_string('infobox_statistic_maxreached', 'organizer', $a);
     }
-    $allminreached = $a->undermin ? true : false;
+    $allminreached = $a->undermin ? false : true;
     $allmaxreached = (int) $a->entries == (int) $a->maxreached ? true : false;
 
     $out = "";
 
-    $out .= html_writer::start_div('registrationstatusbar w-50', array('title' => $messageminreached));
+    $out .= html_writer::start_div('registrationstatusbar w-100', array('title' => $messageminreached));
     if ($allminreached) {
         $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
-            array('width' => '100%'));
+            array('width' => '50%'));
     } else {
-        $partialfullwidth = ((int) $a->undermin * 100 / (int) $a->entries);
-        $partialemptywidth = 100 - $partialfullwidth;
+        $partialfullwidth = (int) (((int) $a->undermin * 100 / (int) $a->entries) / 2);
+        $partialemptywidth = 50 - $partialfullwidth;
         $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
             array('width' => $partialfullwidth."%"));
         $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning',
@@ -252,13 +252,13 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
     $out .= html_writer::span($messageminreached, 'ml-3');
     $out .= html_writer::end_div();
 
-    $out .= html_writer::start_div('registrationstatusbar w-50', array('title' => $messagemaxreached));
+    $out .= html_writer::start_div('registrationstatusbar mb-3 w-100', array('title' => $messagemaxreached));
     if ($allmaxreached) {
         $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
-            array('width' => '100%'));
+            array('width' => '50%'));
     } else {
-        $partialfullwidth = ((int) $a->maxreached * 100 / (int) $a->entries);
-        $partialemptywidth = 100 - $partialfullwidth;
+        $partialfullwidth = int (((int) $a->maxreached * 100 / (int) $a->entries) / 2);
+        $partialemptywidth = 50 - $partialfullwidth;
         $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
             array('width' => $partialfullwidth."%"));
         $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning',

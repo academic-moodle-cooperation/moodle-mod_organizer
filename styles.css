@@ -211,11 +211,10 @@
 }
 
 .path-mod-organizer .registrationstatusbar {
-    height: 3.3rem;
+    height: 2.5rem;
     display: block;
 }
 
 .path-mod-organizer .registrationstatusbarleg {
-    height: 3.3rem;
-    display: inline-block;
+    height: 2.5rem;
 }
