@@ -1983,13 +1983,12 @@ function organizer_participants_action($params, $slot) {
         } else {
             $action = 'reregister';
         }
+    } else if ($slotfull) {
+        if ($isqueueable) {
+            $action = 'queue';
+            $disabled |= !$rightregister || $slotexpired || !$lefttobook;
+        }
     }
-
-    if ($lefttobook && !$isuserslot && $slotfull && $rightregister && $isqueueable) {
-        $action = 'queue';
-        $disabled |= $slotexpired;
-    }
-
     if ($isalreadyinqueue) {
         $action = 'unqueue';
         $disabled |= $slotexpired;
