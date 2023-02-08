@@ -222,17 +222,19 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
     $a->max = $organizer->userslotsmax;
     $a->min = $organizer->userslotsmin;
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        list($a->entries, $a->undermin, $a->maxreached) =
+        list($a->entries, $undermin, $a->maxreached) =
             organizer_registration_statistics($organizer, true, $entries);
+        $a->minreached = (int) $a->entries - (int) $undermin;
         $messageminreached = get_string('infobox_statistic_minreached_group', 'organizer', $a);
         $messagemaxreached = get_string('infobox_statistic_maxreached_group', 'organizer', $a);
     } else {
-        list($a->entries, $a->undermin, $a->maxreached) =
+        list($a->entries, $undermin, $a->maxreached) =
             organizer_registration_statistics($organizer, false, $entries);
+        $a->minreached = (int) $a->entries - (int) $undermin;
         $messageminreached = get_string('infobox_statistic_minreached', 'organizer', $a);
         $messagemaxreached = get_string('infobox_statistic_maxreached', 'organizer', $a);
     }
-    $allminreached = $a->undermin ? false : true;
+    $allminreached = $undermin ? false : true;
     $allmaxreached = (int) $a->entries == (int) $a->maxreached ? true : false;
 
     $out = "";
@@ -242,7 +244,7 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
         $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
             array('style' => 'width: 50%'));
     } else {
-        $partialfullwidth = (int) ((int) $a->undermin * 100 / (int) $a->entries) / 2;
+        $partialfullwidth = (int) ((int) $a->minreached * 100 / (int) $a->entries) / 2;
         $partialemptywidth = 50 - $partialfullwidth;
         if ($partialfullwidth > 0) {
             $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
