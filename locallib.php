@@ -2296,8 +2296,8 @@ function organizer_statusbar($bookings, $max, $minreached, $statusmsg, $msg) {
         $classstrfull = 'align-middle border border-success bg-success';
         $classstrempty = 'align-middle border border-success';
     } else {
-        $classstrfull = 'align-middle border border-warning';
-        $classstrempty = 'align-middle border border-warning bg-warning';
+        $classstrfull = 'align-middle border border-warning bg-warning';
+        $classstrempty = 'align-middle border border-warning';
     }
     $i = 1;
     while ($i <= (int) $bookings) {
