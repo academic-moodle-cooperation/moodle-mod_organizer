@@ -1959,10 +1959,9 @@ function organizer_participants_action($params, $slot) {
     $isuserslot = organizer_get_slot_user_appointment($slotx) ? true : false;
     $organizerdisabled = $slotx->organizer_unavailable() || $slotx->organizer_expired();
     $slotexpired = $slotx->is_past_due() || $slotx->is_past_deadline();
-    $slotevalpending = $slotx->is_past_deadline() && !$slotx->is_evaluated();
+    $slotpastdeadline = $slotx->is_past_deadline();
     $slotfull = $slotx->is_full();
-    $disabled = $slotevalpending || $organizerdisabled ||
-        !$slotx->organizer_groupmode_user_has_access() || $slotx->is_evaluated();
+    $disabled = $organizerdisabled || !$slotx->organizer_groupmode_user_has_access() || $slotx->is_evaluated();
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $isalreadyinqueue = $slotx->is_group_in_queue();
         $group = organizer_fetch_user_group($USER->id, $organizer->id);
@@ -1975,9 +1974,9 @@ function organizer_participants_action($params, $slot) {
 
     if ($isuserslot) {
         $action = 'unregister';
-        $disabled |= !$rightunregister || $slotexpired;
+        $disabled |= !$rightunregister || $slotexpired || $slotx->is_evaluated() || $slotpastdeadline;
     } else if (!$slotfull) {
-        $disabled |= !$rightregister || $slotexpired;
+        $disabled |= !$rightregister || $slotexpired || $slotpastdeadline;
         if ($lefttobook) {
             $action = 'register';
         } else {
@@ -1986,12 +1985,12 @@ function organizer_participants_action($params, $slot) {
     } else if ($slotfull) {
         if ($isqueueable) {
             $action = 'queue';
-            $disabled |= !$rightregister || $slotexpired || !$lefttobook;
+            $disabled |= !$rightregister || $slotexpired || !$lefttobook || $slotpastdeadline;
         }
     }
     if ($isalreadyinqueue) {
         $action = 'unqueue';
-        $disabled |= $slotexpired;
+        $disabled |= !$rightunregister || $slotexpired;
     }
 
     // Show slot comments if user is owner.
