@@ -127,6 +127,13 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 
     if ($success) {
         if ($action == ORGANIZER_ACTION_QUEUE) {
+            if ($groupid) {
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_queued_group',
+                    'organizer'), 'success');
+            } else {
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_queued',
+                    'organizer'), 'success');
+            }
             $event = \mod_organizer\event\queue_added::create(
                 array(
                     'objectid' => $PAGE->cm->id,
@@ -138,6 +145,13 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
                 organizer_prepare_and_send_message($slot, 'group_registration_notify:student:queue');
             }
         } else {
+            if ($groupid) {
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_registered_group',
+                    'organizer'), 'success');
+            } else {
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_registered',
+                    'organizer'), 'success');
+            }
             $event = \mod_organizer\event\appointment_added::create(
                 array(
                     'objectid' => $PAGE->cm->id,
@@ -151,7 +165,7 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
         }
         $event->trigger();
     } else {
-        if (organizer_is_group_mode()) {
+        if ($groupid) {
             $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_slot_full_group',
                 'organizer'), 'error');
         } else {
@@ -183,6 +197,13 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 
     if ($success) {
         if ($action == ORGANIZER_ACTION_UNREGISTER) {
+            if ($groupid) {
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_unregistered_group',
+                    'organizer'), 'success');
+            } else {
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_unregistered',
+                    'organizer'), 'success');
+            }
             $event = \mod_organizer\event\appointment_removed::create(
                 array(
                 'objectid' => $PAGE->cm->id,
@@ -194,6 +215,13 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
                 organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unregister');
             }
         } else {
+            if ($groupid) {
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_unqueued_group',
+                    'organizer'), 'success');
+            } else {
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_unqueued',
+                    'organizer'), 'success');
+            }
             $event = \mod_organizer\event\queue_removed::create(
                 array(
                 'objectid' => $PAGE->cm->id,
@@ -232,6 +260,13 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
     $success = organizer_reregister_appointment($slot, $groupid);
 
     if ($success) {
+        if ($groupid) {
+            $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_reregistered_group',
+                'organizer'), 'success');
+        } else {
+            $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_reregistered',
+                'organizer'), 'success');
+        }
         $event = \mod_organizer\event\appointment_removed::create(
             array(
                 'objectid' => $PAGE->cm->id,
@@ -266,7 +301,8 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
 
 } else {
 
-    // If no actionselectbutton was chosen: redirect to view.php.
+    $_SESSION["infoboxmessage"] = "";
+        // If no actionselectbutton was chosen: redirect to view.php.
     redirect($redirecturl);
 
 }
