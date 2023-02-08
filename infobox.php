@@ -244,8 +244,10 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
     } else {
         $partialfullwidth = (int) ((int) $a->undermin * 100 / (int) $a->entries) / 2;
         $partialemptywidth = 50 - $partialfullwidth;
-        $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
-            array('width' => $partialfullwidth."%"));
+        if ($partialfullwidth > 0) {
+            $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
+                array('width' => $partialfullwidth . "%"));
+        }
         $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning',
             array('width' => $partialemptywidth."%"));
     }
@@ -259,8 +261,10 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
     } else {
         $partialfullwidth = (int) ((int) $a->maxreached * 100 / (int) $a->entries) / 2;
         $partialemptywidth = 50 - $partialfullwidth;
-        $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
-            array('width' => $partialfullwidth."%"));
+        if ($partialfullwidth > 0) {
+            $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
+                array('width' => $partialfullwidth."%"));
+        }
         $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning',
             array('width' => $partialemptywidth."%"));
     }

@@ -216,5 +216,6 @@
 }
 
 .path-mod-organizer .registrationstatusbarleg {
+    display: inline-block;
     height: 2.5rem;
 }
