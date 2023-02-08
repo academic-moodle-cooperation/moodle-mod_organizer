@@ -242,7 +242,7 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
         $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
             array('width' => '50%'));
     } else {
-        $partialfullwidth = (int) (((int) $a->undermin * 100 / (int) $a->entries) / 2);
+        $partialfullwidth = (int) ((int) $a->undermin * 100 / (int) $a->entries) / 2;
         $partialemptywidth = 50 - $partialfullwidth;
         $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
             array('width' => $partialfullwidth."%"));
@@ -257,7 +257,7 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
         $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
             array('width' => '50%'));
     } else {
-        $partialfullwidth = int (((int) $a->maxreached * 100 / (int) $a->entries) / 2);
+        $partialfullwidth = (int) ((int) $a->maxreached * 100 / (int) $a->entries) / 2;
         $partialemptywidth = 50 - $partialfullwidth;
         $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
             array('width' => $partialfullwidth."%"));
