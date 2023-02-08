@@ -2293,17 +2293,17 @@ function organizer_statusbar($bookings, $max, $minreached, $statusmsg, $msg) {
 
     $out = html_writer::start_div('statusbar_tr', array('title' => $msg));
     if ($minreached) {
-        $classstr = 'statusbar_td align-middle border border-succuess bg-success';
+        $classstr = 'align-middle border border-success bg-success';
     } else {
-        $classstr = 'statusbar_td align-middle border border-warning bg-warning';
+        $classstr = 'align-middle border border-warning bg-warning';
     }
     $i = 1;
     while ($i <= (int) $bookings) {
-        $out .= html_writer::div(' ', 'statusbar_td_full'.$classstr);
+        $out .= html_writer::div(' ', 'statusbar_td_full '.$classstr);
         $i++;
     }
     while ($i <= (int) $max) {
-        $out .= html_writer::div(' ', 'statusbar_td_empty'.$classstr);
+        $out .= html_writer::div(' ', 'statusbar_td_empty '.$classstr);
         $i++;
     }
     $out .= html_writer::span($statusmsg, 'ml-3');
