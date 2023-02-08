@@ -85,7 +85,7 @@ if ($data = $mform->get_data()) {
                 'success');
             $groups = groups_get_all_groups($course->id, 0, $cm->groupingid);
             list($registrantstotal, $notreachedmin, ) =
-                organizer_multiplebookings_statistics($organizer, true, $groups);
+                organizer_registration_statistics($organizer, true, $groups);
             $sql = 'SELECT COUNT(DISTINCT app.id) as total
                 FROM {organizer_slots} org
                 JOIN {organizer_slot_appointments} app ON org.id = app.slotid
@@ -107,7 +107,7 @@ if ($data = $mform->get_data()) {
             }
             $entries = get_enrolled_users($context, 'mod/organizer:register');
             list($registrantstotal, $notreachedmin, ) =
-                organizer_multiplebookings_statistics($organizer, null, $entries);
+                organizer_registration_statistics($organizer, null, $entries);
             $sql = 'SELECT COUNT(DISTINCT app.id) as total
                 FROM {organizer_slots} org
                 JOIN {organizer_slot_appointments} app ON org.id = app.slotid

@@ -186,34 +186,36 @@
     border-bottom: none !important;
 }
 
-.path-mod-organizer .userslotsboard {
-    width: 100%;
-    background-color: #e8e8e8;
-    text-align: right;
-    padding: 0.5em;
-    margin-bottom: 1em;
-}
-
 .path-mod-organizer .slotoptions {
     margin-right: 0.3em;
     margin-left: 0.9em;
 }
 
-.path-mod-organizer .statusbar_tr {
+.path-mod-organizer .userstatusbar_tr {
     max-width: 90%;
     margin-bottom: 1em;
 }
 
-.path-mod-organizer .statusbar_td_empty {
+.path-mod-organizer .userstatusbar_td_empty {
     width: 2rem;
     height: 3.3rem;
     display: inline-block;
     margin: 0.1rem;
 }
 
-.path-mod-organizer .statusbar_td_full {
+.path-mod-organizer .userstatusbar_td_full {
     width: 2rem;
     height: 3.3rem;
     display: inline-block;
     margin: 0.1rem;
+}
+
+.path-mod-organizer .registrationstatusbar {
+    height: 3.3rem;
+    display: block;
+}
+
+.path-mod-organizer .registrationstatusbarleg {
+    height: 3.3rem;
+    display: inline-block;
 }

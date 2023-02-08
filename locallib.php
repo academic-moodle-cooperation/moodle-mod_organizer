@@ -2175,7 +2175,7 @@ function organizer_bookings_exist($organizerid) {
 }
 
 /**
- * Returns amount of course participants who have not booked the minimum of slots yet.
+ * Returns amount of course participants who have not booked the minimum of slots and have booked the maximum of slots.
  *
  * @param object $organizer organizer instance
  * @param boolean $groupmode is organizer instance in groupmode
@@ -2184,7 +2184,7 @@ function organizer_bookings_exist($organizerid) {
  * @return array $entries, $underminimum: participants booked under minimum, $maxreached: participants
  * who have reached the max
  */
-function organizer_multiplebookings_statistics($organizer, $groupmode, $entries) {
+function organizer_registration_statistics($organizer, $groupmode, $entries) {
     $countentries = 0;
     $underminimum = 0;
     $maxreached = 0;
@@ -2278,7 +2278,7 @@ function organizer_get_counters($organizer, $cm = null) {
 }
 
 /**
- * Returns amount of course participants who have not booked the minimum of slots yet.
+ * Returns the html of a status bar indicating the user's status regarding his bookings.
  *
  * @param int $bookings amount of user bookings
  * @param int $max max amount of bookings per user
@@ -2288,10 +2288,10 @@ function organizer_get_counters($organizer, $cm = null) {
  *
  * @return object $out html output of status bar
  */
-function organizer_statusbar($bookings, $max, $minreached, $statusmsg, $msg) {
+function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg) {
     global $OUTPUT;
 
-    $out = html_writer::start_div('statusbar_tr', array('title' => $msg));
+    $out = html_writer::start_div('userstatusbar_tr', array('title' => $msg));
     if ($minreached) {
         $classstrfull = 'align-middle border border-success bg-success';
         $classstrempty = 'align-middle border border-success';
@@ -2301,11 +2301,11 @@ function organizer_statusbar($bookings, $max, $minreached, $statusmsg, $msg) {
     }
     $i = 1;
     while ($i <= (int) $bookings) {
-        $out .= html_writer::div(' ', 'statusbar_td_full '.$classstrfull);
+        $out .= html_writer::div(' ', 'userstatusbar_td_full '.$classstrfull);
         $i++;
     }
     while ($i <= (int) $max) {
-        $out .= html_writer::div(' ', 'statusbar_td_empty '.$classstrempty);
+        $out .= html_writer::div(' ', 'userstatusbar_td_empty '.$classstrempty);
         $i++;
     }
     $out .= html_writer::span($statusmsg, 'ml-3');

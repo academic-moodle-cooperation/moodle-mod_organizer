@@ -66,7 +66,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
                 $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS, $params)) {
                 $output .= organizer_make_sendreminder_section($params, $context);
             }
-            $output .= organizer_make_minmax_section($organizer, $entries);
+            $output .= organizer_make_registrationstatistic_section($organizer, $entries);
         break;
         case ORGANIZER_ASSIGNMENT_VIEW:
         break;
@@ -200,7 +200,7 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
             $statusbarmsg .= get_string('infobox_myslot_userslots_min_reached'.$groupstr, 'organizer', $a).
                 ' '.get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a);
         }
-        $statusbar = organizer_statusbar($a->booked, $a->max, $minreached, $statusbarstatusmsg, $statusbarmsg);
+        $statusbar = organizer_userstatus_bar($a->booked, $a->max, $minreached, $statusbarstatusmsg, $statusbarmsg);
         $output .= $statusbar;
     }
     if (count($apps) > 0) {
@@ -217,32 +217,57 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
     }
     return organizer_make_section('infobox_myslot', $output);
 }
-function organizer_make_minmax_section($organizer, $entries) {
-
-    $output = html_writer::start_div('userslotsboard');
+function organizer_make_registrationstatistic_section($organizer, $entries) {
     $a = new stdClass();
     $a->max = $organizer->userslotsmax;
     $a->min = $organizer->userslotsmin;
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         list($a->entries, $a->undermin, $a->maxreached) =
-            organizer_multiplebookings_statistics($organizer, true, $entries);
-        $userslotsboard = html_writer::div(get_string('infobox_minmax_entries_group', 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_minmax_min_group', 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_minmax_max_group', 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_minmax_undermin_group', 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_minmax_maxreached_group', 'organizer', $a));
+            organizer_registration_statistics($organizer, true, $entries);
+        $messageminreached = get_string('infobox_statistic_minreached_group', 'organizer', $a);
+        $messagemaxreached = get_string('infobox_statistic_maxreached_group', 'organizer', $a);
     } else {
         list($a->entries, $a->undermin, $a->maxreached) =
-            organizer_multiplebookings_statistics($organizer, false, $entries);
-        $userslotsboard = html_writer::div(get_string('infobox_minmax_entries', 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_minmax_min', 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_minmax_max', 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_minmax_undermin', 'organizer', $a));
-        $userslotsboard .= html_writer::div(get_string('infobox_minmax_maxreached', 'organizer', $a));
+            organizer_registration_statistics($organizer, false, $entries);
+        $messageminreached = get_string('infobox_statistic_minreached', 'organizer', $a);
+        $messagemaxreached = get_string('infobox_statistic_maxreached', 'organizer', $a);
     }
-    $output .= $userslotsboard;
-    $output .= html_writer::end_div();
-    return organizer_make_section('infobox_minmax', $output);
+    $allminreached = $a->undermin ? true : false;
+    $allmaxreached = (int) $a->entries == (int) $a->maxreached ? true : false;
+
+    $out = "";
+
+    $out .= html_writer::start_div('registrationstatusbar w-50', array('title' => $messageminreached));
+    if ($allminreached) {
+        $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
+            array('width' => '100%'));
+    } else {
+        $partialfullwidth = ((int) $a->undermin * 100 / (int) $a->entries);
+        $partialemptywidth = 100 - $partialfullwidth;
+        $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
+            array('width' => $partialfullwidth."%"));
+        $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning',
+            array('width' => $partialemptywidth."%"));
+    }
+    $out .= html_writer::span($messageminreached, 'ml-3');
+    $out .= html_writer::end_div();
+
+    $out .= html_writer::start_div('registrationstatusbar w-50', array('title' => $messagemaxreached));
+    if ($allmaxreached) {
+        $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
+            array('width' => '100%'));
+    } else {
+        $partialfullwidth = ((int) $a->maxreached * 100 / (int) $a->entries);
+        $partialemptywidth = 100 - $partialfullwidth;
+        $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
+            array('width' => $partialfullwidth."%"));
+        $out .= html_writer::span(' ', 'registrationstatusbarleg align-middle border border-warning',
+            array('width' => $partialemptywidth."%"));
+    }
+    $out .= html_writer::span($messagemaxreached, 'ml-3');
+    $out .= html_writer::end_div();
+
+    return organizer_make_section('infobox_registrationstatistic', $out);
 }
 function organizer_make_filtersection($mode) {
     global $OUTPUT;
