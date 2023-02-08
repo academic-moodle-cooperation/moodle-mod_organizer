@@ -240,16 +240,16 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
     $out .= html_writer::start_div('registrationstatusbar mb-3 w-100', array('title' => $messageminreached));
     if ($allminreached) {
         $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
-            array('width' => '50%'));
+            array('style' => 'width: 50%'));
     } else {
         $partialfullwidth = (int) ((int) $a->undermin * 100 / (int) $a->entries) / 2;
         $partialemptywidth = 50 - $partialfullwidth;
         if ($partialfullwidth > 0) {
             $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
-                array('width' => $partialfullwidth . "%"));
+                array('style' => "width: $partialfullwidth%"));
         }
-        $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-warning',
-            array('width' => $partialemptywidth."%"));
+        $out .= html_writer::div(" ', 'registrationstatusbarleg align-middle border border-warning',
+            array('style' => "width: $partialemptywidth%"));
     }
     $out .= html_writer::div($messageminreached, 'd-inline ml-3');
     $out .= html_writer::end_div();
