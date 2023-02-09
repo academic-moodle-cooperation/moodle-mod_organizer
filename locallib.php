@@ -2295,9 +2295,11 @@ function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg
     if ($minreached) {
         $classstrfull = 'align-middle border border-success bg-success';
         $classstrempty = 'align-middle border border-success';
+        $classstatusmsg = 'text-success font-weight-bolder';
     } else {
         $classstrfull = 'align-middle border border-warning bg-warning';
         $classstrempty = 'align-middle border border-warning';
+        $classstatusmsg = 'text-warning font-weight-bolder';
     }
     $i = 1;
     while ($i <= (int) $bookings) {
@@ -2308,8 +2310,8 @@ function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg
         $out .= html_writer::div(' ', 'userstatusbar_td_empty '.$classstrempty);
         $i++;
     }
-    $out .= html_writer::span($statusmsg, 'ml-3');
-    $out .= $OUTPUT->pix_icon('t/message', $msg, null, array('class' => 'ml-1 icon-size-3 align-super'));
+    $out .= html_writer::span($statusmsg, 'ml-3 '.$classstatusmsg);
+    $out .= html_writer::span($msg, 'ml-1');
     $out .= html_writer::end_div();
 
     return $out;
