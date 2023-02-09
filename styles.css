@@ -197,15 +197,15 @@
 }
 
 .path-mod-organizer .userstatusbar_td_empty {
-    width: 2rem;
-    height: 3.3rem;
+    width: 1.5rem;
+    height: 1.5rem;
     display: inline-block;
     margin: 0.1rem;
 }
 
 .path-mod-organizer .userstatusbar_td_full {
-    width: 2rem;
-    height: 3.3rem;
+    width: 1.5rem;
+    height: 1.5rem;
     display: inline-block;
     margin: 0.1rem;
 }
