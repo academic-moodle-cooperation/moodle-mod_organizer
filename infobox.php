@@ -218,6 +218,7 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
     return organizer_make_section('infobox_myslot', $output);
 }
 function organizer_make_registrationstatistic_section($organizer, $entries) {
+    $barwidth = 30;
     $a = new stdClass();
     $a->max = $organizer->userslotsmax;
     $a->min = $organizer->userslotsmin;
@@ -242,10 +243,10 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
     $out .= html_writer::start_div('registrationstatusbar mb-3 w-100', array('title' => $messageminreached));
     if ($allminreached) {
         $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
-            array('style' => 'width: 50%'));
+            array('style' => "width: $barwidth%"));
     } else {
-        $partialfullwidth = (int) ((int) $a->minreached * 100 / (int) $a->entries) / 2;
-        $partialemptywidth = 50 - $partialfullwidth;
+        $partialfullwidth = (int) ((int) $a->minreached * 100 / (int) $a->entries * ( $barwidth / 100 ));
+        $partialemptywidth = $barwidth - $partialfullwidth;
         if ($partialfullwidth > 0) {
             $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
                 array('style' => "width: $partialfullwidth%"));
@@ -259,10 +260,10 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
     $out .= html_writer::start_div('registrationstatusbar mb-3 w-100', array('title' => $messagemaxreached));
     if ($allmaxreached) {
         $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
-            array('style' => 'width: 50%'));
+            array('style' => "width: $barwidth%"));
     } else {
-        $partialfullwidth = (int) ((int) $a->maxreached * 100 / (int) $a->entries) / 2;
-        $partialemptywidth = 50 - $partialfullwidth;
+        $partialfullwidth = (int) ((int) $a->maxreached * 100 / (int) $a->entries * ( $barwidth / 100 ));
+        $partialemptywidth = $barwidth - $partialfullwidth;
         if ($partialfullwidth > 0) {
             $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
                 array('style' => "width: $partialfullwidth%"));
