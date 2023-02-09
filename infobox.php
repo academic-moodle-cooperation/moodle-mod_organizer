@@ -147,9 +147,9 @@ function organizer_make_description_section($organizer, $cmid) {
         if ($group) {
             $a = new stdClass();
             $a->groupname = $group->name;
-            $output .= $OUTPUT->notification(get_string('grouporganizer_desc_hasgroup', 'organizer', $a), 'success');
+            $output .= html_writer::div(get_string('grouporganizer_desc_hasgroup', 'organizer', $a), 'text-success');
         } else {
-            $output .= $OUTPUT->notification(get_string('grouporganizer_desc_novalidgroup', 'organizer'), 'warning');
+            $output .= html_writer::div(get_string('grouporganizer_desc_novalidgroup', 'organizer'), 'text-error');
         }
     }
     if (isset($organizer->duedate)) {
@@ -157,14 +157,13 @@ function organizer_make_description_section($organizer, $cmid) {
         $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
         $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
         if ($organizer->duedate > time()) {
-            $output .= $OUTPUT->notification(get_string('infobox_organizer_expires', 'organizer', $a), 'info');
+            $output .= html_writer::div(get_string('infobox_organizer_expires', 'organizer', $a), 'text-info');
         } else {
-            $output .= $OUTPUT->notification(get_string('infobox_organizer_expired', 'organizer', $a), 'warning');
+            $output .= html_writer::div(get_string('infobox_organizer_expired', 'organizer', $a), 'text-primary');
         }
     } else {
-        $output .= $OUTPUT->notification(get_string('infobox_organizer_never_expires', 'organizer'), 'info');
+        $output .= html_writer::div(get_string('infobox_organizer_never_expires', 'organizer'), 'text-info');
     }
-    $output .= '<br>';
 
     return $OUTPUT->box($output, 'generalbox', 'intro');
 }
