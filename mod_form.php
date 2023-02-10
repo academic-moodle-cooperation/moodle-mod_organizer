@@ -127,10 +127,12 @@ class mod_organizer_mod_form extends moodleform_mod
         // Header organizer settings.
         $mform->addElement('header', 'organizercommon', get_string('organizercommon', 'organizer'));
 
-        // M_B Allowed/Required bookings per user.
-        $mform->addElement('text', 'userslotsmin', get_string('userslotsmin', 'organizer'), array('size' => '3'));
+        // Allowed/Required bookings per user.
+        $mform->addElement('text', 'userslotsmin', get_string('userslotsmin', 'organizer'),
+            array('size' => '2', 'class' => 'text-center'));
         $mform->setType('userslotsmin', PARAM_INT);
-        $mform->addElement('text', 'userslotsmax', get_string('userslotsmax', 'organizer'), array('size' => '3'));
+        $mform->addElement('text', 'userslotsmax', get_string('userslotsmax', 'organizer'),
+            array('size' => '2', 'class' => 'text-center'));
         $mform->setType('userslotsmax', PARAM_INT);
         $mform->addHelpButton('userslotsmin', 'userslotsmin', 'organizer');
         $mform->addHelpButton('userslotsmax', 'userslotsmax', 'organizer');
@@ -141,9 +143,11 @@ class mod_organizer_mod_form extends moodleform_mod
             $mform->setDefault('userslotsmin', 1);
             $mform->addHelpButton('userslotsmin', 'userslotsmin', 'organizer');
             $mform->addRule('userslotsmin', null, 'numeric', null, 'client');
+            $mform->addRule('userslotsmin', get_string('maximumchars', '', 2), 'maxlength', 2, 'client');
             $mform->addRule('userslotsmin', null, 'required', null, 'client');
             $mform->setDefault('userslotsmax', 1);
             $mform->addRule('userslotsmax', null, 'numeric', null, 'client');
+            $mform->addRule('userslotsmax', get_string('maximumchars', '', 2), 'maxlength', 2, 'client');
             $mform->addRule('userslotsmax', null, 'required', null, 'client');
         }
 

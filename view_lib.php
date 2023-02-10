@@ -2020,17 +2020,21 @@ function organizer_is_my_slot($slot) {
     return false;
 }
 
-function organizer_get_reg_button($type, $slotid, $params, $disabled = false) {
+function organizer_get_reg_button($action, $slotid, $params, $disabled = false) {
     global $OUTPUT;
 
-    $actionurl = new moodle_url(
-        '/mod/organizer/view_action.php',
-        array('id' => $params['id'], 'mode' => $params['mode'], 'action' => $type, 'slot' => $slotid)
-    );
+    $out = "";
+    if ($action) {
+        $actionurl = new moodle_url(
+            '/mod/organizer/view_action.php',
+            array('id' => $params['id'], 'mode' => $params['mode'], 'action' => $action, 'slot' => $slotid)
+        );
 
-    return $OUTPUT->single_button(
-        $actionurl, get_string("btn_$type", 'organizer'), 'post', array('disabled' => $disabled)
-    );
+        $out = $OUTPUT->single_button(
+            $actionurl, get_string("btn_$action", 'organizer'), 'post', array('disabled' => $disabled)
+        );
+    }
+    return $out;
 }
 
 function organizer_get_assign_button($slotid, $params) {

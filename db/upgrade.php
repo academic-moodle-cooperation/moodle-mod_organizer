@@ -710,20 +710,20 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021062301, 'organizer');
     }
 
-    if ($oldversion < 2021062307) {
+    if ($oldversion < 2021062305) {
         $table = new xmldb_table('organizer');
 
-        $field = new xmldb_field('userslotsmin', XMLDB_TYPE_INTEGER, '4', null, false, null, '0', 'enableprintslotuserfields');
+        $field = new xmldb_field('userslotsmin', XMLDB_TYPE_INTEGER, '4', null, false, null, '1', 'enableprintslotuserfields');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        $field = new xmldb_field('userslotsmax', XMLDB_TYPE_INTEGER, '4', null, false, null, '0', 'userslotsmin');
+        $field = new xmldb_field('userslotsmax', XMLDB_TYPE_INTEGER, '4', null, false, null, '1', 'userslotsmin');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        $field = new xmldb_field('gradeaggregationmethod', XMLDB_TYPE_INTEGER, '4', null, true, null, '0', 'grade');
+        $field = new xmldb_field('gradeaggregationmethod', XMLDB_TYPE_INTEGER, '4', null, true, null, '1', 'grade');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -736,7 +736,7 @@ function xmldb_organizer_upgrade($oldversion) {
         $sql = 'UPDATE {organizer} SET userslotsmin=1,userslotsmax=1,gradeaggregationmethod=2';
         $DB->execute($sql, []);
 
-        upgrade_mod_savepoint(true, 2021062307, 'organizer');
+        upgrade_mod_savepoint(true, 2021062305, 'organizer');
     }
 
     return true;

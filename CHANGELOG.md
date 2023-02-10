@@ -1,6 +1,15 @@
 CHANGELOG
 =========
 
+3.11.5 (2023-02-10)
+------------------
+* [FIXED] #7431: sort participants by lastname, firstname in grading form
+* [FIXED] #7449: wrong forecast if dateto time is less than datefrom time in adding slots form
+* [FEATURE] #7446: multiple slots registrations per user/group in one single organizer instance
+* [FEATURE] #7458: better grouping of slot overview options
+* [FEATURE] #7459: deleting an appointment
+* [FEATURE] #7460: in-app notifications in Moodle style
+
 3.11.4 (2022-10-31)
 ------------------
 * [FIXED] #6383: slot edit leads to shortened location string

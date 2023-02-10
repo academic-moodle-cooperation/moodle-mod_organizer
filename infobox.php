@@ -140,8 +140,7 @@ function organizer_make_sendreminder_section($params, $context) {
 function organizer_make_description_section($organizer, $cmid) {
     global $OUTPUT;
 
-    $output = '<br>';
-    $output .= format_module_intro('organizer', $organizer, $cmid);
+    $output = format_module_intro('organizer', $organizer, $cmid);
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $group = organizer_fetch_my_group();
         if ($group) {
@@ -159,7 +158,7 @@ function organizer_make_description_section($organizer, $cmid) {
         if ($organizer->duedate > time()) {
             $output .= html_writer::div(get_string('infobox_organizer_expires', 'organizer', $a), 'text-info');
         } else {
-            $output .= html_writer::div(get_string('infobox_organizer_expired', 'organizer', $a), 'text-primary');
+            $output .= html_writer::div(get_string('infobox_organizer_expired', 'organizer', $a), 'text-warning');
         }
     } else {
         $output .= html_writer::div(get_string('infobox_organizer_never_expires', 'organizer'), 'text-info');
