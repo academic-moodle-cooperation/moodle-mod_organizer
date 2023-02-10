@@ -1951,8 +1951,8 @@ function organizer_participants_action($params, $slot) {
     global $OUTPUT, $USER;
 
     $slotx = new organizer_slot($slot);
-
     list(, , $organizer, $context) = organizer_get_course_module_data();
+    $action = "";
 
     $rightregister = has_capability('mod/organizer:register', $context, null, false);
     $rightunregister = has_capability('mod/organizer:unregister', $context, null, false);
