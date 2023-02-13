@@ -2310,7 +2310,7 @@ function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg
         $out .= html_writer::div(' ', 'userstatusbar_td_empty '.$classstrempty);
         $i++;
     }
-    $out .= html_writer::span($statusmsg, 'ml-3 '.$classstatusmsg);
+    $out .= html_writer::span($statusmsg, 'ml-2 '.$classstatusmsg);
     $out .= html_writer::span($msg, 'ml-1 font-italic');
     $out .= html_writer::end_div();
 

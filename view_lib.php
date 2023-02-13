@@ -31,11 +31,9 @@ defined('MOODLE_INTERNAL') || die();
 
 define('ORGANIZER_APP_STATUS_INVALID', -1);
 define('ORGANIZER_APP_STATUS_ATTENDED', 0);
-define('ORGANIZER_APP_STATUS_ATTENDED_REAPP', 1);
 define('ORGANIZER_APP_STATUS_PENDING', 2);
 define('ORGANIZER_APP_STATUS_REGISTERED', 3);
 define('ORGANIZER_APP_STATUS_NOT_ATTENDED', 4);
-define('ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP', 5);
 define('ORGANIZER_APP_STATUS_NOT_REGISTERED', 6);
 
 define('ORGANIZER_ICON_STUDENT_COMMENT', 0);
@@ -198,8 +196,8 @@ function organizer_generate_assignment_view($params, $instance) {
     }
     $output = organizer_make_section('assign', $content);
 
-    $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
-    $align = array('left', 'left', 'left', 'left', 'center', 'center');
+    $columns = array('datetime', 'location', 'participants', 'teacher', 'actions');
+    $align = array('left', 'left', 'left', 'left', 'center');
     $sortable = array('datetime', 'location');
 
     $table = new html_table();
@@ -454,26 +452,37 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                 $app = $apps[$isuserslot];
                 if ($onlyownslots) {
                     $onlyownslotsmsg = "";
-                    if ($slot->starttime - $organizer->relativedeadline - time() > 0) {
-                        $a = new stdClass();
-                        list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown(
-                            $slot->starttime - $organizer->relativedeadline - time());
-                        $class = $a->days > 1 ? "countdown_normal" : ($a->hours > 1 ? "countdown_hurry" : "countdown_critical");
-                        $onlyownslotsmsg .= "<div><span class=\"$class\">".
-                            get_string('infobox_deadline_countdown', 'organizer', $a).'</span></div>';
+                    // App occured.
+                    if ($slot->starttime - time() < 0) {
+                        $textclass = "";
+                        if ($slot->startime + $slot->duration - time() < 0) {
+                            $infotxt = get_string('infobox_app_occured', 'organizer');
+                        } else {
+                            $infotxt = get_string('infobox_app_inprogress', 'organizer');
+                        }
+                        $onlyownslotsmsg .= organizer_get_icon_msg($infotxt, 'message_info', $textclass);
                     } else {
-                        $onlyownslotsmsg .= '<div><span class="countdown_passed">'.
-                            get_string('infobox_deadline_passed', 'organizer').'</span></div>';
-                    }
-                    if ($slot->starttime - time() > 0) {
+                        // Deadline countdown on.
+                        if ($slot->starttime - $organizer->relativedeadline - time() > 0) {
+                            $a = new stdClass();
+                            list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown(
+                                $slot->starttime - $organizer->relativedeadline - time());
+                            $textclass = $a->days > 1 ? "" : ($a->hours > 1 ? "font-weight-bolder" : "danger");
+                            $infotxt = get_string('infobox_deadline_countdown', 'organizer', $a);
+                            $onlyownslotsmsg .= organizer_get_icon_msg($infotxt, 'message_warning', $textclass);
+                        // Deadline passed.
+                        } else {
+                            $textclass = "font-weight-bolder";
+                            $infotxt = get_string('infobox_deadline_passed', 'organizer');
+                            $onlyownslotsmsg .= organizer_get_icon_msg($infotxt, 'message_warning', $textclass);
+                        }
+                        // App countdown on.
                         $a = new stdClass();
-                        list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown($slot->starttime - time());
-                        $class = $a->days > 1 ? "countdown_normal" : ($a->hours > 1 ? "countdown_hurry" : "countdown_critical");
-                        $onlyownslotsmsg .= "<div><span class=\"$class\">".
-                            get_string('infobox_app_countdown', 'organizer', $a).'</span></div>';
-                    } else {
-                        $onlyownslotsmsg .= '<div><span class="countdown_passed">'.
-                            get_string('infobox_app_occured', 'organizer').'</span></div>';
+                        list($a->days, $a->hours, $a->minutes, $a->seconds) =
+                            organizer_get_countdown($slot->starttime - time());
+                        $textclass = $a->days > 1 ? "" : ($a->hours > 1 ? "font-weight-bolder" : "danger");
+                        $infotxt = get_string('infobox_app_countdown', 'organizer', $a);
+                        $onlyownslotsmsg .= organizer_get_icon_msg($infotxt, 'message_info', $textclass);
                     }
                 }
             } else {
@@ -577,7 +586,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                         $cell = $row->cells[] = new html_table_cell(organizer_slot_commands($slot->id, $params));
                     break;
                     case 'datetime':
-                        $cell = $row->cells[] = new html_table_cell(organizer_date_time($slot));
+                        $cell = $row->cells[] = new html_table_cell(organizer_date_time($slot, true));
                     break;
                     case 'location':
                         $cell = $row->cells[] = new html_table_cell(organizer_location_link($slot));
@@ -971,10 +980,11 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                     break;
                                 case 'status':
                                     if ($entry->starttime) {
-                                        $cell = $row->cells[] = new html_table_cell(organizer_get_status_icon_new($entry->status));
+                                        $cell = $row->cells[] = new html_table_cell(
+                                            organizer_get_status_icon_new($entry->status, $organizer));
                                     } else {
                                         $cell = $row->cells[] = new html_table_cell(
-                                            organizer_get_status_icon_new(ORGANIZER_APP_STATUS_NOT_REGISTERED));
+                                        organizer_get_status_icon_new(ORGANIZER_APP_STATUS_NOT_REGISTERED, $organizer));
                                     }
                                     $cell->style .= " text-align: center;";
                                     break;
@@ -1048,7 +1058,8 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                         $entry->teacherapplicanttimemodified));
                                 break;
                             case 'status':
-                                $cell = $row->cells[] = new html_table_cell(organizer_get_status_icon_new($entry->status));
+                                $cell = $row->cells[] = new
+                                html_table_cell(organizer_get_status_icon_new($entry->status, $organizer));
                                 break;
                             case 'bookings':
                                 $cell = $row->cells[] = new html_table_cell(
@@ -1135,7 +1146,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
     return $rows;
 }
 
-function organizer_generate_assignment_table_content($columns, $params, $organizer, $redirecturl = null) {
+function organizer_generate_assignment_table_content($columns, $params, $organizer) {
     global $DB;
 
     $translate = array('datetime' => "starttime {$params['dir']}", 'location' => "location {$params['dir']}");
@@ -1156,7 +1167,7 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
                 foreach ($columns as $column) {
                     switch ($column) {
                         case 'datetime':
-                            $cell = $row->cells[] = new html_table_cell(organizer_date_time($slot));
+                            $cell = $row->cells[] = new html_table_cell(organizer_date_time($slot, true));
                         break;
                         case 'location':
                             $cell = $row->cells[] = new html_table_cell(organizer_location_link($slot));
@@ -1173,9 +1184,6 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
                         break;
                         case 'details':
                             $cell = $row->cells[] = new html_table_cell(organizer_slot_status($params, $slot));
-                        break;
-                        case 'status':
-                            $cell = $row->cells[] = new html_table_cell(organizer_slot_reg_status($organizer, $slot));
                         break;
                         case 'actions':
                             $cell = $row->cells[] = new html_table_cell(organizer_get_assign_button($slot->id, $params));
@@ -1208,6 +1216,8 @@ function organizer_app_details($appointment) {
         return '';
     }
 
+    $organizer = organizer_get_organizer();
+
     $list = '<span style="display: table-cell;">';
     if ($appointment->comments) {
         $list .= organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, organizer_filter_text($appointment->comments));
@@ -1217,10 +1227,11 @@ function organizer_app_details($appointment) {
     $list .= '</span>';
 
     $list .= '<span style="display: table-cell;">';
-    $list .= '&nbsp;' . organizer_get_attended_icon($appointment);
+    if ($organizer->grade != 0) {
+        $list .= '&nbsp;'.organizer_get_attended_icon($appointment);
+    }
     $list .= '</span>';
 
-    $organizer = organizer_get_organizer();
     if ($organizer->grade != 0) {
         $grade = organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
         if ($grade != get_string("nograde")) {
@@ -1253,7 +1264,7 @@ function organizer_registration_allowed($organizer, $userid = null) {
 
 // Content generating functions.
 
-function organizer_date_time($slot) {
+function organizer_date_time($slot, $nobreak = false) {
     if (!isset($slot) || !isset($slot->starttime)) {
         return '-';
     }
@@ -1265,7 +1276,11 @@ function organizer_date_time($slot) {
     list($unitname, $value) = organizer_figure_out_unit($slot->duration);
     $duration = ($slot->duration / $value) . ' ' . $unitname;
 
-    return "$datefrom -<br />$dateto ($duration)";
+    if ($nobreak) {
+        return "$datefrom - $dateto ($duration)";
+    } else {
+        return "$datefrom -<br />$dateto ($duration)";
+    }
 }
 
 function organizer_trainer_data($params, $slot, $trainerids = null) {
@@ -1346,7 +1361,9 @@ function organizer_reg_organizer_app_details($organizer, $groupmode, $appid) {
     if ($appointment) {
         $list = '';
         if ($groupmode) {
-            $list .= ' ' . organizer_get_attended_icon($appointment) . ' ';
+            if ($organizer->grade != 0) {
+                $list .= ' ' . organizer_get_attended_icon($appointment) . ' ';
+            }
         }
         if ($organizer->grade > 0) {
                 $grade = organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
@@ -1440,7 +1457,7 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $buttons = array();
 
     // If entry is appointment => show grade button.
-    if ($entry->status != ORGANIZER_APP_STATUS_NOT_REGISTERED) {
+    if ($entry->status != ORGANIZER_APP_STATUS_NOT_REGISTERED && $organizer->grade != 0) {
         $button = new stdClass();
         $button->text = get_string("btn_eval_short", 'organizer');
         $button->url = $evalurl;
@@ -1687,38 +1704,10 @@ function organizer_get_participant_list($params, $slot, $app) {
 }
 
 function organizer_get_attended_icon($appointment) {
-    if (isset($appointment->attended)) {
-        if ($appointment->attended == 1) {
-            if ($appointment->allownewappointments) {
-                return organizer_get_icon(
-                    'yes_reg',
-                    get_string('reg_status_slot_attended_reapp', 'organizer')
-                );
-            } else {
-                return organizer_get_icon(
-                    'yes',
-                    get_string('reg_status_slot_attended', 'organizer')
-                );
-            }
-        } else {
-            if ($appointment->allownewappointments ) {
-                return organizer_get_icon(
-                    'no_reg',
-                    get_string('reg_status_slot_not_attended_reapp', 'organizer')
-                );
-            } else {
-                return organizer_get_icon(
-                    'no',
-                    get_string('reg_status_slot_not_attended', 'organizer')
-                );
-            }
-        }
-    }
-
-    if (organizer_with_grading()) {
-        return organizer_get_icon('pending', get_string('reg_status_slot_pending', 'organizer'));
+    if (isset($appointment->attended) && $appointment->attended == 1) {
+        return organizer_get_icon('yes', get_string('reg_status_slot_attended', 'organizer'));
     } else {
-        return "";
+        return organizer_get_icon('no', get_string('reg_status_slot_not_attended', 'organizer'));
     }
 }
 
@@ -1744,6 +1733,17 @@ function organizer_location_link($slot) {
 
 function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
     return '<img src="' . $src . '" alt="' . $alt . '" title="' . $title . '" id="' . $id . '" ' . $other . ' />';
+}
+
+function organizer_get_icon_msg($infotxt, $icon, $textclass='', $link=null) {
+    global $OUTPUT;
+    if ($link) {
+        $output = html_writer::div($OUTPUT->pix_icon($icon, $infotxt, 'mod_organizer').$link);
+    } else {
+        $output = html_writer::div($OUTPUT->pix_icon($icon, $infotxt, 'mod_organizer').
+            html_writer::span($infotxt, 'text-left '.$textclass));
+    }
+    return $output;
 }
 
 function organizer_get_icon($iconname, $string, $size="small", $id="") {
@@ -1875,69 +1875,44 @@ function organizer_slot_reg_status($organizer, $slot, $onlyownslotsmsg = null) {
 
     $slotx = new organizer_slot($slot);
 
-    $app = organizer_get_last_user_appointment($organizer);
+    $app = organizer_get_slot_user_appointment($slotx);
 
     if ($slotx->organizer_expired()) {
-        $output = organizer_get_icon(
-            'organizer_expired',
-            get_string('reg_status_organizer_expired', 'organizer'), "big"
-        );
+        $output = organizer_get_icon('organizer_expired',
+            get_string('reg_status_organizer_expired', 'organizer'), "big");
     } else if ($slotx->is_past_due()) {
         if ($app) {
-            $regslot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
-            if ($slotx->id == $regslot->id) {
-                if (!isset($app->attended)) {
-                    if (organizer_with_grading()) {
-                                    $output = organizer_get_icon(
-                                        'pending',
-                                        get_string('reg_status_slot_pending', 'organizer'), "big"
-                                    );
-                    } else {
-                                    $output = organizer_get_icon(
-                                        'student_slot_expired', '',
-                                        get_string('reg_status_slot_expired', 'organizer'), "big"
-                                    );
-                    }
-                } else if ($app->attended == 0 && $app->allownewappointments == 0) {
-                    $output = organizer_get_icon('no', get_string('reg_status_slot_not_attended', 'organizer'), "big");
-                } else if ($app->attended == 1 && $app->allownewappointments == 0) {
-                    $output = organizer_get_icon('yes', get_string('reg_status_slot_attended', 'organizer'), "big");
-                } else if ($app->attended == 0 && $app->allownewappointments == 1) {
-                    $output = organizer_get_icon(
-                        'no_reg',
-                        get_string('reg_status_slot_not_attended_reapp', 'organizer'), "big"
-                    );
-                } else if ($app->attended == 1 && $app->allownewappointments == 1) {
-                    $output = organizer_get_icon(
-                        'yes_reg',
-                        get_string('reg_status_slot_attended_reapp', 'organizer'), "big"
-                    );
+            if (!isset($app->attended)) {
+                if ($organizer->grade != 0) {
+                    $output = organizer_get_icon('pending',
+                        get_string('reg_status_slot_pending', 'organizer'), "big");
+                } else {
+                    $output = organizer_get_icon('student_slot_expired',
+                        get_string('reg_status_slot_expired', 'organizer'), "big");
                 }
-            } else {
-                $output = organizer_get_icon(
-                    'student_slot_expired',
-                    get_string('reg_status_slot_expired', 'organizer'), "big"
-                );
+            } else if ($app->attended == 0) {
+                $output = organizer_get_icon('no', get_string('reg_status_slot_not_attended', 'organizer'), "big");
+            } else if ($app->attended == 1) {
+                $output = organizer_get_icon('yes', get_string('reg_status_slot_attended', 'organizer'), "big");
             }
         } else {
-            $output = organizer_get_icon(
-                'student_slot_expired',
-                get_string('reg_status_slot_expired', 'organizer'), "big"
-            );
+            $output = organizer_get_icon('student_slot_expired',
+                get_string('reg_status_slot_expired', 'organizer'), "big");
         }
     } else if ($slotx->is_past_deadline()) {
-        $output = organizer_get_icon(
-            'student_slot_past_deadline',
-            get_string('reg_status_slot_past_deadline', 'organizer'), "big"
-        );
+        $output = organizer_get_icon('student_slot_past_deadline',
+            get_string('reg_status_slot_past_deadline', 'organizer'), "big");
     } else {
         if ($slotx->is_full()) {
-            $output = organizer_get_icon('student_slot_full', get_string('reg_status_slot_full', 'organizer'), "big");
+            if ($app) {
+                $output = organizer_get_icon('status_not_occured', get_string('reg_not_occured', 'organizer'), "big");
+            } else {
+                $output = organizer_get_icon('student_slot_full',
+                    get_string('reg_status_slot_full', 'organizer'), "big");
+            }
         } else {
-            $output = organizer_get_icon(
-                'student_slot_available',
-                get_string('reg_status_slot_available', 'organizer'), "big"
-            );
+            $output = organizer_get_icon('student_slot_available',
+                get_string('reg_status_slot_available', 'organizer'), "big");
         }
     }
 
@@ -1963,8 +1938,11 @@ function organizer_participants_action($params, $slot) {
     $disabled = $organizerdisabled || !$slotx->organizer_groupmode_user_has_access() || $slotx->is_evaluated();
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $isalreadyinqueue = $slotx->is_group_in_queue();
-        $group = organizer_fetch_user_group($USER->id, $organizer->id);
-        $lefttobook = organizer_multiplebookings_slotslefttobook($organizer, null, $group->id);
+        if ($group = organizer_fetch_user_group($USER->id, $organizer->id)) {
+            $lefttobook = organizer_multiplebookings_slotslefttobook($organizer, null, $group->id);
+        } else {
+            $lefttobook = 0;
+        }
     } else {
         $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
         $lefttobook = organizer_multiplebookings_slotslefttobook($organizer, $USER->id);
@@ -2010,16 +1988,6 @@ function organizer_participants_action($params, $slot) {
 
 }
 
-function organizer_is_my_slot($slot) {
-    $apps = organizer_get_all_user_appointments($slot->organizerid);
-    foreach ($apps as $app) {
-        if ($app->slotid == $slot->id) {
-            return true;
-        }
-    }
-    return false;
-}
-
 function organizer_get_reg_button($action, $slotid, $params, $disabled = false) {
     global $OUTPUT;
 
@@ -2048,28 +2016,23 @@ function organizer_get_assign_button($slotid, $params) {
     return $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'), 'post');
 }
 
-function organizer_get_status_icon_new($status) {
+function organizer_get_status_icon_new($status, $organizer) {
     switch ($status) {
         case ORGANIZER_APP_STATUS_ATTENDED:
-        return organizer_get_icon('status_attended', get_string('reg_status_slot_attended', 'organizer'), "big");
+            return organizer_get_icon('status_attended', get_string('reg_status_slot_attended', 'organizer'), "big");
         case ORGANIZER_APP_STATUS_PENDING:
-            if (organizer_with_grading()) {
+            if ($organizer->grade) {
                   return organizer_get_icon('status_pending', get_string('reg_status_slot_pending', 'organizer'), "big");
             } else {
                 return "";
             }
         case ORGANIZER_APP_STATUS_REGISTERED:
-        return organizer_get_icon('status_not_occured', get_string('reg_status_registered', 'organizer'), "big");
-        case ORGANIZER_APP_STATUS_NOT_ATTENDED:
-        return organizer_get_icon(
-            'status_not_attended',
-            get_string('reg_status_slot_not_attended', 'organizer'), "big"
-        );
+            return organizer_get_icon('status_not_occured', get_string('reg_status_registered', 'organizer'), "big");
         case ORGANIZER_APP_STATUS_NOT_REGISTERED:
-        return organizer_get_icon(
-            'status_not_registered',
-            get_string('reg_status_not_registered', 'organizer'), "big"
-        );
+            return organizer_get_icon(
+                'status_not_registered',
+                get_string('reg_status_not_registered', 'organizer'), "big"
+            );
         default:
             print_error("Wrong status code: $status");
     }
@@ -2100,11 +2063,6 @@ function organizer_get_countdown($time) {
     return array($days, $hrs, $min, $sec);
 }
 
-function organizer_get_user_idnumber($userid) {
-    global $DB;
-    return $DB->get_field_select('user', 'idnumber', "id = {$userid}");
-}
-
 function organizer_popup_icon($type, $content) {
     $icons = array(
             ORGANIZER_ICON_STUDENT_COMMENT => 'feedback2',
@@ -2117,7 +2075,6 @@ function organizer_popup_icon($type, $content) {
 }
 
 function organizer_slot_is_free($slot, $userid, $assignmentview = null) {
-
     $slotx = new organizer_slot($slot);
     if ($assignmentview) {
         $organizerconfig = get_config('organizer');
@@ -2127,10 +2084,8 @@ function organizer_slot_is_free($slot, $userid, $assignmentview = null) {
         } else {
             $ispastdue = false;
         }
-
     }
     if (!$ispastdue && !$slotx->is_full() && $slotx->is_available() ) {
-
         $apps = organizer_get_all_user_appointments($slotx->organizerid, $userid);
         foreach ($apps as $app) {  // Is own slot?
             if ($app->slotid == $slotx->id) {
@@ -2139,29 +2094,23 @@ function organizer_slot_is_free($slot, $userid, $assignmentview = null) {
         }
         return true;
     }
-
     return false;
 }
 
 function organizer_register_popup() {
     static $id = 0;
-
     $elementid = "organizer_popup_icon_{$id}";
     $id++;
-
     return $elementid;
 }
 
-
 function organizer_write_places_inqueue_position($a) {
-
     $output = "";
     $output .= "<span style=\"color: red;\">&nbsp;(" . get_string('places_inqueue_withposition', 'organizer', $a) . ")</span>";
     return $output;
 }
 
 function organizer_write_places_inqueue($a, $slot, $params) {
-
     $output = "";
     $output .= "<span style=\"color: red;\">&nbsp;(" . get_string('places_inqueue', 'organizer', $a);
     if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW || $slot->visibility == ORGANIZER_VISIBILITY_ALL) {
@@ -2301,7 +2250,6 @@ function organizer_get_participants_tableheadercell($params, $column, $columnhel
         array('id' => $params['id'], 'mode' => $params['mode'], 'sort' => 'participant',
             'dir' => $participantdir)
     );
-
     $urln = new moodle_url(
             '/mod/organizer/view.php',
             array('id' => $params['id'], 'mode' => $params['mode'], 'sort' => $params['sort'],

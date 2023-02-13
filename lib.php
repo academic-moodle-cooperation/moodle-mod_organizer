@@ -1283,3 +1283,15 @@ function organizer_change_eventnames($organizerid, $oldname, $newname) {
     }
     $rs->close();
 }
+
+/**
+ * Get icon mapping for font-awesome.
+ */
+function mod_organizer_get_fontawesome_icon_map() {
+    return [
+        'mod_organizer:message_error' => 'fa-times-circle',
+        'mod_organizer:message_info' => 'fa-info-circle',
+        'mod_organizer:message_warning' => 'fa-exclamation-circle',
+    ];
+}
+

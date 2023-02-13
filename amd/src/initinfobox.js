@@ -113,6 +113,7 @@ define(['jquery', 'core/config'], function($, config) {
                 }
 
                 tablebody.show();
+                $('#counttabrows').text(tablebody.find('tr:visible:not(.info)').length);
 
                 toggle_info();
             }
