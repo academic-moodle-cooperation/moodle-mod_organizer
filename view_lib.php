@@ -455,7 +455,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                     // App occured.
                     if ($slot->starttime - time() < 0) {
                         $textclass = "";
-                        if ($slot->startime + $slot->duration - time() < 0) {
+                        if ($slot->starttime + $slot->duration - time() < 0) {
                             $infotxt = get_string('infobox_app_occured', 'organizer');
                         } else {
                             $infotxt = get_string('infobox_app_inprogress', 'organizer');
@@ -947,12 +947,12 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                         INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid '.
                                         $orderby, array('groupid' => $entry->id)
                                     );
-                                    $list = "<span style='display:table'>";
+                                    $list = "<span style='display: table'>";
                                     foreach ($members as $member) {
-                                        $list .= "<span style='display:table-row'>";
+                                        $list .= "<span style='display: table-row'>";
                                         $identity = organizer_get_user_identity($member);
                                         $identity = $identity != "" ? " ({$identity})" : "";
-                                        $list .= "<span style='display:table-cell'>" . organizer_get_name_link($member) . $identity;
+                                        $list .= "<span style='display: table-cell'>" . organizer_get_name_link($member) . $identity;
                                         if ($entry->starttime) {
                                             if ($member == $entry->applicantid) {
                                                 $list .= organizer_get_img(
@@ -965,11 +965,11 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                         }
                                         $list .= "</span>";
                                         if ($queueable) {
-                                            $list .= "<span style='display:table-cell'>" .
+                                            $list .= "<span style='display: table-cell'>" .
                                                 organizer_reg_waitinglist_status($organizer->id, $groupmode, $member)
                                                 . "</span>";
                                         }
-                                        $list .= "<span style='display:table-cell'>" .
+                                        $list .= "<span style='display: table-cell'>" .
                                             organizer_reg_organizer_app_details($organizer, $groupmode, $entry->appid)
                                             . "</span>";
                                         $list .= "</span>";
@@ -1241,7 +1241,7 @@ function organizer_app_details($appointment) {
         }
     }
 
-    $list .= '<span style="display:table-cell">';
+    $list .= '<span style="display: table-cell">';
     $list .= $appointment->feedback ? organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback) : " ";
     $list .= '</span>';
 
@@ -1507,8 +1507,8 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
 function organizer_get_participant_list($params, $slot, $app) {
     global $DB, $USER;
 
+    // Fetch relevant data.
     $slotx = new organizer_slot($slot);
-
     $dir = isset($params['pdir']) ? $params['pdir'] : 'ASC';
     if (isset($params['psort']) && $params['psort'] == 'name') {
         $orderby = " ORDER BY u.lastname $dir, u.firstname $dir, u.idnumber ASC";
@@ -1517,39 +1517,91 @@ function organizer_get_participant_list($params, $slot, $app) {
     } else {
         $orderby = " ORDER BY u.lastname $dir, u.firstname $dir, u.idnumber ASC";
     }
-
     $query = "SELECT a.*, u.firstname, u.lastname, u.idnumber
         FROM {organizer_slot_appointments} a
         INNER JOIN {user} u ON a.userid = u.id
         WHERE a.slotid = :slotid $orderby";
-
     $param = array('slotid' => $slotx->id);
-
     $appointments = $DB->get_records_sql($query, $param);
-    $count = count($appointments);
-
-    $isownslot = $app && ($app->slotid == $slotx->id);
-
-    $wasownslot = false;
-    foreach ($appointments as $someapp) {
-        if ($someapp->userid == $USER->id) {
-            $wasownslot = true;
-            break;
-        }
-    }
-
+    $countapps = count($appointments);
+    $ismyslot = $app && ($app->slotid == $slotx->id);
     if (!$slotx->is_available()) {
         $when = userdate($slotx->starttime - $slotx->availablefrom, get_string('fulldatetimetemplate', 'organizer'));
         return "<em>" . get_string('unavailableslot', 'organizer') . "<br/>{$when}</em>";
     }
+    $studentview = $params['mode'] == ORGANIZER_TAB_STUDENT_VIEW;
+    $groupmode = organizer_is_group_mode();
+    if ($slot->visibility == ORGANIZER_VISIBILITY_ANONYMOUS) {
+        $slotvisibilitystr = organizer_get_icon('anon', get_string('slot_anonymous', 'organizer'));
+    } else if ($slot->visibility == ORGANIZER_VISIBILITY_SLOT) {
+        $slotvisibilitystr = organizer_get_icon('slotanon', get_string('slot_slotvisible', 'organizer'));
+    }
 
     $content = '';
-    $studentview = $params['mode'] == ORGANIZER_TAB_STUDENT_VIEW;
-    $ismyslot = $isownslot || $wasownslot;
-    $groupmode = organizer_is_group_mode();
 
+    // Compose first summary line.
+    $firstline = "";
+    if (!$groupmode) {
+        $maxparticipants = $slot->maxparticipants;
+        $a = new stdClass();
+        $a->numtakenplaces = $countapps;
+        $a->totalplaces = $maxparticipants;
+        if ($maxparticipants - $countapps != 0) {
+            if ($maxparticipants == 1) {
+                $firstline .= html_writer::span(get_string('places_taken_sg', 'organizer', $a), 'font-italic mr-1');
+            } else {
+                $firstline .= html_writer::span(get_string('places_taken_pl', 'organizer', $a), 'font-italic mr-1');
+            }
+        } else {
+            if ($maxparticipants == 1) {
+                $firstline .= html_writer::span(get_string('places_taken_sg', 'organizer', $a), 'font-italic text-danger mr-1');
+            } else {
+                $firstline .= html_writer::span(get_string('places_taken_pl', 'organizer', $a), 'font-italic text-danger mr-1');
+            }
+            if (organizer_is_queueable()) {
+                $inqueue = count($DB->get_records('organizer_slot_queues', array('slotid' => $slot->id)));
+                if ($inqueue) {
+                    $a->inqueue = $inqueue;
+                    if ($a->queueposition = $slotx->is_user_in_queue($USER->id)) {
+                        $firstline .= organizer_write_places_inqueue_position($a);
+                    } else {
+                        $firstline .= organizer_write_places_inqueue($a, $slot, $params);
+                    }
+                }
+            }
+        }
+        if ($countapps > 5 && !$studentview) {
+            $firstline = organizer_get_icon('plus-square', get_string('clicktohideshow')).$firstline.$slotvisibilitystr;
+            $content .= html_writer::div($firstline, 'collapseclick text-nowrap', array( 'data-target' => '.s'.$slot->id));
+        } else {
+            $content .= html_writer::div($firstline.$slotvisibilitystr, 'text-nowrap');
+        }
+    } else { // If groupmode.
+        if ($countapps == 0) {
+            $firstline .= html_writer::span(get_string('group_slot_available', 'organizer'), 'font-italic mr-1');
+        } else {
+            $firstline .= html_writer::span(get_string('group_slot_full', 'organizer'), 'font-italic text-danger mr-1');
+            if (organizer_is_queueable()) {
+                $sql = "SELECT COUNT(distinct q.groupid) FROM {organizer_slot_queues} q
+                        WHERE q.slotid = :slotid";
+                $paramssql = array('slotid' => $slot->id);
+                $inqueues = $DB->count_records_sql($sql, $paramssql);
+                if ($inqueues) {
+                    $a = new stdClass();
+                    $a->inqueue = $inqueues;
+                    if ($a->queueposition = $slotx->is_group_in_queue()) {
+                        $firstline .= organizer_write_places_inqueue_position($a);
+                    } else {
+                        $firstline .= organizer_write_places_inqueue($a, $slot, $params);
+                    }
+                }
+            }
+        }
+    }
+    $content .= html_writer::div($firstline.$slotvisibilitystr, 'text-nowrap');
+
+    // Write participant's list.
     if ($studentview) {
-
         if ($slot->visibility == ORGANIZER_VISIBILITY_ANONYMOUS) {
             if ($ismyslot) {
                 $content .= organizer_get_name_link($app->userid) .
@@ -1560,42 +1612,36 @@ function organizer_get_participant_list($params, $slot, $app) {
             if ($groupmode) {
                 $app = reset($appointments);
                 if ($app === false) {
-                    $content = '<em>' . get_string('nogroup', 'organizer') . '</em><br />';
+                    $content .= html_writer::span(get_string('nogroup', 'organizer'), 'font-italic ml-1');
                 } else {
                     $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
-                    $content = "<em>{$groupname}</em>" .
-                            organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified) .
-                            "<br />";
+                    $content .= html_writer::span($groupname, 'font-italic ml-1');
+                    $content .= html_writer::span(organizer_get_teacherapplicant_output($app->teacherapplicantid,
+                            $app->teacherapplicanttimemodified));
                 }
             }
-
             $showparticipants = ($slot->visibility == ORGANIZER_VISIBILITY_ALL) || $ismyslot;
             if ($showparticipants) {
-                $content .= "<span style='display: table;'>";
+                $content .= html_writer::start_span('', array('style' => 'display: table'));
                 foreach ($appointments as $appointment) {
-                    $content .= "<span style='display: table-row;'>";
-                    $content .= "<span style='display: table-cell;'>";
-                    $content .= organizer_get_name_link($appointment->userid);
+                    $content .= html_writer::start_span('', array('style' => 'display: table-row'));
+                    $namelink = organizer_get_name_link($appointment->userid);
                     if ($groupmode) {
                         if ($appointment->userid == $appointment->applicantid) {
-                            $content .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
+                            $namelink .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
                         }
                     } else {
-                        $content .= organizer_get_teacherapplicant_output(
-                            $appointment->teacherapplicantid,
-                            $appointment->teacherapplicanttimemodified
-                        );
+                        $namelink .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid,
+                            $appointment->teacherapplicanttimemodified);
                     }
-                    $content .= '</span>';
-                       $content .= '</span>';
+                    $content .= html_writer::span($namelink, '', array('style' => 'display: table-cell'));
+                    $content .= html_writer::end_span();
                 }
-                         $content .= '</span>';
+                $content .= html_writer::end_span();
             }
         }
-
     } else {  // Not studentview.
-
-        if ($count == 0) {
+        if ($countapps == 0) {
             $content .= $groupmode ? ('<em>' . get_string('nogroup', 'organizer') .
                     '</em><br />') : ('<em>' . get_string('noparticipants', 'organizer') . '</em><br />');
         } else {
@@ -1610,10 +1656,12 @@ function organizer_get_participant_list($params, $slot, $app) {
                 }
             }
 
-            $list .= '<span style="display: table;">';
+            $list .= html_writer::start_span('', array('style' => 'display: table'));
+            $apps = count($appointments);
             foreach ($appointments as $appointment) {
-                $list .= '<span style="display: table-row;">';
-                $list .= '<span style="display: table-cell;">';
+                $class =  $apps > 5 ? 'mycollapse s'.$slot->id : '';
+                $list .= html_writer::start_span($class, array('style' => 'display: table-row'));
+                $list .= html_writer::start_span('', array('style' => 'display: table-cell'));
                 $identity = organizer_get_user_identity($appointment->userid);
                 $identity = $identity != "" ? " ({$identity})" : "";
                 $list .= organizer_get_name_link($appointment->userid) . $identity;
@@ -1627,79 +1675,14 @@ function organizer_get_participant_list($params, $slot, $app) {
                         $appointment->teacherapplicanttimemodified
                     );
                 }
-                $list .= '</span>';
+                $list .= html_writer::end_span();
                 $list .= organizer_app_details($appointment);
-                $list .= '</span>';
+                $list .= html_writer::end_span();
             }
-            $list .= '</span>';
+            $list .= html_writer::end_span();
             $content .= $list;
         }
     }
-
-    if (!$groupmode) {
-        $maxparticipants = $slot->maxparticipants;
-        $a = new stdClass();
-        $a->numtakenplaces = $count;
-        $a->totalplaces = $maxparticipants;
-
-        if ($maxparticipants - $count != 0) {
-            if ($maxparticipants == 1) {
-                $content .= "<em>" . get_string('places_taken_sg', 'organizer', $a) . "</em>";
-            } else {
-                $content .= "<em>" . get_string('places_taken_pl', 'organizer', $a) . "</em>";
-            }
-        } else {
-            if ($maxparticipants == 1) {
-                $content .= "<span style=\"color: red;\"><em>" . get_string('places_taken_sg', 'organizer', $a)
-                        . "</em></span>";
-            } else {
-                $content .= "<span style=\"color: red;\"><em>" . get_string('places_taken_pl', 'organizer', $a)
-                        . "</em></span>";
-            }
-            if (organizer_is_queueable()) {
-                      $inqueue = count($DB->get_records('organizer_slot_queues', array('slotid' => $slot->id)));
-                if ($inqueue) {
-                    $a->inqueue = $inqueue;
-                    if ($a->queueposition = $slotx->is_user_in_queue($USER->id)) {
-                        $content .= organizer_write_places_inqueue_position($a);
-                    } else {
-                        $content .= organizer_write_places_inqueue($a, $slot, $params);
-                    }
-                }
-            }
-        }
-
-    } else { // If groupmode: .
-
-        if ($count == 0) {
-            $content .= "<em>" . get_string('group_slot_available', 'organizer') . "&nbsp;</em>";
-        } else {
-            $content .= "<span style=\"color: red;\"><em>" . get_string('group_slot_full', 'organizer')
-                    . "&nbsp;</em></span>";
-            if (organizer_is_queueable()) {
-                $sql = "SELECT COUNT(distinct q.groupid) FROM {organizer_slot_queues} q
-                        WHERE q.slotid = :slotid";
-                $paramssql = array('slotid' => $slot->id);
-                $inqueues = $DB->count_records_sql($sql, $paramssql);
-                if ($inqueues) {
-                    $a = new stdClass();
-                    $a->inqueue = $inqueues;
-                    if ($a->queueposition = $slotx->is_group_in_queue()) {
-                        $content .= organizer_write_places_inqueue_position($a);
-                    } else {
-                        $content .= organizer_write_places_inqueue($a, $slot, $params);
-                    }
-                }
-            }
-        }
-    }
-
-    if ($slot->visibility == ORGANIZER_VISIBILITY_ANONYMOUS) {
-        $content .= organizer_get_icon('anon', get_string('slot_anonymous', 'organizer'));
-    } else if ($slot->visibility == ORGANIZER_VISIBILITY_SLOT) {
-        $content .= organizer_get_icon('slotanon', get_string('slot_slotvisible', 'organizer'));
-    }
-
     return $content;
 }
 
@@ -1764,6 +1747,7 @@ function organizer_get_icon($iconname, $string, $size="small", $id="") {
         if ($string) {
             $attributes['data-toggle'] = "tooltip";
             $attributes['title'] = $string;
+            $attributes['class'] = 'ml-1';
             $alt = $string;
         }
         $icon = $OUTPUT->pix_icon($iconname, $alt, 'mod_organizer', $attributes);

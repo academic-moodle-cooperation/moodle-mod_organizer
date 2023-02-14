@@ -180,6 +180,7 @@ define(['jquery', 'core/config'], function($, config) {
                 slotsviewoptions += $('#show_hidden_slots').is(':checked') ? '1' : '0';
                 slotsviewoptions += $('#show_past_slots').is(':checked') ? '1' : '0';
                 slotsviewoptions += $('#show_registrations_only').is(':checked') ? '1' : '0';
+                slotsviewoptions += $('#show_all_participants').is(':checked') ? '1' : '0';
 
                 $.get(config.wwwroot + '/mod/organizer/slotsviewoptions.php', {
                     sesskey: config.sesskey,
@@ -189,13 +190,27 @@ define(['jquery', 'core/config'], function($, config) {
 
             }
 
+            /**
+             * Toggle participantslist.
+             * @param {object} event element which has been clicked
+             */
+            function participantslist_toggle(event) {
+                let targetelement = event.target;
+                let clickeddiv = $(targetelement).parent();
+                let targetclass = clickeddiv.attr('data-target');
+                $(targetclass).toggle();
+            }
+
             $('#show_past_slots').on('click', function() { toggle_all_slots(event); });
+            $('#show_all_participants').on('click', function() { $('.mycollapse').toggle(); });
             $('#show_my_slots_only').on('click', function() { toggle_all_slots(event); });
             $('#show_free_slots_only').on('click', function() { toggle_all_slots(event); });
             $('#show_hidden_slots').on('click', function() { toggle_all_slots(event); });
             $('#show_registrations_only').on('click', function() { toggle_all_slots(event); });
             $('.organizer_filtertable').on('keyup', function() { toggle_all_slots(event); });
             toggle_all_slots();
+            $('.collapseclick').on('click', function() { participantslist_toggle(event); });
+            $('.mycollapse').hide();
         };
 
         return instance;

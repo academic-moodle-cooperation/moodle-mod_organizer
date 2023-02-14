@@ -74,7 +74,8 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     }
     if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
         // Display section with predefined filter view options like "hidden slots only" etc..
-        $output .= organizer_make_slotoptions_section($params['mode']);
+        $output .= organizer_make_slotoptions_section($params['mode'],
+            $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS);
     }
     // Display search field for fulltext search.
     $output .= organizer_make_filtersection($params['mode']);
@@ -192,6 +193,13 @@ function organizer_make_description_section($organizer, $cmid) {
             $link = html_writer::link($modediturl, get_string('grading_desc_nograde', 'organizer'));
         }
         $infotxt = get_string('grading_desc_nograde', 'organizer');
+        $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder', $link);
+    }
+    if ($organizer->queue != 0) {
+        $infotxt = get_string('waitinglists_desc_active', 'organizer');
+        $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
+    } else {
+        $infotxt = get_string('waitinglists_desc_notactive', 'organizer');
         $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder', $link);
     }
 
@@ -347,20 +355,22 @@ function organizer_make_filtersection($mode) {
 
     return $output;
 }
-function organizer_make_slotoptions_section($mode) {
+function organizer_make_slotoptions_section($mode, $groupmode) {
     global $OUTPUT;
 
     // Display show more - options.
     $output = html_writer::start_div();
     $output .= html_writer::span(get_string('showmore', 'organizer').
         $OUTPUT->help_icon('slotoptionstable', 'organizer'));
-    $displayhiddenslots = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
+    $displayhiddenslots = $displayallparticipants = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
     $displaypastslots = true;
     if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
         $showhiddenslots = substr($prefs, 2, 1) ? true : false;
         $showpastslots = substr($prefs, 3, 1) ? true : false;
+        $showallparticipants = substr($prefs, 5, 1) ? true : false;
     } else {
         $showhiddenslots = $showpastslots = false;
+        $showallparticipants = true;
     }
     if ($displayhiddenslots) {
         $output .= html_writer::checkbox('show_hidden_slots', '1', $showhiddenslots,
@@ -371,6 +381,11 @@ function organizer_make_slotoptions_section($mode) {
         $output .= html_writer::checkbox('show_past_slots', '1', $showpastslots,
             get_string('infobox_showslots', 'organizer'),
             array('id' => 'show_past_slots', 'class' => 'slotoptions'));
+    }
+    if (!$groupmode && $displayallparticipants) {
+        $output .= html_writer::checkbox('show_all_participants', '1', $showallparticipants,
+            get_string('infobox_showallparticipants', 'organizer'),
+            array('id' => 'show_all_participants', 'class' => 'slotoptions'));
     }
     $output .= html_writer::end_div();;
 
