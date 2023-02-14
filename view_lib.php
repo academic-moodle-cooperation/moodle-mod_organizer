@@ -1614,7 +1614,7 @@ function organizer_get_participant_list($params, $slot, $app) {
                     $content .= html_writer::span(get_string('nogroup', 'organizer'), 'font-italic ml-1');
                 } else {
                     $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
-                    $content .= html_writer::span($groupname, 'font-italic ml-1');
+                    $content .= html_writer::span($groupname, 'font-italic');
                     $content .= html_writer::span(organizer_get_teacherapplicant_output($app->teacherapplicantid,
                             $app->teacherapplicanttimemodified));
                 }
