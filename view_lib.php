@@ -470,8 +470,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                             $textclass = $a->days > 1 ? "" : ($a->hours > 1 ? "font-weight-bolder" : "danger");
                             $infotxt = get_string('infobox_deadline_countdown', 'organizer', $a);
                             $onlyownslotsmsg .= organizer_get_icon_msg($infotxt, 'message_warning', $textclass);
-                        // Deadline passed.
-                        } else {
+                        } else { // Deadline passed.
                             $textclass = "font-weight-bolder";
                             $infotxt = get_string('infobox_deadline_passed', 'organizer');
                             $onlyownslotsmsg .= organizer_get_icon_msg($infotxt, 'message_warning', $textclass);
@@ -1659,7 +1658,7 @@ function organizer_get_participant_list($params, $slot, $app) {
             $list .= html_writer::start_span('', array('style' => 'display: table'));
             $apps = count($appointments);
             foreach ($appointments as $appointment) {
-                $class =  $apps > 5 ? 'mycollapse s'.$slot->id : '';
+                $class = $apps > 5 ? 'mycollapse s'.$slot->id : '';
                 $list .= html_writer::start_span($class, array('style' => 'display: table-row'));
                 $list .= html_writer::start_span('', array('style' => 'display: table-cell'));
                 $identity = organizer_get_user_identity($appointment->userid);
