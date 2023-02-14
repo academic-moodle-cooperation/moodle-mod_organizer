@@ -195,10 +195,17 @@ function organizer_make_description_section($organizer, $cmid) {
         $infotxt = get_string('grading_desc_nograde', 'organizer');
         $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder', $link);
     }
+    $link = "";
     if ($organizer->queue != 0) {
+        if (has_capability("mod/organizer:editslots", $context)) {
+            $link = html_writer::link($modediturl, get_string('waitinglists_desc_active', 'organizer'));
+        }
         $infotxt = get_string('waitinglists_desc_active', 'organizer');
         $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
     } else {
+        if (has_capability("mod/organizer:editslots", $context)) {
+            $link = html_writer::link($modediturl, get_string('waitinglists_desc_notactive', 'organizer'));
+        }
         $infotxt = get_string('waitinglists_desc_notactive', 'organizer');
         $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder', $link);
     }
