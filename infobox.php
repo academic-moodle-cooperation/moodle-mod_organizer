@@ -52,7 +52,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
 
     switch($params['mode']) {
         case ORGANIZER_TAB_APPOINTMENTS_VIEW:
-            $output .= organizer_make_addslotbutton_section($params, $organizerexpired, $organizer);
+            $output .= organizer_make_addslotbutton_section($params, $organizerexpired);
         break;
         case ORGANIZER_TAB_STUDENT_VIEW:
             // My own booking information section.
@@ -76,8 +76,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     }
     if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
         // Display section with predefined filter view options like "hidden slots only" etc..
-        $output .= organizer_make_slotoptions_section($params['mode'],
-            $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS);
+        $output .= organizer_make_slotoptions_section($params['mode'], $organizer);
     }
     // Display search field for fulltext search.
     $output .= organizer_make_filtersection($params['mode']);
@@ -211,6 +210,15 @@ function organizer_make_description_section($organizer, $cmid) {
         }
         $infotxt = get_string('waitinglists_desc_notactive', 'organizer');
         $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder', $link);
+    }
+    $link = "";
+    if (has_capability("mod/organizer:editslots", $context)) {
+        $a = new stdClass();
+        $a->min = $organizer->userslotsmin;
+        $a->max = $organizer->userslotsmax;
+        $link = html_writer::link($modediturl, get_string('infobox_minmax', 'organizer', $a));
+        $infotxt = get_string('infobox_minmax', 'organizer', $a);
+        $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
     }
 
     return $OUTPUT->box($output, 'generalbox', 'intro');
@@ -365,11 +373,17 @@ function organizer_make_filtersection($mode) {
 
     return $output;
 }
-function organizer_make_slotoptions_section($mode, $groupmode) {
+function organizer_make_slotoptions_section($mode, $organizer) {
     global $OUTPUT;
 
+    if ($mode == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
+        $output = organizer_appointmentsstatus_bar($organizer);
+    } else {
+        $output = "";
+    }
+
     // Display show more - options.
-    $output = html_writer::start_div();
+    $output .= html_writer::start_div();
     $output .= html_writer::span(get_string('showmore', 'organizer').
         $OUTPUT->help_icon('slotoptionstable', 'organizer'));
     $displayhiddenslots = $displayallparticipants = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
@@ -401,18 +415,16 @@ function organizer_make_slotoptions_section($mode, $groupmode) {
 
     return organizer_make_section('infobox_slotoverview', $output);
 }
-function organizer_make_addslotbutton_section($params, $organizerexpired, $organizer) {
+function organizer_make_addslotbutton_section($params, $organizerexpired) {
 
-    $output = '<div id="organizer_addbutton_div">';
+    $output = html_writer::start_div('mb-3 mt-1');
 
     $slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
     $output .= '<input class="btn btn-primary" type="submit" value="' . get_string('btn_add', 'organizer') .
         '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsaddurl . '\');" ' .
         ($organizerexpired ? 'disabled ' : '') . '/>';
 
-    $output .= '</div>';
-
-    $output .= organizer_appointmentsstatus_bar($organizer);
+    $output .= html_writer::end_div();
 
     return $output;
 }
