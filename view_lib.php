@@ -447,6 +447,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
     $rows = array();
     if (count($slots) != 0) {
         $numshown = 0;
+        $weekbefore = -1;
         foreach ($slots as $slot) {
             if ($isuserslot = array_search($slot->id, $userslots)) {
                 $app = $apps[$isuserslot];
@@ -524,6 +525,13 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                 if (in_array($USER->id, $trainerids)) {
                     $myslotastrainer = true;
                 }
+            }
+            if ($params['sort'] == 'datetime') {
+                $week = (int)date('W', $slot->starttime);
+                if ($weekbefore != -1 && $week != $weekbefore) {
+                    $row->attributes['class'] .= ' newweek';
+                }
+                $weekbefore = $week;
             }
             $slotvisible = $slot->visible;
             $hidden = false;
@@ -994,8 +1002,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                     break;
                                 case 'datetime':
                                     if ($entry->starttime) {
-                                        $cell = $row->cells[] = new html_table_cell(organizer_date_time($entry));
-                                        $cell->style .= " text-align: left;";
+                                        $cell = $row->cells[] = new html_table_cell(organizer_date_time($entry, true));
                                     } else {
                                         $cell = $row->cells[] = new html_table_cell('-');
                                         $cell->style .= " text-align: center;";
@@ -1066,12 +1073,9 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 $cell->style .= " text-align: center;";
                                 break;
                             case 'datetime':
-                                $text = organizer_date_time($entry);
-                                if ($text != "-") {
-                                    $cell = $row->cells[] = new html_table_cell($text);
-                                    $cell->style .= " text-align: left;";
-                                } else {
-                                    $cell = $row->cells[] = new html_table_cell("-");
+                                $text = organizer_date_time($entry, true);
+                                $cell = $row->cells[] = new html_table_cell($text);
+                                if ($text == "-") {
                                     $cell->style = " text-align: center;";
                                 }
                                 break;
@@ -1162,11 +1166,15 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
         $numshown = 0;
         foreach ($slots as $slot) {
             if (organizer_slot_is_free($slot, $assignid, true)) {
-                   $row = new html_table_row();
+                $row = new html_table_row();
                 foreach ($columns as $column) {
                     switch ($column) {
                         case 'datetime':
-                            $cell = $row->cells[] = new html_table_cell(organizer_date_time($slot, true));
+                            $text = organizer_date_time($slot, true);
+                            $cell = $row->cells[] = new html_table_cell($text);
+                            if ($text == '-') {
+                                $cell->style .= " text-align:center;";
+                            }
                         break;
                         case 'location':
                             $cell = $row->cells[] = new html_table_cell(organizer_location_link($slot));
@@ -1268,18 +1276,37 @@ function organizer_date_time($slot, $nobreak = false) {
         return '-';
     }
 
-    $datefrom = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer')) . " " .
-            userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-    $dateto = userdate($slot->starttime + $slot->duration, get_string('fulldatetemplate', 'organizer')) . " " .
-            userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
     list($unitname, $value) = organizer_figure_out_unit($slot->duration);
     $duration = ($slot->duration / $value) . ' ' . $unitname;
 
-    if ($nobreak) {
-        return "$datefrom - $dateto ($duration)";
+    // If slot is within a day.
+    if (userdate($slot->starttime, get_string('datetemplate', 'organizer')) ==
+        userdate($slot->starttime + $slot->duration, get_string('datetemplate', 'organizer'))) {
+        $datefrom = html_writer::span(userdate($slot->starttime, '%a'), 'badge badge-info font-big mr-1');
+        $datefrom .= userdate($slot->starttime, get_string('datetemplate', 'organizer')) . " " .
+            html_writer::span(userdate($slot->starttime, get_string('timetemplate', 'organizer')),
+                'badge badge-dark font-big mr-1');
+        $dateto = html_writer::span(userdate($slot->starttime + $slot->duration,
+            get_string('timetemplate', 'organizer')), 'badge badge-dark font-big ml-1');
     } else {
-        return "$datefrom -<br />$dateto ($duration)";
+        $datefrom = html_writer::span(userdate($slot->starttime, '%a'), 'badge badge-info font-big mr-1');
+        $datefrom .= userdate($slot->starttime, get_string('datetemplate', 'organizer')) . " " .
+            html_writer::span(userdate($slot->starttime, get_string('timetemplate', 'organizer')),
+                'badge badge-dark font-big mr-1');
+        $slotendtime = $slot->starttime + $slot->duration;
+        $dateto = html_writer::span(userdate($slotendtime, '%a'), 'badge badge-info font-big mr-1');
+        $dateto .= userdate($slotendtime, get_string('datetemplate', 'organizer')) .
+            html_writer::span(userdate($slotendtime, get_string('timetemplate', 'organizer')),
+                'badge badge-dark font-big ml-1');
     }
+
+    if ($nobreak) {
+        $datestr = html_writer::span("$datefrom-$dateto", "slotdates text-nowrap", array("title" => $duration));
+    } else {
+        $datestr = html_writer::span("$datefrom-<br />$dateto", "slotdates", array("title" => $duration));
+    }
+    return $datestr;
+
 }
 
 function organizer_trainer_data($params, $slot, $trainerids = null) {
@@ -1534,6 +1561,8 @@ function organizer_get_participant_list($params, $slot, $app) {
         $slotvisibilitystr = organizer_get_icon('anon', get_string('slot_anonymous', 'organizer'));
     } else if ($slot->visibility == ORGANIZER_VISIBILITY_SLOT) {
         $slotvisibilitystr = organizer_get_icon('slotanon', get_string('slot_slotvisible', 'organizer'));
+    } else {
+        $slotvisibilitystr = "";
     }
 
     $content = '';
@@ -1570,10 +1599,10 @@ function organizer_get_participant_list($params, $slot, $app) {
             }
         }
         if ($countapps > 5 && !$studentview) {
-            $firstline = organizer_get_icon('plus-square', get_string('clicktohideshow')).$firstline.$slotvisibilitystr;
-            $content .= html_writer::div($firstline, 'collapseclick text-nowrap', array( 'data-target' => '.s'.$slot->id));
+            $firstline = organizer_get_icon('plus-square', get_string('clicktohideshow'), null, null, 'collapseicon').$firstline.$slotvisibilitystr;
+            $firstline = html_writer::div($firstline, 'collapseclick text-nowrap', array( 'data-target' => '.s'.$slot->id));
         } else {
-            $content .= html_writer::div($firstline.$slotvisibilitystr, 'text-nowrap');
+            $firstline = html_writer::div($firstline.$slotvisibilitystr, 'text-nowrap');
         }
     } else { // If groupmode.
         if ($countapps == 0) {
@@ -1596,8 +1625,9 @@ function organizer_get_participant_list($params, $slot, $app) {
                 }
             }
         }
+        $firstline = html_writer::div($firstline.$slotvisibilitystr, 'text-nowrap');
     }
-    $content .= html_writer::div($firstline.$slotvisibilitystr, 'text-nowrap');
+    $content .= $firstline;
 
     // Write participant's list.
     if ($studentview) {
@@ -1648,17 +1678,19 @@ function organizer_get_participant_list($params, $slot, $app) {
             if ($groupmode) {
                 $app = reset($appointments);
                 if ($app !== false) {
-                             $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
-                             $list .= "<em>{$groupname}</em>" .
-                    organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified)
-                        . "<br />";
+                    $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
+                    $groupnameline = organizer_get_icon('plus-square', get_string('clicktohideshow'), null, null, 'collapseicon').$groupname;
+                    $groupnameline .= html_writer::span(organizer_get_teacherapplicant_output($app->teacherapplicantid,
+                        $app->teacherapplicanttimemodified));
+                    $groupnameline = html_writer::div($groupnameline, 'collapseclick font-italic', array( 'data-target' => '.s'.$slot->id));
+                    $content .= $groupnameline;
                 }
             }
 
             $list .= html_writer::start_span('', array('style' => 'display: table'));
             $apps = count($appointments);
             foreach ($appointments as $appointment) {
-                $class = $apps > 5 ? 'mycollapse s'.$slot->id : '';
+                $class = $apps > 5 || $groupmode ? 'mycollapse s'.$slot->id : '';
                 $list .= html_writer::start_span($class, array('style' => 'display: table-row'));
                 $list .= html_writer::start_span('', array('style' => 'display: table-cell'));
                 $identity = organizer_get_user_identity($appointment->userid);
@@ -1728,7 +1760,7 @@ function organizer_get_icon_msg($infotxt, $icon, $textclass='', $link=null) {
     return $output;
 }
 
-function organizer_get_icon($iconname, $string, $size="small", $id="") {
+function organizer_get_icon($iconname, $string, $size="small", $id="", $class="") {
     global $OUTPUT;
     if ($size == "big") {
         $alt = "";
@@ -1746,7 +1778,7 @@ function organizer_get_icon($iconname, $string, $size="small", $id="") {
         if ($string) {
             $attributes['data-toggle'] = "tooltip";
             $attributes['title'] = $string;
-            $attributes['class'] = 'ml-1';
+            $attributes['class'] = 'ml-1 '.$class;
             $alt = $string;
         }
         $icon = $OUTPUT->pix_icon($iconname, $alt, 'mod_organizer', $attributes);

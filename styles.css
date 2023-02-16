@@ -219,3 +219,12 @@
     display: inline-block;
     height: 1.5rem;
 }
+
+.path-mod-organizer .newweek {
+    border-top: double;
+}
+
+.path-mod-organizer .font-big {
+    font-size: 0.8rem;
+    width: 2.7rem;
+}

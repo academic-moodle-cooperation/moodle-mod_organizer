@@ -32,6 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/slotlib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
 class organizer_delete_slots_form extends moodleform
 {
@@ -64,21 +65,17 @@ class organizer_delete_slots_form extends moodleform
                 $mform->addElement('hidden', 'slots[]', $slot->id);
                 $mform->setType('slots[]', PARAM_INT);
                 if (!$slot->has_participants()) {
-                    $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
-                    $stime = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-                    $etime = userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
-                    $mform->addElement(
-                        'static', '', '',
-                        "$date " . get_string('slotfrom', 'organizer') . " $stime "
-                                    . get_string('slotto', 'organizer') . " $etime "
-                        . get_string('atlocation', 'organizer') . " $slot->location"
-                    );
+                    $out = html_writer::start_div();
+                    $out .= html_writer::span(organizer_date_time($slot, true), '');
+                    $out .= html_writer::span($slot->location, 'ml-2');
+                    $out .= html_writer::end_div();
+                    $mform->addElement('static', '', '', $out);
                 }
             }
             if (!$deletableslots) {
-                $mform->addElement('static', '', '', get_string('deletenoslots', 'organizer'));
+                $mform->addElement('static', '', '',
+                    html_writer::span(get_string('deletenoslots', 'organizer'), 'text-danger'));
             }
-
             $exceptions = false;
             foreach ($slots as $slot) {
                 $slot = new organizer_slot($slot);
@@ -87,21 +84,16 @@ class organizer_delete_slots_form extends moodleform
                     break;
                 }
             }
-
             if ($exceptions) {
                 $mform->addElement('static', '', '', '<br/><b>' . get_string('deletekeep', 'organizer') . '</b>');
                 foreach ($slots as $slot) {
                     $slot = new organizer_slot($slot);
                     if ($slot->has_participants()) {
-                        $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
-                        $stime = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-                        $etime = userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
-                        $mform->addElement(
-                            'static', '', '',
-                            "$date " . get_string('slotfrom', 'organizer') . " $stime "
-                                        . get_string('slotto', 'organizer') . " $etime "
-                            . get_string('atlocation', 'organizer') . " $slot->location"
-                        );
+                        $out = html_writer::start_div();
+                        $out .= html_writer::span(organizer_date_time($slot, true), '');
+                        $out .= html_writer::span($slot->location, 'ml-2');
+                        $out .= html_writer::end_div();
+                        $mform->addElement('static', '', '', $out);
                     }
                 }
             }

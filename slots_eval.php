@@ -62,8 +62,8 @@ if (count($slots) == 0) {
         'organizer'), 'error');
     redirect($redirecturl);
 }
-
-$mform = new organizer_evaluate_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
+$mform = new organizer_evaluate_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots),
+    null, null, array('class' => 'form-inline'));
 
 if ($data = $mform->get_data()) {
     $slotids = organizer_evaluate_slots($data);

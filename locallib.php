@@ -2066,7 +2066,7 @@ function organizer_get_param_slots() {
 }
 
 /**
- * How many slots has a participant booked
+ * How many slots a participant has booked
  *
  * @param int $organizerid  ID of organizer instance
  * @param int $userid ID of user
@@ -2122,7 +2122,7 @@ function organizer_multiplebookings_status($slotsbooked, $organizer) {
 }
 
 /**
- * How many slots has a participant left
+ * How many slots a participant has left
  *
  * @param object $organizer  organizer instance
  * @param int $userid ID of user
@@ -2226,10 +2226,9 @@ function organizer_get_counters($organizer, $cm = null) {
     }
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $params = array('groupingid' => $cm->groupingid);
-        $query = 'SELECT {groups}.* FROM {groups}
+        $query = 'SELECT {groups}.id FROM {groups}
                 INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
-                WHERE {groupings_groups}.groupingid = :groupingid
-                ORDER BY {groups}.name ASC';
+                WHERE {groupings_groups}.groupingid = :groupingid';
         $groups = $DB->get_records_sql($query, $params);
         $attended = 0;
         $registered = 0;
@@ -2289,7 +2288,6 @@ function organizer_get_counters($organizer, $cm = null) {
  * @return object $out html output of status bar
  */
 function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg) {
-    global $OUTPUT;
 
     $out = html_writer::start_div('userstatusbar_tr', array('title' => $msg));
     if ($minreached) {
@@ -2297,9 +2295,9 @@ function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg
         $classstrempty = 'align-middle border border-success';
         $classstatusmsg = 'text-success font-weight-bolder';
     } else {
-        $classstrfull = 'align-middle border border-warning bg-warning';
-        $classstrempty = 'align-middle border border-warning';
-        $classstatusmsg = 'text-warning font-weight-bolder';
+        $classstrfull = 'align-middle border border-info bg-info';
+        $classstrempty = 'align-middle border border-info';
+        $classstatusmsg = 'text-info font-weight-bolder';
     }
     $i = 1;
     while ($i <= (int) $bookings) {
@@ -2313,6 +2311,89 @@ function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg
     $out .= html_writer::span($statusmsg, 'ml-2 '.$classstatusmsg);
     $out .= html_writer::span($msg, 'ml-1 font-italic');
     $out .= html_writer::end_div();
+
+    return $out;
+
+}
+
+/**
+ * Returns the html of a status bar indicating the user's status regarding his bookings.
+ *
+ * @param int $bookings amount of user bookings
+ * @param int $max max amount of bookings per user
+ * @param boolean $minreached if user has reached minimum of bookings
+ * @param string $statusmsg to be written
+ * @param string $msg for the tooltip
+ *
+ * @return object $out html output of status bar
+ */
+function organizer_appointmentsstatus_bar($organizer) {
+    global $DB;
+
+    $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
+
+    $a = new stdClass();
+    $min = $organizer->userslotsmin;
+    $tooless = 0;
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $params = array('groupingid' => $cm->groupingid);
+        $query = 'SELECT {groups}.id FROM {groups}
+                INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
+                WHERE {groupings_groups}.groupingid = :groupingid';
+        $groups = $DB->get_records_sql($query, $params);
+        foreach ($groups as $group) {
+            $apps = organizer_get_all_group_appointments($organizer, $group->id);
+            $diff = $min - count($apps);
+            $tooless += $diff > 0 ? $diff : 0;
+        }
+        $a->tooless = $tooless;
+    } else {
+        $context = context_module::instance($cm->id, MUST_EXIST);
+        $participants = get_enrolled_users($context, 'mod/organizer:register');
+        foreach ($participants as $participant) {
+            $apps = organizer_get_all_user_appointments($organizer, $participant->id);
+            $diff = $min - count($apps);
+            $tooless += $diff > 0 ? $diff : 0;
+        }
+        $a->tooless = $tooless;
+    }
+    $slotscount = 0;
+    $places = 0;
+    $paramssql = array('organizerid' => $organizer->id);
+    $query = "SELECT s.id, s.starttime, s.maxparticipants, count(DISTINCT a.id) as apps FROM {organizer_slots} s
+        LEFT OUTER JOIN {organizer_slot_appointments} a ON s.id = a.slotid
+        WHERE s.organizerid = :organizerid
+        GROUP BY (s.id, s.starttime, s.maxparticipants)";
+    $slots = $DB->get_records_sql($query, $paramssql);
+    foreach ($slots as $slot) {
+        if ($slot->starttime <= time()) {
+            continue;
+        } else {
+            $slotscount++;
+            $apps = $slot->apps ?? 0;
+            $diff = $slot->maxparticipants - $apps;
+            $places += $diff > 0 ? $diff : 0;
+        }
+    }
+    if ($a->tooless == 1) {
+        $msg = get_string('infobox_appointmentsstatus_outstandingbookings_sg', 'mod_organizer', $a);
+    } else {
+        $msg = get_string('infobox_appointmentsstatus_outstandingbookings_pl', 'mod_organizer', $a);
+    }
+    $a->slots = $slotscount;
+    $a->places = $places;
+    if ($a->places == 1) {
+        $msg .= '<br />' . get_string('infobox_appointmentsstatus_freeplaces_sg', 'mod_organizer', $a);
+    } else {
+        $msg .= '<br />' . get_string('infobox_appointmentsstatus_freeplaces_pl', 'mod_organizer', $a);
+    }
+    if ($places >= $tooless) {
+        $class = 'success';
+    } else {
+        $class = 'danger';
+    }
+    $out = html_writer::div($msg, "p-3 mb-3 mt-3 d-inline-block border border-$class rounded text-$class",
+        array('style' => 'max-width: 50%;'));
 
     return $out;
 

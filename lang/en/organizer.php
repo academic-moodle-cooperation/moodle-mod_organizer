@@ -507,6 +507,10 @@ $string['includetraineringroups_help'] = 'If you check the checkbox not only the
 $string['infobox_app_countdown'] = 'Time left to the appointment: {$a->days} days, {$a->hours} hours, {$a->minutes} minutes, {$a->seconds} seconds';
 $string['infobox_app_inprogress'] = 'The appointment is in progress.';
 $string['infobox_app_occured'] = 'The appointment has already occurred.';
+$string['infobox_appointmentsstatus_freeplaces_pl'] = 'This instance provides {$a->places} free places in {$a->slots} up-coming slot(s).';
+$string['infobox_appointmentsstatus_freeplaces_sg'] = 'This instance provides one free place in {$a->slots} up-coming slot(s).';
+$string['infobox_appointmentsstatus_outstandingbookings_pl'] = '{$a->tooless} bookings are due.';
+$string['infobox_appointmentsstatus_outstandingbookings_sg'] = 'One booking is due.';
 $string['infobox_deadline_countdown'] = 'Time left to deadline: {$a->days} days, {$a->hours} hours, {$a->minutes} minutes, {$a->seconds} seconds';
 $string['infobox_deadline_passed'] = 'Registration deadline passed. You can no longer change registrations.';
 $string['infobox_deadline_passed_slot'] = 'xxx slots could not be created because registration deadline has passed.';
@@ -594,8 +598,6 @@ $string['message_error_unknown_unregister'] = 'Your registration could not be re
 $string['message_info_appointment_deleted'] = 'The appointment was deleted. The participant has been notified.';
 $string['message_info_appointment_deleted_group'] = 'The appointments of one group have been deleted. The participants have been notified.';
 $string['message_info_appointment_not_deleted'] = 'A problem occured when deleting the appointment(s).';
-$string['message_info_available'] = 'There are {$a->freeslots} places available for {$a->notreachedmin} outstanding bookings.';
-$string['message_info_available_group'] = 'There are {$a->freeslots} places available for {$a->notreachedmin} outstanding bookings.';
 $string['message_info_queued'] = 'You was added to a slot\'s waiting list.';
 $string['message_info_queued_group'] = 'Your group was added to a slot\'s waiting list';
 $string['message_info_registered'] = 'You successfully registered for a slot.';
@@ -606,12 +608,8 @@ $string['message_info_reregistered'] = 'You successfully reregistered for a slot
 $string['message_info_reregistered_group'] = 'Your group successfully reregistered for a slot.';
 $string['message_info_slots_added_pl'] = '{$a->count} new slots were added.';
 $string['message_info_slots_added_sg'] = '{$a->count} new slot was added.';
-$string['message_info_slots_deleted'] = 'The following slots were deleted:<br/>
-{$a->deleted} slot(s) deleted.<br/>
-{$a->notified} participant(s) have been notified.';
-$string['message_info_slots_deleted_group'] = 'The following slots were deleted:<br/>
-{$a->deleted} slot(s) deleted.<br/>
-{$a->notified} participant(s) have been notified.';
+$string['message_info_slots_deleted_pl'] = '{$a->deleted} slots were deleted. {$a->notified} participant(s) had been notified.';
+$string['message_info_slots_deleted_sg'] = 'One slot was deleted. {$a->notified} participant(s) had been notified.';
 $string['message_info_slots_edited_pl'] = '{$a->count} slots were edited.';
 $string['message_info_slots_edited_sg'] = '{$a->count} slot was edited.';
 $string['message_info_slots_evaluated_pl'] = '{$a->count} slots were graded.';

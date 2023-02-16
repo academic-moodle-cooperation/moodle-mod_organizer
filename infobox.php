@@ -48,10 +48,11 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
 
     $jsparams = new stdClass();
     $jsparams->studentview = 0;
+    $jsparams->registrationview = 0;
 
     switch($params['mode']) {
         case ORGANIZER_TAB_APPOINTMENTS_VIEW:
-            $output .= organizer_make_addslotbutton_section($params, $organizerexpired);
+            $output .= organizer_make_addslotbutton_section($params, $organizerexpired, $organizer);
         break;
         case ORGANIZER_TAB_STUDENT_VIEW:
             // My own booking information section.
@@ -66,6 +67,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
                 $output .= organizer_make_sendreminder_section($params, $context);
             }
             $output .= organizer_make_registrationstatistic_section($organizer, $entries);
+            $jsparams->registrationview = 1;
         break;
         case ORGANIZER_ASSIGNMENT_VIEW:
         break;
@@ -80,7 +82,8 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     // Display search field for fulltext search.
     $output .= organizer_make_filtersection($params['mode']);
 
-    $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams->studentview, $USER->id));
+    $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams->studentview,
+        $jsparams->registrationview, $USER->id));
 
     return $output;
 }
@@ -292,10 +295,10 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
         $partialfullwidth = (int) ((int) $a->minreached * 100 / (int) $a->entries * ( $barwidth / 100 ));
         $partialemptywidth = $barwidth - $partialfullwidth;
         if ($partialfullwidth > 0) {
-            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
+            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info bg-info',
                 array('style' => "width: $partialfullwidth%"));
         }
-        $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-warning',
+        $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info',
             array('style' => "width: $partialemptywidth%"));
     }
     $out .= html_writer::div($messageminreached, 'd-inline ml-3');
@@ -309,10 +312,10 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
         $partialfullwidth = (int) ((int) $a->maxreached * 100 / (int) $a->entries * ( $barwidth / 100 ));
         $partialemptywidth = $barwidth - $partialfullwidth;
         if ($partialfullwidth > 0) {
-            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-warning bg-warning',
+            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info bg-info',
                 array('style' => "width: $partialfullwidth%"));
         }
-        $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-warning',
+        $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info',
             array('style' => "width: $partialemptywidth%"));
     }
     $out .= html_writer::div($messagemaxreached, 'd-inline-block ml-3');
@@ -389,7 +392,7 @@ function organizer_make_slotoptions_section($mode, $groupmode) {
             get_string('infobox_showslots', 'organizer'),
             array('id' => 'show_past_slots', 'class' => 'slotoptions'));
     }
-    if (!$groupmode && $displayallparticipants) {
+    if ($displayallparticipants) {
         $output .= html_writer::checkbox('show_all_participants', '1', $showallparticipants,
             get_string('infobox_showallparticipants', 'organizer'),
             array('id' => 'show_all_participants', 'class' => 'slotoptions'));
@@ -398,7 +401,7 @@ function organizer_make_slotoptions_section($mode, $groupmode) {
 
     return organizer_make_section('infobox_slotoverview', $output);
 }
-function organizer_make_addslotbutton_section($params, $organizerexpired) {
+function organizer_make_addslotbutton_section($params, $organizerexpired, $organizer) {
 
     $output = '<div id="organizer_addbutton_div">';
 
@@ -408,6 +411,8 @@ function organizer_make_addslotbutton_section($params, $organizerexpired) {
         ($organizerexpired ? 'disabled ' : '') . '/>';
 
     $output .= '</div>';
+
+    $output .= organizer_appointmentsstatus_bar($organizer);
 
     return $output;
 }

@@ -32,15 +32,17 @@ define(['jquery', 'core/config'], function($, config) {
      * @alias module:mod_organizer/initinfobox
      */
         var Initinfobox = function() {
-            this.student = 0;
+            this.studentview = 0;
+            this.registrationview = 0;
             this.userid = 0;
         };
 
         var instance = new Initinfobox();
 
-        instance.init = function(participant, userid) {
+        instance.init = function(studentview, registrationview, userid) {
 
-            instance.student = participant; // Is user student or not?
+            instance.studentview = studentview; // Loaded on student view?
+            instance.registrationview = registrationview; // Loaded on registration view?
             instance.userid = userid; // This user ID.
 
             /**
@@ -48,7 +50,7 @@ define(['jquery', 'core/config'], function($, config) {
              * @param {object} event element which has been clicked
              */
             function toggle_all_slots(event) {
-                if (event!=undefined) {
+                if (event!=undefined && instance.registrationview == 0) {
                     saveuserpreference();
                 }
                 var tablebody = $('#slot_overview tbody');
@@ -64,7 +66,7 @@ define(['jquery', 'core/config'], function($, config) {
                     tablebody.find('tr.not_registered').hide();
                 }
 
-                if (!instance.student) {
+                if (!instance.studentview) {
                     if (!showhiddenslots) {
                         tablebody.find('tr.unavailable').hide();
                     }
@@ -75,7 +77,7 @@ define(['jquery', 'core/config'], function($, config) {
                 }
 
                 if (showmyslotsonly) {
-                    if (!instance.student) {
+                    if (!instance.studentview) {
                         tablebody.find('tr.not_my_slot').hide();
                     }
                 }
@@ -191,26 +193,71 @@ define(['jquery', 'core/config'], function($, config) {
             }
 
             /**
-             * Toggle participantslist.
-             * @param {object} event element which has been clicked
+             * Toggle single participantslist.
+             * @param {object} target element which has been clicked
              */
-            function participantslist_toggle(event) {
-                let targetelement = event.target;
-                let clickeddiv = $(targetelement).parent();
+            function participantslist_toggle(target) {
+                let clickeddiv = $(target).parent();
                 let targetclass = clickeddiv.attr('data-target');
                 $(targetclass).toggle();
+                let icon = clickeddiv.find('.collapseicon');
+                let isrc = $(icon).attr('src');
+                if (isrc.indexOf('minus-square') > 0) {
+                    isrc = isrc.replace('minus-square', 'plus-square');
+                } else {
+                    isrc = isrc.replace('plus-square', 'minus-square');
+                }
+                $(icon).attr('src', isrc);
+            }
+
+            /**
+             * Toggle all participantslists.
+             */
+            function participantslists_all_toggle() {
+                if (instance.registrationview == 0) {
+                    saveuserpreference();
+                }
+                let tablebody = $('#slot_overview tbody');
+                let showallparticipants = $('#show_all_participants').is(':checked');
+                if (showallparticipants == 1) {
+                    $('.mycollapse').show();
+                    let allicons = tablebody.find('.collapseicon');
+                    allicons.each(
+                        function() {
+                            let isrc = $(this).attr('src');
+                            isrc = isrc.replace('plus-square', 'minus-square');
+                            $(this).attr('src', isrc);
+                        }
+                    );
+                } else {
+                    $('.mycollapse').hide();
+                    let allicons = tablebody.find('.collapseicon');
+                    allicons.each(
+                        function() {
+                            let isrc = $(this).attr('src');
+                            isrc = isrc.replace('minus-square', 'plus-square');
+                            $(this).attr('src', isrc);
+                        }
+                    );
+                }
             }
 
             $('#show_past_slots').on('click', function() { toggle_all_slots(event); });
-            $('#show_all_participants').on('click', function() { $('.mycollapse').toggle(); });
+            $('#show_all_participants').on('click', function() { participantslists_all_toggle(); });
             $('#show_my_slots_only').on('click', function() { toggle_all_slots(event); });
             $('#show_free_slots_only').on('click', function() { toggle_all_slots(event); });
             $('#show_hidden_slots').on('click', function() { toggle_all_slots(event); });
             $('#show_registrations_only').on('click', function() { toggle_all_slots(event); });
             $('.organizer_filtertable').on('keyup', function() { toggle_all_slots(event); });
+            $('.collapseclick').on('click', function() { participantslist_toggle(event.target); });
             toggle_all_slots();
-            $('.collapseclick').on('click', function() { participantslist_toggle(event); });
-            $('.mycollapse').hide();
+            participantslists_all_toggle();
+            $('.organizer_filtertable').keypress(function(event){
+                var keycode = (event.which ? event.which : event.keyCode);
+                if(keycode == '13'){
+                    return false;
+                }
+            });
         };
 
         return instance;
