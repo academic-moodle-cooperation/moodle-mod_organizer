@@ -312,7 +312,7 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
     $out .= html_writer::div($messageminreached, 'd-inline ml-3');
     $out .= html_writer::end_div();
 
-    $out .= html_writer::start_div('registrationstatusbar mb-3 w-100', array('title' => $messagemaxreached));
+    $out .= html_writer::start_div('registrationstatusbar mb-4 w-100', array('title' => $messagemaxreached));
     if ($allmaxreached) {
         $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
             array('style' => "width: $barwidth%"));
