@@ -2329,8 +2329,7 @@ function organizer_appointmentsstatus_bar($organizer) {
     $slotscount = 0;
     $places = 0;
     $paramssql = array('organizerid' => $organizer->id);
-    $query = "SELECT s.id, s.starttime, s.maxparticipants, count(DISTINCT a.id) as apps FROM {organizer_slots} s
-        LEFT OUTER JOIN {organizer_slot_appointments} a ON s.id = a.slotid
+    $query = "SELECT s.id, s.starttime, s.maxparticipants FROM {organizer_slots} s
         WHERE s.organizerid = :organizerid
         GROUP BY (s.id, s.starttime, s.maxparticipants)";
     $slots = $DB->get_records_sql($query, $paramssql);
@@ -2339,7 +2338,7 @@ function organizer_appointmentsstatus_bar($organizer) {
             continue;
         } else {
             $slotscount++;
-            $apps = $slot->apps ?? 0;
+            $apps = $DB->count_records('organizer_slot_appointments', array('slotid' => $slot->id));
             $diff = $slot->maxparticipants - $apps;
             $places += $diff > 0 ? $diff : 0;
         }
