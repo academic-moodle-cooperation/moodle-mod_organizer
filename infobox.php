@@ -212,14 +212,14 @@ function organizer_make_description_section($organizer, $cmid) {
         $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder', $link);
     }
     $link = "";
+    $a = new stdClass();
+    $a->min = $organizer->userslotsmin;
+    $a->max = $organizer->userslotsmax;
     if (has_capability("mod/organizer:editslots", $context)) {
-        $a = new stdClass();
-        $a->min = $organizer->userslotsmin;
-        $a->max = $organizer->userslotsmax;
         $link = html_writer::link($modediturl, get_string('infobox_minmax', 'organizer', $a));
-        $infotxt = get_string('infobox_minmax', 'organizer', $a);
-        $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
     }
+    $infotxt = get_string('infobox_minmax', 'organizer', $a);
+    $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
 
     return $OUTPUT->box($output, 'generalbox', 'intro');
 }
