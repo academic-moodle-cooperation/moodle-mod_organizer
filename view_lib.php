@@ -2330,8 +2330,7 @@ function organizer_appointmentsstatus_bar($organizer) {
     $places = 0;
     $paramssql = array('organizerid' => $organizer->id);
     $query = "SELECT s.id, s.starttime, s.maxparticipants FROM {organizer_slots} s
-        WHERE s.organizerid = :organizerid
-        GROUP BY (s.id, s.starttime, s.maxparticipants)";
+        WHERE s.organizerid = :organizerid";
     $slots = $DB->get_records_sql($query, $paramssql);
     foreach ($slots as $slot) {
         if ($slot->starttime <= time()) {
