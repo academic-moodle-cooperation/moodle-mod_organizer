@@ -341,7 +341,6 @@ function organizer_make_filtersection($mode) {
     $output .= html_writer::tag('input', null,
         array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
     $output .= html_writer::end_span();
-    $output .= html_writer::span('', 'ml-1 text-mute small', array('id' => 'counttabrows'));
 
     $displaymyslotsonly = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
     $displayregistrationsonly = $displayfreeslots = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
@@ -369,6 +368,12 @@ function organizer_make_filtersection($mode) {
     }
 
     $output .= html_writer::end_div();
+
+    $output .= html_writer::start_div();
+    $output .= html_writer::span('', 'text-info', array('id' => 'counttabrows'));
+    $output .= html_writer::span(get_string('infobox_counter_slotrows', 'mod_organizer'), 'ml-1 text-info');
+    $output .= html_writer::end_div();
+
     $output .= html_writer::div('', 'clearer');
 
     return $output;

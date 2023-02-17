@@ -50,7 +50,7 @@ define(['jquery', 'core/config'], function($, config) {
              * @param {object} event element which has been clicked
              */
             function toggle_all_slots(event) {
-                if (event!=undefined && instance.registrationview == 0) {
+                if (event != undefined && instance.registrationview == 0) {
                     saveuserpreference();
                 }
                 var tablebody = $('#slot_overview tbody');
@@ -62,8 +62,43 @@ define(['jquery', 'core/config'], function($, config) {
 
                 tablebody.find('tr').show();
 
-                if (showregistrationsonly) {
-                    tablebody.find('tr.not_registered').hide();
+                if (event != undefined) {
+                    if (showregistrationsonly) {
+                        if ($('#show_registrations_only').is(event.target)) {
+                            $('#show_free_slots_only').prop('checked', false);
+                            showfreeslotsonly = false;
+                            saveuserpreference();
+                        }
+                        if (showfreeslotsonly) {
+                            if ($('#show_free_slots_only').is(event.target)) {
+                                $('#show_registrations_only').prop('checked', false);
+                                tablebody.find('tr.not_free_slot').hide();
+                                saveuserpreference();
+                            } else {
+                                $('#show_free_slots_only').prop('checked', false);
+                                tablebody.find('tr.not_registered').hide();
+                                saveuserpreference();
+                            }
+                        } else {
+                            tablebody.find('tr.not_registered').hide();
+                        }
+                    } else {
+                        if (showfreeslotsonly) {
+                            tablebody.find('tr.not_free_slot').hide();
+                        }
+                    }
+                } else {
+                    if (showregistrationsonly && showfreeslotsonly) {
+                        $('#show_free_slots_only').prop('checked', false);
+                        tablebody.find('tr.not_registered').hide();
+                        saveuserpreference();
+                    } else {
+                        if (showregistrationsonly) {
+                            tablebody.find('tr.not_registered').hide();
+                        } else if (showfreeslotsonly) {
+                            tablebody.find('tr.not_free_slot').hide();
+                        }
+                    }
                 }
 
                 if (!instance.studentview) {
@@ -71,19 +106,13 @@ define(['jquery', 'core/config'], function($, config) {
                         tablebody.find('tr.unavailable').hide();
                     }
                 }
-
                 if (!showpastslots) {
                     tablebody.find('tr.past_due').hide();
                 }
-
                 if (showmyslotsonly) {
                     if (!instance.studentview) {
                         tablebody.find('tr.not_my_slot').hide();
                     }
-                }
-
-                if (showfreeslotsonly) {
-                    tablebody.find('tr.not_free_slot').hide();
                 }
 
                 var target = $('.organizer_filtertable');
