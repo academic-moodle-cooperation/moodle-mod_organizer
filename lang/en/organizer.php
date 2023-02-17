@@ -560,20 +560,6 @@ $string['isgrouporganizer_help'] = 'Check this if you want this organizer to dea
 \'Use existing groups\': A single groupmember books a slot for the group.
 \'Group creation per empty slot\': A course group is created for every new slot.
 \'Group creation per booked slot\': A course group is created for every booked slot.';
-$string['legend_anonymous'] = 'Anonymous slot';
-$string['legend_comments'] = 'Student/Teacher comments';
-$string['legend_due'] = 'Slot due';
-$string['legend_evaluated'] = 'Slot evaluated';
-$string['legend_feedback'] = 'Teacher feedback';
-$string['legend_group_applicant'] = 'Applicant of the group';
-$string['legend_halfanonymous'] = 'Only participants of own slot visible';
-$string['legend_no_participants'] = 'Slot had no participants';
-$string['legend_not_occured'] = 'Appointment has not occured yet';
-$string['legend_organizer_expired'] = 'Organizer expired';
-$string['legend_past_deadline'] = 'Slot past deadline';
-$string['legend_pending'] = 'Slot pending evaluation';
-$string['legend_section_details'] = 'Slot details icons';
-$string['legend_section_status'] = 'Status icons';
 $string['location'] = 'Location';
 $string['location_help'] = 'The location where the slot takes place.';
 $string['locationlink'] = 'Location link URL';

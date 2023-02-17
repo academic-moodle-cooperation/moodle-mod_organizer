@@ -343,13 +343,16 @@ function organizer_make_filtersection($mode) {
     $output .= html_writer::end_span();
 
     $displaymyslotsonly = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
-    $displayregistrationsonly = $displayfreeslots = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
+    $displayregistrationsonly = $displayfreeslots = $displayallparticipants =
+        $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
     if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
         $showmyslotsonly = substr($prefs, 0, 1) ? true : false;
         $showfreeslotsonly = substr($prefs, 1, 1) ? true : false;
         $showregistrationsonly = substr($prefs, 4, 1) ? true : false;
+        $showallparticipants = substr($prefs, 5, 1) ? true : false;
     } else {
         $showmyslotsonly = $showfreeslotsonly = $showregistrationsonly = false;
+        $showallparticipants = true;
     }
     if ($displaymyslotsonly) {
         $output .= html_writer::checkbox('show_my_slots_only', '1', $showmyslotsonly,
@@ -366,12 +369,16 @@ function organizer_make_filtersection($mode) {
             get_string('infobox_showregistrationsonly', 'organizer'),
             array('id' => 'show_registrations_only', 'class' => 'slotoptions'));
     }
-
     $output .= html_writer::end_div();
 
     $output .= html_writer::start_div();
     $output .= html_writer::span('', 'text-info', array('id' => 'counttabrows'));
     $output .= html_writer::span(get_string('infobox_counter_slotrows', 'mod_organizer'), 'ml-1 text-info');
+    if ($displayallparticipants) {
+        $output .= html_writer::checkbox('show_all_participants', '1', $showallparticipants,
+            get_string('infobox_showallparticipants', 'organizer'),
+            array('id' => 'show_all_participants', 'class' => 'slotoptions'));
+    }
     $output .= html_writer::end_div();
 
     $output .= html_writer::div('', 'clearer');
@@ -391,15 +398,13 @@ function organizer_make_slotoptions_section($mode, $organizer) {
     $output .= html_writer::start_div();
     $output .= html_writer::span(get_string('showmore', 'organizer').
         $OUTPUT->help_icon('slotoptionstable', 'organizer'));
-    $displayhiddenslots = $displayallparticipants = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
+    $displayhiddenslots = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
     $displaypastslots = true;
     if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
         $showhiddenslots = substr($prefs, 2, 1) ? true : false;
         $showpastslots = substr($prefs, 3, 1) ? true : false;
-        $showallparticipants = substr($prefs, 5, 1) ? true : false;
     } else {
         $showhiddenslots = $showpastslots = false;
-        $showallparticipants = true;
     }
     if ($displayhiddenslots) {
         $output .= html_writer::checkbox('show_hidden_slots', '1', $showhiddenslots,
@@ -410,11 +415,6 @@ function organizer_make_slotoptions_section($mode, $organizer) {
         $output .= html_writer::checkbox('show_past_slots', '1', $showpastslots,
             get_string('infobox_showslots', 'organizer'),
             array('id' => 'show_past_slots', 'class' => 'slotoptions'));
-    }
-    if ($displayallparticipants) {
-        $output .= html_writer::checkbox('show_all_participants', '1', $showallparticipants,
-            get_string('infobox_showallparticipants', 'organizer'),
-            array('id' => 'show_all_participants', 'class' => 'slotoptions'));
     }
     $output .= html_writer::end_div();;
 

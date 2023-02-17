@@ -1809,8 +1809,6 @@ function organizer_slot_status($params, $slot) {
     if ($slotevaluated) {
         return '<a href="' . $actionurl->out(false) . '">'
                 . organizer_get_icon('yes', get_string('img_title_evaluated', 'organizer'), "big") . '</a>';
-    } else if ($slotnoparticipants) {
-        return organizer_get_icon('no_participants', get_string('img_title_no_participants', 'organizer'), "big");
     } else if ($slotpending) {
         return '<a href="' . $actionurl->out(false) . '">'
                 . organizer_get_icon('pending', get_string('img_title_pending', 'organizer'), "big") . '</a>';
@@ -1826,6 +1824,8 @@ function organizer_slot_status($params, $slot) {
         return '<a href="' . $actionurl->out(false) . '">'
                 . organizer_get_icon('student_slot_available', get_string('img_title_due', 'organizer'), "big")
                 . '</a>';
+    } else if ($slotnoparticipants) {
+        return organizer_get_icon('no_participants', get_string('img_title_no_participants', 'organizer'), "big");
     } else {
         print_error("This shouldn't happen.");
     }
