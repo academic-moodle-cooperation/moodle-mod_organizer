@@ -1280,23 +1280,23 @@ function organizer_date_time($slot, $nobreak = false) {
     $duration = ($slot->duration / $value) . ' ' . $unitname;
 
     // If slot is within a day.
-    if (userdate($slot->starttime, get_string('datetemplate', 'organizer')) ==
-        userdate($slot->starttime + $slot->duration, get_string('datetemplate', 'organizer'))) {
-        $datefrom = html_writer::span(userdate($slot->starttime, '%a'), 'badge badge-info font-big mr-1');
-        $datefrom .= userdate($slot->starttime, get_string('datetemplate', 'organizer')) . " " .
-            html_writer::span(userdate($slot->starttime, get_string('timetemplate', 'organizer')),
+    if (organizer_userdate($slot->starttime, get_string('datetemplate', 'organizer')) ==
+        organizer_userdate($slot->starttime + $slot->duration, get_string('datetemplate', 'organizer'))) {
+        $datefrom = html_writer::span(organizer_userdate($slot->starttime, '%a'), 'badge badge-info font-big mr-1');
+        $datefrom .= organizer_userdate($slot->starttime, get_string('datetemplate', 'organizer')) . " " .
+            html_writer::span(organizer_userdate($slot->starttime, get_string('timetemplate', 'organizer')),
                 'badge badge-dark font-big mr-1');
-        $dateto = html_writer::span(userdate($slot->starttime + $slot->duration,
+        $dateto = html_writer::span(organizer_userdate($slot->starttime + $slot->duration,
             get_string('timetemplate', 'organizer')), 'badge badge-dark font-big ml-1');
     } else {
-        $datefrom = html_writer::span(userdate($slot->starttime, '%a'), 'badge badge-info font-big mr-1');
-        $datefrom .= userdate($slot->starttime, get_string('datetemplate', 'organizer')) . " " .
-            html_writer::span(userdate($slot->starttime, get_string('timetemplate', 'organizer')),
+        $datefrom = html_writer::span(organizer_userdate($slot->starttime, '%a'), 'badge badge-info font-big mr-1');
+        $datefrom .= organizer_userdate($slot->starttime, get_string('datetemplate', 'organizer')) . " " .
+            html_writer::span(organizer_userdate($slot->starttime, get_string('timetemplate', 'organizer')),
                 'badge badge-dark font-big mr-1');
         $slotendtime = $slot->starttime + $slot->duration;
-        $dateto = html_writer::span(userdate($slotendtime, '%a'), 'badge badge-info font-big mr-1');
-        $dateto .= userdate($slotendtime, get_string('datetemplate', 'organizer')) .
-            html_writer::span(userdate($slotendtime, get_string('timetemplate', 'organizer')),
+        $dateto = html_writer::span(organizer_userdate($slotendtime, '%a'), 'badge badge-info font-big mr-1');
+        $dateto .= organizer_userdate($slotendtime, get_string('datetemplate', 'organizer')) .
+            html_writer::span(organizer_userdate($slotendtime, get_string('timetemplate', 'organizer')),
                 'badge badge-dark font-big ml-1');
     }
 
@@ -1307,6 +1307,10 @@ function organizer_date_time($slot, $nobreak = false) {
     }
     return $datestr;
 
+}
+
+function organizer_userdate($date, $format) {
+    return userdate($date, $format, null, false, false);
 }
 
 function organizer_trainer_data($params, $slot, $trainerids = null) {
