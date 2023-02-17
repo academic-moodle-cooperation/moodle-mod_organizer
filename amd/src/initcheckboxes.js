@@ -14,7 +14,7 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod
+ * @package
  * @subpackage organizer
  * @copyright 2020 Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -38,6 +38,10 @@ define(
 
         instance.init = function() {
 
+            /**
+             * Check or uncheck checkboxes of slot overview.
+             * @param {object} e element which has been clicked
+             */
             function organizer_check_all(e) {
                 var checked = $(e.target).is(':checked');
                 var table = $('#slot_overview');

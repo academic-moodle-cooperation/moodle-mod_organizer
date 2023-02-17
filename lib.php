@@ -50,6 +50,15 @@ define('ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE', 'Instance');
 define('EIGHTDAYS', 691200);
 define('ORGANIZER_PRINTSLOTUSERFIELDS', 9);
 
+define('USERSLOTS_MIN_NOT_REACHED', 0);
+define('USERSLOTS_MIN_REACHED', 1);
+define('USERSLOTS_MAX_REACHED', 2);
+
+define('GRADEAGGREGATIONMETHOD_AVERAGE', 1);
+define('GRADEAGGREGATIONMETHOD_SUM', 2);
+define('GRADEAGGREGATIONMETHOD_BEST', 3);
+define('GRADEAGGREGATIONMETHOD_WORST', 4);
+
 require_once(dirname(__FILE__) . '/slotlib.php');
 
 /**
@@ -107,7 +116,7 @@ function organizer_update_instance($organizer) {
     }
 
     $newname = $organizer->name;
-    $oldname = $DB->get_field('organizer', 'name', array('id' => $organizer->id));
+    $organizerold = $DB->get_record('organizer', array('id' => $organizer->id), 'name, gradeaggregationmethod');
 
     organizer_grade_item_update($organizer);
 
@@ -117,6 +126,12 @@ function organizer_update_instance($organizer) {
         organizer_remove_waitingqueueentries($organizer);
     }
 
+    // If grade aggregation method has changed regrade all grades.
+    if ($organizerold->gradeaggregationmethod != $organizer->gradeaggregationmethod) {
+        organizer_update_all_grades($organizer->id);
+    }
+
+    // Update event entries.
     $params = array('modulename' => 'organizer', 'instance' => $organizer->id,
         'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE);
 
@@ -130,8 +145,8 @@ function organizer_update_instance($organizer) {
 
     organizer_change_event_instance($organizer, $eventids);
 
-    if ($oldname != $newname) {
-        organizer_change_eventnames($organizer->id, $oldname, $newname);
+    if ($organizerold->name != $newname) {
+        organizer_change_eventnames($organizer->id, $organizerold->name, $newname);
     }
 
     return true;
@@ -297,7 +312,7 @@ function organizer_reset_userdata($data) {
 }
 
 function organizer_reset_gradebook($courseid) {
-    global $CFG, $DB;
+    global $DB;
 
     $params = array('courseid' => $courseid);
 
@@ -332,18 +347,18 @@ function organizer_get_user_grade($organizer, $userid = 0) {
                 INNER JOIN {organizer_slots} s ON a.slotid = s.id
                 WHERE s.organizerid = :organizerid AND a.userid = :userid
                 ORDER BY id DESC';
-        $arr = $DB->get_records_sql($query, $params);
-        $result = reset($arr);
-        if ($result) {
-            return array($userid => $result);
-        } else {
-            return array();
-        }
+        return $DB->get_records_sql($query, $params);
     } else {
         return array();
     }
 }
 
+/**
+ * Update activity grades.
+ *
+ * @param object $organizer
+ * @param int $userid specific user only, 0 means all
+ */
 function organizer_update_grades($organizer, $userid = 0) {
     global $CFG;
     include_once($CFG->libdir . '/gradelib.php');
@@ -352,18 +367,77 @@ function organizer_update_grades($organizer, $userid = 0) {
         return organizer_grade_item_update($organizer);
     } else {
         if ($grades = organizer_get_user_grade($organizer, $userid)) {
-            foreach ($grades as $key => $value) {
-                if ($value->rawgrade == -1) {
-                    $grades[$key]->rawgrade = null;
+            $grade = reset($grades);
+            if ($organizer->grade > 0) { // Numerical.
+                switch ($organizer->gradeaggregationmethod) {
+                    case GRADEAGGREGATIONMETHOD_AVERAGE:
+                        $sum = 0;
+                        $i = 0;
+                        foreach ($grades as $value) {
+                            if ($value->rawgrade) {
+                                $i++;
+                                $sum += $value->rawgrade;
+                            }
+                        }
+                        $grade->rawgrade = $sum / $i;
+                        break;
+                    case GRADEAGGREGATIONMETHOD_SUM:
+                        $sum = 0;
+                        foreach ($grades as $value) {
+                            if ($value->rawgrade) {
+                                $sum += $value->rawgrade;
+                            }
+                        }
+                        $grade->rawgrade = $sum;
+                        break;
+                    case GRADEAGGREGATIONMETHOD_BEST:
+                        $max = 0;
+                        foreach ($grades as $value) {
+                            if (is_numeric($value->rawgrade)) {
+                                if ((float) $value->rawgrade > (float) $max) {
+                                    $max = $value->rawgrade;
+                                }
+                            }
+                        }
+                        $grade->rawgrade = $max;
+                        break;
+                    case GRADEAGGREGATIONMETHOD_WORST:
+                        $min = INF;
+                        foreach ($grades as $value) {
+                            if (is_numeric($value->rawgrade)) {
+                                if ((float) $value->rawgrade < (float) $min) {
+                                    $min = $value->rawgrade;
+                                }
+                            }
+                        }
+                        $grade->rawgrade = $min;
+                        break;
+                    default:
+                        // If no grade method is selected take average method.
+                        $sum = 0;
+                        $i = 0;
+                        foreach ($grades as $value) {
+                            if ($value->rawgrade) {
+                                $i++;
+                                $sum += $value->rawgrade;
+                            }
+                        }
+                        $grade->rawgrade = $sum / $i;
                 }
             }
-            return organizer_grade_item_update($organizer, $grades);
+            return organizer_grade_item_update($organizer, $grade);
         } else {
             return organizer_grade_item_update($organizer);
         }
     }
 }
 
+/**
+ * Create/update grade items for given organizer.
+ *
+ * @param stdClass $organizer Organizer instance object
+ * @param mixed $grades Optional array/object of grade(s); 'reset' means reset grades in gradebook
+ */
 function organizer_grade_item_update($organizer, $grades = null) {
     global $CFG;
     include_once($CFG->libdir . '/gradelib.php');
@@ -402,7 +476,7 @@ function organizer_display_grade($organizer, $grade, $userid) {
     $nograde = get_string('nograde');
     static $scalegrades = array();   // Cache scales for each organizer - they might have different scales!!
 
-    if ($organizer->grade >= 0) {    // Normal number.
+    if ($organizer->grade > 0) {    // Normal number.
         if ($grade == -1 || $grade == null) {
             $finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid);
             if ($finalgrade !== false) {
@@ -420,7 +494,7 @@ function organizer_display_grade($organizer, $grade, $userid) {
         }
     } else {    // Scale.
         if (empty($scalegrades[$organizer->id])) {
-            if ($scale = $DB->get_record('scale', array('id' => -($organizer->grade)))) {
+            if ($scale = $DB->get_record('scale', array('id' => -($organizer->scale)))) {
                 $scalegrades[$organizer->id] = make_menu_from_list($scale->scale);
             } else {
                 return $nograde;
@@ -477,6 +551,35 @@ function organizer_get_finalgrade_overwritten($organizerid, $userid) {
     }
 }
 
+function organizer_update_all_grades($organizerid) {
+    global $DB;
+
+    list($cm, , $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
+
+    $studentids = array();
+
+    if ($organizer->isgrouporganizer != ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $students = get_enrolled_users($context, 'mod/organizer:register');
+        foreach ($students as $student) {
+            $studentids[] = $student->id;
+        }
+    } else if ($cm->groupingid != 0) {
+        $query = "SELECT u.id FROM {user} u
+        INNER JOIN {groups_members} gm ON u.id = gm.userid
+        INNER JOIN {groups} g ON gm.groupid = g.id
+        INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
+        WHERE gg.groupingid = :grouping";
+        $par = array('grouping' => $cm->groupingid);
+        $studentids = $DB->get_fieldset_sql($query, $par);
+    }
+
+    foreach ($studentids as $studentid) {
+        organizer_update_grades($organizer, $studentid);
+    }
+
+    return count($studentids);
+}
+
 // Tscpr: we can strip the trailing _organizer in this function name...
 function organizer_make_grades_menu_organizer($gradingtype) {
     global $DB;
@@ -507,95 +610,6 @@ function organizer_clean_num($num) {
     }
 }
 
-function organizer_get_last_group_appointment($organizer, $groupid) {
-    global $DB;
-    $params = array('groupid' => $groupid, 'organizerid' => $organizer->id);
-    $groupapps = $DB->get_records_sql(
-        'SELECT a.* FROM {organizer_slot_appointments} a
-            INNER JOIN {organizer_slots} s ON a.slotid = s.id
-            WHERE a.groupid = :groupid AND s.organizerid = :organizerid
-            ORDER BY a.id DESC', $params
-    );
-
-    $app = null;
-
-    $appcount = 0;
-    $someoneattended = 0;
-    foreach ($groupapps as $groupapp) {
-        if ($groupapp->groupid == $groupid) {
-            $app = $groupapp;
-        }
-        if (isset($groupapp->attended)) {
-            $appcount++;
-            if ($groupapp->attended == 1) {
-                $someoneattended = 1;
-            }
-        }
-    }
-
-    if ($app) {
-        $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
-    }
-
-    return $app;
-}
-
-function organizer_get_counters($organizer) {
-    global $DB;
-
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
-        $params = array('groupingid' => $cm->groupingid);
-        $query = 'SELECT {groups}.* FROM {groups}
-                INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
-                WHERE {groupings_groups}.groupingid = :groupingid
-                ORDER BY {groups}.name ASC';
-        $groups = $DB->get_records_sql($query, $params);
-
-        $attended = 0;
-        $registered = 0;
-        foreach ($groups as $group) {
-            $app = organizer_get_last_group_appointment($organizer, $group->id);
-            if ($app && $app->attended == 1) {
-                $attended++;
-            } else if ($app && !isset($app->attended)) {
-                $registered++;
-            }
-        }
-        $total = count($groups);
-
-        $a = new stdClass();
-        $a->registered = $registered;
-        $a->attended = $attended;
-        $a->total = $total;
-    } else {
-        $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
-        $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
-        $context = context_module::instance($cm->id, MUST_EXIST);
-
-        $students = get_enrolled_users($context, 'mod/organizer:register');
-
-        $attended = 0;
-        $registered = 0;
-        foreach ($students as $student) {
-            $app = organizer_get_last_user_appointment($organizer, $student->id);
-            if ($app && $app->attended == 1) {
-                $attended++;
-            } else if ($app && !isset($app->attended)) {
-                $registered++;
-            }
-        }
-        $total = count($students);
-
-        $a = new stdClass();
-        $a->registered = $registered;
-        $a->attended = $attended;
-        $a->total = $total;
-    }
-
-    return $a;
-}
-
 function organizer_get_eventaction_instance_trainer($organizer) {
     $a = organizer_get_counters($organizer);
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
@@ -615,40 +629,35 @@ function organizer_get_eventaction_instance_trainer($organizer) {
 
 function organizer_get_eventaction_instance_student($organizer) {
 
-    $app = organizer_get_next_user_appointment($organizer);
-    if ($app) {
-        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-            $group = organizer_fetch_group($organizer);
-            $a = new stdClass();
-            $a->groupname = $group->name;
+    $a = new stdClass();
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $group = organizer_fetch_group($organizer);
+        $a->booked = organizer_count_bookedslots($organizer->id, null, $group->id);
+        $a->groupname = $group->name;
+        $a->slotsmin = $organizer->userslotsmin;
+        if (organizer_multiplebookings_status($a->booked, $organizer) != USERSLOTS_MIN_NOT_REACHED) {
             $str = get_string('mymoodle_reg_slot_group', 'organizer', $a);
         } else {
-            $str = get_string('mymoodle_reg_slot', 'organizer');
+            $str = get_string('mymoodle_no_reg_slot_group', 'organizer');
         }
     } else {
-        if (!$app = organizer_get_last_user_appointment($organizer)) {
-            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                $group = organizer_fetch_group($organizer);
-                $a = new stdClass();
-                $a->groupname = $group->name;
-                $str = get_string('mymoodle_no_reg_slot_group', 'organizer', $a);
-            } else {
-                $str = get_string('mymoodle_no_reg_slot', 'organizer');
-            }
+        $a->booked = organizer_count_bookedslots($organizer->id);
+        $a->slotsmin = $organizer->userslotsmin;
+        if (organizer_multiplebookings_status($a->booked, $organizer) != USERSLOTS_MIN_NOT_REACHED) {
+            $str = get_string('mymoodle_reg_slot', 'organizer', $a);
         } else {
-            $regslot = get_string('mymoodle_reg_slot', 'organizer');
-            $str = " " . $regslot;
-            if (isset($organizer->duedate)) {
-                $a = new stdClass();
-                $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
-                $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
-                if ($organizer->duedate > time()) {
-                    $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
-                } else {
-                    $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
-                }
-                $str .= " " . $orgexpires;
+            $str = get_string('mymoodle_no_reg_slot', 'organizer');
+        }
+        if (isset($organizer->duedate)) {
+            $a = new stdClass();
+            $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
+            $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
+            if ($organizer->duedate > time()) {
+                $orgexpires = get_string('mymoodle_organizer_expires', 'organizer', $a);
+            } else {
+                $orgexpires = get_string('mymoodle_organizer_expired', 'organizer', $a);
             }
+            $str .= " " . $orgexpires;
         }
     }
 
@@ -943,25 +952,16 @@ function organizer_uninstall() {
 function organizer_supports($feature) {
     switch ($feature) {
         case FEATURE_GROUPS:
-        return true;
         case FEATURE_GROUPINGS:
-        return true;
-        case FEATURE_GROUPMEMBERSONLY:
-        return true;
         case FEATURE_MOD_INTRO:
-        return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS:
-        return true;
         case FEATURE_GRADE_HAS_GRADE:
-        return true;
         case FEATURE_GRADE_OUTCOMES:
-        return true;
         case FEATURE_BACKUP_MOODLE2:
-        return true;
         case FEATURE_SHOW_DESCRIPTION:
-        return true;
+            return true;
         default:
-        return null;
+            return null;
     }
 }
 
@@ -1084,7 +1084,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $us
             $isvisible = false;
         } else {
             if (has_capability('mod/organizer:viewallslots', $context)) {
-                $a = organizer_get_counters($organizer);
+                $a = organizer_get_counters($organizer, $cm);
                 if ($a->total == 0) {
                     $isvisible = true;
                 } else if ($organizer->grade != 0 && $a->attended < $a->total) { // If grading is active.
@@ -1283,3 +1283,15 @@ function organizer_change_eventnames($organizerid, $oldname, $newname) {
     }
     $rs->close();
 }
+
+/**
+ * Get icon mapping for font-awesome.
+ */
+function mod_organizer_get_fontawesome_icon_map() {
+    return [
+        'mod_organizer:message_error' => 'fa-times-circle',
+        'mod_organizer:message_info' => 'fa-info-circle',
+        'mod_organizer:message_warning' => 'fa-exclamation-circle',
+    ];
+}
+

@@ -150,7 +150,7 @@ function organizer_add_new_slots($data) {
 
     $collisionmessages = "";
     $startdate = $data->startdate;
-    $enddate = $data->enddate + 86399;
+    $enddate = $data->enddate + 86400;
     $date = time();
     $slotsnotcreatedduetodeadline = 0;
     $slotsnotcreatedduetopasttime = 0;
@@ -167,8 +167,11 @@ function organizer_add_new_slots($data) {
             $slot['datefrom'] = $daydate + $slot['from'];
             $slot['dateto'] = organizer_get_dayto($slot['dayto'], $daydate);
             $slot['dateto'] = $slot['dateto'] + $slot['to'];
-            if ($slot['datefrom'] < $startdate || $slot['datefrom'] > $enddate || $slot['dateto'] > $enddate) {
+            if ($slot['datefrom'] < $startdate || $slot['datefrom'] > $enddate) {
                 continue;
+            }
+            while ($slot['dateto'] < $slot['datefrom']) {
+                $slot['dateto'] += (7 * 86400);
             }
 
             $newslot = new stdClass();
@@ -195,7 +198,8 @@ function organizer_add_new_slots($data) {
                 print_error('Gap is invalid (not set or < 0). No slots will be added. Contact support!');
             }
 
-            for ($time = $slot['datefrom']; $time + $data->duration <= $slot['dateto']; $time += ($data->duration + $data->gap)) {
+            $dateto = $enddate < $slot['dateto'] ? $enddate : $slot['dateto'];
+            for ($time = $slot['datefrom']; $time + $data->duration <= $dateto; $time += ($data->duration + $data->gap)) {
 
                 if ($time - $date < $relativedeadline && $time - $date > 0 ) {
                     $slotsnotcreatedduetodeadline++;
@@ -228,7 +232,7 @@ function organizer_add_new_slots($data) {
                             $collisionmessage = "";
                             foreach ($collisions as $collision) {
                                 if ($head) {
-                                    $collisionmessage .= '<span class="error">' .
+                                    $collisionmessage .= '<span class="warning">' .
                                         get_string('collision', 'organizer') . '</span><br />';
                                     $head = false;
                                 }
@@ -755,6 +759,44 @@ function organizer_delete_appointment_slot($id) {
     return $notifiedusers;
 }
 
+function organizer_delete_appointment($id) {
+    global $DB, $USER;
+
+    if (!$appointment = $DB->get_record('organizer_slot_appointments', array('id' => $id))) {
+        return false;
+    }
+
+    // Send a message to the participant.
+    $slot = new organizer_slot($appointment->slotid);
+    $receiver = intval($appointment->userid);
+    organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
+    $DB->delete_records('event', array('id' => $appointment->eventid));
+    $DB->delete_records('organizer_slot_appointments', array('id' => $id));
+
+    return true;
+}
+
+function organizer_delete_appointment_group($slotid, $groupid) {
+    global $DB, $USER;
+
+    $slot = new organizer_slot($slotid);
+
+    if (!$appointments = $DB->get_records('organizer_slot_appointments',
+        array('slotid' => $slotid, 'groupid' => $groupid))) {
+        return false;
+    }
+
+    foreach ($appointments as $appointment) {
+        // Send a message to the participant.
+        $receiver = intval($appointment->userid);
+        organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
+        $DB->delete_records('event', array('id' => $appointment->eventid));
+        $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
+    }
+
+    return true;
+}
+
 function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
     global $DB;
 
@@ -835,7 +877,7 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
 
 function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
                                         $sendmessage = false, $teacherapplicantid = null, $slotnotfull = false) {
-    global $DB, $USER, $CFG;
+    global $DB, $USER;
 
     if (!$userid) {
         $userid = $USER->id;
@@ -897,17 +939,6 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
 
     list($cm, , $organizer, ) = organizer_get_course_module_data(null, $ogranizerid);
 
-    $params = array('organizerid' => $organizer->id, 'userid' => $userid);
-    $query = "SELECT COUNT(*) FROM {organizer_slot_appointments}
-                    INNER JOIN {organizer_slots} ON {organizer_slot_appointments}.slotid = {organizer_slots}.id
-                    WHERE {organizer_slots}.organizerid = :organizerid
-                    AND {organizer_slot_appointments}.userid = :userid
-                    AND ( {organizer_slot_appointments}.allownewappointments IS NULL OR
-                    {organizer_slot_appointments}.allownewappointments = 0 )";
-    if ($alreadyapps = $DB->count_records_sql($query, $params)) {
-        return false;
-    }
-
     $appointment = new stdClass();
     $appointment->slotid = $slotid;
     $appointment->userid = $userid;
@@ -935,7 +966,14 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     $DB->update_record('organizer_slot_appointments', $appointment);
 
     if (organizer_hasqueue($organizer->id)) {
-        organizer_delete_user_from_any_queue($organizer->id, $userid);
+        if ($groupid) {
+            $booked = organizer_count_bookedslots($organizer->id, null, $groupid);
+        } else {
+            $booked = organizer_count_bookedslots($organizer->id, $userid, null);
+        }
+        if (organizer_multiplebookings_status($booked, $organizer) == USERSLOTS_MAX_REACHED) {
+            organizer_delete_user_from_any_queue($organizer->id, $userid);
+        }
     }
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPBOOKING ||
@@ -1084,11 +1122,19 @@ function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
             if ($next = $slotx->get_next_in_queue_group()) {
                 organizer_register_appointment($slotid, $next->groupid, 0, true);
                 organizer_delete_from_queue($slotid, null, $next->groupid);
+                $booked = organizer_count_bookedslots($organizerid, null, $next->groupid);
+                if (organizer_multiplebookings_status($booked, $organizerid) == USERSLOTS_MAX_REACHED) {
+                    organizer_delete_user_from_any_queue($organizerid, null, $next->groupid);
+                }
             }
         } else {
             if ($next = $slotx->get_next_in_queue()) {
                 organizer_register_appointment($slotid, 0, $next->userid, true);
                 organizer_delete_from_queue($slotid, $next->userid);
+                $booked = organizer_count_bookedslots($organizerid, $next->userid, null);
+                if (organizer_multiplebookings_status($booked, $organizerid) == USERSLOTS_MAX_REACHED) {
+                    organizer_delete_user_from_any_queue($organizerid, $next->userid, null);
+                }
             }
         }
     }
@@ -1176,7 +1222,6 @@ function organizer_evaluate_slots($data) {
             }
 
             $newapp->feedback = isset($app['feedback']) ? $app['feedback'] : "";
-            $newapp->allownewappointments = $app['allownewappointments'];
 
             $DB->update_record('organizer_slot_appointments', $newapp);
 
@@ -2002,7 +2047,6 @@ function organizer_get_registrationview_entries($groupmode, $params) {
     return $entries;
 }
 
-
 /**
  * Obtains slots parameters if present
  *
@@ -2019,4 +2063,255 @@ function organizer_get_param_slots() {
         }
     }
     return $slots;
+}
+
+/**
+ * How many slots a participant has booked
+ *
+ * @param int $organizerid  ID of organizer instance
+ * @param int $userid ID of user
+ * @param int $groupid ID of group (if instance is groupmode)
+ *
+ * @return int $slots
+ */
+function organizer_count_bookedslots($organizerid, $userid = null, $groupid = null) {
+    global $DB, $USER;
+
+    if ($userid == null && $groupid == null) {
+        $userid = $USER->id;
+    }
+    if ($userid) {
+        $paramssql = array('userid' => $userid, 'organizerid' => $organizerid);
+        $query = "SELECT count(*) FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.userid = :userid";
+    } else {
+        $paramssql = array('groupid' => $groupid, 'organizerid' => $organizerid);
+        $query = "SELECT count(DISTINCT s.id) FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.groupid = :groupid";
+    }
+    $slots = $DB->count_records_sql($query, $paramssql);
+
+    return $slots;
+}
+
+/**
+ * What is the multiple slots bookings status for the given amount of user bookings in this organizer instance
+ *
+ * @param int $slotsbooked amount of booked slots of a user
+ * @param object $organizer this organizer instance
+ *
+ * @return int $status 0 for min not reached, 1 for min reached, 2 for max_reached
+ */
+function organizer_multiplebookings_status($slotsbooked, $organizer) {
+    global $DB;
+
+    if (is_number($organizer)) {
+        $organizer = $DB->get_record('organizer', array('id' => $organizer), 'userslotsmin, userslotsmax', MUST_EXIST);
+    }
+
+    if ($slotsbooked >= $organizer->userslotsmax) {
+        $status = USERSLOTS_MAX_REACHED;
+    } else if ($slotsbooked >= $organizer->userslotsmin) {
+        $status = USERSLOTS_MIN_REACHED;
+    } else {
+        $status = USERSLOTS_MIN_NOT_REACHED;
+    }
+    return $status;
+}
+
+/**
+ * How many slots a participant has left
+ *
+ * @param object $organizer  organizer instance
+ * @param int $userid ID of user
+ * @param int $groupid ID of group (if instance is groupmode)
+ *
+ * @return int $slotsleft
+ */
+function organizer_multiplebookings_slotslefttobook($organizer, $userid = null, $groupid = null) {
+    global $DB, $USER;
+
+    if ($userid == null && $groupid == null) {
+        $userid = $USER->id;
+    }
+
+    if ($userid) {
+        $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
+        $query = "SELECT count(*) FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.userid = :userid";
+    } else {
+        $paramssql = array('groupid' => $groupid, 'organizerid' => $organizer->id);
+        $query = "SELECT count(DISTINCT s.id) FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.groupid = :groupid";
+    }
+    $bookedslots = $DB->count_records_sql($query, $paramssql);
+
+    $slotsleft = $organizer->userslotsmax - $bookedslots;
+
+    return $slotsleft;
+}
+
+/**
+ * Returns true if at least one user booking exists in this organizer instance
+ *
+ * @param int $organizerid ID of organizer instance
+ *
+ * @return bool $exist
+ */
+function organizer_bookings_exist($organizerid) {
+    global $DB;
+
+    $paramssql = array('organizerid' => $organizerid);
+    $query = "select a.id from {organizer_slot_appointments} a
+        inner join {organizer_slots} s on a.slotid = s.id
+        where s.organizerid = :organizerid";
+    $exist = $DB->record_exists_sql($query, $paramssql);
+
+    return $exist;
+}
+
+/**
+ * Returns amount of course participants who have not booked the minimum of slots and have booked the maximum of slots.
+ *
+ * @param object $organizer organizer instance
+ * @param boolean $groupmode is organizer instance in groupmode
+ * @param objects $entries of registration view
+ *
+ * @return array $entries, $underminimum: participants booked under minimum, $maxreached: participants
+ * who have reached the max
+ */
+function organizer_registration_statistics($organizer, $groupmode, $entries) {
+    $countentries = 0;
+    $underminimum = 0;
+    $maxreached = 0;
+    $entriesdone = array();
+    foreach ($entries as $entry) {
+        if (!in_array($entry->id, $entriesdone)) { // No duplicates!
+            $countentries++;
+            if ($groupmode) {
+                $booked = organizer_count_bookedslots($organizer->id, null, $entry->id);
+            } else {
+                $booked = organizer_count_bookedslots($organizer->id, $entry->id, null);
+            }
+            $status = organizer_multiplebookings_status($booked, $organizer);
+            if ($status == USERSLOTS_MIN_NOT_REACHED) {
+                $underminimum++;
+            } else if ($status == USERSLOTS_MAX_REACHED) {
+                $maxreached++;
+            }
+            $entriesdone[] = $entry->id;
+        }
+    }
+
+    return [$countentries, $underminimum, $maxreached];
+}
+
+/**
+ * Returns amount of course participants who have not booked the minimum of slots yet.
+ *
+ * @param object $organizer organizer instance
+ * @param object $cm course module data of instance
+ *
+ * @return object $allparticipants, $participantsreachedminimum, $attendedparticipants
+ */
+function organizer_get_counters($organizer, $cm = null) {
+    global $DB;
+
+    if (!$cm) {
+        $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
+    }
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $params = array('groupingid' => $cm->groupingid);
+        $query = 'SELECT {groups}.id FROM {groups}
+                INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
+                WHERE {groupings_groups}.groupingid = :groupingid';
+        $groups = $DB->get_records_sql($query, $params);
+        $attended = 0;
+        $registered = 0;
+        foreach ($groups as $group) {
+            $apps = organizer_get_all_group_appointments($organizer, $group->id);
+            if (organizer_multiplebookings_status(count($apps), $organizer) != USERSLOTS_MIN_NOT_REACHED) {
+                $registered ++;
+            }
+            foreach ($apps as $app) {
+                if ($app->attended == 1) {
+                    $attended++;
+                    break;
+                }
+            }
+        }
+        $total = count($groups);
+        $a = new stdClass();
+        $a->registered = $registered;
+        $a->attended = $attended;
+        $a->total = $total;
+    } else {
+        $context = context_module::instance($cm->id, MUST_EXIST);
+        $participants = get_enrolled_users($context, 'mod/organizer:register');
+        $attended = 0;
+        $registered = 0;
+        foreach ($participants as $participant) {
+            $apps = organizer_get_all_user_appointments($organizer, $participant->id);
+            if (organizer_multiplebookings_status(count($apps), $organizer) != USERSLOTS_MIN_NOT_REACHED) {
+                $registered ++;
+            }
+            foreach ($apps as $app) {
+                if ($app->attended == 1) {
+                    $attended++;
+                    break;
+                }
+            }
+        }
+        $total = count($participants);
+        $a = new stdClass();
+        $a->registered = $registered;
+        $a->attended = $attended;
+        $a->total = $total;
+    }
+
+    return $a;
+}
+
+/**
+ * Returns the html of a status bar indicating the user's status regarding his bookings.
+ *
+ * @param int $bookings amount of user bookings
+ * @param int $max max amount of bookings per user
+ * @param boolean $minreached if user has reached minimum of bookings
+ * @param string $statusmsg to be written
+ * @param string $msg for the tooltip
+ *
+ * @return object $out html output of status bar
+ */
+function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg) {
+
+    $out = html_writer::start_div('userstatusbar_tr', array('title' => $msg));
+    if ($minreached) {
+        $classstrfull = 'align-middle border border-success bg-success';
+        $classstrempty = 'align-middle border border-success';
+        $classstatusmsg = 'text-success font-weight-bolder';
+    } else {
+        $classstrfull = 'align-middle border border-info bg-info';
+        $classstrempty = 'align-middle border border-info';
+        $classstatusmsg = 'text-info font-weight-bolder';
+    }
+    $i = 1;
+    while ($i <= (int) $bookings) {
+        $out .= html_writer::div(' ', 'userstatusbar_td_full '.$classstrfull);
+        $i++;
+    }
+    while ($i <= (int) $max) {
+        $out .= html_writer::div(' ', 'userstatusbar_td_empty '.$classstrempty);
+        $i++;
+    }
+    $out .= html_writer::span($statusmsg, 'ml-2 '.$classstatusmsg);
+    $out .= html_writer::span($msg, 'ml-1 font-italic');
+    $out .= html_writer::end_div();
+
+    return $out;
+
 }

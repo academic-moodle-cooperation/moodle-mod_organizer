@@ -14,7 +14,7 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod
+ * @package
  * @subpackage organizer
  * @copyright 2020 Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -38,11 +38,15 @@ define(
         var instance = new Evalform();
 
         instance.init = function() {
+
+            /**
+             * Display the icon for changed content.
+             * @param {object} e element which has been clicked
+             */
             function toggle_all(e) {
                 var target = $(e.target);
                 var checked = target.is(':checked');
                 var sender_class = target.attr('class').match(/allow\d+/g)[0];
-
                 $('input.' + sender_class).val(checked ? "1" : "0");
             }
 

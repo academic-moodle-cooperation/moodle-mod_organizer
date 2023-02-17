@@ -46,14 +46,17 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 
 require_capability('mod/organizer:deleteslots', $context);
 
+$infoboxmessage = "";
 if (!$slots) {
-    $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+    $infoboxmessage .= $OUTPUT->notification(get_string('message_warning_no_slots_selected', 'organizer'),
+        'error');
     redirect($redirecturl);
 }
 
 $mform = new organizer_delete_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
 if ($data = $mform->get_data()) {
+    $a = new stdClass();
     if (isset($slots)) {
         $notified = 0;
         foreach ($slots as $slotid) {
@@ -63,61 +66,23 @@ if ($data = $mform->get_data()) {
             }
             $notified += organizer_delete_appointment_slot($slotid);
         }
+        $a->notified = $notified;
+        $a->deleted = count($slots);
 
-        $slotsdeleted = count($slots);
-
-        $slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
-
-        $event = \mod_organizer\event\slot_deleted::create(
-            array(
-                'objectid' => $PAGE->cm->id,
-                'context' => $PAGE->context
-            )
-        );
+        $event = \mod_organizer\event\slot_deleted::create(array('objectid' => $PAGE->cm->id,
+                'context' => $PAGE->context));
         $event->trigger();
 
-        // Count_records_sql doesnt work.
-           $appointmentstotal = $DB->get_record_sql(
-               'SELECT COUNT(*) as total
-            FROM {organizer_slots} org
-            JOIN {organizer_slot_appointments} app ON org.id = app.slotid
-            WHERE org.organizerid=?', array($organizer->id)
-           );
-           $appointmentstotal = $appointmentstotal->total;
-
-        if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-            $redirecturl->param('messages[]', 'message_info_slots_deleted_group');
-
-            $groups = groups_get_all_groups($course->id, 0, $cm->groupingid);
-            $registrantstotal = count($groups);
-
-            $placestotal = count($slots);
-
+        if ($a->deleted == 1) {
+            $infoboxmessage .= $OUTPUT->notification(get_string('message_info_slots_deleted_sg', 'organizer', $a),
+                'success');
         } else {
-            $redirecturl->param('messages[0]', 'message_info_slots_deleted');
-
-            $slots = $DB->get_records('organizer_slots', array('organizerid' => $organizer->id));
-            $placestotal = 0;
-            foreach ($slots as $slot) {
-                $placestotal += $slot->maxparticipants;
-            }
-
-            $registrantstotal = count(get_enrolled_users($context, 'mod/organizer:register'));
+            $infoboxmessage .= $OUTPUT->notification(get_string('message_info_slots_deleted_pl', 'organizer', $a),
+                'success');
         }
-
-        $freetotal = $placestotal - $appointmentstotal;
-        $notregistered = $registrantstotal - $appointmentstotal;
-
-        $redirecturl->param('data[deleted]', $slotsdeleted);
-        $redirecturl->param('data[notified]', $notified); // Anzahl benachrichtigter studenten.
-        $redirecturl->param('data[freeslots]', $freetotal); // Freie slots.
-        $redirecturl->param('data[notregistered]', $notregistered); // Anzahl noch nicht angemeldeter studenten.
-
-        $prefix = ($notregistered > $freetotal) ? 'warning' : 'info';
-        $suffix = ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) ? '_group' : '';
-
-        $redirecturl->param('messages[1]', 'message_' . $prefix . '_available' . $suffix);
-
+    }
+    if ($infoboxmessage) {
+        $_SESSION["infoboxmessage"] = $infoboxmessage;
     }
     redirect($redirecturl);
 } else if ($mform->is_cancelled()) {

@@ -14,7 +14,7 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod
+ * @package
  * @subpackage organizer
  * @copyright 2020 Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,7 +26,7 @@
 
 
 define(
-    ['jquery', 'core/log'], function($, log) {
+    ['jquery'], function($) {
 
         /**
          * @constructor
@@ -50,8 +50,8 @@ define(
             instance.totalday = param.totalday; // String for new slots amount status message for a day.
             instance.totaltotal = param.totaltotal; // String for new slots amount total status message.
             instance.relativedeadline = param.relativedeadline; // Relative deadline for slot registrations in seconds.
-            instance.relativedeadlinestring = param.relativedeadlinestring; // String warning message if slots had
-            // not been created due to registration deadline. "xxx" is replaced by the number of not created slots.
+            instance.relativedeadlinestring = param.relativedeadlinestring; /* String warning message if slots had
+            not been created due to registration deadline. "xxx" is replaced by the number of not created slots. */
             instance.allowcreationofpasttimeslots = param.allowcreationofpasttimeslots;// Deadline for registrations(s).
             instance.pasttimeslotsstring = param.pasttimeslotsstring; // String warning message if slots had
 
@@ -94,7 +94,11 @@ define(
                 $('#id_availablefrom_timeunit').prop("disabled", true);
             }
 
-            // Get index of changed row and start evaluation.
+            /**
+             * Get index of changed row and start evaluation.
+             *
+             * @param {object} e event of changed row element
+             */
             function startevaluation(e) {
                 var name = $(e.target).attr("name");
                 var i = parseInt(name.replace('newslots[', ''));
@@ -103,7 +107,7 @@ define(
                 var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[fromh\]']").val()) +
                     parseInt($("select[name='newslots\[" + i + "\]\[fromm\]']").val());
                 // Proposal for to-date's time when from-date's time has been changed.
-                if ((valdayfrom != -1 && valdayto == -1) || (name.indexOf("[fromh]") != -1 && name.indexOf("[fromm]") != -1)) {
+                if (valdayfrom != -1 && name.indexOf('dayto') == -1 && name.indexOf('toh') == -1 && name.indexOf('tom') == -1) {
                     var periodstartdate = getstartdate();
                     var periodenddate = getenddate();
                     for (var daydate = periodstartdate; daydate <= periodenddate; daydate = addDays(daydate * 1000, 1)) {
@@ -136,7 +140,11 @@ define(
                 writetotal();
             }
 
-            // Evaluate a certain row to make forecast.
+            /**
+             * Evaluate a certain row to make forecast.
+             *
+             * @param {number} i Index of row
+             */
             function evaluaterow(i) {
                 var howmanyslots = getslots(i);
                 var slots = howmanyslots[0];
@@ -158,7 +166,11 @@ define(
                 $("span[name='newpax_" + i + "']").html(pax.toString());
             }
 
-            // Set row evaluation to zero.
+            /**
+             * Set row evaluation to zero.
+             *
+             * @param {number} i Index of row
+             */
             function resetrowevaluation(i) {
                 var slots = 0;
                 var pax = 0;
@@ -168,7 +180,9 @@ define(
                 $("span[name='newpax_" + i + "']").html(pax.toString());
             }
 
-            // Reevaluate all rows and write the totals.
+            /**
+             * Reevaluate all rows and write the totals.
+             */
             function evaluateallrows() {
                 for (var i = 0; i < instance.current; i++) {
                     evaluaterow(i);
@@ -176,17 +190,22 @@ define(
                 writetotal();
             }
 
-            // Get amount of slots of row i.
+            /**
+             * Get amount of slots of row i.
+             *
+             * @param {number} i Index of row
+             * @returns {array} returnvalues slots, slotsnotcreated1, slotsnotcreated2
+             */
             function getslots(i) {
                 // No selected day-from: return 0.
                 var dayfromvalue = parseInt($("select[name^='newslots\[" + i + "\]\[day\]']").val());
                 if (dayfromvalue == -1) {
-                    return 0;
+                    return [0, 0, 0];
                 }
                 // No selected day to: return 0.
                 var daytovalue = parseInt($("select[name^='newslots\[" + i + "\]\[dayto\]']").val());
                 if (daytovalue == -1) {
-                    return 0;
+                    return [0, 0, 0];
                 }
                 // Get period, time from, slot duration and gap between slots.
                 var periodstartdate = getstartdate();
@@ -220,6 +239,7 @@ define(
                     }
                     var now = new Date();
                     var date = now.getTime() / 1000;
+                    dateto = periodenddate < dateto ? periodenddate : dateto;
                     for (itime = datefrom; itime + duration <= dateto; itime += iteration) {
                         if (itime - date < instance.relativedeadline && itime - date > 0) {
                             slotsnotcreatedduetodeadline++;
@@ -234,6 +254,10 @@ define(
                 return returnvalues;
             }
 
+            /**
+             * Get max amount of participants of this slot.
+             * @return {int} pax
+             */
             function getpax() {
                 var pax = $('input[name=maxparticipants]').val();
                 if ($.isNumeric(pax)) {
@@ -243,6 +267,9 @@ define(
                 }
             }
 
+            /**
+             * Write out overall sums of forecast bookings.
+             */
             function writetotal() {
                 var totalslots = 0;
                 var totalpax = 0;
@@ -262,6 +289,10 @@ define(
                 $("div[name='organizer_newslots_forecasttotal']").html(forecaststring);
             }
 
+            /**
+             * Get the startdate for the series of dates.
+             * @return {number}
+             */
             function getstartdate() {
                 var startdateday = $("select[name='startdate\[day\]']").val();
                 var startdatemonth = $("select[name='startdate\[month\]']").val() - 1;
@@ -270,14 +301,22 @@ define(
                 return startdatedate.getTime() / 1000;
             }
 
+            /**
+             * Get the enddate for the series of dates.
+             * @return {number}
+             */
             function getenddate() {
                 var enddateday = $("select[name='enddate\[day\]']").val();
                 var enddatemonth = $("select[name='enddate\[month\]']").val() - 1;
                 var enddateyear = $("select[name='enddate\[year\]']").val();
                 var enddatedate = new Date(enddateyear, enddatemonth, enddateday);
-                return enddatedate.getTime() / 1000 + 86399; // Include last day of period.
+                return enddatedate.getTime() / 1000 + 86400; // Include last day of period.
             }
 
+            /**
+             * Get the duration of a slot.
+             * @return {number} in seconds
+             */
             function getduration() {
                 var durationnumber = parseInt($("input[name='duration\[number\]']").val());
                 var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
@@ -289,6 +328,10 @@ define(
                 return duration;
             }
 
+            /**
+             * Get the gap between the dates, if any.
+             * @return {number} in seconds
+             */
             function getgap() {
                 var gapnumber = parseInt($("input[name='gap\[number\]']").val());
                 var gaptimeunit = parseInt($("select[name='gap\[timeunit\]']").val());
@@ -300,12 +343,22 @@ define(
                 return gap;
             }
 
+            /**
+             * Function to add a day to a given date.
+             * @param {string} date to add a day to
+             * @param { number } days to add to the date
+             * @return {number} the new date
+             */
             function addDays(date, days) {
                 var result = new Date(date);
                 result.setDate(result.getDate() + days);
                 return result.getTime() / 1000;
             }
 
+            /**
+             * Function to add a day to a given date.
+             * @param {string} id contains the index of the current slot
+             */
             function shownextnewslot(id) {
                 // As soon as a to time is edited, display the next day.
                 let nextindex = parseInt(id) + 1;

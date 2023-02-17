@@ -19,7 +19,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
-require_once(dirname(__FILE__) . '/lib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 /**
  *
  *
@@ -91,12 +91,9 @@ class organizer_evaluate_slots_form extends moodleform
             $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
 
             // Build Slot datetime string.
-            $date = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer'));
-            $time = userdate($slot->starttime, get_string('timetemplate', 'organizer')) . ' - '
-                    . userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
-            $slotdatetime = " <strong>$date, $time</strong>";
+            $slotdatetime = html_writer::span(organizer_date_time($slot, true), '');
             if ($slot->starttime > $now) {
-                $slotdatetime .= ' <em>(' . get_string('eval_not_occured', 'organizer') . ')</em>';
+                $slotdatetime .= html_writer::span(get_string('eval_not_occured', 'organizer'), 'ml-2 text-danger');
             }
             $appgroup = array();
             // Slot checkbox.
@@ -107,20 +104,29 @@ class organizer_evaluate_slots_form extends moodleform
             $mform->insertElementBefore($mform->createElement('group', '', '', $appgroup, '', false), 'buttonar');
 
             // Get apps (participants or groups).
-            $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slotid));
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                $query = "SELECT DISTINCT CONCAT(a.id, u.id) AS fakeid, a.id, a.userid, a.groupid, a.grade,
+                a.attended, a.feedback, u.lastname, u.firstname
+                        FROM {organizer_slot_appointments} a
+                        INNER JOIN {user} u ON a.userid = u.id
+                        WHERE a.slotid = :slotid
+                        ORDER BY u.lastname ASC, u.firstname ASC";
+            } else {
+                $query = "SELECT CONCAT(a.id, u.id) AS fakeid, a.id, a.userid, a.groupid, a.grade,
+                a.attended, a.feedback, u.lastname, u.firstname
+                        FROM {organizer_slot_appointments} a
+                        INNER JOIN {user} u ON a.userid = u.id
+                        WHERE a.slotid = :slotid
+                        ORDER BY u.lastname ASC, u.firstname ASC";
+            }
+            $param = array('slotid' => $slot->id);
+            $apps = $DB->get_records_sql($query, $param);
 
-            // If groupmode write groupname and checkbox allownewappointments here.
+            // If groupmode write groupname.
             if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && count($apps) != 0) {
                 $app = reset($apps);
                 $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
-                $mform->insertElementBefore(
-                    $mform->createElement(
-                        'advcheckbox', "allownewappointments{$slotid}", $groupname, get_string('eval_allow_new_appointments', 'organizer'),
-                        array('group' => 0, 'class' => "allow{$slotid}"), array(0, 1)
-                    ), 'buttonar'
-                );
-                $mform->setType("allownewappointments{$slotid}", PARAM_INT);
-                $mform->setDefault("allownewappointments{$slotid}", $app->allownewappointments);
+                $mform->insertElementBefore($mform->createElement('static', '', '', $groupname), 'buttonar');
             }
 
             // If no apps write it and deactivate slot.
@@ -136,90 +142,52 @@ class organizer_evaluate_slots_form extends moodleform
             foreach ($apps as $app) {
                 $user = $DB->get_record('user', array('id' => $app->userid));
                 $name = "apps[{$app->id}]";
-
                 $finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $user->id);
 
-                $lastapp = organizer_get_last_user_appointment($organizer, $app->userid);
+                $namelink = html_writer::div($this->_organizer_get_name_link($user->id), 'd-block');
+                $mform->insertElementBefore($mform->createElement('static', '', '', $namelink), 'buttonar');
 
-                if ($lastapp->id != $app->id) { // If not lastapp - no evaluation of this app.
-
-                    $link = new moodle_url(
-                        '/mod/organizer/view_action.php', array('id' => $data['id'], 'mode' => $data['mode'], 'action' => 'eval',
-                        'slots[]' => $lastapp->slotid, 'sesskey' => sesskey())
-                    );
-
-                    $title = $this->_organizer_get_name_link($user->id) . '<br/><em>' . get_string('cannot_eval', 'organizer')
-                            . '</em> ' . html_writer::link($link, get_string('eval_link', 'organizer')) . '<br/>';
-                    $appgroup = array();
-                    $appgroup[] = $mform->createElement('static', '', '', $title);
-
-                } else { // If lastapp - evaluation of this app.
-
-                    $title = $this->_organizer_get_name_link($user->id) . '<br/>';
-
-                    $appgroup = array();
-                    $appgroup[] = $mform->createElement('static', '', '', $title);
-                    $appgroup[] = $mform->createElement('advcheckbox', 'attended', get_string('eval_attended', 'organizer'), '',
-                            null, array(0, 1));
-
-                    $maxgrade = $organizer->grade;
-                    if ($maxgrade != 0) {
-
-                        $grademenu = organizer_make_grades_menu_organizer($maxgrade);
-                        if ($finalgrade !== false) {
-                            $appgrade = $app->grade == "0" ? "-1" : $app->grade;
-                            $appgroup[] = $mform->createElement(
-                                'hidden', 'grade', $appgrade, array('class' => "allow{$slotid}")
-                            );
-                            $appgroup[] = $select = $mform->createElement(
-                                'select', 'gradenothing', '', $grademenu, array('disabled' => 'disabled')
-                            );
-                            $appgroup[] = $mform->createElement('static', '', '', organizer_display_finalgrade($finalgrade));
-                        } else {
-                            $appgroup[] = $mform->createElement('select', 'grade', '', $grademenu);
-                        }
-                    }
-
-                    $appgroup[] = $mform->createElement('static', '', '', get_string('eval_feedback', 'organizer') . ':&nbsp;');
-                    $appgroup[] = $mform->createElement('text', 'feedback', null, array('size' => 32));
-
-                    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                        $appgroup[] = $mform->createElement(
-                            'hidden', 'allownewappointments', 0, array('class' => "allow{$slotid}")
+                // Formgroup evaluation.
+                $appgroup = array();
+                $appgroup[] = $mform->createElement('advcheckbox', 'attended',
+                    get_string('eval_attended', 'organizer'), '', null, array(0, 1));
+                $maxgrade = $organizer->grade;
+                if ($maxgrade != 0) {
+                    $grademenu = organizer_make_grades_menu_organizer($maxgrade);
+                    if ($finalgrade !== false) {
+                        $appgrade = $app->grade == "0" ? "-1" : $app->grade;
+                        $appgroup[] = $mform->createElement('hidden', 'grade', $appgrade,
+                            array('class' => "allow{$slotid}")
                         );
+                        $appgroup[] = $mform->createElement(
+                            'select', 'gradenothing', '', $grademenu, array('disabled' => 'disabled')
+                        );
+                        $appgroup[] = $mform->createElement('static', '', '',
+                            organizer_display_finalgrade($finalgrade));
                     } else {
-                        $appgroup[] = $mform->createElement(
-                            'static', '', '', '&nbsp;'.get_string('eval_allow_new_appointments', 'organizer').':&nbsp;'
-                        );
-                        $appgroup[] = $mform->createElement(
-                            'advcheckbox', 'allownewappointments', '', '', null, array(0, 1)
-                        );
+                        $appgroup[] = $mform->createElement('select', 'grade', '', $grademenu);
                     }
-
-                    $mform->disabledif ("{$name}[attended]", $checkboxname);
-                    $mform->disabledif ("{$name}[grade]", $checkboxname);
-                    $mform->disabledif ("{$name}[feedback]", $checkboxname);
-                    $mform->disabledif ("{$name}[allownewappointments]", $checkboxname);
-
-                    $mform->setType("{$name}[attended]", PARAM_INT);
-                    $mform->setDefault("{$name}[attended]", $app->attended);
-
-                    if ($maxgrade != 0) {
-                        $mform->setType("{$name}[grade]", PARAM_INT);
-                        if ($finalgrade) {
-                            $mform->setType("{$name}[gradenothing]", PARAM_INT);
-                            $mform->setDefault("{$name}[gradenothing]", $app->grade);
-                        } else {
-                            $mform->setDefault("{$name}[grade]", $app->grade);
-                        }
-                    }
-
-                    $mform->setType("{$name}[feedback]", PARAM_TEXT);
-                    $mform->setDefault("{$name}[feedback]", $app->feedback);
-
-                    $mform->setType("{$name}[allownewappointments]", PARAM_INT);
-                    $mform->setDefault("{$name}[allownewappointments]", $app->allownewappointments);
                 }
+                $appgroup[] = $mform->createElement('static', '', '',
+                    get_string('eval_feedback', 'organizer') . ':&nbsp;');
+                $appgroup[] = $mform->createElement('text', 'feedback', null, array('class' => 'w-25'));
+
+                $mform->disabledif ("{$name}[attended]", $checkboxname);
+                $mform->disabledif ("{$name}[grade]", $checkboxname);
+                $mform->disabledif ("{$name}[feedback]", $checkboxname);
+                $mform->setType("{$name}[attended]", PARAM_INT);
+                $mform->setDefault("{$name}[attended]", $app->attended);
+                if ($maxgrade != 0) {
+                    $mform->setType("{$name}[grade]", PARAM_INT);
+                    if ($finalgrade) {
+                        $mform->setType("{$name}[gradenothing]", PARAM_INT);
+                        $mform->setDefault("{$name}[gradenothing]", $app->grade);
+                    } else {
+                        $mform->setDefault("{$name}[grade]", $app->grade);
+                    }
+                }
+                $mform->setType("{$name}[feedback]", PARAM_TEXT);
+                $mform->setDefault("{$name}[feedback]", $app->feedback);
 
                 $mform->insertElementBefore($mform->createElement('group', $name, '', $appgroup, ' ', true), 'buttonar');
             }
