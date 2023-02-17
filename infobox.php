@@ -371,15 +371,17 @@ function organizer_make_filtersection($mode) {
     }
     $output .= html_writer::end_div();
 
-    $output .= html_writer::start_div();
-    $output .= html_writer::span('', 'text-info', array('id' => 'counttabrows'));
-    $output .= html_writer::span(get_string('infobox_counter_slotrows', 'mod_organizer'), 'ml-1 text-info');
-    if ($displayallparticipants) {
-        $output .= html_writer::checkbox('show_all_participants', '1', $showallparticipants,
-            get_string('infobox_showallparticipants', 'organizer'),
-            array('id' => 'show_all_participants', 'class' => 'slotoptions'));
+    if ($mode == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
+        $output .= html_writer::start_div();
+        $output .= html_writer::span('', 'text-info', array('id' => 'counttabrows'));
+        $output .= html_writer::span(get_string('infobox_counter_slotrows', 'mod_organizer'), 'ml-1 text-info');
+        if ($displayallparticipants) {
+            $output .= html_writer::checkbox('show_all_participants', '1', $showallparticipants,
+                get_string('infobox_showallparticipants', 'organizer'),
+                array('id' => 'show_all_participants', 'class' => 'slotoptions'));
+        }
+        $output .= html_writer::end_div();
     }
-    $output .= html_writer::end_div();
 
     $output .= html_writer::div('', 'clearer');
 
