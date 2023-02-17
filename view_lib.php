@@ -1598,7 +1598,7 @@ function organizer_get_participant_list($params, $slot, $app) {
                 }
             }
         }
-        if ($countapps > 5 && !$studentview) {
+        if ($countapps && !$studentview) {
             $firstline = organizer_get_icon('plus-square', get_string('clicktohideshow'), null, null, 'collapseicon').$firstline.$slotvisibilitystr;
             $firstline = html_writer::div($firstline, 'collapseclick text-nowrap', array( 'data-target' => '.s'.$slot->id));
         } else {
@@ -1690,7 +1690,7 @@ function organizer_get_participant_list($params, $slot, $app) {
             $list .= html_writer::start_span('', array('style' => 'display: table'));
             $apps = count($appointments);
             foreach ($appointments as $appointment) {
-                $class = $apps > 5 || $groupmode ? 'mycollapse s'.$slot->id : '';
+                $class = $apps || $groupmode ? 'mycollapse s'.$slot->id : '';
                 $list .= html_writer::start_span($class, array('style' => 'display: table-row'));
                 $list .= html_writer::start_span('', array('style' => 'display: table-cell'));
                 $identity = organizer_get_user_identity($appointment->userid);
