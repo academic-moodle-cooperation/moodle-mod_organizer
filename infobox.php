@@ -131,7 +131,7 @@ function organizer_make_messages_section($params) {
 }
 function organizer_make_sendreminder_section($params, $context) {
     global $OUTPUT;
-    if (has_capability("mod/organizer:sendreminders", $context, null, true)) {
+    if (has_capability("mod/organizer:sendreminders", $context)) {
         $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id']));
         $output = $OUTPUT->single_button($sendurl, get_string("btn_sendall", 'organizer'), true);
         return organizer_make_section('infobox_messaging', $output);
@@ -312,22 +312,24 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
     $out .= html_writer::div($messageminreached, 'd-inline ml-3');
     $out .= html_writer::end_div();
 
-    $out .= html_writer::start_div('registrationstatusbar mb-4 w-100', array('title' => $messagemaxreached));
-    if ($allmaxreached) {
-        $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
-            array('style' => "width: $barwidth%"));
-    } else {
-        $partialfullwidth = (int) ((int) $a->maxreached * 100 / (int) $a->entries * ( $barwidth / 100 ));
-        $partialemptywidth = $barwidth - $partialfullwidth;
-        if ($partialfullwidth > 0) {
-            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info bg-info',
-                array('style' => "width: $partialfullwidth%"));
+    if ($organizer->userslotsmin != $organizer->userslotsmax) {
+        $out .= html_writer::start_div('registrationstatusbar mb-4 w-100', array('title' => $messagemaxreached));
+        if ($allmaxreached) {
+            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
+                array('style' => "width: $barwidth%"));
+        } else {
+            $partialfullwidth = (int) ((int) $a->maxreached * 100 / (int) $a->entries * ( $barwidth / 100 ));
+            $partialemptywidth = $barwidth - $partialfullwidth;
+            if ($partialfullwidth > 0) {
+                $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info bg-info',
+                    array('style' => "width: $partialfullwidth%"));
+            }
+            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info',
+                array('style' => "width: $partialemptywidth%"));
         }
-        $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info',
-            array('style' => "width: $partialemptywidth%"));
+        $out .= html_writer::div($messagemaxreached, 'd-inline-block ml-3');
+        $out .= html_writer::end_div();
     }
-    $out .= html_writer::div($messagemaxreached, 'd-inline-block ml-3');
-    $out .= html_writer::end_div();
 
     return organizer_make_section('infobox_registrationstatistic', $out);
 }
