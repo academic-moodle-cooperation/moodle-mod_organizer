@@ -793,7 +793,7 @@ function organizer_organizer_get_status_table_entries($params) {
             $studentids[] = $student->id;
         }
     } else if ($cm->groupingid != 0) {
-        $query = "SELECT u.id FROM {user} u
+        $query = "SELECT DISTINCT(u.id) FROM {user} u
             INNER JOIN {groups_members} gm ON u.id = gm.userid
             INNER JOIN {groups} g ON gm.groupid = g.id
             INNER JOIN {groupings_groups} gg ON g.id = gg.groupid

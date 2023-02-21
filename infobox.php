@@ -275,17 +275,19 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
 function organizer_make_registrationstatistic_section($organizer, $entries) {
     $barwidth = 30;
     $a = new stdClass();
-    $a->max = $organizer->userslotsmax;
     $a->min = $organizer->userslotsmin;
+    $a->max = $organizer->userslotsmax;
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         list($a->entries, $undermin, $a->maxreached) =
-            organizer_registration_statistics($organizer, true, $entries);
+            organizer_registration_statistics($organizer, true, $entries,
+                $organizer->userslotsmin, $organizer->userslotsmax);
         $a->minreached = (int) $a->entries - (int) $undermin;
         $messageminreached = get_string('infobox_statistic_minreached_group', 'organizer', $a);
         $messagemaxreached = get_string('infobox_statistic_maxreached_group', 'organizer', $a);
     } else {
         list($a->entries, $undermin, $a->maxreached) =
-            organizer_registration_statistics($organizer, false, $entries);
+            organizer_registration_statistics($organizer, false, $entries,
+                $organizer->userslotsmin, $organizer->userslotsmax);
         $a->minreached = (int) $a->entries - (int) $undermin;
         $messageminreached = get_string('infobox_statistic_minreached', 'organizer', $a);
         $messagemaxreached = get_string('infobox_statistic_maxreached', 'organizer', $a);
