@@ -2180,33 +2180,29 @@ function organizer_bookings_exist($organizerid) {
  * @param object $organizer organizer instance
  * @param boolean $groupmode is organizer instance in groupmode
  * @param objects $entries of registration view
+ * @param int $min required minimum of slots a user/group has to book
+ * @param int $max maximum of slots a user/group is allowed to book
  *
  * @return array $entries, $underminimum: participants booked under minimum, $maxreached: participants
  * who have reached the max
  */
-function organizer_registration_statistics($organizer, $groupmode, $entries) {
+function organizer_registration_statistics($organizer, $groupmode, $entries, $min, $max) {
     $countentries = 0;
     $underminimum = 0;
     $maxreached = 0;
-    $entriesdone = array();
     foreach ($entries as $entry) {
-        if (!in_array($entry->id, $entriesdone)) { // No duplicates!
-            $countentries++;
-            if ($groupmode) {
-                $booked = organizer_count_bookedslots($organizer->id, null, $entry->id);
-            } else {
-                $booked = organizer_count_bookedslots($organizer->id, $entry->id, null);
-            }
-            $status = organizer_multiplebookings_status($booked, $organizer);
-            if ($status == USERSLOTS_MIN_NOT_REACHED) {
-                $underminimum++;
-            } else if ($status == USERSLOTS_MAX_REACHED) {
-                $maxreached++;
-            }
-            $entriesdone[] = $entry->id;
+        $countentries++;
+        if ($groupmode) {
+            $booked = organizer_count_bookedslots($organizer->id, null, $entry->id);
+        } else {
+            $booked = organizer_count_bookedslots($organizer->id, $entry->id, null);
+        }
+        if ($booked < $min) {
+            $underminimum++;
+        } else if ($booked >= $max) {
+            $maxreached++;
         }
     }
-
     return [$countentries, $underminimum, $maxreached];
 }
 
