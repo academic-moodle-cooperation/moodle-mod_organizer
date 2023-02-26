@@ -2234,7 +2234,7 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
             $maxreached++;
         }
     }
-    $underminimum +=  $countentries - $countgroupedentries;
+    $underminimum += $countentries - $countgroupedentries;
 
     return [$countentries, $underminimum, $maxreached];
 }

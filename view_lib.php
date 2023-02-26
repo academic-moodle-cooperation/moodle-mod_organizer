@@ -2303,7 +2303,7 @@ function organizer_get_participants_tableheadercell($params, $column, $columnhel
  */
 function organizer_appointmentsstatus_bar($organizer) {
     global $DB;
-return "";
+
     $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
 
     $a = new stdClass();
