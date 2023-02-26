@@ -478,18 +478,9 @@ function organizer_display_grade($organizer, $grade, $userid) {
 
     if ($organizer->grade > 0) {    // Normal number.
         if ($grade == -1 || $grade == null) {
-            $finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid);
-            if ($finalgrade !== false) {
-                      return organizer_display_finalgrade($finalgrade);
-            } else {
-                      return $nograde;
-            }
+            return $nograde;
         } else {
             $returnstr = organizer_clean_num($grade) . '/' . organizer_clean_num($organizer->grade);
-            $finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid);
-            if ($finalgrade !== false) {
-                      $returnstr .= organizer_display_finalgrade($finalgrade);
-            }
             return $returnstr;
         }
     } else {    // Scale.
@@ -500,54 +491,11 @@ function organizer_display_grade($organizer, $grade, $userid) {
                 return $nograde;
             }
         }
-        $finalgrade = organizer_get_finalgrade_overwritten($organizer->id, $userid);
-        if ($finalgrade !== false) {
-            if (isset($scalegrades[$organizer->id][intval($finalgrade)])) {
-                return organizer_display_finalgrade($scalegrades[$organizer->id][intval($finalgrade)]);
-            } else {
-                return $nograde;
-            }
-        }
         if (isset($scalegrades[$organizer->id][intval($grade)])) {
             return $scalegrades[$organizer->id][intval($grade)];
         } else {
             return $nograde;
         }
-    }
-}
-
-function organizer_display_finalgrade($finalgrade) {
-    $nograde = get_string('nograde');
-
-    if ($finalgrade !== false) {
-        return html_writer::span('(' . $finalgrade . ')', 'finalgrade', array('title' => get_string('finalgrade', 'organizer')));
-    } else {
-        return $nograde;
-    }
-}
-
-function organizer_get_finalgrade_overwritten($organizerid, $userid) {
-    global $DB;
-
-    $params = array('organizerid' => $organizerid, 'userid' => $userid);
-    $query = "SELECT gg.rawgrade, gg.finalgrade FROM {grade_items} gi
-			inner join {grade_grades} gg on gg.itemid = gi.id
-			where gi.itemtype = 'mod' and gi.itemmodule = 'organizer'
-			and gi.iteminstance = :organizerid and gg.userid = :userid";
-    if ($grades = $DB->get_record_sql($query, $params)) {
-        if (is_null($grades->rawgrade)) {
-            $grades->rawgrade = 0;
-        }
-        if (is_null($grades->finalgrade)) {
-            $grades->finalgrade = 0;
-        }
-        if ($grades->rawgrade !== $grades->finalgrade) {
-            return organizer_clean_num($grades->finalgrade);
-        } else {
-            return false;
-        }
-    } else {
-        return false;
     }
 }
 
@@ -1041,7 +989,7 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
  * @return bool Returns true if the event is visible to the current user, false otherwise.
  */
 function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $userid = 0) {
-    global $USER, $DB;
+    global $USER, $DB, $CFG;
     $props = $event->properties();
 
     $organizer = $DB->get_record('organizer', array('id' => $props->instance), '*');
@@ -1084,6 +1032,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $us
             $isvisible = false;
         } else {
             if (has_capability('mod/organizer:viewallslots', $context)) {
+                include_once(dirname(__FILE__) . '/locallib.php');
                 $a = organizer_get_counters($organizer, $cm);
                 if ($a->total == 0) {
                     $isvisible = true;

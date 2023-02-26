@@ -1538,7 +1538,6 @@ function organizer_get_participant_list($params, $slot, $app) {
     global $DB, $USER;
 
     // Fetch relevant data.
-    $slotx = new organizer_slot($slot);
     $dir = isset($params['pdir']) ? $params['pdir'] : 'ASC';
     if (isset($params['psort']) && $params['psort'] == 'name') {
         $orderby = " ORDER BY u.lastname $dir, u.firstname $dir, u.idnumber ASC";
@@ -1551,12 +1550,12 @@ function organizer_get_participant_list($params, $slot, $app) {
         FROM {organizer_slot_appointments} a
         INNER JOIN {user} u ON a.userid = u.id
         WHERE a.slotid = :slotid $orderby";
-    $param = array('slotid' => $slotx->id);
+    $param = array('slotid' => $slot->id);
     $appointments = $DB->get_records_sql($query, $param);
     $countapps = count($appointments);
-    $ismyslot = $app && ($app->slotid == $slotx->id);
-    if (!$slotx->is_available()) {
-        $when = userdate($slotx->starttime - $slotx->availablefrom, get_string('fulldatetimetemplate', 'organizer'));
+    $ismyslot = $app && ($app->slotid == $slot->id);
+    if (!(($slot->availablefrom == 0) || ($slot->starttime - $slot->availablefrom <= time()))) {
+        $when = userdate($slot->starttime - $slot->availablefrom, get_string('fulldatetimetemplate', 'organizer'));
         return "<em>" . get_string('unavailableslot', 'organizer') . "<br/>{$when}</em>";
     }
     $studentview = $params['mode'] == ORGANIZER_TAB_STUDENT_VIEW;
@@ -1594,6 +1593,7 @@ function organizer_get_participant_list($params, $slot, $app) {
                 $inqueue = count($DB->get_records('organizer_slot_queues', array('slotid' => $slot->id)));
                 if ($inqueue) {
                     $a->inqueue = $inqueue;
+                    $slotx = new organizer_slot($slot);
                     if ($a->queueposition = $slotx->is_user_in_queue($USER->id)) {
                         $firstline .= organizer_write_places_inqueue_position($a);
                     } else {
@@ -1621,6 +1621,7 @@ function organizer_get_participant_list($params, $slot, $app) {
                 if ($inqueues) {
                     $a = new stdClass();
                     $a->inqueue = $inqueues;
+                    $slotx = new organizer_slot($slot);
                     if ($a->queueposition = $slotx->is_group_in_queue()) {
                         $firstline .= organizer_write_places_inqueue_position($a);
                     } else {
@@ -2302,7 +2303,7 @@ function organizer_get_participants_tableheadercell($params, $column, $columnhel
  */
 function organizer_appointmentsstatus_bar($organizer) {
     global $DB;
-
+return "";
     $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
 
     $a = new stdClass();
