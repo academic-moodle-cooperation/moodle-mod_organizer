@@ -2365,7 +2365,7 @@ function organizer_date_time_plain($slot) {
         $dateto = userdate($slot->starttime + $slot->duration, get_string('fulldatetemplate', 'organizer')) . " " .
             userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
     }
-    $datestr = html_writer::span("$datefrom-$dateto", "slotdates", array("title" => $duration));
+    $datestr = "$datefrom-$dateto";
     return $datestr;
 
 }
