@@ -2344,3 +2344,28 @@ function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg
     return $out;
 
 }
+
+function organizer_date_time_plain($slot) {
+    if (!isset($slot) || !isset($slot->starttime)) {
+        return '-';
+    }
+
+    list($unitname, $value) = organizer_figure_out_unit($slot->duration);
+    $duration = ($slot->duration / $value) . ' ' . $unitname;
+
+    // If slot is within a day.
+    if (userdate($slot->starttime, get_string('datetemplate', 'organizer')) ==
+        userdate($slot->starttime + $slot->duration, get_string('datetemplate', 'organizer'))) {
+        $datefrom = userdate($slot->starttime, get_string('datetemplate', 'organizer')) . " " .
+            userdate($slot->starttime, get_string('timetemplate', 'organizer'));
+        $dateto = userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
+    } else {
+        $datefrom = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer')) . " " .
+            userdate($slot->starttime, get_string('timetemplate', 'organizer'));
+        $dateto = userdate($slot->starttime + $slot->duration, get_string('fulldatetemplate', 'organizer')) . " " .
+            userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
+    }
+    $datestr = html_writer::span("$datefrom-$dateto", "slotdates", array("title" => $duration));
+    return $datestr;
+
+}

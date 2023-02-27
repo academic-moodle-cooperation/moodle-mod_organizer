@@ -271,7 +271,7 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
         }
     }
 
-    $slotdatetime = organizer_date_time($slot);
+    $slotdatetime = organizer_date_time_plain($slot);
     $slotdatetime = str_replace("<br />", " ", $slotdatetime);
     $trainerstr = "";
     $conn = "";
