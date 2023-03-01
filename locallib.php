@@ -2187,22 +2187,55 @@ function organizer_bookings_exist($organizerid) {
  * who have reached the max
  */
 function organizer_registration_statistics($organizer, $groupmode, $entries, $min, $max) {
+    global $DB;
+
     $countentries = 0;
     $underminimum = 0;
     $maxreached = 0;
-    foreach ($entries as $entry) {
-        $countentries++;
-        if ($groupmode) {
-            $booked = organizer_count_bookedslots($organizer->id, null, $entry->id);
-        } else {
-            $booked = organizer_count_bookedslots($organizer->id, $entry->id, null);
+
+    $entryids = array();
+    if ($groupmode) {
+        $currentgroup = 0;
+        foreach ($entries as $entry) {
+            $entryids[] = $entry->id;
+            if ($entry->id != $currentgroup) {
+                $countentries++;
+                $currentgroup = $entry->id;
+            }
         }
-        if ($booked < $min) {
+    } else {
+        foreach ($entries as $entry) {
+            $entryids[] = $entry->id;
+        }
+        $countentries = count($entryids);
+    }
+    list($insql, $paramssql) = $DB->get_in_or_equal($entryids, SQL_PARAMS_NAMED);
+
+    if ($groupmode) {
+        $where = 's.organizerid = ' . $organizer->id . ' AND a.groupid ' . $insql;
+        $query = "SELECT a.groupid, count(DISTINCT s.id) as apps FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE $where
+            GROUP BY a.groupid";
+    } else {
+        $where = 's.organizerid = ' . $organizer->id . ' AND a.userid ' . $insql;
+        $query = "SELECT a.userid, count(DISTINCT a.id) as apps FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE $where
+            GROUP BY a.userid";
+    }
+    $groupedentries = $DB->get_recordset_sql($query, $paramssql);
+    $countgroupedentries = 0;
+    foreach ($groupedentries as $entry) {
+        $countgroupedentries++;
+        if ($entry->apps < $min) {
             $underminimum++;
-        } else if ($booked >= $max) {
+        } else if ($entry->apps >= $max) {
             $maxreached++;
         }
     }
+    $underminimum += $countentries - $countgroupedentries;
+
     return [$countentries, $underminimum, $maxreached];
 }
 
@@ -2309,5 +2342,30 @@ function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg
     $out .= html_writer::end_div();
 
     return $out;
+
+}
+
+function organizer_date_time_plain($slot) {
+    if (!isset($slot) || !isset($slot->starttime)) {
+        return '-';
+    }
+
+    list($unitname, $value) = organizer_figure_out_unit($slot->duration);
+    $duration = ($slot->duration / $value) . ' ' . $unitname;
+
+    // If slot is within a day.
+    if (userdate($slot->starttime, get_string('datetemplate', 'organizer')) ==
+        userdate($slot->starttime + $slot->duration, get_string('datetemplate', 'organizer'))) {
+        $datefrom = userdate($slot->starttime, get_string('datetemplate', 'organizer')) . " " .
+            userdate($slot->starttime, get_string('timetemplate', 'organizer'));
+        $dateto = userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
+    } else {
+        $datefrom = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer')) . " " .
+            userdate($slot->starttime, get_string('timetemplate', 'organizer'));
+        $dateto = userdate($slot->starttime + $slot->duration, get_string('fulldatetemplate', 'organizer')) . " " .
+            userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
+    }
+    $datestr = "$datefrom-$dateto";
+    return $datestr;
 
 }

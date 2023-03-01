@@ -35,7 +35,7 @@ require_once(dirname(__FILE__) . '/messaging.php');
 $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $slot = optional_param('slot', null, PARAM_INT);
-$slots = organizer_get_param_slots();
+$slots = $slots = optional_param_array('slots', [], PARAM_INT);
 
 list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
@@ -62,8 +62,7 @@ if (count($slots) == 0) {
         'organizer'), 'error');
     redirect($redirecturl);
 }
-$mform = new organizer_evaluate_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots),
-    null, null, array('class' => 'form-inline'));
+$mform = new organizer_evaluate_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
 
 if ($data = $mform->get_data()) {
     $slotids = organizer_evaluate_slots($data);

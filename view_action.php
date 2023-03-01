@@ -117,8 +117,9 @@ if ($action == ORGANIZER_ACTION_REGISTER || $action == ORGANIZER_ACTION_QUEUE) {
     require_capability('mod/organizer:register', $context);
 
     if (!organizer_participants_action_allowed($action, $slot, $organizer, $context)) {
-        print_error('Inconsistent state: Cannot execute registration action! Please navigate back and refresh your browser!');
-        die();
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_action_notallowed',
+            'organizer'), 'success');
+        redirect($redirecturl);
     }
 
     $group = organizer_fetch_my_group();
