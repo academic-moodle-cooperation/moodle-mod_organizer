@@ -667,6 +667,9 @@ function organizer_update_slot($data) {
             if ($trainermodified) {
                 $trainers = organizer_get_slot_trainers($slot->id);
                 if ($deletions = array_diff($trainers, $data->trainerid)) {
+                    if (empty($deletions)) {
+                        $deletions = array(0);
+                    }
                     list($insql, $inparams) = $DB->get_in_or_equal($deletions, SQL_PARAMS_NAMED);
                     $eventids = $DB->get_fieldset_select(
                             'organizer_slot_trainer', 'eventid', 'slotid = ' . $slot->id . ' AND trainerid ' . $insql, $inparams
@@ -1408,6 +1411,9 @@ function organizer_fetch_hidecalendar() {
 function organizer_fetch_table_entries($slots, $orderby="") {
     global $DB;
 
+    if (empty($slots)) {
+        $slots = array(0);
+    }
     list($insql, $inparams) = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
 
     $params = array();
@@ -2208,6 +2214,9 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
             $entryids[] = $entry->id;
         }
         $countentries = count($entryids);
+    }
+    if (empty($entryids)) {
+        $entryids = array(0);
     }
     list($insql, $paramssql) = $DB->get_in_or_equal($entryids, SQL_PARAMS_NAMED);
 

@@ -686,7 +686,6 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
     if (!$groupids || count($groupids) == 0) {
         return array();
     }
-
     list($insql, $inparams) = $DB->get_in_or_equal($groupids, SQL_PARAMS_NAMED);
 
     $dir = isset($params['dir']) ? $params['dir'] : 'ASC';
