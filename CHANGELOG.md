@@ -7,6 +7,7 @@ CHANGELOG
 * [FIXED] #7449: wrong forecast if dateto time is less than datefrom time in adding slots form
 * [FIXED] #7462: no loading add slots page anymore after pressing enter in search field of slot overview
 * [FIXED] #7464: dont loose slot options user preferences when changing to registration overview page
+* [FIXED] #7485: Github #112 - registration view does not work when there are no participants
 * [FEATURE] #7446: multiple slots registrations per user/group in one single organizer instance
 * [FEATURE] #7458: better grouping of slot overview options
 * [FEATURE] #7459: deleting an appointment
