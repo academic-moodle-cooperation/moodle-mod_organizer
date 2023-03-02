@@ -53,7 +53,12 @@ class organizer_delete_slots_form extends moodleform
         $deletableslots = false;
 
         if (isset($data['slots'])) {
-            list($sql, $params) = $DB->get_in_or_equal($data['slots']);
+            if (empty($data['slots'])) {
+                $slots = array(0);
+            } else {
+                $slots = $data['slots'];
+            }
+            list($sql, $params) = $DB->get_in_or_equal($slots);
 
             $slots = $DB->get_records_sql('SELECT * FROM {organizer_slots} WHERE {organizer_slots}.id ' . $sql, $params);
 
