@@ -2158,26 +2158,7 @@ function organizer_multiplebookings_slotslefttobook($organizer, $userid = null, 
 
     $slotsleft = $organizer->userslotsmax - $bookedslots;
 
-    return $slotsleft;
-}
-
-/**
- * Returns true if at least one user booking exists in this organizer instance
- *
- * @param int $organizerid ID of organizer instance
- *
- * @return bool $exist
- */
-function organizer_bookings_exist($organizerid) {
-    global $DB;
-
-    $paramssql = array('organizerid' => $organizerid);
-    $query = "select a.id from {organizer_slot_appointments} a
-        inner join {organizer_slots} s on a.slotid = s.id
-        where s.organizerid = :organizerid";
-    $exist = $DB->record_exists_sql($query, $paramssql);
-
-    return $exist;
+    return $slotsleft < 0 ? 0 : $slotsleft;
 }
 
 /**

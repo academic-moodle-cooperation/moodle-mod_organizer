@@ -136,20 +136,15 @@ class mod_organizer_mod_form extends moodleform_mod
         $mform->setType('userslotsmax', PARAM_INT);
         $mform->addHelpButton('userslotsmin', 'userslotsmin', 'organizer');
         $mform->addHelpButton('userslotsmax', 'userslotsmax', 'organizer');
-        if ($this->_instance && organizer_bookings_exist($this->_instance)) {
-            $mform->freeze('userslotsmin');
-            $mform->freeze('userslotsmax');
-        } else {
-            $mform->setDefault('userslotsmin', 1);
-            $mform->addHelpButton('userslotsmin', 'userslotsmin', 'organizer');
-            $mform->addRule('userslotsmin', null, 'numeric', null, 'client');
-            $mform->addRule('userslotsmin', get_string('maximumchars', '', 2), 'maxlength', 2, 'client');
-            $mform->addRule('userslotsmin', null, 'required', null, 'client');
-            $mform->setDefault('userslotsmax', 1);
-            $mform->addRule('userslotsmax', null, 'numeric', null, 'client');
-            $mform->addRule('userslotsmax', get_string('maximumchars', '', 2), 'maxlength', 2, 'client');
-            $mform->addRule('userslotsmax', null, 'required', null, 'client');
-        }
+        $mform->setDefault('userslotsmin', 1);
+        $mform->addHelpButton('userslotsmin', 'userslotsmin', 'organizer');
+        $mform->addRule('userslotsmin', null, 'numeric', null, 'client');
+        $mform->addRule('userslotsmin', get_string('maximumchars', '', 2), 'maxlength', 2, 'client');
+        $mform->addRule('userslotsmin', null, 'required', null, 'client');
+        $mform->setDefault('userslotsmax', 1);
+        $mform->addRule('userslotsmax', null, 'numeric', null, 'client');
+        $mform->addRule('userslotsmax', get_string('maximumchars', '', 2), 'maxlength', 2, 'client');
+        $mform->addRule('userslotsmax', null, 'required', null, 'client');
 
         // Relative Deadline.
         $mform->addElement('duration', 'relativedeadline', get_string('relativedeadline', 'organizer'));
