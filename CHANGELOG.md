@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.11.7 (2023-03-16)
+------------------
+* [FEATURE] #7506: Make minimum and maximum of bookable slots per instance always changeable
+
 3.11.6 (2023-03-10)
 ------------------
 * [FIXED] #7485: Github #112 - registration view does not work when there are no participants
