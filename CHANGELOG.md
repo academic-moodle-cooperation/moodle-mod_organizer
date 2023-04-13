@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+4.1.2 (2023-04-13)
+-------------------
+* [FIXED] #7518: fix grading error (postgres error)
+* [FIXED] #7519: fix error message when creating slots (php 8.1)
+* [UPDATE] #7520: new icon image for Moodle 4
+
 4.1.1 (2022-01-19)
 -------------------
 * [FIXED] #7431: evaluation form sort order by participants name
