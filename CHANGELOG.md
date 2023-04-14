@@ -6,6 +6,7 @@ CHANGELOG
 * [FIXED] #7518: fix grading error (postgres error)
 * [FIXED] #7519: fix error message when creating slots (php 8.1)
 * [UPDATE] #7520: new icon image for Moodle 4
+* [FIXED] #7522: evaluation form in group mode: error message (warning)
 
 4.1.1 (2022-01-19)
 -------------------

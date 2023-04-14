@@ -107,15 +107,18 @@ class organizer_evaluate_slots_form extends moodleform
             $mform->insertElementBefore($mform->createElement('group', '', '', $appgroup, '', false), 'buttonar');
 
             if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                $query = "SELECT DISTINCT a.*, g.name, u.lastname, u.firstname
+                $query = "SELECT DISTINCT a.id, a.slotid,
+                        a.userid, a.groupid, a.allownewappointments, a.grade, a.attended, a.feedback,
+                        g.name, u.lastname, u.firstname
                         FROM {organizer_slot_appointments} a
                         INNER JOIN {groups} g ON g.id = a.groupid
-                        INNER JOIN {groups_members} gm ON gm.groupid = g.id
-                        INNER JOIN {user} u ON gm.userid = u.id
+                        INNER JOIN {user} u ON a.userid = u.id
                         WHERE a.slotid = :slotid
-                        ORDER BY g.name ASC, u.lastname ASC, u.firstname ASC";
+                        ORDER BY u.lastname ASC, u.firstname ASC";
             } else {
-                $query = "SELECT DISTINCT a.*, u.lastname, u.firstname
+                $query = "SELECT DISTINCT a.id, a.slotid,
+                        a.userid, a.allownewappointments, a.grade, a.attended, a.feedback,
+                        u.lastname, u.firstname
                         FROM {organizer_slot_appointments} a
                         INNER JOIN {user} u ON a.userid = u.id
                         WHERE a.slotid = :slotid
