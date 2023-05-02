@@ -31,8 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
-class mod_organizer_mod_form extends moodleform_mod
-{
+class mod_organizer_mod_form extends moodleform_mod {
 
     public function definition_after_data() {
         global $PAGE, $DB;

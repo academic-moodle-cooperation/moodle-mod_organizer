@@ -33,8 +33,7 @@ require_once(dirname(__FILE__) . '/slotlib.php');
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class organizer_comment_slot_form extends moodleform
-{
+class organizer_comment_slot_form extends moodleform {
     /**
      * {@inheritDoc}
      * @see moodleform::definition()

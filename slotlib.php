@@ -223,8 +223,7 @@ function organizer_get_next_user_appointment($organizer, $userid = null) {
 }
 
 
-class organizer_slot
-{
+class organizer_slot {
 
     private $slot;
     private $organizer;

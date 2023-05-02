@@ -32,8 +32,7 @@ require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
-class organizer_print_slots_form extends moodleform
-{
+class organizer_print_slots_form extends moodleform {
 
     private $_selcols;
 
