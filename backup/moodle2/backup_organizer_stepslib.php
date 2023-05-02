@@ -36,8 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Define the complete organizer structure for backup, with file and id annotations
  */
-class backup_organizer_activity_structure_step extends backup_activity_structure_step
-{
+class backup_organizer_activity_structure_step extends backup_activity_structure_step {
 
     protected function define_structure() {
         // Define each element separated.

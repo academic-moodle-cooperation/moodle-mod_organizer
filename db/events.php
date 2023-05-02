@@ -34,3 +34,4 @@ $observers = array(
         'callback'    => 'mod_organizer_observer::user_enrolment_deleted',
     ),
 );
+

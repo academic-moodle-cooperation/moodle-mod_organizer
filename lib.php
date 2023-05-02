@@ -1243,4 +1243,3 @@ function mod_organizer_get_fontawesome_icon_map() {
         'mod_organizer:message_warning' => 'fa-exclamation-circle',
     ];
 }
-

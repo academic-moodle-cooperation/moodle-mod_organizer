@@ -168,7 +168,4 @@ class organizer_assign_slot_form extends moodleform
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
     }
-
-
-
 }

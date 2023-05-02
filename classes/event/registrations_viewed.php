@@ -30,8 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * The registrations_viewed event class.
  **/
-class registrations_viewed extends \core\event\base
-{
+class registrations_viewed extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'c'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;

@@ -248,4 +248,3 @@ function organizer_get_status_table_entries($params) {
         $orderby";
     return $DB->get_records_sql($query, $par);
 }
-

@@ -30,8 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * The appointment_added event class.
  **/
-class queue_removed extends \core\event\base
-{
+class queue_removed extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'd'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;

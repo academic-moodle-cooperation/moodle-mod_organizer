@@ -30,8 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * The slot_viewed event class.
  **/
-class slot_viewed extends \core\event\base
-{
+class slot_viewed extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'r'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;

@@ -30,8 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * The appointment_assigned event class.
  **/
-class appointment_assigned extends \core\event\base
-{
+class appointment_assigned extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'u'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;

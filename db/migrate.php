@@ -277,3 +277,4 @@ function add_course_module_x($cmold, $organizer) {
 
     return $cm;
 }
+

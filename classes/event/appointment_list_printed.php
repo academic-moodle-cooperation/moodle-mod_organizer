@@ -30,8 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * The appointment_list_printed event class.
  **/
-class appointment_list_printed extends \core\event\base
-{
+class appointment_list_printed extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'r'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;

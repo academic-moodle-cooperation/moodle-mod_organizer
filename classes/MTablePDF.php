@@ -43,8 +43,7 @@ require_once($CFG->libdir . '/pdflib.php');
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class MTablePDF extends \pdf
-{
+class MTablePDF extends \pdf {
     /**
  * Portrait orientation in PDF
 */
