@@ -49,10 +49,4 @@ class slot_created extends \core\event\base {
     public function get_url() {
         return new \moodle_url('/mod/organizer/slots_add.php', array('id' => $this->objectid, 'mode' => 1));
     }
-
-    public function get_legacy_logdata() {
-        // Override if you are migrating an add_to_log() call.
-        return array($this->courseid, 'mod_organizer', 'add',
-            $this->objectid, $this->contextinstanceid);
-    }
 }

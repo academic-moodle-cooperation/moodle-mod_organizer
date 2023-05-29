@@ -196,7 +196,7 @@ class organizer_add_slots_form extends moodleform {
 
         $mform->addElement('date_selector', 'enddate', get_string('slotperiodendtime', 'organizer'));
         $mform->setType('enddate', PARAM_INT);
-        $mform->setDefault('enddate', mktime(null, null, null, date("m"), date("d") + 6, date("Y")));
+        $mform->setDefault('enddate', mktime(0, 0, 0, date("m"), date("d") + 6, date("Y")));
 
         $mform->addElement('header', 'other', get_string('otherheader', 'organizer'));
 

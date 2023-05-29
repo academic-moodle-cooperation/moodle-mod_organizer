@@ -48,10 +48,4 @@ class registrations_viewed extends \core\event\base {
     public function get_url() {
         return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid, 'mode' => 3));
     }
-
-    public function get_legacy_logdata() {
-        // Override if you are migrating an add_to_log() call.
-        return array($this->courseid, 'mod_organizer', 'statusview',
-            $this->objectid, $this->contextinstanceid);
-    }
 }

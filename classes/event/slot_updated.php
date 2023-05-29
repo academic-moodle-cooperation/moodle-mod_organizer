@@ -49,10 +49,4 @@ class slot_updated extends \core\event\base {
     public function get_url() {
         return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
     }
-
-    public function get_legacy_logdata() {
-        // Override if you are migrating an add_to_log() call.
-        return array($this->courseid, 'mod_organizer', 'edit',
-            $this->objectid, $this->contextinstanceid);
-    }
 }
