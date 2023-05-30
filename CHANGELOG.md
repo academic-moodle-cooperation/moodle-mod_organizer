@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.11.8 (2023-05-30)
+------------------
+* Moodle 4.x compatible version
+
 3.11.7 (2023-03-16)
 ------------------
 * [FEATURE] #7506: Make minimum and maximum of bookable slots per instance always changeable
