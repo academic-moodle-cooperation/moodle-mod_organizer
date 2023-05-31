@@ -23,8 +23,8 @@ Feature: Create organizer instance
       | Description    | Test description    |
     And I am on the "Test organizer name" "organizer activity" page
     And I set the field "Location" to "Karlsplatz"
-    And I set the field "id_newslots_0_day" to "Mo"
-    Then the field "id_newslots_0_dayto" matches value "Mo"
+    And I set the field "id_newslots_0_day" to "Monday"
+    Then the field "id_newslots_0_dayto" matches value "Monday"
     Then the field "id_newslots_0_toh" matches value "08"
     Then the field "id_newslots_0_tom" matches value "15"
     And I press "Save changes"
