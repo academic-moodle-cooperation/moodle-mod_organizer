@@ -41,8 +41,9 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     $output .= organizer_make_messages_section($params);
 
     // Module description section
-    if ($organizer->alwaysshowdescription ||  time() > $organizer->allowregistrationsfromdate) {
-        // Module description, group and duedate informations.
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS ||
+        time() > $organizer->allowregistrationsfromdate) {
+        // Group and duedate informations.
         $output .= organizer_make_description_section($organizer, $params['id']);
     }
 
@@ -146,7 +147,7 @@ function organizer_make_description_section($organizer, $cmid) {
     $context = $PAGE->context;
     $link = "";
 
-    $output = format_module_intro('organizer', $organizer, $cmid);
+    $output = "";
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $group = organizer_fetch_my_group();
         if ($group) {
