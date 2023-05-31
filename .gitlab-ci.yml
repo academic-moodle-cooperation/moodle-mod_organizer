@@ -5,7 +5,7 @@ cache:
 variables:
   CI_BUILD_DIR: "$CI_PROJECT_DIR"
   COMPOSER_HOME: "$CI_PROJECT_DIR/.composer/cache"
-  
+
   POSTGRES_USER: "postgres"
   POSTGRES_HOST_AUTH_METHOD: "trust"
 
@@ -28,14 +28,14 @@ variables:
     - moodle-plugin-ci validate
     - moodle-plugin-ci savepoints
     - moodle-plugin-ci mustache
-   # - moodle-plugin-ci grunt
-   # - moodle-plugin-ci phpdoc
+#    - moodle-plugin-ci grunt
+#    - moodle-plugin-ci phpdoc
     - moodle-plugin-ci phpunit
     - moodle-plugin-ci behat --profile chrome
   parallel:
     matrix:
-      - MOODLE_BRANCH: [ "MOODLE_311_STABLE" ]
-        PHP_VERSION: [ "8.0" ]
+      - MOODLE_BRANCH: [ "MOODLE_402_STABLE" ]
+        PHP_VERSION: [ "8.0", "8.1" ]
 
 test:postgres:
   <<: *job_configuration
