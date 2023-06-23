@@ -1226,7 +1226,8 @@ function organizer_app_details($appointment) {
 
     $list = '<span style="display: table-cell;">';
     if ($appointment->comments) {
-        $list .= organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, organizer_filter_text($appointment->comments));
+        $list .= organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, organizer_filter_text($appointment->comments))
+            . "&nbsp;";
     } else {
         $list .= "&nbsp;";
     }
@@ -1637,9 +1638,15 @@ function organizer_get_participant_list($params, $slot, $app) {
     if ($studentview) {
         if ($slot->visibility == ORGANIZER_VISIBILITY_ANONYMOUS) {
             if ($ismyslot) {
-                $content .= organizer_get_name_link($app->userid) .
-                        organizer_get_teacherapplicant_output($app->teacherapplicantid, $app->teacherapplicanttimemodified) .
-                        '<br />';
+                $content .= organizer_get_name_link($app->userid);
+                if ($app->comments) {
+                    $content .= organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT,
+                        organizer_filter_text($app->comments)) . "&nbsp;";
+                } else {
+                    $content .= "&nbsp;";
+                }
+                $content .= organizer_get_teacherapplicant_output($app->teacherapplicantid,
+                        $app->teacherapplicanttimemodified) . '<br />';
             }
         } else { // Not anonymous.
             if ($groupmode) {
