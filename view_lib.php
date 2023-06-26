@@ -602,6 +602,8 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                         $cell = $row->cells[] = new html_table_cell(
                                 organizer_get_participant_list($params, $slot, $app)
                         );
+                        var_dump($cell);
+                        die();
                     break;
                     case 'teacher':
                         $cell = $row->cells[] = new html_table_cell(organizer_trainer_data($params, $slot, $trainerids));
@@ -1552,7 +1554,6 @@ function organizer_get_participant_list($params, $slot, $app) {
         WHERE a.slotid = :slotid $orderby";
     $param = array('slotid' => $slot->id);
     $appointments = $DB->get_records_sql($query, $param);
-    var_dump($appointments);
     $countapps = count($appointments);
     $ismyslot = $app && ($app->slotid == $slot->id);
     if (!(($slot->availablefrom == 0) || ($slot->starttime - $slot->availablefrom <= time()))) {
@@ -1701,9 +1702,7 @@ function organizer_get_participant_list($params, $slot, $app) {
 
             $list .= html_writer::start_span('', array('style' => 'display: table'));
             $apps = count($appointments);
-            var_dump($appointments);
             foreach ($appointments as $appointment) {
-                var_dump($appointment);
                 $class = $apps || $groupmode ? 'mycollapse s'.$slot->id : '';
                 $list .= html_writer::start_span($class, array('style' => 'display: table-row'));
                 $list .= html_writer::start_span('', array('style' => 'display: table-cell'));
@@ -1725,8 +1724,6 @@ function organizer_get_participant_list($params, $slot, $app) {
                 $list .= html_writer::end_span();
             }
             $list .= html_writer::end_span();
-            var_dump($list);
-            die();
             $content .= $list;
         }
     }
