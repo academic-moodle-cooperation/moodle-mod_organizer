@@ -1724,8 +1724,9 @@ function organizer_get_participant_list($params, $slot, $app) {
                 $list .= organizer_app_details($appointment);
                 $list .= html_writer::end_span();
             }
-            die();
             $list .= html_writer::end_span();
+            var_dump($list);
+            die();
             $content .= $list;
         }
     }
