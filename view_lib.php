@@ -1229,8 +1229,6 @@ function organizer_app_details($appointment) {
         $list .= organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, organizer_filter_text($appointment->comments))
             . "&nbsp;";
     } else {
-        var_dump($appointment);
-        die();
         $list .= "&nbsp;";
     }
     $list .= '</span>';
@@ -1554,6 +1552,8 @@ function organizer_get_participant_list($params, $slot, $app) {
         WHERE a.slotid = :slotid $orderby";
     $param = array('slotid' => $slot->id);
     $appointments = $DB->get_records_sql($query, $param);
+    var_dump($appointments);
+    die();
     $countapps = count($appointments);
     $ismyslot = $app && ($app->slotid == $slot->id);
     if (!(($slot->availablefrom == 0) || ($slot->starttime - $slot->availablefrom <= time()))) {
