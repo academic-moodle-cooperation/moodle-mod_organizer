@@ -1675,6 +1675,7 @@ function organizer_get_participant_list($params, $slot, $app) {
                             $appointment->teacherapplicanttimemodified);
                     }
                     $content .= html_writer::span($namelink, '', array('style' => 'display: table-cell'));
+                    $content .= organizer_app_details($appointment);
                     $content .= html_writer::end_span();
                 }
                 $content .= html_writer::end_span();
