@@ -726,15 +726,14 @@ function xmldb_organizer_upgrade($oldversion) {
         $field = new xmldb_field('gradeaggregationmethod', XMLDB_TYPE_INTEGER, '4', null, true, null, '1', 'grade');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
+            $sql = 'UPDATE {organizer} SET userslotsmin=1,userslotsmax=1,gradeaggregationmethod=2';
+            $DB->execute($sql, []);
         }
 
         $field = new xmldb_field('scale', XMLDB_TYPE_INTEGER, '4', null, true, null, '0', 'gradeaggregationmethod');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-
-        $sql = 'UPDATE {organizer} SET userslotsmin=1,userslotsmax=1,gradeaggregationmethod=2';
-        $DB->execute($sql, []);
 
         upgrade_mod_savepoint(true, 2023053100, 'organizer');
     }

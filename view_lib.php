@@ -602,8 +602,6 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                         $cell = $row->cells[] = new html_table_cell(
                                 organizer_get_participant_list($params, $slot, $app)
                         );
-                        var_dump($cell);
-                        die();
                     break;
                     case 'teacher':
                         $cell = $row->cells[] = new html_table_cell(organizer_trainer_data($params, $slot, $trainerids));
