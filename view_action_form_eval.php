@@ -86,7 +86,7 @@ class organizer_evaluate_slots_form extends moodleform {
             if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                 $query = "SELECT DISTINCT a.id, a.slotid,
                         a.userid, a.groupid, a.allownewappointments, a.grade, a.attended, a.feedback,
-                        g.name, u.lastname, u.firstname
+                        u.lastname, u.firstname
                         FROM {organizer_slot_appointments} a
                         INNER JOIN {user} u ON a.userid = u.id
                         WHERE a.slotid = :slotid
