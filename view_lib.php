@@ -714,9 +714,9 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
         CASE
             WHEN a2.id IS NOT NULL AND a2.attended = 1
                 THEN " . ORGANIZER_APP_STATUS_ATTENDED . "
-            WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime <= :now1
+            WHEN a2.id IS NOT NULL AND (a2.attended IS NULL OR a2.attended = 0) AND a2.starttime <= :now1
                 THEN " . ORGANIZER_APP_STATUS_PENDING . "
-            WHEN a2.id IS NOT NULL AND a2.attended IS NULL AND a2.starttime > :now2
+            WHEN a2.id IS NOT NULL AND (a2.attended IS NULL OR a2.attended = 0) AND a2.starttime > :now2
                 THEN " . ORGANIZER_APP_STATUS_REGISTERED . "
             WHEN a2.id IS NULL
                 THEN " . ORGANIZER_APP_STATUS_NOT_REGISTERED . "
