@@ -976,7 +976,8 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                                 . "</span>";
                                         }
                                         $list .= "<span style='display: table-cell'>" .
-                                            organizer_reg_organizer_app_details($organizer, $groupmode, $entry->appid)
+                                            organizer_reg_organizer_app_details($organizer, $groupmode, $entry->slotid,
+                                                $member)
                                             . "</span>";
                                         $list .= "</span>";
                                     }
@@ -1384,10 +1385,15 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
     return $output;
 }
 
-function organizer_reg_organizer_app_details($organizer, $groupmode, $appid) {
+function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $userid = null) {
     global $DB;
 
-    $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $appid));
+    // Groupmode with userid: id=slotid, no groupmode when no userid: id=appid
+    if ($userid) {
+        $appointment = $DB->get_record('organizer_slot_appointments', array('slotid' => $id, 'userid' => $userid));
+    } else {
+        $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $id));
+    }
     if ($appointment) {
         $list = '';
         if ($groupmode) {
