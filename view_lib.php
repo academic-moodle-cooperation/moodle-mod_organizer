@@ -811,8 +811,9 @@ function organizer_organizer_get_status_table_entries($params) {
 
     if ($params['sort'] == 'status') {
         $orderby = "ORDER BY status $dir, u.lastname ASC, u.firstname ASC, u.idnumber ASC";
-    } else if ($params['sort'] == 'name') {
-        $orderby = "ORDER BY u.lastname $dir, u.firstname $dir, status ASC, u.idnumber ASC";
+    } else if ($params['psort'] == 'name') {
+        $pdir = isset($params['pdir']) ? $params['pdir'] : 'ASC';
+        $orderby = "ORDER BY u.lastname $pdir, u.firstname $pdir, status ASC, u.idnumber ASC";
     } else if ($params['sort'] == 'id') {
         $orderby = "ORDER BY u.idnumber $dir, status ASC, u.lastname ASC, u.firstname ASC";
     } else if ($params['sort'] == 'participant') {
@@ -2250,53 +2251,22 @@ function organizer_get_participants_tableheadercell($params, $column, $columnhel
         $namedir = $params['pdir'] == 'ASC' ? 'DESC' : 'ASC';
         $nameicon = $params['pdir'] == 'ASC' ? 'up' : 'down';
         $nameicon = ' ' . $OUTPUT->pix_icon('t/' . $nameicon, get_string($nameicon));
-    } else {
-        $namedir = 'ASC';
-        $nameicon = '';
-    }
-
-    if ($params['psort'] == 'id') {
-        $iddir = $params['pdir'] == 'ASC' ? 'DESC' : 'ASC';
-        $idicon = $params['pdir'] == 'ASC' ? 'up' : 'down';
-        $idicon = ' ' . $OUTPUT->pix_icon('t/' . $idicon, get_string($idicon));
-    } else {
-        $iddir = 'ASC';
-        $idicon = '';
-    }
-
-    if (!isset($params['sort'])) {
-        $participantdir = 'DESC';
-        $participanticon = 'down';
-        $participanticon = ' ' . $OUTPUT->pix_icon('t/' . $participanticon, get_string($participanticon));
+        $urln = new moodle_url(
+            '/mod/organizer/view.php',
+            array('id' => $params['id'], 'mode' => $params['mode'], 'psort' => 'name', 'pdir' => $namedir)
+        );
+        $links = html_writer::link($urln, get_string("th_{$column}", 'organizer')) . $nameicon;
     } else if ($params['sort'] == 'participant') {
         $participantdir = $params['dir'] == 'ASC' ? 'DESC' : 'ASC';
         $participanticon = $params['dir'] == 'ASC' ? 'up' : 'down';
         $participanticon = ' ' . $OUTPUT->pix_icon('t/' . $participanticon, get_string($participanticon));
-    } else {
-        $participantdir = 'ASC';
-        $participanticon = 'up';
-        $participanticon = ' ' . $OUTPUT->pix_icon('t/' . $participanticon, get_string($participanticon));
+        $urlp = new moodle_url(
+            '/mod/organizer/view.php',
+            array('id' => $params['id'], 'mode' => $params['mode'], 'sort' => 'participant',
+                'dir' => $participantdir)
+        );
+        $links = html_writer::link($urlp, get_string("th_{$column}", 'organizer')) . $participanticon . " ";
     }
-
-    $urlp = new moodle_url(
-        '/mod/organizer/view.php',
-        array('id' => $params['id'], 'mode' => $params['mode'], 'sort' => 'participant',
-            'dir' => $participantdir)
-    );
-    $urln = new moodle_url(
-            '/mod/organizer/view.php',
-            array('id' => $params['id'], 'mode' => $params['mode'], 'sort' => $params['sort'],
-                    'dir' => $params['dir'], 'psort' => 'name', 'pdir' => $namedir)
-    );
-    $urli = new moodle_url(
-            '/mod/organizer/view.php',
-            array('id' => $params['id'], 'mode' => $params['mode'], 'sort' => $params['sort'],
-                    'dir' => $params['dir'], 'psort' => 'id', 'pdir' => $iddir)
-    );
-
-    $links = html_writer::link($urlp, get_string("th_{$column}", 'organizer')) . $participanticon . " ";
-    $links .= "(" . html_writer::link($urln, get_string('name')) . $nameicon . "/";
-    $links .= html_writer::link($urli, get_string('id', 'organizer')) . $idicon . ")";
 
     $cell = new html_table_cell($links . $columnhelpicon);
 
