@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
 require_once(dirname(__FILE__) . '/locallib.php');
+use core_grades\component_gradeitems;
 
 class mod_organizer_mod_form extends moodleform_mod {
 
@@ -205,6 +206,10 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         // Grading.
         $this->standard_grading_coursemodule_elements();
+        $itemnumber = 0;
+        $component = "mod_organizer";
+        $gradefieldname = component_gradeitems::get_field_name_for_itemnumber($component, $itemnumber, 'grade');
+        $mform->setDefault($gradefieldname, $organizerconfig->maximumgrade);
 
         // Print slot userfields.
         // Header.
