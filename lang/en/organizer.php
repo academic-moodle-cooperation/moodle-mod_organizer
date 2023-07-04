@@ -843,6 +843,9 @@ $string['register_notify_teacher:unregister:subject'] = '[{$a->courseid}{$a->cou
 $string['register_promotion_student:fullmessage'] = 'Your registration for a timeslot has been promoted from status \'waiting list\' to status \'booked\'.';
 $string['register_promotion_student:smallmessage'] = 'Your registration for a timeslot has been promoted from status \'waiting list\' to status \'booked\'.';
 $string['register_promotion_student:subject'] = 'Moodle Organizer: Promoted from queue';
+$string['register_promotion_student:group:fullmessage'] = 'Your group\'s registration for a timeslot has been promoted from status \'waiting list\' to status \'booked\'.';
+$string['register_promotion_student:group:smallmessage'] = 'Your group\'s registration for a timeslot has been promoted from status \'waiting list\' to status \'booked\'.';
+$string['register_promotion_student:group:subject'] = 'Moodle Organizer: Group promoted from queue';
 $string['register_reminder_student:fullmessage'] = 'Hello {$a->receivername}!
 
 As a part of the course {$a->courseid} {$a->coursefullname}, you haven\'t registered to the requested amount of time slots yet.
