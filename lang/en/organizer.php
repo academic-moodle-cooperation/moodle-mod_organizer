@@ -636,6 +636,7 @@ $string['modformwarningsingular'] = 'This field cannot be edited as there are ap
 $string['modulename'] = 'Organizer';
 $string['modulename_help'] = 'Organizers enable teachers to make appointments with students by creating time slots which students can register to.';
 $string['modulenameplural'] = 'Organizers';
+$string['monthlyview'] = 'Monthly view';
 $string['multimember'] = 'Users cannot belong to multiple groups within the same grouping!';
 $string['multimemberspecific'] = 'User {$a->username} {$a->idnumber} is registered in more than one group! ({$a->groups})';
 $string['multipleappointmentenddate'] = 'End date';

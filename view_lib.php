@@ -128,7 +128,7 @@ function organizer_add_calendar() {
     $block = new block_contents;
     $block->content = $content;
     $block->footer = '';
-    $block->title = get_string('monthlyview', 'calendar');
+    $block->title = get_string('monthlyview', 'organizer');
     $renderer->add_pretend_calendar_block($block, BLOCK_POS_RIGHT);
 }
 
