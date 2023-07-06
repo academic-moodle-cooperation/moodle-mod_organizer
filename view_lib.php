@@ -63,7 +63,7 @@ function organizer_display_form(moodleform $mform, $title) {
 }
 
 function organizer_add_calendar() {
-    global $PAGE, $DB, $CFG;
+    global $PAGE, $DB;
 
     $courseid = optional_param('course', SITEID, PARAM_INT);
 
@@ -75,16 +75,61 @@ function organizer_add_calendar() {
         $courses = calendar_get_default_courses();
     }
 
-    $now = usergetdate(time());
+    $now = time();
 
-    $calendar = new calendar_information($now['mday'], $now['mon'], $now['year']);
-    if ($CFG->branch > 33) {
-        $calendar->set_sources($course, $courses);
-    } else {
-        $calendar->prepare_for_view($course, $courses);
-    }
+    $calendar = new calendar_information(0, 0, 0, $now);
+    $calendar->set_sources($course, $courses);
     $renderer = $PAGE->get_renderer('core_calendar');
     $calendar->add_sidecalendar_blocks($renderer, true, 'month');
+
+    $calendartype = \core_calendar\type_factory::get_calendar_instance();
+    $time = $calendartype->timestamp_to_date_array($calendar->time);
+
+    $current = $calendar->time;
+    $prevmonthyear = $calendartype->get_prev_month($time['year'], $time['mon']);
+    $prev = $calendartype->convert_to_timestamp(
+        $prevmonthyear[1],
+        $prevmonthyear[0],
+        1
+    );
+    $nextmonthyear = $calendartype->get_next_month($time['year'], $time['mon']);
+    $next = $calendartype->convert_to_timestamp(
+        $nextmonthyear[1],
+        $nextmonthyear[0],
+        1
+    );
+
+    $content = '';
+
+    // Previous.
+    $calendar->set_time($prev);
+    list($previousmonth, ) = calendar_get_view($calendar, 'minithree', false, true);
+
+    // Current month.
+    $calendar->set_time($current);
+    list($currentmonth, ) = calendar_get_view($calendar, 'minithree', false, true);
+
+    // Next month.
+    $calendar->set_time($next);
+    list($nextmonth, ) = calendar_get_view($calendar, 'minithree', false, true);
+
+    // Reset the time back.
+    $calendar->set_time($current);
+
+    $data = (object) [
+        'previousmonth' => $previousmonth,
+        'currentmonth' => $currentmonth,
+        'nextmonth' => $nextmonth,
+    ];
+
+    $template = 'core_calendar/calendar_threemonth';
+    $content .= $renderer->render_from_template($template, $data);
+
+    $block = new block_contents;
+    $block->content = $content;
+    $block->footer = '';
+    $block->title = get_string('monthlyview', 'organizer');
+    $renderer->add_pretend_calendar_block($block, BLOCK_POS_RIGHT);
 }
 
 function organizer_generate_appointments_view($params, $instance) {
