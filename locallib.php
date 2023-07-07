@@ -2320,11 +2320,11 @@ function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg
     }
     $i = 1;
     while ($i <= (int) $bookings) {
-        $out .= html_writer::div(' ', 'userstatusbar_td_full '.$classstrfull);
+        $out .= html_writer::div(' ', 'userstatusbar_td_full rounded '.$classstrfull);
         $i++;
     }
     while ($i <= (int) $max) {
-        $out .= html_writer::div(' ', 'userstatusbar_td_empty '.$classstrempty);
+        $out .= html_writer::div(' ', 'userstatusbar_td_empty rounded '.$classstrempty);
         $i++;
     }
     $out .= html_writer::span($statusmsg, 'ml-2 '.$classstatusmsg);

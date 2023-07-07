@@ -298,37 +298,51 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
 
     $out = "";
 
+    // Minreached bar.
     $out .= html_writer::start_div('registrationstatusbar mb-3 w-100', array('title' => $messageminreached));
     if ($allminreached) {
-        $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
+        $out .= html_writer::div(' ',
+            'registrationstatusbarleg align-middle border border-success bg-success rounded-left',
             array('style' => "width: $barwidth%"));
     } else {
         $partialfullwidth = (int) ((int) $a->minreached * 100 / (int) $a->entries * ( $barwidth / 100 ));
         $partialemptywidth = $barwidth - $partialfullwidth;
         if ($partialfullwidth > 0) {
-            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info bg-info',
+            $out .= html_writer::div(' ',
+                'registrationstatusbarleg align-middle border border-info bg-info rounded-left',
                 array('style' => "width: $partialfullwidth%"));
+            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info rounded-right',
+                array('style' => "width: $partialemptywidth%"));
+        } else {
+            $out .= html_writer::div(' ',
+                'registrationstatusbarleg align-middle border border-info rounded-right rounded-left',
+                array('style' => "width: $partialemptywidth%"));
         }
-        $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info',
-            array('style' => "width: $partialemptywidth%"));
     }
     $out .= html_writer::div($messageminreached, 'd-inline ml-3');
     $out .= html_writer::end_div();
 
+    // Maxreached bar.
     if ($organizer->userslotsmin != $organizer->userslotsmax) {
         $out .= html_writer::start_div('registrationstatusbar mb-4 w-100', array('title' => $messagemaxreached));
         if ($allmaxreached) {
-            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-success bg-success',
+            $out .= html_writer::div(' ',
+                'registrationstatusbarleg align-middle border border-success bg-success rounded-left',
                 array('style' => "width: $barwidth%"));
         } else {
             $partialfullwidth = (int) ((int) $a->maxreached * 100 / (int) $a->entries * ( $barwidth / 100 ));
             $partialemptywidth = $barwidth - $partialfullwidth;
             if ($partialfullwidth > 0) {
-                $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info bg-info',
+                $out .= html_writer::div(' ',
+                    'registrationstatusbarleg align-middle border border-info bg-info rounded-left',
                     array('style' => "width: $partialfullwidth%"));
+                $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info rounded-right',
+                    array('style' => "width: $partialemptywidth%"));
+            } else {
+                $out .= html_writer::div(' ',
+                    'registrationstatusbarleg align-middle border border-info rounded-right rounded-left',
+                    array('style' => "width: $partialemptywidth%"));
             }
-            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info',
-                array('style' => "width: $partialemptywidth%"));
         }
         $out .= html_writer::div($messagemaxreached, 'd-inline-block ml-3');
         $out .= html_writer::end_div();
