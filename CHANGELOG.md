@@ -3,11 +3,12 @@ CHANGELOG
 
 4.2.0 (2023-05-31)
 ------------------
+* [FIXED] #7444: remove double module description
 * [FIXED] #7518: fix grading error with postgres
 * [FIXED] #7519: fix mktime php 8.1 error
 * [FIXED] #7520: introduce new moodle 4.x compatible icons
 * [FIXED] #7522: fix evaluation form group mode error message
-* [FIXED] #7444: remove double module description
+* [FIXED] #7637: fix calendar bug
 * Moodle 4.2 compatible version
 
 3.11.7 (2023-03-16)
