@@ -80,17 +80,6 @@ class mod_organizer_observer {
                                     organizer_delete_user_from_any_queue($organizer->id, $next->userid, null);
                                 }
                             }
-                        } else {
-                            if ($next = $slotx->get_next_in_queue_group()) {
-                                organizer_register_appointment($slot->id, $next->groupid, 0, true);
-                                organizer_delete_from_queue($slot->id, null, $next->groupid);
-                                $booked = organizer_count_bookedslots($organizer->id, null, $next->groupid);
-                                if (organizer_multiplebookings_status($booked, $organizer->id)
-                                    == USERSLOTS_MAX_REACHED) {
-                                    organizer_delete_user_from_any_queue($organizer->id, null, $next->groupid);
-                                }
-                            }
-
                         }
                     }
                     organizer_prepare_and_send_message($slot, 'register_notify_teacher:unregister'); // Message.
