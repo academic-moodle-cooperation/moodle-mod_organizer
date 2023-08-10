@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.2.1 (2023-08-10)
+------------------
+* [FIXED] #7660: fix typo in observer.php
+
 4.2.0 (2023-05-31)
 ------------------
 * [FIXED] #7444: remove double module description
