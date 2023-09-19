@@ -1808,7 +1808,7 @@ function organizer_fetch_printdetail_entries($slot) {
         $fieldname = $socialfield->shortname;
         $paramname = 'u_' . $fieldname . '_fieldid';
         $socialselect .= "$tablename.data AS $fieldname, ";
-        $socialjoin .= "LEFT JOIN {user_info_data} $tablename ON $tablename.userid = a.userid AND $tablename.fieldid = :$paramname";
+        $socialjoin .= " LEFT JOIN {user_info_data} $tablename ON $tablename.userid = a.userid AND $tablename.fieldid = :$paramname";
         $params[$paramname] = $socialfield->id;
     }
 
@@ -1834,7 +1834,7 @@ function organizer_fetch_printdetail_entries($slot) {
                     u.description
                     FROM {organizer_slots} s
                     LEFT JOIN {organizer_slot_appointments} a ON a.slotid = s.id
-                    LEFT JOIN {user} u ON a.userid = u.id
+                    LEFT JOIN {user} u ON a.userid = u.id 
                     $socialjoin
                     LEFT JOIN {groups} g ON a.groupid = g.id
                     WHERE s.id = :slotid
