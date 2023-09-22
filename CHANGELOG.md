@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+4.2.2 (2023-09-22)
+------------------
+* [FIXED] #7670: course fullname instead of the shortname in PAGE heading
+* [FIXED] #7697: print single slot: error message when special userprofile fields are filled
+* [FIXED] #7705: incorrect success message when creating just one slot
+* [FEATURE] #7701: No calendar events for empty slots-option only editable when creating an organizer instance
+* [FEATURE] #7706: managers should not have leadslots permission by default
+
 4.2.1 (2023-08-10)
 ------------------
 * [FIXED] #7660: fix typo in observer.php
