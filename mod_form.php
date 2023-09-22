@@ -203,6 +203,9 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->setType('nocalendareventslotcreation', PARAM_INT);
         $mform->setDefault('nocalendareventslotcreation', 1);
         $mform->addHelpButton('nocalendareventslotcreation', 'nocalendareventslotcreation', 'organizer');
+        if ($this->_instance) {
+            $mform->disabledIf('nocalendareventslotcreation', 'sesskey', 'neq', '');
+        }
 
         // Grading.
         $this->standard_grading_coursemodule_elements();
