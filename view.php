@@ -57,7 +57,7 @@ $url = organizer_create_url($params);
 $PAGE->set_url($url);
 $PAGE->set_context($instance->context);
 $PAGE->set_title($instance->organizer->name);
-$PAGE->set_heading($instance->course->shortname);
+$PAGE->set_heading($instance->course->fullname);
 $PAGE->set_activity_record($instance->organizer);
 
 if ($instance->organizer->hidecalendar != 1) {
