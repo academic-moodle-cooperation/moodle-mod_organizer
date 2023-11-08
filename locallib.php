@@ -1808,7 +1808,7 @@ function organizer_fetch_printdetail_entries($slot) {
         $fieldname = $socialfield->shortname;
         $paramname = 'u_' . $fieldname . '_fieldid';
         $socialselect .= "$tablename.data AS $fieldname, ";
-        $socialjoin .= "LEFT JOIN {user_info_data} $tablename ON $tablename.userid = a.userid AND $tablename.fieldid = :$paramname";
+        $socialjoin .= " LEFT JOIN {user_info_data} $tablename ON $tablename.userid = a.userid AND $tablename.fieldid = :$paramname";
         $params[$paramname] = $socialfield->id;
     }
 
