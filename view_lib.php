@@ -722,12 +722,8 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
     global $DB;
     list($cm, , $organizer, ) = organizer_get_course_module_data();
 
-    $query = "SELECT g.id FROM {groups} g
-            INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
-            WHERE gg.groupingid = :groupingid";
-    $par = array('groupingid' => $cm->groupingid);
-    $groupids = $DB->get_fieldset_sql($query, $par);
-
+    $groups = groups_get_all_groups($cm->course, 0, $cm->groupingid, 'g.id');
+    $groupids = array_keys($groups);
     if (!$groupids || count($groupids) == 0) {
         return array();
     }
@@ -827,18 +823,10 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
  */
 function organizer_organizer_get_status_table_entries($params) {
     global $DB;
-    list($cm, , $organizer, $context) = organizer_get_course_module_data();
+    list(, , $organizer, $context) = organizer_get_course_module_data();
 
-    $studentids = array();
-    if ($organizer->isgrouporganizer != ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $groupids = 0;
-    } else if ($cm->groupingid != 0) {
-        $groupids = groups_get_all_groups($cm->course, 0, $cm->groupingid, 'g.id');
-    }
-    $students = get_enrolled_users($context, 'mod/organizer:register', $groupids, 'u.id', null, 0, 0,true);
-    foreach ($students as $student) {
-        $studentids[] = $student->id;
-    }
+    $students = get_enrolled_users($context, 'mod/organizer:register', 0, 'u.id', null, 0, 0,true);
+    $studentids = array_keys($students);
     if (!$studentids || count($studentids) == 0) {
         return array();
     }
@@ -2341,7 +2329,7 @@ function organizer_appointmentsstatus_bar($organizer) {
         $a->tooless = $tooless;
     } else {
         $context = context_module::instance($cm->id, MUST_EXIST);
-        $participants = get_enrolled_users($context, 'mod/organizer:register');
+        $participants = get_enrolled_users($context, 'mod/organizer:register', 0, 'u.id', null, 0, 0, true);
         foreach ($participants as $participant) {
             $apps = organizer_get_all_user_appointments($organizer, $participant->id);
             $diff = $min - count($apps);
