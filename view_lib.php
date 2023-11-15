@@ -825,7 +825,7 @@ function organizer_organizer_get_status_table_entries($params) {
     global $DB;
     list(, , $organizer, $context) = organizer_get_course_module_data();
 
-    $students = get_enrolled_users($context, 'mod/organizer:register', 0, 'u.id', null, 0, 0,true);
+    $students = get_enrolled_users($context, 'mod/organizer:register', 0, 'u.id', null, 0, 0, true);
     $studentids = array_keys($students);
     if (!$studentids || count($studentids) == 0) {
         return array();
@@ -975,7 +975,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                         $orderby = "lastname {$params['pdir']}, firstname {$params['pdir']}, idnumber ASC";
                                     }
                                     $groupmembers = get_enrolled_users($context, 'mod/organizer:register',
-                                        $entry->id, 'u.id', $orderby, 0, 0,true);
+                                        $entry->id, 'u.id', $orderby, 0, 0, true);
                                     $members = array_keys($groupmembers);
                                     $list = "<span style='display: table'>";
                                     foreach ($members as $member) {
