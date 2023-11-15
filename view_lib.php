@@ -830,22 +830,15 @@ function organizer_organizer_get_status_table_entries($params) {
     list($cm, , $organizer, $context) = organizer_get_course_module_data();
 
     $studentids = array();
-
     if ($organizer->isgrouporganizer != ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $students = get_enrolled_users($context, 'mod/organizer:register');
-        foreach ($students as $student) {
-            $studentids[] = $student->id;
-        }
+        $groupids = 0;
     } else if ($cm->groupingid != 0) {
-        $query = "SELECT DISTINCT(u.id) FROM {user} u
-            INNER JOIN {groups_members} gm ON u.id = gm.userid
-            INNER JOIN {groups} g ON gm.groupid = g.id
-            INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
-            WHERE gg.groupingid = :grouping";
-        $par = array('grouping' => $cm->groupingid);
-        $studentids = $DB->get_fieldset_sql($query, $par);
+        $groupids = groups_get_all_groups($cm->course, 0, $cm->groupingid, 'g.id');
     }
-
+    $students = get_enrolled_users($context, 'mod/organizer:register', $groupids, 'u.id', null, 0, 0,true);
+    foreach ($students as $student) {
+        $studentids[] = $student->id;
+    }
     if (!$studentids || count($studentids) == 0) {
         return array();
     }
@@ -950,7 +943,6 @@ function organizer_organizer_get_status_table_entries($params) {
  * @throws dml_exception
  */
 function organizer_organizer_generate_registration_table_content($columns, $params, $organizer, $context) {
-    global $DB;
 
     $groupmode = $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS;
 
@@ -990,15 +982,13 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                     break;
                                 case 'participants':
                                     if ($params['psort'] == 'id') {
-                                        $orderby = "ORDER BY idnumber {$params['pdir']}, lastname ASC, firstname ASC";
+                                        $orderby = "idnumber {$params['pdir']}, lastname ASC, firstname ASC";
                                     } else {
-                                        $orderby = "ORDER BY lastname {$params['pdir']}, firstname {$params['pdir']}, idnumber ASC";
+                                        $orderby = "lastname {$params['pdir']}, firstname {$params['pdir']}, idnumber ASC";
                                     }
-                                    $members = $DB->get_fieldset_sql(
-                                        'SELECT userid FROM {groups_members} gm
-                                        INNER JOIN {user} u ON gm.userid = u.id WHERE groupid = :groupid '.
-                                        $orderby, array('groupid' => $entry->id)
-                                    );
+                                    $groupmembers = get_enrolled_users($context, 'mod/organizer:register',
+                                        $entry->id, 'u.id', $orderby, 0, 0,true);
+                                    $members = array_keys($groupmembers);
                                     $list = "<span style='display: table'>";
                                     foreach ($members as $member) {
                                         $list .= "<span style='display: table-row'>";
