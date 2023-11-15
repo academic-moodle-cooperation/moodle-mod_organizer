@@ -55,34 +55,34 @@ class mod_organizer_observer {
             }
 
             // Handle slots.
-            $slots = $DB->get_records_select('organizer_slots', 'organizerid ' . $organizerselect, $params);
+            if ($slots = $DB->get_records_select('organizer_slots', 'organizerid ' . $organizerselect, $params)) {
+                list($slotselect, $slotparams) = $DB->get_in_or_equal(array_keys($slots), SQL_PARAMS_NAMED);
+                $slotparams['userid'] = $cp->userid;
 
-            list($slotselect, $slotparams) = $DB->get_in_or_equal(array_keys($slots), SQL_PARAMS_NAMED);
-            $slotparams['userid'] = $cp->userid;
+                $slotappointments = $DB->get_records_select('organizer_slot_appointments',
+                    'userid = :userid AND slotid ' . $slotselect, $slotparams);
 
-            $slotappointments = $DB->get_records_select('organizer_slot_appointments',
-                'userid = :userid AND slotid ' . $slotselect, $slotparams);
-
-            foreach ($slotappointments as $slotappointment) {
-                $slot = $slots[$slotappointment->slotid];
-                $organizer = $organizers[$slot->organizerid];
-                $success = organizer_unregister_single_appointment($slot->id, $cp->userid, $organizer);
-                if ($success) {
-                    if ($organizer->queue == '1') {
-                        $slotx = new organizer_slot($slot, true, $organizer);
-                        if ($organizer->isgrouporganizer != ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                            if ($next = $slotx->get_next_in_queue()) {
-                                organizer_register_appointment($slot->id, 0, $next->userid, true);
-                                organizer_delete_from_queue($slot->id, $next->userid);
-                                $booked = organizer_count_bookedslots($organizer->id, $next->userid, null);
-                                if (organizer_multiplebookings_status($booked, $organizer->id)
-                                    == USERSLOTS_MAX_REACHED) {
-                                    organizer_delete_user_from_any_queue($organizer->id, $next->userid, null);
+                foreach ($slotappointments as $slotappointment) {
+                    $slot = $slots[$slotappointment->slotid];
+                    $organizer = $organizers[$slot->organizerid];
+                    $success = organizer_unregister_single_appointment($slot->id, $cp->userid, $organizer);
+                    if ($success) {
+                        if ($organizer->queue == '1') {
+                            $slotx = new organizer_slot($slot, true, $organizer);
+                            if ($organizer->isgrouporganizer != ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                                if ($next = $slotx->get_next_in_queue()) {
+                                    organizer_register_appointment($slot->id, 0, $next->userid, true);
+                                    organizer_delete_from_queue($slot->id, $next->userid);
+                                    $booked = organizer_count_bookedslots($organizer->id, $next->userid, null);
+                                    if (organizer_multiplebookings_status($booked, $organizer->id)
+                                        == USERSLOTS_MAX_REACHED) {
+                                        organizer_delete_user_from_any_queue($organizer->id, $next->userid, null);
+                                    }
                                 }
                             }
                         }
+                        organizer_prepare_and_send_message($slot, 'register_notify_teacher:unregister'); // Message.
                     }
-                    organizer_prepare_and_send_message($slot, 'register_notify_teacher:unregister'); // Message.
                 }
             }
         }
