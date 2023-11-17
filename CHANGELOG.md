@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+4.2.3 (2023-11-17)
+------------------
+* [FIXED] #7746: don't allow not-students to be graded (in group mode)
+* [FIXED] #7721: error message when deleting enrollments
+* [FIXED] #7745: don't show suspended users in registration view
+* [FEATURE] #7744: new admin setting: don't show participant's ID in slot list
+
 4.2.2 (2023-09-22)
 ------------------
 * [FIXED] #7670: course fullname instead of the shortname in PAGE heading
