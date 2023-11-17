@@ -321,27 +321,30 @@ class mod_organizer_mod_form extends moodleform_mod {
             global $DB;
             $errormsg = '';
             $error = false;
-            $memberships = $this->_get_memberships($data['groupingid']);
+            $memberships = $this->_get_memberships($data['course'], $data['groupingid']);
             foreach ($memberships as $userid => $groups) {
                 if (count($groups) > 1) {
-                    $error = true;
-                    $a = new stdClass();
-                    $user = $DB->get_record('user', array('id' => $userid));
-                    $a->username = fullname($user);
-                    $identity = $DB->get_field_select('user', 'idnumber', "id = {$userid}");
-                    $a->idnumber = $identity != "" ? "({$identity})" : "";
-                    $grouplist = "";
-                    $first = true;
-                    foreach ($groups as $group) {
-                        if ($first) {
-                            $grouplist .= "$group->name";
-                            $first = false;
-                        } else {
-                            $grouplist .= ", $group->name";
+                    if (!has_capability("mod/organizer:editslots", context_module::instance($data['coursemodule']),
+                        $userid)) {
+                        $error = true;
+                        $a = new stdClass();
+                        $user = $DB->get_record('user', array('id' => $userid));
+                        $a->username = fullname($user);
+                        $identity = $DB->get_field_select('user', 'idnumber', "id = {$userid}");
+                        $a->idnumber = $identity != "" ? "({$identity})" : "";
+                        $grouplist = "";
+                        $first = true;
+                        foreach ($groups as $group) {
+                            if ($first) {
+                                $grouplist .= "$group->name";
+                                $first = false;
+                            } else {
+                                $grouplist .= ", $group->name";
+                            }
                         }
+                        $a->groups = $grouplist;
+                        $errormsg .= get_string('multimemberspecific', 'organizer', $a) . "<br />";
                     }
-                    $a->groups = $grouplist;
-                    $errormsg .= get_string('multimemberspecific', 'organizer', $a) . "<br />";
                 }
             }
 
@@ -357,26 +360,16 @@ class mod_organizer_mod_form extends moodleform_mod {
         return $errors;
     }
 
-    private function _get_memberships($groupingid) {
-        global $DB;
+    private function _get_memberships($courseid, $groupingid) {
 
-        $querygroups = "SELECT {groups}.* FROM {groups}
-                INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
-                WHERE {groupings_groups}.groupingid = :groupingid";
-        $groups = $DB->get_records_sql($querygroups, array('groupingid' => $groupingid));
-
+        $groups = groups_get_all_groups($courseid, 0, $groupingid, 'g.*', true);
         $memberships = array();
         foreach ($groups as $group) {
-            $queryusers = "SELECT {user}.* FROM {user}
-                INNER JOIN {groups_members} ON {user}.id = {groups_members}.userid
-                WHERE {groups_members}.groupid = :groupid";
-            $users = $DB->get_records_sql($queryusers, array('groupid' => $group->id));
-
-            foreach ($users as $user) {
-                if (!isset($memberships[$user->id])) {
-                    $memberships[$user->id] = array($group);
+            foreach ($group->members as $member) {
+                if (!isset($memberships[$member])) {
+                    $memberships[$member] = array($group);
                 } else {
-                    $memberships[$user->id][] = $group;
+                    $memberships[$member][] = $group;
                 }
             }
         }
