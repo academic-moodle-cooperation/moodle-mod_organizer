@@ -1240,7 +1240,7 @@ function organizer_evaluate_slots($data) {
 function organizer_get_course_module_data($id = null, $n = null) {
     global $DB;
 
-    $id = $id == null ? optional_param('id', 0, PARAM_INT) : $id; // Course_module ID, or.
+    $id = $id === null ? optional_param('id', 0, PARAM_INT) : $id; // Course_module ID, or.
     $n = $n == null ? optional_param('o', 0, PARAM_INT) : $n; // Organizer instance ID.
 
     if ($id) {

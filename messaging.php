@@ -52,7 +52,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
 
     $organizerid = $slot->organizerid;
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data(0, $organizerid);
 
     $strings = organizer_check_messagerights($sender, $receiver, $cm, $course, $organizer, $context);
     if (!$strings) {
