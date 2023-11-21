@@ -81,7 +81,7 @@ class mod_organizer_observer {
                                 }
                             }
                         }
-                        organizer_prepare_and_send_message($slot, 'register_notify_teacher:unregister'); // Message.
+                        organizer_prepare_and_send_message($slot->id, 'register_notify_teacher:unregister'); // Message.
                     }
                 }
             }
