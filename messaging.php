@@ -238,8 +238,6 @@ function organizer_prepare_and_send_message($data, $type) {
 
     $sentok = false;
 
-    include_once('lib.php');
-
     switch ($type) {
         case 'edit_notify_student':
             foreach ($data->slots as $slotid) {
