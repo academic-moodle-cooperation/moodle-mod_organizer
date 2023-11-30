@@ -1240,7 +1240,7 @@ function organizer_evaluate_slots($data) {
 function organizer_get_course_module_data($id = null, $n = null) {
     global $DB;
 
-    $id = $id == null ? optional_param('id', 0, PARAM_INT) : $id; // Course_module ID, or.
+    $id = $id === null ? optional_param('id', 0, PARAM_INT) : $id; // Course_module ID, or.
     $n = $n == null ? optional_param('o', 0, PARAM_INT) : $n; // Organizer instance ID.
 
     if ($id) {
@@ -1569,8 +1569,9 @@ function organizer_sortout_hiddenslots($slots) {
 function organizer_get_user_identity($user) {
     global $CFG, $DB;
 
-    $identity = "";
-    $identityfields = explode(',', $CFG->showuseridentity);
+    if ($dontshowidentity = get_config('mod_organizer', 'dontshowidentity')) {
+        return "";
+    }
 
     if (is_object($user)) {
         $id = $user->id;
@@ -1581,6 +1582,10 @@ function organizer_get_user_identity($user) {
             return "";
         }
     }
+
+    $identity = "";
+    $identityfields = explode(',', $CFG->showuseridentity);
+
     if (in_array('idnumber', $identityfields)) {
         $identity = $DB->get_field_select('user', 'idnumber', "id = {$id}");
     } else {

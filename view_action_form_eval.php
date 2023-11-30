@@ -26,6 +26,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -43,6 +44,7 @@ class organizer_evaluate_slots_form extends moodleform {
 
         $mform = $this->_form;
         $data = $this->_customdata;
+        $context = context_module::instance($data['id']);
 
         $mform->addElement('hidden', 'id', $data['id']);
         $mform->setType('id', PARAM_INT);
@@ -121,12 +123,12 @@ class organizer_evaluate_slots_form extends moodleform {
 
             // For each appointment of this slot.
             foreach ($apps as $app) {
-                $user = $DB->get_record('user', array('id' => $app->userid));
+                if (has_capability("mod/organizer:evalslots", $context, $app->userid)) {
+                    continue;
+                }
                 $name = "apps[{$app->id}]";
-
-                $namelink = html_writer::div($this->_organizer_get_name_link($user->id), 'd-block');
+                $namelink = html_writer::div($this->_organizer_get_name_link($app->userid), 'd-block');
                 $mform->addElement($mform->createElement('static', '', '', $namelink));
-
                 // Formgroup evaluation.
                 $appgroup = array();
                 $appgroup[] = $mform->createElement('advcheckbox', 'attended',
@@ -139,7 +141,6 @@ class organizer_evaluate_slots_form extends moodleform {
                 $appgroup[] = $mform->createElement('static', '', '',
                     get_string('eval_feedback', 'organizer') . ':&nbsp;');
                 $appgroup[] = $mform->createElement('text', 'feedback', null, array('class' => 'w-25'));
-
                 $mform->disabledif ("{$name}[attended]", $checkboxname);
                 $mform->disabledif ("{$name}[grade]", $checkboxname);
                 $mform->disabledif ("{$name}[feedback]", $checkboxname);
@@ -151,12 +152,9 @@ class organizer_evaluate_slots_form extends moodleform {
                 }
                 $mform->setType("{$name}[feedback]", PARAM_TEXT);
                 $mform->setDefault("{$name}[feedback]", $app->feedback);
-
                 $mform->addElement($mform->createElement('group', $name, '', $appgroup, ' ', true));
             }
-
         }
-
         $this->add_action_buttons(true, get_string('evaluate', 'organizer'));
     }
     /**
