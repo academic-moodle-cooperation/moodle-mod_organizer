@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * event/slot_created.php
+ * event/appointment_delted.php
  *
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
@@ -28,25 +28,25 @@
 namespace mod_organizer\event;
 defined('MOODLE_INTERNAL') || die();
 /**
- * The slots_created event class.
+ * The appointment_deleted event class.
  **/
-class slot_created extends \core\event\base {
+class appointment_deleted extends \core\event\base {
     protected function init() {
-        $this->data['crud'] = 'c'; // Options: c (reate), r (ead), u (pdate), d (elete).
+        $this->data['crud'] = 'd'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data['objecttable'] = 'organizer_slots';
+        $this->data['objecttable'] = 'organizer_slot_appointments';
     }
 
     public static function get_name() {
-        return get_string('eventslotcreated', 'mod_organizer');
+        return get_string('eventappointmentdeleted', 'mod_organizer');
     }
 
     public function get_description() {
-        return "The user with id {$this->userid} added slots to the organizer activity " .
+        return "The user with id {$this->userid} has been unregistered from a slot of organizer activity " .
             "with the course module id {$this->contextinstanceid}.";
     }
 
     public function get_url() {
-        return new \moodle_url('/mod/organizer/slots_add.php', array('id' => $this->objectid, 'mode' => 1));
+        return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
     }
 }

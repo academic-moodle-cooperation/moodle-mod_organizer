@@ -29,8 +29,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__) . '/lib.php');
-require_once(dirname(__FILE__) . '/legend.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/slotlib.php');
 
@@ -38,14 +36,20 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     global $PAGE, $USER;
 
     $output = '';
+
+    // Display messages here.
+    $output .= organizer_make_messages_section($params);
+
+    // Module description section
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS ||
         time() > $organizer->allowregistrationsfromdate) {
         // Group and duedate informations.
-        $output = organizer_make_description_section($organizer);
+        $output .= organizer_make_description_section($organizer, $params['id']);
     }
 
     $jsparams = new stdClass();
     $jsparams->studentview = 0;
+    $jsparams->registrationview = 0;
 
     switch($params['mode']) {
         case ORGANIZER_TAB_APPOINTMENTS_VIEW:
@@ -54,7 +58,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
         case ORGANIZER_TAB_STUDENT_VIEW:
             // My own booking information section.
             $output .= organizer_make_myapp_section($params, $organizer,
-                organizer_get_last_user_appointment($organizer));
+                organizer_get_all_user_appointments($organizer));
             $jsparams->studentview = 1;
         break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
@@ -63,20 +67,23 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
                 $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS, $params)) {
                 $output .= organizer_make_sendreminder_section($params, $context);
             }
+            $output .= organizer_make_registrationstatistic_section($organizer, $entries);
+            $jsparams->registrationview = 1;
         break;
         case ORGANIZER_ASSIGNMENT_VIEW:
         break;
         default:
             print_error("Wrong view mode: {$params['mode']}");
     }
-    // Display messages here.
-    $output .= organizer_make_messages_section($params);
-    // Display section with predefined filter view options like "hidden slots only" etc..
-    $output .= organizer_make_slotoptions_section($params);
+    if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
+        // Display section with predefined filter view options like "hidden slots only" etc..
+        $output .= organizer_make_slotoptions_section($params['mode'], $organizer);
+    }
     // Display search field for fulltext search.
-    $output .= organizer_make_filtersection();
+    $output .= organizer_make_filtersection($params['mode']);
 
-    $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams->studentview, $USER->id));
+    $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams->studentview,
+        $jsparams->registrationview, $USER->id));
 
     return $output;
 }
@@ -96,30 +103,28 @@ function organizer_make_section($name, $content, $hidden = false) {
     $output .= '</div>';
     return $output;
 }
-
-function organizer_add_message_icon($message) {
-    if (strpos($message, 'warning') !== false) {
-        return organizer_get_icon('message_warning', get_string('Warning', 'organizer'));
-    } else if (strpos($message, 'info') !== false) {
-        return organizer_get_icon('message_info', get_string('Info', 'organizer'));
-    } else if (strpos($message, 'error') !== false) {
-        return organizer_get_icon('message_error', get_string('Error', 'organizer'));
-    } else {
-        return '';
-    }
-}
 function organizer_make_messages_section($params) {
-    if ($params['messages']) {
-        $output = '<div style="overflow: auto;">';
-        $a = new stdClass();
-        foreach ($params['data'] as $key => $value) {
-            $a->$key = $value;
+    global $OUTPUT;
+
+    $output = '';
+    $infoboxmessage = $_SESSION["infoboxmessage"] ?? '';
+    if ($infoboxmessage) {
+        $output .= $infoboxmessage;
+        $_SESSION["infoboxmessage"] = "";
+    } else {
+        if (isset($params['messages'])) {
+            $a = new stdClass();
+            if (isset($params['data'])) {
+                foreach ($params['data'] as $key => $value) {
+                    $a->{$key} = $value;
+                }
+            }
+            foreach ($params['messages'] as $message) {
+                $output .= $OUTPUT->notification(get_string($message, 'organizer', $a), 'info');
+            }
         }
-        foreach ($params['messages'] as $message) {
-            $output .= '<p>' . organizer_add_message_icon($message);
-            $output .= ' ' . get_string($message, 'organizer', $a) . '</p>';
-        }
-        $output .= '</div>';
+    }
+    if ($output) {
         return organizer_make_section('infobox_messages', $output);
     } else {
         return '';
@@ -127,28 +132,32 @@ function organizer_make_messages_section($params) {
 }
 function organizer_make_sendreminder_section($params, $context) {
     global $OUTPUT;
-    if (has_capability("mod/organizer:sendreminders", $context, null, true)) {
+    if (has_capability("mod/organizer:sendreminders", $context)) {
         $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id']));
-        $output = '<div name="button_bar" class="organizer_addbutton_div">';
-        $output .= $OUTPUT->single_button($sendurl, get_string("btn_sendall", 'organizer'), 'post');
-        $output .= '</div>';
+        $output = $OUTPUT->single_button($sendurl, get_string("btn_sendall", 'organizer'), true);
         return organizer_make_section('infobox_messaging', $output);
     } else {
         return '';
     }
 }
-function organizer_make_description_section($organizer) {
-    global $OUTPUT;
+function organizer_make_description_section($organizer, $cmid) {
+    global $OUTPUT, $PAGE;
 
-    $output = '';
+    $modediturl = new moodle_url('/course/modedit.php', array('update' => $cmid, 'return' => 1));
+    $context = $PAGE->context;
+    $link = "";
+
+    $output = "";
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $group = organizer_fetch_my_group();
         if ($group) {
             $a = new stdClass();
             $a->groupname = $group->name;
-            $output .= '<p> ' . get_string('grouporganizer_desc_hasgroup', 'organizer', $a) . '</p>';
+            $infotxt = get_string('grouporganizer_desc_hasgroup', 'organizer', $a);
+            $output .= organizer_get_icon_msg($infotxt, 'message_info', '');
         } else {
-            $output .= '<p> ' . get_string('grouporganizer_desc_nogroup', 'organizer') . '</p>';
+            $infotxt = get_string('grouporganizer_desc_novalidgroup', 'organizer');
+            $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder');
         }
     }
     if (isset($organizer->duedate)) {
@@ -156,20 +165,101 @@ function organizer_make_description_section($organizer) {
         $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
         $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
         if ($organizer->duedate > time()) {
-            $output .= '<p>' . get_string('infobox_organizer_expires', 'organizer', $a) . '</p>';
+            if (has_capability("mod/organizer:editslots", $context)) {
+                $link = html_writer::link($modediturl, get_string('infobox_organizer_expires', 'organizer', $a));
+            }
+            $infotxt = get_string('infobox_organizer_expires', 'organizer', $a);
+            $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
         } else {
-            $output .= '<p>' . get_string('infobox_organizer_expired', 'organizer', $a) . '</p>';
+            if (has_capability("mod/organizer:editslots", $context)) {
+                $link = html_writer::link($modediturl, get_string('infobox_organizer_expired', 'organizer', $a));
+            }
+            $infotxt = get_string('infobox_organizer_expired', 'organizer', $a);
+            $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder', $link);
         }
     } else {
-        $output .= '<p>' . get_string('infobox_organizer_never_expires', 'organizer') . '</p>';
+        if (has_capability("mod/organizer:editslots", $context)) {
+            $link = html_writer::link($modediturl, get_string('infobox_organizer_never_expires', 'organizer'));
+        }
+        $infotxt = get_string('infobox_organizer_never_expires', 'organizer');
+        $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
     }
-    $output .= '<br>';
+    $link = "";
+    if ($organizer->grade != 0) {
+        if (has_capability("mod/organizer:editslots", $context)) {
+            $link = html_writer::link($modediturl, get_string('grading_desc_grade', 'organizer'));
+        }
+        $infotxt = get_string('grading_desc_grade', 'organizer');
+        $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
+    } else {
+        if (has_capability("mod/organizer:editslots", $context)) {
+            $link = html_writer::link($modediturl, get_string('grading_desc_nograde', 'organizer'));
+        }
+        $infotxt = get_string('grading_desc_nograde', 'organizer');
+        $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder', $link);
+    }
+    $link = "";
+    if ($organizer->queue != 0) {
+        if (has_capability("mod/organizer:editslots", $context)) {
+            $link = html_writer::link($modediturl, get_string('waitinglists_desc_active', 'organizer'));
+        }
+        $infotxt = get_string('waitinglists_desc_active', 'organizer');
+        $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
+    } else {
+        if (has_capability("mod/organizer:editslots", $context)) {
+            $link = html_writer::link($modediturl, get_string('waitinglists_desc_notactive', 'organizer'));
+        }
+        $infotxt = get_string('waitinglists_desc_notactive', 'organizer');
+        $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder', $link);
+    }
+    $link = "";
+    $a = new stdClass();
+    $a->min = $organizer->userslotsmin;
+    $a->max = $organizer->userslotsmax;
+    if (has_capability("mod/organizer:editslots", $context)) {
+        $link = html_writer::link($modediturl, get_string('infobox_minmax', 'organizer', $a));
+    }
+    $infotxt = get_string('infobox_minmax', 'organizer', $a);
+    $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
 
     return $OUTPUT->box($output, 'generalbox', 'intro');
 }
-function organizer_make_myapp_section($params, $organizer, $app) {
-    global $DB;
-    if ($app) {
+function organizer_make_myapp_section($params, $organizer, $apps) {
+    global $USER;
+
+    $output = "";
+    $groupstr = "";
+    $novalidgroup = false;
+    if (organizer_is_group_mode()) {
+        if (!$group = organizer_fetch_user_group($USER->id, $organizer->id)) {
+            $novalidgroup = true;
+        }
+        $groupstr = "_group";
+    }
+    if (!$novalidgroup) {
+        $a = new stdClass();
+        $a->booked = organizer_count_bookedslots($organizer->id, isset($group->id) ? null : $USER->id, $group->id ?? null);
+        $userslotsstate = organizer_multiplebookings_status($a->booked, $organizer);
+        $a->max = $organizer->userslotsmax;
+        $a->min = $organizer->userslotsmin;
+        $a->left = $organizer->userslotsmax - $a->booked;
+        $statusbarmsg = "";
+        $minreached = false;
+        $statusbarstatusmsg = get_string('infobox_myslot_userslots_status', 'organizer', $a);
+        if ($userslotsstate == USERSLOTS_MIN_NOT_REACHED) {
+            $statusbarmsg .= get_string('infobox_myslot_userslots_min_not_reached'.$groupstr, 'organizer', $a);
+        } else if ($userslotsstate == USERSLOTS_MAX_REACHED) {
+            $minreached = true;
+            $statusbarmsg .= get_string('infobox_myslot_userslots_max_reached'.$groupstr, 'organizer', $a);
+        } else {
+            $minreached = true;
+            $statusbarmsg .= get_string('infobox_myslot_userslots_min_reached'.$groupstr, 'organizer', $a).
+                ' '.get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a);
+        }
+        $statusbar = organizer_userstatus_bar($a->booked, $a->max, $minreached, $statusbarstatusmsg, $statusbarmsg);
+        $output .= $statusbar;
+    }
+    if (count($apps) > 0) {
         $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
         $align = array('left', 'left', 'left', 'left', 'center', 'center');
         $sortable = array();
@@ -179,116 +269,188 @@ function organizer_make_myapp_section($params, $organizer, $app) {
         $table->head = organizer_generate_table_header($columns, $sortable, $params);
         $table->data = organizer_generate_table_content($columns, $params, $organizer, true);
         $table->align = $align;
-        $output = organizer_render_table_with_footer($table, false);
-        $output = preg_replace('/<th /', '<th style="width: 0%;" ', $output); // Afterburner fix - try to fix it using css!
-        $slot = $DB->get_record('organizer_slots', array('id' => $app->slotid));
-        if ($slot->starttime - $organizer->relativedeadline - time() > 0) {
-            $a = new stdClass();
-            list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown(
-                    $slot->starttime - $organizer->relativedeadline - time());
-            $class = $a->days > 1 ? "countdown_normal" : ($a->hours > 1 ? "countdown_hurry" : "countdown_critical");
-            $output .= "<p><span class=\"$class\">" . get_string('infobox_deadline_countdown', 'organizer', $a) . '</span></p>';
-        } else {
-            $output .= '<p><span class="countdown_passed">' . get_string('infobox_deadline_passed', 'organizer') . '</span></p>';
-        }
-        if ($slot->starttime - time() > 0) {
-            $a = new stdClass();
-            list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown($slot->starttime - time());
-            $class = $a->days > 1 ? "countdown_normal" : ($a->hours > 1 ? "countdown_hurry" : "countdown_critical");
-            $output .= "<p><span class=\"$class\">" . get_string('infobox_app_countdown', 'organizer', $a) . '</span></p>';
-        } else {
-            $output .= '<p><span class="countdown_passed">' . get_string('infobox_app_occured', 'organizer') . '</span></p>';
-        }
-    } else {
-        $output = '<p>' . get_string('infobox_myslot_noslot', 'organizer') . '</p>';
+        $output .= organizer_render_table_with_footer($table, false);
     }
     return organizer_make_section('infobox_myslot', $output);
 }
-function organizer_make_slotoptions_section($params) {
+function organizer_make_registrationstatistic_section($organizer, $entries) {
+    $barwidth = 30;
+    $a = new stdClass();
+    $a->min = $organizer->userslotsmin;
+    $a->max = $organizer->userslotsmax;
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        list($a->entries, $undermin, $a->maxreached) =
+            organizer_registration_statistics($organizer, true, $entries,
+                $organizer->userslotsmin, $organizer->userslotsmax);
+        $a->minreached = (int) $a->entries - (int) $undermin;
+        $messageminreached = get_string('infobox_statistic_minreached_group', 'organizer', $a);
+        $messagemaxreached = get_string('infobox_statistic_maxreached_group', 'organizer', $a);
+    } else {
+        list($a->entries, $undermin, $a->maxreached) =
+            organizer_registration_statistics($organizer, false, $entries,
+                $organizer->userslotsmin, $organizer->userslotsmax);
+        $a->minreached = (int) $a->entries - (int) $undermin;
+        $messageminreached = get_string('infobox_statistic_minreached', 'organizer', $a);
+        $messagemaxreached = get_string('infobox_statistic_maxreached', 'organizer', $a);
+    }
+    $allminreached = $undermin ? false : true;
+    $allmaxreached = (int) $a->entries == (int) $a->maxreached ? true : false;
+
+    $out = "";
+
+    // Minreached bar.
+    $out .= html_writer::start_div('registrationstatusbar mb-3 w-100', array('title' => $messageminreached));
+    if ($allminreached) {
+        $out .= html_writer::div(' ',
+            'registrationstatusbarleg align-middle border border-success bg-success rounded-left',
+            array('style' => "width: $barwidth%"));
+    } else {
+        $partialfullwidth = (int) ((int) $a->minreached * 100 / (int) $a->entries * ( $barwidth / 100 ));
+        $partialemptywidth = $barwidth - $partialfullwidth;
+        if ($partialfullwidth > 0) {
+            $out .= html_writer::div(' ',
+                'registrationstatusbarleg align-middle border border-info bg-info rounded-left',
+                array('style' => "width: $partialfullwidth%"));
+            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info rounded-right',
+                array('style' => "width: $partialemptywidth%"));
+        } else {
+            $out .= html_writer::div(' ',
+                'registrationstatusbarleg align-middle border border-info rounded-right rounded-left',
+                array('style' => "width: $partialemptywidth%"));
+        }
+    }
+    $out .= html_writer::div($messageminreached, 'd-inline ml-3');
+    $out .= html_writer::end_div();
+
+    // Maxreached bar.
+    if ($organizer->userslotsmin != $organizer->userslotsmax) {
+        $out .= html_writer::start_div('registrationstatusbar mb-4 w-100', array('title' => $messagemaxreached));
+        if ($allmaxreached) {
+            $out .= html_writer::div(' ',
+                'registrationstatusbarleg align-middle border border-success bg-success rounded-left',
+                array('style' => "width: $barwidth%"));
+        } else {
+            $partialfullwidth = (int) ((int) $a->maxreached * 100 / (int) $a->entries * ( $barwidth / 100 ));
+            $partialemptywidth = $barwidth - $partialfullwidth;
+            if ($partialfullwidth > 0) {
+                $out .= html_writer::div(' ',
+                    'registrationstatusbarleg align-middle border border-info bg-info rounded-left',
+                    array('style' => "width: $partialfullwidth%"));
+                $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info rounded-right',
+                    array('style' => "width: $partialemptywidth%"));
+            } else {
+                $out .= html_writer::div(' ',
+                    'registrationstatusbarleg align-middle border border-info rounded-right rounded-left',
+                    array('style' => "width: $partialemptywidth%"));
+            }
+        }
+        $out .= html_writer::div($messagemaxreached, 'd-inline-block ml-3');
+        $out .= html_writer::end_div();
+    }
+
+    return organizer_make_section('infobox_registrationstatistic', $out);
+}
+function organizer_make_filtersection($mode) {
     global $OUTPUT;
 
-    $output = '<div>';
+    // Display filter - options.
+    $output = html_writer::start_div('organizer_filterblock');
+    $output .= html_writer::start_span('', array('id' => 'organizer_filterfield')).
+        get_string('searchfilter', 'organizer').$OUTPUT->help_icon('filtertable', 'organizer', '');
+    $output .= html_writer::tag('input', null,
+        array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
+    $output .= html_writer::end_span();
 
-    $displaymyslotsonly = $displayhiddenslots = $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW;
-    $displayfreeslots = $displaypastslots = $params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW;
-    $displayregistrationsonly = true;
-
+    $displaymyslotsonly = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
+    $displayregistrationsonly = $displayfreeslots = $displayallparticipants =
+        $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
     if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
         $showmyslotsonly = substr($prefs, 0, 1) ? true : false;
         $showfreeslotsonly = substr($prefs, 1, 1) ? true : false;
-        $showhiddenslots = substr($prefs, 2, 1) ? true : false;
-        $showpastslots = substr($prefs, 3, 1) ? true : false;
         $showregistrationsonly = substr($prefs, 4, 1) ? true : false;
+        $showallparticipants = substr($prefs, 5, 1) ? true : false;
     } else {
-        $showmyslotsonly = $showfreeslotsonly = $showhiddenslots = $showpastslots = $showregistrationsonly = false;
+        $showmyslotsonly = $showfreeslotsonly = $showregistrationsonly = false;
+        $showallparticipants = true;
     }
-
-    $labelmarginstyles = array('style' => 'margin-right:1.5em;margin-left:0.3em;');
-
     if ($displaymyslotsonly) {
         $output .= html_writer::checkbox('show_my_slots_only', '1', $showmyslotsonly,
-            get_string('infobox_showmyslotsonly', 'organizer'), array('id' => 'show_my_slots_only'),
-            $labelmarginstyles);
+            get_string('infobox_showmyslotsonly', 'organizer'),
+            array('id' => 'show_my_slots_only', 'class' => 'slotoptions'));
     }
-
     if ($displayfreeslots) {
         $output .= html_writer::checkbox('show_free_slots_only', '1', $showfreeslotsonly,
-            get_string('infobox_showfreeslots', 'organizer'), array('id' => 'show_free_slots_only'),
-            $labelmarginstyles);
+            get_string('infobox_showfreeslots', 'organizer'),
+            array('id' => 'show_free_slots_only', 'class' => 'slotoptions'));
     }
-
-    if ($displayhiddenslots) {
-        $output .= html_writer::checkbox('show_hidden_slots', '1', $showhiddenslots,
-            get_string('infobox_showhiddenslots', 'organizer'), array('id' => 'show_hidden_slots'),
-            $labelmarginstyles);
-    }
-
-    if ($displaypastslots) {
-        $output .= html_writer::checkbox('show_past_slots', '1', $showpastslots,
-            get_string('infobox_showslots', 'organizer'), array('id' => 'show_past_slots'),
-            $labelmarginstyles);
-    }
-
     if ($displayregistrationsonly) {
         $output .= html_writer::checkbox('show_registrations_only', '1', $showregistrationsonly,
-            get_string('infobox_showregistrationsonly', 'organizer'), array('id' => 'show_registrations_only'),
-            $labelmarginstyles);
+            get_string('infobox_showregistrationsonly', 'organizer'),
+            array('id' => 'show_registrations_only', 'class' => 'slotoptions'));
+    }
+    $output .= html_writer::end_div();
+
+    if ($mode == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
+        $output .= html_writer::start_div();
+        $output .= html_writer::span('', 'text-info', array('id' => 'counttabrows'));
+        $output .= html_writer::span(get_string('infobox_counter_slotrows', 'mod_organizer'), 'ml-1 text-info');
+        if ($displayallparticipants) {
+            $output .= html_writer::checkbox('show_all_participants', '1', $showallparticipants,
+                get_string('infobox_showallparticipants', 'organizer'),
+                array('id' => 'show_all_participants', 'class' => 'slotoptions'));
+        }
+        $output .= html_writer::end_div();
     }
 
-    $output .= $OUTPUT->help_icon('infobox_slotsviewoptions', 'organizer', '');
-
-    $output .= '</div>';
-
-    return organizer_make_section('infobox_slotoverview', $output);
-}
-
-function organizer_make_filtersection() {
-    global $OUTPUT;
-
-    $output = '<p class="organizer_filterblock">';
-    $output .= '<span id="organizer_filterfield">' . get_string('search') .
-        $OUTPUT->help_icon('filtertable', 'organizer', '');
-    $output .= html_writer::tag('input', null,
-        array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
-    $output .= '</span>';
-    $output .= '</p>';
-    $output .= '<div class="clearer">&nbsp;</div>';
+    $output .= html_writer::div('', 'clearer');
 
     return $output;
 }
+function organizer_make_slotoptions_section($mode, $organizer) {
+    global $OUTPUT;
 
+    if ($mode == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
+        $output = organizer_appointmentsstatus_bar($organizer);
+    } else {
+        $output = "";
+    }
+
+    // Display show more - options.
+    $output .= html_writer::start_div();
+    $output .= html_writer::span(get_string('showmore', 'organizer').
+        $OUTPUT->help_icon('slotoptionstable', 'organizer'));
+    $displayhiddenslots = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
+    $displaypastslots = true;
+    if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
+        $showhiddenslots = substr($prefs, 2, 1) ? true : false;
+        $showpastslots = substr($prefs, 3, 1) ? true : false;
+    } else {
+        $showhiddenslots = $showpastslots = false;
+    }
+    if ($displayhiddenslots) {
+        $output .= html_writer::checkbox('show_hidden_slots', '1', $showhiddenslots,
+            get_string('infobox_showhiddenslots', 'organizer'),
+            array('id' => 'show_hidden_slots', 'class' => 'slotoptions'));
+    }
+    if ($displaypastslots) {
+        $output .= html_writer::checkbox('show_past_slots', '1', $showpastslots,
+            get_string('infobox_showslots', 'organizer'),
+            array('id' => 'show_past_slots', 'class' => 'slotoptions'));
+    }
+    $output .= html_writer::end_div();;
+
+    return organizer_make_section('infobox_slotoverview', $output);
+}
 function organizer_make_addslotbutton_section($params, $organizerexpired) {
 
-    $output = '<div id="organizer_addbutton_div">';
+    $output = html_writer::start_div('mb-3 mt-1');
 
     $slotsaddurl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
     $output .= '<input class="btn btn-primary" type="submit" value="' . get_string('btn_add', 'organizer') .
         '" onClick="this.parentNode.parentNode.setAttribute(\'action\', \'' . $slotsaddurl . '\');" ' .
         ($organizerexpired ? 'disabled ' : '') . '/>';
 
-    $output .= '</div>';
+    $output .= html_writer::end_div();
 
     return $output;
 }
-
-

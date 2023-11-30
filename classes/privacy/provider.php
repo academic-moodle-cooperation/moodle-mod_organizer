@@ -48,8 +48,7 @@ use core_privacy\local\request\approved_userlist;
  * @copyright  2018 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements metadataprovider, pluginprovider, core_userlist_provider
-{
+class provider implements metadataprovider, pluginprovider, core_userlist_provider {
     /**
      * Provides meta data that is stored about a user with mod_organizer
      *
@@ -529,6 +528,9 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
                 }
                 // Get slots of this organizer instance.
                 $slotids = $DB->get_fieldset_select('organizer_slots', 'id', 'organizerid = ?', [$organizer->id]);
+                if (empty($slotids)) {
+                    $slotids = array(0);
+                }
                 list($slotidssql, $slotidsparams) = $DB->get_in_or_equal($slotids, SQL_PARAMS_NAMED);
 
                 list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);

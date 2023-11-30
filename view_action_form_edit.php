@@ -34,8 +34,7 @@ require_once("$CFG->libdir/formslib.php");
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class organizer_edit_slots_form extends moodleform
-{
+class organizer_edit_slots_form extends moodleform {
     /**
      * {@inheritDoc}
      * @see moodleform::definition()

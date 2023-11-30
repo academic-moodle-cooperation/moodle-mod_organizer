@@ -30,8 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/lib.php');
 
-class organizer_assign_slot_form extends moodleform
-{
+class organizer_assign_slot_form extends moodleform {
     /**
      * {@inheritDoc}
      * @see moodleform::definition()
@@ -168,7 +167,4 @@ class organizer_assign_slot_form extends moodleform
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
     }
-
-
-
 }

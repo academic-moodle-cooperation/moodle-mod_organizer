@@ -52,7 +52,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
 
     $organizerid = $slot->organizerid;
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
+    list($cm, $course, $organizer, $context) = organizer_get_course_module_data(0, $organizerid);
 
     $strings = organizer_check_messagerights($sender, $receiver, $cm, $course, $organizer, $context);
     if (!$strings) {
@@ -237,8 +237,6 @@ function organizer_prepare_and_send_message($data, $type) {
     global $DB, $USER;
 
     $sentok = false;
-
-    include_once('lib.php');
 
     switch ($type) {
         case 'edit_notify_student':

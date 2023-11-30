@@ -30,8 +30,7 @@ require_once($CFG->dirroot . '/mod/organizer/backup/moodle2/restore_organizer_st
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_organizer_activity_task extends restore_activity_task
-{
+class restore_organizer_activity_task extends restore_activity_task {
 
     /**
      * Define (add) particular settings this activity can have

@@ -113,6 +113,9 @@ function organizer_get_status_table_entries_group($params) {
     $par = array('groupingid' => $cm->groupingid);
     $groupids = $DB->get_fieldset_sql($query, $par);
 
+    if (empty($groupids)) {
+        $groupids = array(0);
+    }
     list($insql, $inparams) = $DB->get_in_or_equal($groupids, SQL_PARAMS_NAMED);
 
     if ($params['sort'] == 'name') {
@@ -185,7 +188,9 @@ function organizer_get_status_table_entries($params) {
         $par = array('grouping' => $cm->groupingid);
         $studentids = $DB->get_fieldset_sql($query, $par);
     }
-
+    if (empty($studentids)) {
+        $studentids = array(0);
+    }
     list($insql, $inparams) = $DB->get_in_or_equal($studentids, SQL_PARAMS_NAMED);
 
     if ($params['sort'] == 'name') {
@@ -243,4 +248,3 @@ function organizer_get_status_table_entries($params) {
         $orderby";
     return $DB->get_records_sql($query, $par);
 }
-

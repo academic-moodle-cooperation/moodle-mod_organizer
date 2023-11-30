@@ -77,9 +77,11 @@ if (organizer_is_group_mode()) {
 
 $sent = organizer_prepare_and_send_message($data, 'assign_notify_student'); // Message.
 if ($sent) {  // If slot not in the past.
-    $redirectmsg = get_string('assignsuccess', 'organizer');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('assignsuccess',
+        'organizer'), 'success');
 } else {
-    $redirectmsg = get_string('assignsuccessnotsent', 'organizer');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('assignsuccessnotsent',
+        'organizer'), 'error');
 }
 organizer_prepare_and_send_message($data, 'assign_notify_teacher'); // Message.
 
@@ -93,7 +95,7 @@ $event = \mod_organizer\event\appointment_assigned::create(
 );
 $event->trigger();
 
-redirect($newurl, $redirectmsg, 5);
+redirect($newurl);
 
 print_error('If you see this, something went wrong!');
 

@@ -1,26 +1,54 @@
 CHANGELOG
 =========
 
-4.1.2 (2023-04-13)
--------------------
-* [FIXED] #7518: fix grading error (postgres error)
-* [FIXED] #7519: fix error message when creating slots (php 8.1)
-* [UPDATE] #7520: new icon image for Moodle 4
-* [FIXED] #7522: evaluation form in group mode: error message (warning)
+4.2.3 (2023-11-17)
+------------------
+* [FIXED] #7721: error message when deleting enrollments
+* [FIXED] #7746: don't allow not-students to be graded (in group mode)
+* [FIXED] #7745: don't show suspended users in registration view
+* [FIXED] #7778: include statement does not work using Bulk user actions - delete
+* [FEATURE] #7744: new admin setting: don't show participant's ID in slot list
 
-4.1.1 (2022-01-19)
--------------------
-* [FIXED] #7431: evaluation form sort order by participants name
-* [FIXED] #7444: github #110 remove double module description appearance at view.php
-* [FIXED] #7449: github #109 add slots: wrong forecast if dateto time is less than datefrom time
+4.2.2 (2023-09-22)
+------------------
+* [FIXED] #7670: course fullname instead of the shortname in PAGE heading
+* [FIXED] #7697: print single slot: error message when special userprofile fields are filled
+* [FIXED] #7705: incorrect success message when creating just one slot
+* [FEATURE] #7701: No calendar events for empty slots-option only editable when creating an organizer instance
+* [FEATURE] #7706: managers should not have leadslots permission by default
 
-4.1.0 (2022-11-28)
--------------------
-* Moodle 4.1 compatible version
+4.2.1 (2023-08-10)
+------------------
+* [FIXED] #7660: fix typo in observer.php
 
-4.0.0 (2022-10-28)
--------------------
-* Moodle 4.0 compatible version
+4.2.0 (2023-05-31)
+------------------
+* [FIXED] #7444: remove double module description
+* [FIXED] #7518: fix grading error with postgres
+* [FIXED] #7519: fix mktime php 8.1 error
+* [FIXED] #7520: introduce new moodle 4.x compatible icons
+* [FIXED] #7522: fix evaluation form group mode error message
+* [FIXED] #7637: fix calendar bug
+* Moodle 4.2 compatible version
+
+3.11.7 (2023-03-16)
+------------------
+* [FEATURE] #7506: Make minimum and maximum of bookable slots per instance always changeable
+
+3.11.6 (2023-03-10)
+------------------
+* [FIXED] #7485: Github #112 - registration view does not work when there are no participants
+
+3.11.5 (2023-02-10)
+------------------
+* [FIXED] #7431: sort participants by lastname, firstname in grading form
+* [FIXED] #7449: wrong forecast if dateto time is less than datefrom time in adding slots form
+* [FIXED] #7462: no loading add slots page anymore after pressing enter in search field of slot overview
+* [FIXED] #7464: dont loose slot options user preferences when changing to registration overview page
+* [FEATURE] #7446: multiple slots registrations per user/group in one single organizer instance
+* [FEATURE] #7458: better grouping of slot overview options
+* [FEATURE] #7459: deleting an appointment
+* [FEATURE] #7460: in-app notifications in Moodle style
 
 3.11.4 (2022-10-31)
 ------------------

@@ -57,7 +57,7 @@ $url = organizer_create_url($params);
 $PAGE->set_url($url);
 $PAGE->set_context($instance->context);
 $PAGE->set_title($instance->organizer->name);
-$PAGE->set_heading($instance->course->shortname);
+$PAGE->set_heading($instance->course->fullname);
 $PAGE->set_activity_record($instance->organizer);
 
 if ($instance->organizer->hidecalendar != 1) {
@@ -175,7 +175,7 @@ function organizer_load_params($instance) {
             $params['sort'] = optional_param('sort', 'datetime', PARAM_ALPHA);
         break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
-            $params['sort'] = optional_param('sort', 'status', PARAM_ALPHA);
+            $params['sort'] = optional_param('sort', '', PARAM_ALPHA);
         break;
         case ORGANIZER_ASSIGNMENT_VIEW:
             $params['assignid'] = required_param('assignid', PARAM_INT);
@@ -189,6 +189,7 @@ function organizer_load_params($instance) {
     $params['dir'] = optional_param('dir', 'ASC', PARAM_ALPHA);
     $params['data'] = optional_param_array('data', array(), PARAM_INT);
     $params['messages'] = optional_param_array('messages', array(), PARAM_ALPHAEXT);
+    $params['xmessages'] = optional_param_array('xmessages', array(), PARAM_ALPHAEXT);
     $params['usersort'] = optional_param('usersort', 'name', PARAM_ALPHA);
 
     return $params;

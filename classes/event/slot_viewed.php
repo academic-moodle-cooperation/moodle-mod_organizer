@@ -30,8 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * The slot_viewed event class.
  **/
-class slot_viewed extends \core\event\base
-{
+class slot_viewed extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'r'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
@@ -48,11 +47,5 @@ class slot_viewed extends \core\event\base
 
     public function get_url() {
         return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
-    }
-
-    public function get_legacy_logdata() {
-        // Override if you are migrating an add_to_log() call.
-        return array($this->courseid, 'mod_organizer', 'allview',
-            $this->objectid, $this->contextinstanceid);
     }
 }
