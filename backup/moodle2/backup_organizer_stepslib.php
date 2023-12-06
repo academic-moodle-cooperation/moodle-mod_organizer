@@ -36,19 +36,44 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Define the complete organizer structure for backup, with file and id annotations
  */
-class backup_organizer_activity_structure_step extends backup_activity_structure_step
-{
+class backup_organizer_activity_structure_step extends backup_activity_structure_step {
 
     protected function define_structure() {
         // Define each element separated.
         $organizer = new backup_nested_element(
             'organizer', array('id'),
-            array('course', 'name', 'intro', 'introformat', 'timemodified', 'isgrouporganizer', 'emailteachers',
-            'allowregistrationsfromdate', 'duedate', 'alwaysshowdescription', 'relativedeadline', 'grade', 'visibility', 'queue',
-                    'hidecalendar', 'nocalendareventslotcreation', 'includetraineringroups', 'singleslotprintfield0',
-                    'singleslotprintfield1', 'singleslotprintfield2', 'singleslotprintfield3', 'singleslotprintfield4',
-                    'singleslotprintfield5', 'singleslotprintfield6', 'singleslotprintfield7', 'singleslotprintfield8',
-                    'singleslotprintfield9')
+            array(
+                'course',
+                'name',
+                'intro',
+                'introformat',
+                'timemodified',
+                'isgrouporganizer',
+                'emailteachers',
+                'allowregistrationsfromdate',
+                'duedate',
+                'alwaysshowdescription',
+                'relativedeadline',
+                'grade',
+                'gradeaggregationmethod',
+                'scale',
+                'queue',
+                'visibility',
+                'hidecalendar',
+                'nocalendareventslotcreation',
+                'includetraineringroups',
+                'singleslotprintfield0',
+                'singleslotprintfield1',
+                'singleslotprintfield2',
+                'singleslotprintfield3',
+                'singleslotprintfield4',
+                'singleslotprintfield5',
+                'singleslotprintfield6',
+                'singleslotprintfield7',
+                'singleslotprintfield8',
+                'singleslotprintfield9',
+                'userslotsmin',
+                'userslotsmax')
         );
 
         $slots = new backup_nested_element('slots');

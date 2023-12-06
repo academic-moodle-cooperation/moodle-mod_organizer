@@ -43,8 +43,7 @@ require_once($CFG->libdir . '/pdflib.php');
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class MTablePDF extends \pdf
-{
+class MTablePDF extends \pdf {
     /**
  * Portrait orientation in PDF
 */
@@ -950,8 +949,10 @@ class MTablePDF extends \pdf
         $lines = array();
 
         // Course information.
-        for ($i = 0; $i < count($this->header); $i += 2) {
-            $lines[] = $this->header[$i] . $sep . $this->header[$i + 1];
+        if (is_countable($this->header)) {
+            for ($i = 0; $i < count($this->header); $i += 2) {
+                $lines[] = $this->header[$i] . $sep . $this->header[$i + 1];
+            }
         }
 
         // Table header.

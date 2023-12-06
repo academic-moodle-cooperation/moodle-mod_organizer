@@ -50,6 +50,7 @@ $userid = required_param('userid', PARAM_INT);  // The ID of the user.
  * Position 2: show_hidden_slots
  * Position 3: show_past_slots
  * Position 4: show_registrations_only
+ * Position 5: show_all_participants
  */
 
 set_user_preference('mod_organizer_slotsviewoptions', $slotsviewoptions, $userid);

@@ -35,7 +35,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 $id = required_param('id', PARAM_INT);   // Course.
 
 if (! $course = $DB->get_record('course', array('id' => $id))) {
-    error('Course ID is incorrect');
+    print_error('Course ID is incorrect');
 }
 
 require_course_login($course);
@@ -109,27 +109,23 @@ foreach ($organizers as $organizer) {
 
     $row[] = format_module_intro('organizer', $organizer, $cm->id);
     if (has_capability('mod/organizer:viewregistrations', $context)) {
-        $a = organizer_get_counters($organizer);
+        $a = organizer_get_counters($organizer, $cm);
         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $reg = get_string('mymoodle_registered_group_short', 'organizer', $a);
             $att = get_string('mymoodle_attended_group_short', 'organizer', $a);
-
             $str = '<p>'.$reg.'</p><p>'.$att.'</p>';
         } else {
             $reg = get_string('mymoodle_registered_short', 'organizer', $a);
             $att = get_string('mymoodle_attended_short', 'organizer', $a);
-
             $str = '<p>'.$reg.'</p><p>'.$att.'</p>';
         }
         $row[] = $str;
         $row[] = '-';
     } else {
         $row[] = organizer_get_eventaction_instance_student($organizer);
-        $app = organizer_get_last_user_appointment($organizer, null, false);
-        if ($app) {
+        $apps = organizer_get_all_user_appointments($organizer, $USER->id, false);
+        foreach ($apps as $app) {
             $row[] = organizer_display_grade($organizer, $app->grade, $app->userid);
-        } else {
-            $row[] = '-';
         }
     }
 

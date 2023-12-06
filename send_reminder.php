@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * view_action.php
+ * send_reminder.php
  *
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
@@ -50,17 +50,14 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 // Get recipients.
 if ($recipient != null) {
     $recipients = array();
-
-    if ($cm->groupmode == 0) {
-        $recipients = $DB->get_records_list('user', 'id', array($recipient));
-    } else {
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $recipients = groups_get_members($recipient, $fields = 'u.id, u.idnumber', $sort = 'lastname ASC');
+    } else {
+        $recipients = $DB->get_records_list('user', 'id', array($recipient));
     }
-
     $counter = count($recipients);
-
 } else {
-    // Send reminders to all students without an appointment.
+    // Send reminders to all students without enough appointments.
     $counter = 0;
     $recipients = array();
 
@@ -68,12 +65,29 @@ if ($recipient != null) {
 
     if ($entries->valid()) {
         // Filter all not registered and not attended.
+        $entrybefore = 0;
         foreach ($entries as $entry) {
-            if ($entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED
-                || $entry->status == ORGANIZER_APP_STATUS_NOT_ATTENDED_REAPP
-            ) {
-                $counter++;
-                $recipients[] = $entry;
+            if ($entry->id != $entrybefore) {
+                $in = false;
+                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                    $group = organizer_fetch_user_group($entry->id, $organizer->id);
+                    if (organizer_multiplebookings_status(
+                            organizer_count_bookedslots($organizer->id, null, $group->id),
+                                $organizer) == USERSLOTS_MIN_NOT_REACHED) {
+                        $in = true;
+                    }
+                } else {
+                    if (organizer_multiplebookings_status(
+                            organizer_count_bookedslots($organizer->id, $entry->id, null),
+                                $organizer) == USERSLOTS_MIN_NOT_REACHED) {
+                        $in = true;
+                    }
+                }
+                if ($in) {
+                    $counter++;
+                    $recipients[] = $entry;
+                }
+                $entrybefore = $entry->id;
             }
         }
     }
@@ -89,18 +103,18 @@ $mform = new organizer_remind_all_form(
 );
 
 if ($data = $mform->get_data()) {
-
+    $infoboxmessage = "";
+    $a = new stdClass();
     $recipient = $data->user;
-
     $count = organizer_remind_all($recipient, $data->message_custommessage['text']);
-
-    $redirecturl->param('data[count]', $count);
+    $a->count = $count;
     if ($count == 1) {
-        $redirecturl->param('messages[]', 'message_info_reminders_sent_sg');
+        $infoboxmessage .= $OUTPUT->notification(get_string('message_info_reminders_sent_sg', 'organizer', $a),
+            'success');
     } else {
-        $redirecturl->param('messages[]', 'message_info_reminders_sent_pl');
+        $infoboxmessage .= $OUTPUT->notification(get_string('message_info_reminders_sent_pl', 'organizer', $a),
+            'success');
     }
-
     $event = \mod_organizer\event\appointment_reminder_sent::create(
         array(
             'objectid' => $PAGE->cm->id,
@@ -108,7 +122,7 @@ if ($data = $mform->get_data()) {
         )
     );
     $event->trigger();
-
+    $_SESSION["infoboxmessage"] = $infoboxmessage;
     $redirecturl = $redirecturl->out();
     redirect($redirecturl);
 } else if ($mform->is_cancelled()) {

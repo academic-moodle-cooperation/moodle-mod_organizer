@@ -31,8 +31,7 @@ require_once(dirname(__FILE__) . '/custom_table_renderer.php');
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class organizer_print_slotdetail_form extends moodleform
-{
+class organizer_print_slotdetail_form extends moodleform {
     /**
      * @var string select of the colums
      */

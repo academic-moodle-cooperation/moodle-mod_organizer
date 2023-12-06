@@ -31,3 +31,4 @@ defined('MOODLE_INTERNAL') || die();
 global $DB;
 
 $logs = array();
+

@@ -34,8 +34,7 @@ require_once(dirname(__FILE__) . '/slotlib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 
-class organizer_remind_all_form extends moodleform
-{
+class organizer_remind_all_form extends moodleform {
 
     protected function definition() {
 

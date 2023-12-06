@@ -109,6 +109,9 @@ if ($ADMIN->fulltree) {
                     get_string('allowcreationofpasttimeslots', 'organizer'),
                     get_string('configallowcreationofpasttimeslots', 'organizer'), 0, $yesno));
 
+    // Show participant's identity in registration view
+    $settings->add(new admin_setting_configcheckbox('mod_organizer/dontshowidentity', get_string('cfg_dontshowidentity', 'organizer'),
+        get_string('cfg_dontshowidentity_desc', 'organizer'), 0));
 
     // Predefine locations for slots, make location mandatory.
 
@@ -155,5 +158,4 @@ if ($ADMIN->fulltree) {
                 $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'),
                 null, '', $selectableprofilefields));
     }
-
 }

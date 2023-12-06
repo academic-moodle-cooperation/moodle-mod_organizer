@@ -52,8 +52,10 @@ if ($data = $mform->get_data()) {  // When page is called the first time (=empty
     } else {  // Submit button was pressed and submitted form data has no errors.
         list($slotids, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $messages) = organizer_add_new_slots($data);
         $finalslots = count($slotids);
+        $infoboxmessage = "";
+        $a = new stdClass();
         if ($finalslots == 0) {
-            $redirecturl->param('messages[]', 'message_warning_no_slots_added');
+            $infoboxmessage .= $OUTPUT->notification(get_string('message_warning_no_slots_added', 'organizer'), 'error');
         } else {
             $event = \mod_organizer\event\slot_created::create(
                 array(
@@ -63,17 +65,28 @@ if ($data = $mform->get_data()) {  // When page is called the first time (=empty
             );
             $event->trigger();
 
-            $redirecturl->param('data[count]', $finalslots);
+            $a->count = $finalslots;
             if ($finalslots == 1) {
-                $redirecturl->param('messages[]', 'message_info_slots_added_sg');
+                $infoboxmessage .= $OUTPUT->notification(get_string('message_info_slots_added_sg', 'organizer', $a),
+                    'success');
             } else {
-                $redirecturl->param('messages[]', 'message_info_slots_added_pl');
+                $infoboxmessage .= $OUTPUT->notification(get_string('message_info_slots_added_pl', 'organizer', $a),
+                    'success');
             }
-
             $redirecturl->param('slots', implode(',', array_values($slotids)));
         }
+        if ($slotsnotcreatedduetodeadline) {
+            $a->slots = $slotsnotcreatedduetodeadline;
+            $infoboxmessage .= $OUTPUT->notification(get_string('infobox_deadline_passed_slotphp', 'organizer', $a),
+                'error');
+        }
+        if ($slotsnotcreatedduetopasttime) {
+            $a->slots = $slotsnotcreatedduetopasttime;
+            $infoboxmessage .= $OUTPUT->notification(get_string('pasttimeslotstringphp', 'organizer', $a), 'error');
+        }
+        $_SESSION["infoboxmessage"] = $infoboxmessage;
         if ($messages) {
-            redirect($redirecturl, $messages, 10);
+            redirect($redirecturl, $messages, 10, \core\output\notification::NOTIFY_WARNING);
         } else {
             redirect($redirecturl);
         }

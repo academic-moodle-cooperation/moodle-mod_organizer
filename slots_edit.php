@@ -61,7 +61,8 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode;
 require_capability('mod/organizer:editslots', $context);
 
 if (!$slots) {
-    $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected', 'organizer'),
+        'error');
     redirect($redirecturl);
 }
 
@@ -73,8 +74,18 @@ if ($mform->is_cancelled()) {
 } else if ($data = $mform->get_data()) {
     $slotids = organizer_update_slot($data);
 
+    $a = new stdClass();
+    $a->count = count($slotids);
+    if ($a->count == 1) {
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_slots_edited_sg',
+            'organizer', $a), 'success');
+    } else {
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_slots_edited_pl', 'organizer', $a),
+            'success');
+    }
+
     organizer_prepare_and_send_message($data, 'edit_notify_teacher');
-    organizer_prepare_and_send_message($data, 'edit_notify_student'); // Message.
+    organizer_prepare_and_send_message($data, 'edit_notify_student');
 
     $redirecturl->param('slots', implode(',', array_values($slotids)));
     $newurl = $redirecturl->out();
