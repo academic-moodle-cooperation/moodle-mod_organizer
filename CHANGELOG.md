@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.3.0 (2024-01-11)
+------------------
+* Moodle 4.3 compatible version
+
 4.2.3 (2023-11-17)
 ------------------
 * [FIXED] #7721: error message when deleting enrollments

@@ -5,7 +5,7 @@ This file is part of the mod_organizer plugin for Moodle - <http://moodle.org/>
 
 *Author:*    Thomas Niedermaier, Ivan Sakic, Katarzyna Potocka, Simeon Naydenov
 
-*Copyright:* 2022 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
+*Copyright:* [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
 
 *License:*   [GNU GPL v3 or later](http://www.gnu.org/copyleft/gpl.html)
 
@@ -49,12 +49,6 @@ unenrolments should be possible up to two days prior to the event, or at least b
 Students' attendance and grades are to be documented.
 
 
-Requirements
-------------
-
-The plugin is available for Moodle 2.5+.
-
-
 Installation
 ------------
 
@@ -62,22 +56,14 @@ Installation
 
 * Log into Moodle as administrator.
 
-* Open the administration area (http://your-moodle-site/admin) to start the installation
-  automatically.
+* Open the administration area (http://your-moodle-site/admin) to start the installation automatically.
 
 
-Admin Settings
+Privacy API
 --------------
 
-As an administrator you can set the default values instance-wide on the settings page for
-administrators in the organizer module:
-
-* Best grade (text field)
-* E-mail notification (drop down)
-* Send a summary of events (drop down)
-* Final deadline (drop down)
-* Relative deadline (drop down)
-
+The plugin fully implements the Moodle Privacy API.
+ 
 
 Documentation
 -------------
