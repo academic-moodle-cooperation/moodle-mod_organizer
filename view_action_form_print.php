@@ -157,9 +157,9 @@ class organizer_print_slots_form extends moodleform {
     }
 
     private function _create_preview_table($columns) {
-        global $PAGE, $OUTPUT, $cm, $CFG;
+        global $PAGE, $OUTPUT, $cm, $CFG, $USER;
 
-        user_preference_allow_ajax_update('mod_organizer_noprintfields', PARAM_TEXT);
+        $USER->ajax_updatable_user_prefs['mod_organizer_noprintfields'] = PARAM_TEXT;
 
         $param = new \stdClass();
         $param->iconminus = $OUTPUT->image_icon('t/switch_minus', get_string('hide'), 'moodle', array(
