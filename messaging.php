@@ -327,17 +327,17 @@ function organizer_prepare_and_send_message($data, $type) {
             break;
         case 'register_notify_teacher:reregister':
         case 'register_notify_teacher:unregister':
-        $slot = $DB->get_record('organizer_slots', array('id' => $data));
-        $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
-        if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG ||
-            $organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
-            $trainers = organizer_get_slot_trainers($slot->id);
-            foreach ($trainers as $trainerid) {
-                // Reregister and unregister notify trainer: Send notification to trainer.
-                $sentok = organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
+            $slot = $DB->get_record('organizer_slots', array('id' => $data));
+            $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
+            if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG ||
+                $organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
+                $trainers = organizer_get_slot_trainers($slot->id);
+                foreach ($trainers as $trainerid) {
+                    // Reregister and unregister notify trainer: Send notification to trainer.
+                    $sentok = organizer_send_message(intval($USER->id), intval($trainerid), $slot, $type);
+                }
             }
-        }
-        break;
+            break;
         case 'register_notify_teacher:unqueue':
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
