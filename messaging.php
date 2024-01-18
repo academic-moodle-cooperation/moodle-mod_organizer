@@ -259,7 +259,7 @@ function organizer_prepare_and_send_message($data, $type) {
                     }
                     // Edit notify student: Send notification to participant.
                     $sentok = organizer_send_message(intval($trainerid), intval($app->userid), $slot, $type, null,
-                        $customdata);
+                        $customdata, true);
                 }
             }
             break;
@@ -298,7 +298,7 @@ function organizer_prepare_and_send_message($data, $type) {
 
                     // Eval notify student: Send notification to participant.
                     $sentok = organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type,
-                        null, $customdata);
+                        null, $customdata, true);
                 }
             }
             break;
@@ -362,7 +362,8 @@ function organizer_prepare_and_send_message($data, $type) {
                 }
                 if ($app->userid != $USER->id) {
                     // Group registrations, unregistrations, queues notify participant:Send notification to participant.
-                    $sentok = organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type);
+                    $sentok = organizer_send_message(intval($USER->id), intval($app->userid),
+                        $slot, $type, null, null, true);
                 }
             }
             break;

@@ -745,7 +745,7 @@ function organizer_delete_appointment_slot($id) {
         foreach ($appointments as $appointment) {
             $receiver = intval($appointment->userid);
             // App delete when slot delete: Send notification to participant.
-            organizer_send_message($USER, $receiver, $slot, 'slotdeleted_notify_student');
+            organizer_send_message($USER, $receiver, $slot, 'slotdeleted_notify_student', null, null, true);
             $DB->delete_records('event', array('id' => $appointment->eventid));
             $notifiedusers++;
         }
@@ -795,7 +795,7 @@ function organizer_delete_appointment_group($slotid, $groupid) {
         // Send a message to the participant.
         $receiver = intval($appointment->userid);
         // App delete group: Send notification to participant.
-        organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
+        organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student', null, null, true);
         $DB->delete_records('event', array('id' => $appointment->eventid));
         $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
     }

@@ -722,7 +722,8 @@ SQL;
     $apps = $DB->get_records_sql($appsquery, $params);
     foreach ($apps as $app) {
         $customdata = ['showsendername' => intval($app->teachervisible == 1)];
-        $success &= organizer_send_message_from_trainer(intval($app->userid), $app, 'appointment_reminder_student', null, $customdata);
+        $success &= organizer_send_message_from_trainer(intval($app->userid), $app,
+            'appointment_reminder_student', null, $customdata);
     }
 
     if (empty($apps)) {
