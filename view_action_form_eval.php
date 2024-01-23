@@ -123,11 +123,6 @@ class organizer_evaluate_slots_form extends moodleform {
 
             // For each appointment of this slot.
             foreach ($apps as $app) {
-                if (has_capability("mod/organizer:evalslots", $context)) {
-                    $debug = var_export($context, true);
-                    $mform->addElement($mform->createElement('static', '', '', $debug));
-                    continue;
-                }
                 $name = "apps[{$app->id}]";
                 $namelink = html_writer::div($this->_organizer_get_name_link($app->userid), 'd-block');
                 $mform->addElement($mform->createElement('static', '', '', $namelink));
