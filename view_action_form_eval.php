@@ -123,7 +123,7 @@ class organizer_evaluate_slots_form extends moodleform {
 
             // For each appointment of this slot.
             foreach ($apps as $app) {
-                if (has_capability("mod/organizer:evalslots", $context, $app->userid)) {
+                if (has_capability("mod/organizer:evalslots", $context)) {
                     continue;
                 }
                 $name = "apps[{$app->id}]";
