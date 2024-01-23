@@ -1602,6 +1602,7 @@ function organizer_get_participant_list($params, $slot, $app) {
 
     // Compose first summary line.
     $firstline = "";
+    $notcollapsed = $params['mode'] == 'notcollapsed';
     if (!$groupmode) {
         $maxparticipants = $slot->maxparticipants;
         $a = new stdClass();
@@ -1632,7 +1633,7 @@ function organizer_get_participant_list($params, $slot, $app) {
                 }
             }
         }
-        if ($countapps && !$studentview) {
+        if ($countapps && !$studentview && !$notcollapsed) {
             $firstline = organizer_get_icon('plus-square', get_string('clicktohideshow'), null, null, 'collapseicon').$firstline.$slotvisibilitystr;
             $firstline = html_writer::div($firstline, 'collapseclick text-nowrap', array( 'data-target' => '.s'.$slot->id));
         } else {
@@ -1721,10 +1722,17 @@ function organizer_get_participant_list($params, $slot, $app) {
                 $app = reset($appointments);
                 if ($app !== false) {
                     $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
-                    $groupnameline = organizer_get_icon('plus-square', get_string('clicktohideshow'), null, null, 'collapseicon').$groupname;
-                    $groupnameline .= html_writer::span(organizer_get_teacherapplicant_output($app->teacherapplicantid,
-                        $app->teacherapplicanttimemodified));
-                    $groupnameline = html_writer::div($groupnameline, 'collapseclick font-italic', array( 'data-target' => '.s'.$slot->id));
+                    if (!$notcollapsed) {
+                        $groupnameline = organizer_get_icon('plus-square', get_string('clicktohideshow'), null, null, 'collapseicon').$groupname;
+                        $groupnameline .= html_writer::span(organizer_get_teacherapplicant_output($app->teacherapplicantid,
+                            $app->teacherapplicanttimemodified));
+                        $groupnameline = html_writer::div($groupnameline, 'collapseclick font-italic', array( 'data-target' => '.s'.$slot->id));
+                    } else {
+                        $groupnameline = $groupname;
+                        $groupnameline .= html_writer::span(organizer_get_teacherapplicant_output($app->teacherapplicantid,
+                            $app->teacherapplicanttimemodified));
+                        $groupnameline = html_writer::div($groupnameline);
+                    }
                     $content .= $groupnameline;
                 }
             }

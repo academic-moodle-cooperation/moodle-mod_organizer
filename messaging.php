@@ -38,7 +38,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
  *
  * @param $sender   ... the user who sends this message
  * @param $receiver ... the user who receives this message
- * @param stdClass $slot  ... the appointment, if there is any
+ * @param stdClass $slot  ... the time slot
  * @param string $type  ... messagetype
  * @param null $digest  ... if this is a email sent by cron to the teachers with all appointments lying ahead
  * @param array $customdata ... additional optional message-relevant data
@@ -302,7 +302,7 @@ function organizer_prepare_and_send_message($data, $type) {
                 }
             }
             break;
-        case 'register_notify_teacher:register': // TODO: check how it was actually originally defined.
+        case 'register_notify_teacher:register':
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
             $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
             if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG ||
@@ -352,7 +352,6 @@ function organizer_prepare_and_send_message($data, $type) {
         case 'group_registration_notify:student:register':
         case 'group_registration_notify:student:queue':
         case 'group_registration_notify:student:reregister':
-        case 'group_registration_notify:student:unregister':
         case 'group_registration_notify:student:unqueue':
             $slot = $DB->get_record('organizer_slots', array('id' => $data));
             $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
@@ -454,11 +453,11 @@ function organizer_prepare_and_send_message($data, $type) {
  * the message to send
  * @param user record or id $sender
  * @param user record or id $receiver
- * @param string $type of message
  * @param record $cm organizer coursemodule
  * @param record $course
  * @param record $organizer instance
  * @param object $context
+ * @param bool $trainercheck if receiver is trainer and notifications are off don't send
  * @return bool|stdClass
  * @throws dml_exception
  */
@@ -472,8 +471,8 @@ function organizer_check_messagerights($sender, $receiver, $cm, $course, $organi
     $now = time();
     $instancenotactive = !$cm->visible || (isset($cm->availablefrom) && $cm->availablefrom && $cm->availablefrom > $now)
         || (isset($cm->availableuntil) && $cm->availableuntil && $cm->availableuntil < $now);
-    $notrainermail = $trainercheck && $organizer->emailteachers == ORGANIZER_MESSAGES_NONE &&
-        has_capability('mod/organizer:receivemessagesteacher', $context);
+    $receiveteachermailsright = has_capability('mod/organizer:receivemessagesteacher', $context);
+    $notrainermail = $trainercheck && $organizer->emailteachers == ORGANIZER_MESSAGES_NONE && $receiveteachermailsright;
     if ($instancenotactive || $hasnoroles || $notrainermail) {
         return false;
     }
@@ -490,7 +489,7 @@ function organizer_check_messagerights($sender, $receiver, $cm, $course, $organi
     return $strings;
 }
 
-/**
+/*
  * Builds a part of the message to send
  *
  * @param $namesplit
@@ -509,11 +508,13 @@ function organizer_check_messagerights($sender, $receiver, $cm, $course, $organi
 function organizer_build_message($namesplit, $cm, $course, $organizer, $sender, $receiver, $digest,
                                  $type, $strings, $customdata) {
 
-    if (count($namesplit) == 1) {
-        $messagename = "$namesplit[0]";
-    } else {
-        $messagename = "$namesplit[0]_$namesplit[1]";
+    $messagename = count($namesplit) == 1 ? "$namesplit[0]" : "$namesplit[0]_$namesplit[1]";
+    $strings->location = $strings->location ?? get_string('nolocationplaceholder', 'organizer');
+    if (isset($digest)) {
+        $strings->digest = $digest;
+        $type .= ":digest";
     }
+
     $message = new \core\message\message();
     $message->component = 'mod_organizer';
     $message->name = $messagename;
@@ -522,23 +523,15 @@ function organizer_build_message($namesplit, $cm, $course, $organizer, $sender, 
     $message->fullmessageformat = FORMAT_PLAIN;
     $message->userfrom = $sender;
     $message->userto = $receiver;
-
-    if (isset($digest)) {
-        $strings->digest = $digest;
-        $type .= ":digest";
-    }
-
     $message->subject = get_string("$type:subject", 'organizer', $strings);
     $message->fullmessage = get_string("$type:fullmessage", 'organizer', $strings);
     $message->fullmessagehtml = organizer_make_html(
         get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm, $course
     );
-
     if (isset($customdata['custommessage'])) {
         $message->fullmessage = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessage);
         $message->fullmessagehtml = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessagehtml);
     }
-
     $message->smallmessage = get_string("$type:smallmessage", 'organizer', $strings);
 
     return $message;
