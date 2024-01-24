@@ -42,16 +42,12 @@ list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 require_login($course, false, $cm);
 
 require_capability('mod/organizer:deleteslots', $context);
-require_capability('mod/organizer:assignslots', $context);
 
 $redirecturl = new moodle_url('/mod/organizer/view.php');
 $redirecturl->param('id', $cm->id);
 $redirecturl->param('mode', '3');
 
-$url = new moodle_url(
-    '/mod/organizer/appointment_delete.php',
-    array('id' => $id, 'appid' => $appid)
-);
+$url = new moodle_url('/mod/organizer/appointment_delete.php', array('id' => $id, 'appid' => $appid));
 $PAGE->set_url($url);
 
 $mform = new organizer_delete_appointment_form(null, array('id' => $cm->id, 'appid' => $appid));
@@ -98,6 +94,3 @@ if ($data = $mform->get_data()) {
 } else {
     organizer_display_form($mform, get_string('title_delete_appointment', 'organizer'));
 }
-print_error('If you see this, something went wrong with delete action!');
-
-die;

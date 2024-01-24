@@ -50,7 +50,7 @@ class organizer_delete_appointment_form extends \moodleform {
         $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $data['appid']));
         $slot = $DB->get_record('organizer_slots', array('id' => $appointment->slotid));
 
-        $text = organizer_date_time($slot);
+        $text = organizer_date_time($slot, true);
 
         $list = '<span style="display: table-row;">';
         $list .= '<span style="display: table-cell;">';
@@ -61,7 +61,7 @@ class organizer_delete_appointment_form extends \moodleform {
         $list .= '<span style="display: table-cell;">';
 
         if (organizer_is_group_mode()) {
-            $params['mode'] = null;
+            $params['mode'] = 'notcollapsed';
             $list .= organizer_get_participant_list($params, $slot, null);
         } else {
             $identity = organizer_get_user_identity($appointment->userid);
