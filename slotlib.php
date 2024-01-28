@@ -330,7 +330,7 @@ class organizer_slot {
         $this->load_appointments();
 
         foreach ($this->apps as $app) {
-            if (!isset($app->attended)) {
+            if (($app->attended ?? -1) < 0) {
                 return false;
             }
         }
@@ -356,6 +356,11 @@ class organizer_slot {
             }
         }
         return true;
+    }
+
+    public function gradingisactive() {
+        $this->load_organizer();
+        return $this->organizer->grade;
     }
 
 

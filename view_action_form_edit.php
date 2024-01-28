@@ -473,9 +473,9 @@ class organizer_edit_slots_form extends moodleform {
      */
     private function _warning_icon($name, $noshow = false) {
         if (!$noshow) {
-            $warningname = $name . '_warning';
+            $warningname = "id='".$name."_warning'";
             $text = get_string('warningtext1', 'organizer');
-            $columnicon = organizer_get_icon('warning', $text, "small", $warningname);
+            $columnicon = organizer_get_fa_icon('fa fa-warning', $text, $warningname);
             return $columnicon;
         } else {
             return '';

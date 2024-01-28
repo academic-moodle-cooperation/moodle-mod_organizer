@@ -58,12 +58,13 @@ function organizer_generate_registration_table_content($columns, $params) {
                             $identity = organizer_get_user_identity($member);
                             $identity = $identity ? " (" . $identity . ") " : "";
                             $list .= organizer_get_name_link($member) . $identity
-                                . (isset($entry->comments) ? get_img('i/feedback', '', $entry->comments) : '');
+                                . (isset($entry->comments) ? organizer_get_fa_icon('fa fa-comment-o',
+                                    $entry->comments) : '');
                             if ($member == $entry->applicantid) {
                                 $list .= ' '
-                                    . organizer_get_icon('applicant', 'applicant') . '<br/>';
+                                    . organizer_get_fa_icon('fa fa-star', 'applicant') . '<br/>';
                             } else {
-                                $list .= ' ' . organizer_get_icon('transparent', '') . '<br/>';
+                                $list .= '&nbsp;<br/>';
                             }
                         }
                         $row->cells[] = new html_table_cell($list);

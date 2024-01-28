@@ -223,3 +223,11 @@
     font-size: 0.8rem;
     width: 2.7rem;
 }
+
+.path-mod-organizer .slotactivecolor {
+    color: green;
+}
+
+.path-mod-organizer .slotovercolor {
+    color: dimgrey;
+}
