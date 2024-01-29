@@ -31,7 +31,7 @@
 }
 
 #organizer_main_cointainer table tr.affected_slot td {
-    background-color: LightGreen !important;
+    background-color: Lightgreen  !important;
 }
 
 #organizer_main_cointainer table tr.unavailable td {
@@ -47,7 +47,7 @@
 }
 
 #organizer_main_cointainer table.overview td {
-    border: 1px solid #BBB !important;
+    border: 1px solid #FFF !important;
 }
 
 #organizer_main_cointainer fieldset.preview {
@@ -80,12 +80,8 @@
     border-collapse: collapse;
 }
 
-#organizer_main_cointainer table.legend td {
-    vertical-align: middle !important;
-}
-
 #organizer_main_cointainer tr.registered_slot td {
-    background-color: LightGreen !important;
+    background-color: Lightgreen !important;
 }
 
 #organizer_main_cointainer div.singlebutton button {
@@ -117,7 +113,7 @@
 }
 
 #organizer_main_cointainer table.print_preview td {
-    border: 1px solid #BBB !important;
+    border: 1px solid #FFF !important;
     border-collapse: collapse;
 }
 
@@ -230,4 +226,8 @@
 
 .path-mod-organizer .slotovercolor {
     color: dimgrey;
+}
+
+#organizer_main_cointainer .icon.fa.fa-question-circle.text-info.fa-fw  {
+    margin-left: 0.2rem !important;
 }

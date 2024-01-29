@@ -962,6 +962,11 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                             $entry->teacherapplicanttimemodified
                                         );
                                     }
+                                    if ($queueable) {
+                                        $list .= "<span style='display: table-cell'>" .
+                                            organizer_reg_waitinglist_status($organizer->id, null, $entry->id)
+                                            . "</span>";
+                                    }
                                     $cell = $row->cells[] = new html_table_cell($list);
                                     break;
                                 case 'participants':
@@ -989,11 +994,6 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                             }
                                         }
                                         $list .= "$identity</span>";
-                                        if ($queueable) {
-                                            $list .= "<span style='display: table-cell'>" .
-                                                organizer_reg_waitinglist_status($organizer->id, $groupmode, $member)
-                                                . "</span>";
-                                        }
                                         $list .= "<span style='display: table-cell'>" .
                                             organizer_reg_organizer_app_details($organizer, $groupmode, $entry->slotid,
                                                 $member)
@@ -1100,7 +1100,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 break;
                             case 'appdetails':
                                 if ($queueable) {
-                                    $outcell = organizer_reg_waitinglist_status($organizer->id, $groupmode);
+                                    $outcell = organizer_reg_waitinglist_status($organizer->id, $entry->id);
                                 } else {
                                     $outcell = '';
                                 }
@@ -1427,26 +1427,23 @@ function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $useri
             $list .= ' ';
         }
         if (isset($appointment->comments) && $appointment->comments != '') {
-            $list .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($appointment->comments));
+            $list .= organizer_get_fa_icon('fa fa-comment-o', organizer_filter_text($appointment->comments));
         }
-    } else {
-        $list = '-';
     }
 
     return $list;
 }
 
-function organizer_reg_waitinglist_status($organizerid, $groupmode, $userid = 0) {
+function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupid = 0) {
     global $DB;
 
     $list = "";
-    if ($groupmode) {
-        $group = organizer_fetch_user_group($userid, $organizerid);
+    if ($groupid) {
         $query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.location
                 FROM {organizer_slot_queues} q
 				INNER JOIN {organizer_slots} s ON s.id = q.slotid
 				WHERE q.groupid = :groupid and s.organizerid = :organizerid";
-        $par = array('groupid' => $group->id, 'organizerid' => $organizerid);
+        $par = array('groupid' => $groupid, 'organizerid' => $organizerid);
     } else {
         $query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.location FROM {user} u
 				INNER JOIN {organizer_slot_queues} q ON q.userid = u.id
@@ -1456,14 +1453,14 @@ function organizer_reg_waitinglist_status($organizerid, $groupmode, $userid = 0)
     }
     if ($slot = $DB->get_record_sql($query, $par)) {
         $slotx = new organizer_slot($slot->id);
-        if ($groupmode) {
-            $position = $slotx->is_group_in_queue($group->id);
+        if ($groupid) {
+            $position = $slotx->is_group_in_queue($groupid);
         } else {
             $position = $slotx->is_user_in_queue($userid);
         }
-        $list = "&nbsp;" . get_string('inwaitingqueue', 'organizer');
+        $list = html_writer::span(get_string('inwaitingqueue', 'organizer'), 'font-italic');
         $slotinfo = str_replace("<br />", " ", organizer_date_time($slot));
-        $slotinfo .= "/ " . get_string('teacherid', 'organizer') . ":";
+        $slotinfo .= "<br>" . get_string('teacherid', 'organizer') . ": ";
         $trainerstr = "";
         if ($trainers = organizer_get_slot_trainers($slot->id, true)) {
             $conn = "";
@@ -1473,11 +1470,12 @@ function organizer_reg_waitinglist_status($organizerid, $groupmode, $userid = 0)
             }
         }
         $slotinfo .= $trainerstr ?? "-";
-        $slotinfo .= "/ " . get_string('location', 'organizer') . ":";
+        $slotinfo .= "<br>" . get_string('location', 'organizer') . ": ";
         $slotinfo .= $slot->location ?? "-";
-        $slotinfo .= "/ " . get_string('position', 'organizer') . ":";
+        $slotinfo .= "<br>" . get_string('position', 'organizer') . ": ";
         $slotinfo .= $position;
-        $list .= "<span style=\"cursor:help;\"> " . organizer_get_fa_icon('fa fa-info-circle', $slotinfo) . "</span>";
+        $list .= "<span style=\"cursor:help;\"> " .
+            organizer_get_fa_icon('fa fa-info-circle', $slotinfo) . "</span>";
     }
 
     return $list;
@@ -1814,35 +1812,25 @@ function organizer_get_icon_msg($infotxt, $type, $textclass='', $link=null) {
 }
 function organizer_get_fa_icon($classes, $tooltiptext = "", $other = "") {
     if ($tooltiptext) {
-        $other .= $tooltiptext ? "data-toggle='tooltip' data-html='true' title='$tooltiptext'" : '';
+        $other .= $tooltiptext ?
+            "data-toggle='tooltip' data-html='true' title='$tooltiptext' aria-label='$tooltiptext'" : '';
     }
     return "<i class='$classes' $other></i>";
 }
 
 function organizer_get_icon($iconname, $string, $size="small", $id="", $class="") {
     global $OUTPUT;
-    if ($size == "big") {
-        $alt = "";
-        $title = "";
-        $other = 'width="32" height="32"';
-        if ($string) {
-            $alt = $string;
-            $title = $string;
-            $other .= ' data-toggle="tooltip"';
-        }
-        $icon = organizer_get_img('pix/' . $iconname . '.png', $alt, $title, $id, $other);
-    } else {
-        $attributes = $id != '' ? array('id' => $id) : array();
-        $alt = "";
-        if ($string) {
-            $attributes['data-toggle'] = "tooltip";
-            $attributes['title'] = $string;
-            $attributes['class'] = 'ml-1 '.$class;
-            $alt = $string;
-        }
-        $icon = $OUTPUT->pix_icon($iconname, $alt, 'mod_organizer', $attributes);
+
+    $attributes = $id != '' ? array('id' => $id) : array();
+    $alt = "";
+    if ($string) {
+        $attributes['data-toggle'] = "tooltip";
+        $attributes['title'] = $string;
+        $attributes['aria-label'] = $string;
+        $attributes['class'] = $class;
+        $alt = $string;
     }
-    return $icon;
+    return $icon = $OUTPUT->pix_icon($iconname, $alt, 'mod_organizer', $attributes);
 }
 
 
