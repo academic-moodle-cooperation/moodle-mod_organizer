@@ -2307,24 +2307,24 @@ function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg
 
     $out = html_writer::start_div('userstatusbar_tr', array('title' => $msg));
     if ($minreached) {
-        $classstrfull = 'align-middle border border-success bg-success';
-        $classstrempty = 'align-middle border border-success';
+        $classstrfull = 'fa fa-check-circle-o fa-2x mr-2 text-success';
+        $classstrempty = 'fa fa-circle-o fa-2x mr-2 text-success';
         $classstatusmsg = 'text-success font-weight-bolder';
     } else {
-        $classstrfull = 'align-middle border border-info bg-info';
-        $classstrempty = 'align-middle border border-info';
+        $classstrfull = 'fa fa-check-circle-o fa-2x mr-1 text-info';
+        $classstrempty = 'fa fa-circle-o fa-2x mr-1 text-info';
         $classstatusmsg = 'text-info font-weight-bolder';
     }
     $i = 1;
     while ($i <= (int) $bookings) {
-        $out .= html_writer::div(' ', 'userstatusbar_td_full rounded '.$classstrfull);
+        $out .= organizer_get_fa_icon($classstrfull, $statusmsg);
         $i++;
     }
     while ($i <= (int) $max) {
-        $out .= html_writer::div(' ', 'userstatusbar_td_empty rounded '.$classstrempty);
+        $out .= organizer_get_fa_icon($classstrempty, $statusmsg);
         $i++;
     }
-    $out .= html_writer::span($statusmsg, 'ml-2 '.$classstatusmsg);
+    $out .= html_writer::span($statusmsg, $classstatusmsg);
     $out .= html_writer::span($msg, 'ml-1 font-italic');
     $out .= html_writer::end_div();
 

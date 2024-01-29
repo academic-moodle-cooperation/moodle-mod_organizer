@@ -1246,7 +1246,7 @@ function organizer_app_details($appointment) {
 
     $list = '<span style="display: table-cell;">';
     if ($appointment->comments) {
-        $list .= organizer_get_fa_icon('fa fa-comment-o', organizer_filter_text($appointment->comments)) . "&nbsp;";
+        $list .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($appointment->comments)) . "&nbsp;";
     } else {
         $list .= "&nbsp;";
     }
@@ -1386,11 +1386,11 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
 
     if (isset($slot->teachercomments)) {
         if ($slot->teachercomments) {
-            $output .= ' ' . organizer_get_fa_icon('fa fa-comment-o', organizer_filter_text($slot->teachercomments));
+            $output .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($slot->teachercomments));
         }
     } else {
         if ($slot->comments) {
-            $output .= ' ' . organizer_get_fa_icon('fa fa-comment-o', organizer_filter_text($slot->comments));
+            $output .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($slot->comments));
         }
     }
 
@@ -1424,10 +1424,12 @@ function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $useri
         if (isset($appointment->feedback) && $appointment->feedback != '') {
             $list .= $appointment->feedback ? organizer_get_fa_icon('fa fa-file-text-o ml-1', $appointment->feedback) : "";
         } else {
-            $list .= ' ';
+            if ($organizer->grade > 0) {
+                $list .= ' ';
+            }
         }
         if (isset($appointment->comments) && $appointment->comments != '') {
-            $list .= organizer_get_fa_icon('fa fa-comment-o', organizer_filter_text($appointment->comments));
+            $list .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($appointment->comments));
         }
     }
 
@@ -1661,7 +1663,7 @@ function organizer_get_participant_list($params, $slot, $app) {
                 $content .= organizer_get_teacherapplicant_output($app->teacherapplicantid,
                         $app->teacherapplicanttimemodified) . '&nbsp;';
                 if ($app->comments) {
-                    $content .= organizer_get_fa_icon('fa fa-comment-o', organizer_filter_text($app->comments))
+                    $content .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($app->comments))
                         . "<br />";
                 } else {
                     $content .= "<br />";
@@ -1852,24 +1854,23 @@ function organizer_slot_status($params, $slot) {
     );
 
     if ($slotpastdue) {  // Slot starttime has passed.
-        $slotcolor = "slotovercolor";
         if ($slotevaluated) {
             return '<a href="' . $actionurl->out(false) . '">'
-                . organizer_get_fa_icon("fa fa-check-square-o fa-2x $slotcolor",
+                . organizer_get_fa_icon("fa fa-check-square fa-2x text-primary",
                 get_string('img_title_evaluated', 'organizer'));
         } else {
             if ($slotpending) {
-                return '<a href="'.$actionurl->out(false).'">'.organizer_get_fa_icon("fa fa-flag-o fa-2x $slotcolor",
+                return '<a href="'.$actionurl->out(false).'">'.organizer_get_fa_icon("fa fa-flag-o fa-2x text-primary",
                     get_string('img_title_pending', 'organizer')) . '</a>';
             } else {
                 if ($slotisfull) {
-                    return organizer_get_fa_icon("fa fa-circle fa-2x $slotcolor",
+                    return organizer_get_fa_icon("fa fa-circle fa-2x text-primary",
                         get_string('img_title_full', 'organizer'));
                 } else if ($slothasparticipants) {
-                    return organizer_get_fa_icon("fa fa-dot-circle-o fa-2x $slotcolor",
+                    return organizer_get_fa_icon("fa fa-dot-circle-o fa-2x text-primary",
                         get_string('img_title_past_deadline', 'organizer'));
                 } else {
-                    return organizer_get_fa_icon("fa fa-remove fa-2x $slotcolor",
+                    return organizer_get_fa_icon("fa fa-remove fa-2x text-primary",
                         get_string('img_title_no_participants', 'organizer'));
                 }
             }
@@ -2055,11 +2056,14 @@ function organizer_participants_action($params, $slot) {
             array('id' => $params['id'], 'slot' => $slotx->id)
         );
         $commentbtndisabled = $organizerdisabled || !$slotx->organizer_groupmode_user_has_access();
-        $commentbtn = $OUTPUT->single_button(
-            $commenturl, get_string("btn_comment", 'organizer'), 'post',
-            array('disabled' => $commentbtndisabled)
-        );
-        $commentbtn = "<br/>".$commentbtn;
+        $commentlabel = get_string("btn_comment", 'organizer');
+        if ($commentbtndisabled) {
+            $commentbtn = '<a href="#" class="action disabled">' . $commentlabel .
+                organizer_get_fa_icon('fa fa-commenting text-secondary ml-1', $commentlabel) . '</a>';
+        } else {
+            $commentbtn = '<a href="' . $commenturl . '" class="action">' . $commentlabel .
+                organizer_get_fa_icon('fa fa-commenting ml-1', $commentlabel)  . '</a>';
+        }
     }
 
     return organizer_get_reg_button($action, $slotx->id, $params, $disabled).$commentbtn;
@@ -2079,6 +2083,7 @@ function organizer_get_reg_button($action, $slotid, $params, $disabled = false) 
         $out = $OUTPUT->single_button(
             $actionurl, get_string("btn_$action", 'organizer'), 'post', array('disabled' => $disabled)
         );
+        $out = str_replace("btn-secondary", "btn-primary mb-2", $out);
     }
     return $out;
 }
@@ -2091,7 +2096,10 @@ function organizer_get_assign_button($slotid, $params) {
         array('id' => $params['id'], 'mode' => $params['mode'], 'assignid' => $params['assignid'], 'slot' => $slotid)
     );
 
-    return $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'), 'post');
+    $out = $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'), 'post');
+    $out = str_replace("btn-secondary", "btn-primary", $out);
+
+    return $out;
 }
 
 function organizer_get_status_icon_new($status, $organizer) {
