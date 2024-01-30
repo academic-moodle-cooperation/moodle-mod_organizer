@@ -38,7 +38,7 @@ function organizer_get_slot_user_appointment($slotx, $userid = null, $mergegroup
 
     $organizer = $slotx->get_organizer();
 
-    $paramssql = array('slotid' => $slotx->id, 'userid' => $userid);
+    $paramssql = array('slotid' => $slotx->get_id(), 'userid' => $userid);
     $query = "SELECT a.* FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.id = :slotid AND a.userid = :userid" .
@@ -48,7 +48,7 @@ function organizer_get_slot_user_appointment($slotx, $userid = null, $mergegroup
     $app = reset($apps);
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
-        $paramssql = array('slotid' => $slotx->id, 'groupid' => $app->groupid);
+        $paramssql = array('slotid' => $slotx->get_id(), 'groupid' => $app->groupid);
         $query = "SELECT a.* FROM {organizer_slot_appointments} a
                 INNER JOIN {organizer_slots} s ON a.slotid = s.id
                 WHERE s.id = :slotid AND a.groupid = :groupid

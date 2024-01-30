@@ -1845,7 +1845,7 @@ function organizer_slot_status($params, $slot) {
 
     $actionurl = new moodle_url(
         '/mod/organizer/slots_eval.php',
-        array('id' => $params['id'], 'slot' => $slotx->id)
+        array('id' => $params['id'], 'slot' => $slotx->get_id())
     );
 
     if ($slotevaluated) {
@@ -2031,7 +2031,7 @@ function organizer_participants_action($params, $slot) {
     if ($isuserslot) {
         $commenturl = new moodle_url(
             '/mod/organizer/comment_edit.php',
-            array('id' => $params['id'], 'slot' => $slotx->id)
+            array('id' => $params['id'], 'slot' => $slotx->get_id())
         );
         $commentbtndisabled = $organizerdisabled || !$slotx->organizer_groupmode_user_has_access();
         $commentbtn = $OUTPUT->single_button(
@@ -2041,7 +2041,7 @@ function organizer_participants_action($params, $slot) {
         $commentbtn = "<br/>".$commentbtn;
     }
 
-    return organizer_get_reg_button($action, $slotx->id, $params, $disabled).$commentbtn;
+    return organizer_get_reg_button($action, $slotx->get_id(), $params, $disabled).$commentbtn;
 
 }
 
@@ -2145,7 +2145,7 @@ function organizer_slot_is_free($slot, $userid, $assignmentview = null) {
     if (!$ispastdue && !$slotx->is_full() && $slotx->is_available() ) {
         $apps = organizer_get_all_user_appointments($slotx->organizerid, $userid);
         foreach ($apps as $app) {  // Is own slot?
-            if ($app->slotid == $slotx->id) {
+            if ($app->slotid == $slotx->get_id()) {
                 return false;
             }
         }
