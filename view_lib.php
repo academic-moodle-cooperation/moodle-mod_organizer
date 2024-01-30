@@ -566,7 +566,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
             }
             $slotpastdue = $slotx->is_past_due();
             $myslotastrainer = false;
-            if ($trainerids = organizer_get_slot_trainers($slotx->id)) {
+            if ($trainerids = organizer_get_slot_trainers($slotx->get_id())) {
                 if (in_array($USER->id, $trainerids)) {
                     $myslotastrainer = true;
                 }
