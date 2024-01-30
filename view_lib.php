@@ -1246,17 +1246,16 @@ function organizer_app_details($appointment) {
 
     $list = '<span style="display: table-cell;">';
     if ($appointment->comments) {
-        $list .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($appointment->comments)) . "&nbsp;";
-    } else {
-        $list .= "&nbsp;";
+        $list .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($appointment->comments));
     }
     $list .= '</span>';
 
-    $list .= '<span style="display: table-cell;">';
-    $list .= organizer_get_attended_icon($appointment, $organizer->grade);
-    $list .= '</span>';
-
     if ($organizer->grade != 0) {
+
+        $list .= '<span style="display: table-cell;">';
+        $list .= organizer_get_attended_icon($appointment, $organizer->grade);
+        $list .= '</span>';
+
         $grade = organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
         if ($grade != get_string("nograde")) {
             $list .= '<span style="display: table-cell;" class="text-right mr-1">';
@@ -1404,6 +1403,7 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
 function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $userid = null) {
     global $DB;
 
+    $list = '';
     // Groupmode with userid: id=slotid, no groupmode when no userid: id=appid
     if ($userid) {
         $appointment = $DB->get_record('organizer_slot_appointments', array('slotid' => $id, 'userid' => $userid));
@@ -1411,29 +1411,22 @@ function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $useri
         $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $id));
     }
     if ($appointment) {
-        $list = '';
-        if ($groupmode) {
-            $list .= ' ' . organizer_get_attended_icon($appointment, $organizer->grade);
-        }
         if ($organizer->grade > 0) {
-                $grade = organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
+            $list .= organizer_get_attended_icon($appointment, $organizer->grade);
+            $grade = organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
             if ($grade != get_string("nograde")) {
                 $list .= $grade;
             }
         }
         if (isset($appointment->feedback) && $appointment->feedback != '') {
             $list .= $appointment->feedback ? organizer_get_fa_icon('fa fa-file-text-o ml-1', $appointment->feedback) : "";
-        } else {
-            if ($organizer->grade > 0) {
-                $list .= ' ';
-            }
         }
         if (isset($appointment->comments) && $appointment->comments != '') {
             $list .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($appointment->comments));
         }
     }
 
-    return $list;
+    return $list ? $list : '-';
 }
 
 function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupid = 0) {
@@ -1860,7 +1853,7 @@ function organizer_slot_status($params, $slot) {
                 get_string('img_title_evaluated', 'organizer'));
         } else {
             if ($slotpending) {
-                return '<a href="'.$actionurl->out(false).'">'.organizer_get_fa_icon("fa fa-flag-o fa-2x text-primary",
+                return '<a href="'.$actionurl->out(false).'">'.organizer_get_fa_icon("fa fa-flag- fa-2x text-primary",
                     get_string('img_title_pending', 'organizer')) . '</a>';
             } else {
                 if ($slotisfull) {
