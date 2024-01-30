@@ -1283,8 +1283,8 @@ function organizer_app_details($appointment) {
 function organizer_registration_allowed($organizer, $userid = null) {
     $app = organizer_get_last_user_appointment($organizer, $userid);
     if ($app) { // Appointment made, check the flag.
-        $slot = new organizer_slot($app->slotid);
-        if ($slot->is_past_deadline()) {
+        $slotx = new organizer_slot($app->slotid);
+        if ($slotx->is_past_deadline()) {
             return isset($app->allownewappointments) && $app->allownewappointments;
         } else {
             return !isset($app->allownewappointments) || $app->allownewappointments;

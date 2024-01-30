@@ -740,11 +740,11 @@ function organizer_delete_appointment_slot($id) {
     $notifiedusers = 0;
     if (count($appointments) > 0) {
         // Someone was already registered to this slot.
-        $slot = new organizer_slot($id);
+        $slotx = new organizer_slot($id);
 
         foreach ($appointments as $appointment) {
             $reciever = intval($appointment->userid);
-            organizer_send_message($USER, $reciever, $slot, 'slotdeleted_notify_student');
+            organizer_send_message($USER, $reciever, $slotx, 'slotdeleted_notify_student');
             $DB->delete_records('event', array('id' => $appointment->eventid));
             $notifiedusers++;
         }
@@ -770,9 +770,9 @@ function organizer_delete_appointment($id) {
     }
 
     // Send a message to the participant.
-    $slot = new organizer_slot($appointment->slotid);
+    $slotx = new organizer_slot($appointment->slotid);
     $receiver = intval($appointment->userid);
-    organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
+    organizer_send_message($USER, $receiver, $slotx, 'appointmentdeleted_notify_student');
     $DB->delete_records('event', array('id' => $appointment->eventid));
     $DB->delete_records('organizer_slot_appointments', array('id' => $id));
 
@@ -782,7 +782,7 @@ function organizer_delete_appointment($id) {
 function organizer_delete_appointment_group($slotid, $groupid) {
     global $DB, $USER;
 
-    $slot = new organizer_slot($slotid);
+    $slotx = new organizer_slot($slotid);
 
     if (!$appointments = $DB->get_records('organizer_slot_appointments',
         array('slotid' => $slotid, 'groupid' => $groupid))) {
@@ -792,7 +792,7 @@ function organizer_delete_appointment_group($slotid, $groupid) {
     foreach ($appointments as $appointment) {
         // Send a message to the participant.
         $receiver = intval($appointment->userid);
-        organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
+        organizer_send_message($USER, $receiver, $slotx, 'appointmentdeleted_notify_student');
         $DB->delete_records('event', array('id' => $appointment->eventid));
         $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
     }
@@ -885,16 +885,16 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
     if (!$userid) {
         $userid = $USER->id;
     }
-    $slot = new organizer_slot($slotid);
+    $slotx = new organizer_slot($slotid);
     if (!$slotnotfull) {
-        if ($slot->is_full()) {
-            return organizer_add_to_queue($slot, $groupid, $userid);
+        if ($slotx->is_full()) {
+            return organizer_add_to_queue($slotx, $groupid, $userid);
         }
     }
 
     if ($sendmessage) {
-        $trainers = organizer_get_slot_trainers($slot->get_slot()->id);
-        if ($slot->get_slot()->teachervisible && !empty($trainers)) {
+        $trainers = organizer_get_slot_trainers($slotx->get_id());
+        if ($slotx->get_slot()->teachervisible && !empty($trainers)) {
             $trainerid = reset($trainers);
             $from = core_user::get_user($trainerid);
         } else {
@@ -902,7 +902,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
         }
     }
 
-    $organizer = $slot->get_organizer();
+    $organizer = $slotx->get_organizer();
     $ok = true;
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
@@ -914,7 +914,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
                     $receiver = core_user::get_user($memberid);
                     /* Here we have some overlap with functions organizer_send_message_from_trainer,
                      * but they don't fit exactly for our usecase. */
-                    organizer_send_message($from, $receiver, $slot, 'register_promotion_student');
+                    organizer_send_message($from, $receiver, $slotx, 'register_promotion_student');
                 }
                 $generatetrainerevents = false;
             }
@@ -926,7 +926,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
                 $receiver = core_user::get_user($userid);
                 /* Here we have some overlap with functions organizer_send_message_from_trainer,
                  * but they don't fit exactly for our usecase. */
-                organizer_send_message($from, $receiver, $slot, 'register_promotion_student');
+                organizer_send_message($from, $receiver, $slotx, 'register_promotion_student');
             }
         }
     }
@@ -1015,7 +1015,7 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
     $organizerid = $DB->get_field_sql($query, $params);
     $organizer = $DB->get_record('organizer', array('id' => $organizerid));
 
-    $slot = new organizer_slot($slotid);
+    $slotx = new organizer_slot($slotid);
     if ($slot->is_full()) {
         return false;
     }
@@ -1028,7 +1028,7 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
         // Events for the trainers will only be generated with the first participants registration.
         $generatetrainerevents = true;
         foreach ($memberids as $memberid) {
-            if ($app = organizer_get_last_user_appointment($slot->organizerid, $memberid)) {
+            if ($app = organizer_get_last_user_appointment($slotx->organizerid, $memberid)) {
                 $okunregister = organizer_unregister_single_appointment($app->slotid, $memberid);
             }
             $okregister = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid,
@@ -1036,7 +1036,7 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
             $generatetrainerevents = false;
         }
     } else {
-        if ($app = organizer_get_last_user_appointment($slot->organizerid)) {
+        if ($app = organizer_get_last_user_appointment($slotx->organizerid)) {
             $okunregister = organizer_unregister_single_appointment($app->slotid, $USER->id);
         }
         $okregister = organizer_register_single_appointment($slotid, $USER->id, 0, 0, null, true);
