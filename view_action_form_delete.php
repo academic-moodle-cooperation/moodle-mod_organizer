@@ -71,7 +71,7 @@ class organizer_delete_slots_form extends moodleform {
                 if (!$slotx->has_participants()) {
                     $out = html_writer::start_div();
                     $out .= html_writer::span(organizer_date_time($slotx, true), '');
-                    $out .= html_writer::span($slotx->location, 'ml-2');
+                    $out .= html_writer::span($slot->location, 'ml-2');
                     $out .= html_writer::end_div();
                     $mform->addElement('static', '', '', $out);
                 }
@@ -95,7 +95,7 @@ class organizer_delete_slots_form extends moodleform {
                     if ($slotx->has_participants()) {
                         $out = html_writer::start_div();
                         $out .= html_writer::span(organizer_date_time($slotx, true), '');
-                        $out .= html_writer::span($slotx->location, 'ml-2');
+                        $out .= html_writer::span($slot->location, 'ml-2');
                         $out .= html_writer::end_div();
                         $mform->addElement('static', '', '', $out);
                     }

@@ -1016,7 +1016,7 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
     $organizer = $DB->get_record('organizer', array('id' => $organizerid));
 
     $slotx = new organizer_slot($slotid);
-    if ($slot->is_full()) {
+    if ($slotx->is_full()) {
         return false;
     }
 
@@ -1042,7 +1042,7 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
         $okregister = organizer_register_single_appointment($slotid, $USER->id, 0, 0, null, true);
     }
 
-    if (organizer_hasqueue($slot->organizerid)) {
+    if (organizer_hasqueue($slotx->organizerid)) {
          $slotx = new organizer_slot($app->slotid);
         if (organizer_is_group_mode()) {
             if ($next = $slotx->get_next_in_queue_group()) {

@@ -660,8 +660,6 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                     case 'actions':
                         $cell = $row->cells[] = new html_table_cell(organizer_participants_action($params, $slot));
                     break;
-                    default:
-                        print_error("Unrecognized column type: $column");
                 }
                 $cell->style .= ' vertical-align: middle;';
             }
@@ -1375,7 +1373,7 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
 
     if ($wasownslot) {
         if (!$slotdisabled) {
-               $showteacher |= !$canunregister || (isset($regslotx) && $regslotx->is_evaluated());
+               $showteacher |= !$canunregister;
         }
     }
 
@@ -1868,8 +1866,6 @@ function organizer_slot_status($params, $slot) {
                 . '</a>';
     } else if ($slotnoparticipants) {
         return organizer_get_icon('no_participants', get_string('img_title_no_participants', 'organizer'), "big");
-    } else {
-        print_error("This shouldn't happen.");
     }
 }
 

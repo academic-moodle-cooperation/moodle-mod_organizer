@@ -386,8 +386,7 @@ function organizer_prepare_and_send_message($data, $type) {
             }
             break;
         case 'assign_notify_teacher':
-            $slot = $DB->get_record('organizer_slots', array('id' => $data->selectedslot));
-            $slotx = new organizer_slot($slot);
+            $slotx = new organizer_slot($data->selectedslot);
             if (!$slotx->is_past_due()) {
                 if ($data->participant) {
                     $apps = $DB->get_records(
@@ -399,7 +398,7 @@ function organizer_prepare_and_send_message($data, $type) {
                     );
                 }
                 if ($app = reset($apps)) {
-                    $trainers = organizer_get_slot_trainers($slot->id);
+                    $trainers = organizer_get_slot_trainers($slotx->get_id());
                     foreach ($trainers as $trainerid) {
                         if ($app->teacherapplicantid != $trainerid) {
                             $customdata = array();
@@ -410,7 +409,7 @@ function organizer_prepare_and_send_message($data, $type) {
                                 $customdata['groupname'] = organizer_fetch_groupname($data->group);
                             }
                             $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($trainerid),
-                                $slot, $type, null, $customdata);
+                                $slotx, $type, null, $customdata);
                         }
                     }
                 } else { // If no app was found there is no need to send messages.
@@ -418,8 +417,6 @@ function organizer_prepare_and_send_message($data, $type) {
                 }
             }
             break;
-        default:
-            print_error('Not debugged yet!');
     }
     return $sentok;
 }
