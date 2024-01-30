@@ -731,7 +731,7 @@ function organizer_update_slot($data) {
 function organizer_delete_appointment_slot($id) {
     global $DB, $USER;
 
-    if (!$DB->get_record('organizer_slots', array('id' => $id))) {
+    if ($slot = !$DB->get_record('organizer_slots', array('id' => $id))) {
         return false;
     }
 
@@ -744,7 +744,7 @@ function organizer_delete_appointment_slot($id) {
 
         foreach ($appointments as $appointment) {
             $reciever = intval($appointment->userid);
-            organizer_send_message($USER, $reciever, $slotx, 'slotdeleted_notify_student');
+            organizer_send_message($USER, $reciever, $slot, 'slotdeleted_notify_student');
             $DB->delete_records('event', array('id' => $appointment->eventid));
             $notifiedusers++;
         }
