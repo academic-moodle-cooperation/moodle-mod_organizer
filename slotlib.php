@@ -487,6 +487,10 @@ class organizer_slot {
             $this->queuegroup = $DB->get_records_sql($sql, $paramssql);
         }
     }
+
+    public function __set(string $name, mixed $value): void {
+
+    }
 }
 
 function organizer_user_has_access($slotid) {
