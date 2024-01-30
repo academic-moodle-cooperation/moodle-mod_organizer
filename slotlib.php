@@ -491,6 +491,10 @@ class organizer_slot {
     public function __set(string $name, mixed $value): void {
 
     }
+
+    public function get_id() {
+        return $this->slot->id ?? 0;
+    }
 }
 
 function organizer_user_has_access($slotid) {
