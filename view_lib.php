@@ -36,10 +36,6 @@ define('ORGANIZER_APP_STATUS_REGISTERED', 3);
 define('ORGANIZER_APP_STATUS_NOT_ATTENDED', 4);
 define('ORGANIZER_APP_STATUS_NOT_REGISTERED', 6);
 
-define('ORGANIZER_ICON_STUDENT_COMMENT', 0);
-define('ORGANIZER_ICON_TEACHER_COMMENT', 1);
-define('ORGANIZER_ICON_TEACHER_FEEDBACK', 2);
-
 require_once(dirname(__FILE__) . '/../../course/lib.php');
 require_once(dirname(__FILE__) . '/../../calendar/lib.php');
 require_once(dirname(__FILE__) . '/infobox.php');
@@ -966,6 +962,11 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                             $entry->teacherapplicanttimemodified
                                         );
                                     }
+                                    if ($queueable) {
+                                        $list .= "<span style='display: table-cell'>" .
+                                            organizer_reg_waitinglist_status($organizer->id, null, $entry->id)
+                                            . "</span>";
+                                    }
                                     $cell = $row->cells[] = new html_table_cell($list);
                                     break;
                                 case 'participants':
@@ -981,24 +982,18 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                     foreach ($members as $member) {
                                         $list .= "<span style='display: table-row'>";
                                         $identity = organizer_get_user_identity($member);
-                                        $identity = $identity != "" ? " ({$identity})" : "";
-                                        $list .= "<span style='display: table-cell'>" . organizer_get_name_link($member) . $identity;
+                                        $identity = $identity != "" ?
+                                            "<span class='organizer_identity ml-1'>({$identity})</span>" : "";
+                                        $list .= "<span style='display: table-cell'> ".organizer_get_name_link($member);
                                         if ($entry->starttime) {
                                             if ($member == $entry->applicantid) {
-                                                $list .= organizer_get_img(
-                                                    'pix/applicant.gif', 'applicant',
-                                                    get_string('applicant', 'organizer')
-                                                );
+                                                $list .= organizer_get_fa_icon('fa fa-star fa-2xs ml-1',
+                                                    get_string('applicant', 'organizer'));
                                             } else {
                                                 $list .= " ";
                                             }
                                         }
-                                        $list .= "</span>";
-                                        if ($queueable) {
-                                            $list .= "<span style='display: table-cell'>" .
-                                                organizer_reg_waitinglist_status($organizer->id, $groupmode, $member)
-                                                . "</span>";
-                                        }
+                                        $list .= "$identity</span>";
                                         $list .= "<span style='display: table-cell'>" .
                                             organizer_reg_organizer_app_details($organizer, $groupmode, $entry->slotid,
                                                 $member)
@@ -1105,7 +1100,7 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                 break;
                             case 'appdetails':
                                 if ($queueable) {
-                                    $outcell = organizer_reg_waitinglist_status($organizer->id, $groupmode);
+                                    $outcell = organizer_reg_waitinglist_status($organizer->id, $entry->id);
                                 } else {
                                     $outcell = '';
                                 }
@@ -1251,30 +1246,27 @@ function organizer_app_details($appointment) {
 
     $list = '<span style="display: table-cell;">';
     if ($appointment->comments) {
-        $list .= organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, organizer_filter_text($appointment->comments))
-            . "&nbsp;";
+        $list .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($appointment->comments)) . "&nbsp;";
     } else {
         $list .= "&nbsp;";
     }
     $list .= '</span>';
 
     $list .= '<span style="display: table-cell;">';
-    if ($organizer->grade != 0) {
-        $list .= '&nbsp;'.organizer_get_attended_icon($appointment);
-    }
+    $list .= organizer_get_attended_icon($appointment, $organizer->grade);
     $list .= '</span>';
 
     if ($organizer->grade != 0) {
         $grade = organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
         if ($grade != get_string("nograde")) {
-            $list .= '<span style="display: table-cell; text-align: right; padding-right: 6px;">';
+            $list .= '<span style="display: table-cell;" class="text-right mr-1">';
             $list .= $grade;
             $list .= '</span>';
         }
     }
 
     $list .= '<span style="display: table-cell">';
-    $list .= $appointment->feedback ? organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback) : " ";
+    $list .= $appointment->feedback ? organizer_get_fa_icon('fa fa-file-text-o ml-1', $appointment->feedback) : "";
     $list .= '</span>';
 
     return $list;
@@ -1393,12 +1385,12 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
     }
 
     if (isset($slot->teachercomments)) {
-        if ($slot->teachercomments != '') {
-            $output .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_COMMENT, s($slot->teachercomments));
+        if ($slot->teachercomments) {
+            $output .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($slot->teachercomments));
         }
     } else {
-        if ($slot->comments != '') {
-            $output .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_COMMENT, s($slot->comments));
+        if ($slot->comments) {
+            $output .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($slot->comments));
         }
     }
 
@@ -1421,9 +1413,7 @@ function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $useri
     if ($appointment) {
         $list = '';
         if ($groupmode) {
-            if ($organizer->grade != 0) {
-                $list .= ' ' . organizer_get_attended_icon($appointment) . ' ';
-            }
+            $list .= ' ' . organizer_get_attended_icon($appointment, $organizer->grade);
         }
         if ($organizer->grade > 0) {
                 $grade = organizer_display_grade($organizer, $appointment->grade, $appointment->userid);
@@ -1432,31 +1422,30 @@ function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $useri
             }
         }
         if (isset($appointment->feedback) && $appointment->feedback != '') {
-            $list .= ' ' . organizer_popup_icon(ORGANIZER_ICON_TEACHER_FEEDBACK, $appointment->feedback);
+            $list .= $appointment->feedback ? organizer_get_fa_icon('fa fa-file-text-o ml-1', $appointment->feedback) : "";
         } else {
-            $list .= ' ';
+            if ($organizer->grade > 0) {
+                $list .= ' ';
+            }
         }
         if (isset($appointment->comments) && $appointment->comments != '') {
-            $list .= ' ' . organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT, $appointment->comments);
+            $list .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($appointment->comments));
         }
-    } else {
-        $list = '-';
     }
 
     return $list;
 }
 
-function organizer_reg_waitinglist_status($organizerid, $groupmode, $userid = 0) {
+function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupid = 0) {
     global $DB;
 
     $list = "";
-    if ($groupmode) {
-        $group = organizer_fetch_user_group($userid, $organizerid);
+    if ($groupid) {
         $query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.location
                 FROM {organizer_slot_queues} q
 				INNER JOIN {organizer_slots} s ON s.id = q.slotid
 				WHERE q.groupid = :groupid and s.organizerid = :organizerid";
-        $par = array('groupid' => $group->id, 'organizerid' => $organizerid);
+        $par = array('groupid' => $groupid, 'organizerid' => $organizerid);
     } else {
         $query = "SELECT DISTINCT s.id, s.starttime, s.duration, s.location FROM {user} u
 				INNER JOIN {organizer_slot_queues} q ON q.userid = u.id
@@ -1466,14 +1455,14 @@ function organizer_reg_waitinglist_status($organizerid, $groupmode, $userid = 0)
     }
     if ($slot = $DB->get_record_sql($query, $par)) {
         $slotx = new organizer_slot($slot->id);
-        if ($groupmode) {
-            $position = $slotx->is_group_in_queue($group->id);
+        if ($groupid) {
+            $position = $slotx->is_group_in_queue($groupid);
         } else {
             $position = $slotx->is_user_in_queue($userid);
         }
-        $list = "&nbsp;" . get_string('inwaitingqueue', 'organizer');
+        $list = html_writer::span(get_string('inwaitingqueue', 'organizer'), 'font-italic');
         $slotinfo = str_replace("<br />", " ", organizer_date_time($slot));
-        $slotinfo .= "/ " . get_string('teacherid', 'organizer') . ":";
+        $slotinfo .= "<br>" . get_string('teacherid', 'organizer') . ": ";
         $trainerstr = "";
         if ($trainers = organizer_get_slot_trainers($slot->id, true)) {
             $conn = "";
@@ -1482,12 +1471,13 @@ function organizer_reg_waitinglist_status($organizerid, $groupmode, $userid = 0)
                 $conn = ", ";
             }
         }
-        $slotinfo .= $trainerstr ? $trainerstr : "-";
-        $slotinfo .= "/ " . get_string('location', 'organizer') . ":";
-        $slotinfo .= $slot->location ? $slot->location : "-";
-        $slotinfo .= "/ " . get_string('position', 'organizer') . ":";
+        $slotinfo .= $trainerstr ?? "-";
+        $slotinfo .= "<br>" . get_string('location', 'organizer') . ": ";
+        $slotinfo .= $slot->location ?? "-";
+        $slotinfo .= "<br>" . get_string('position', 'organizer') . ": ";
         $slotinfo .= $position;
-        $list .= "<span style=\"cursor:help;\"> " . organizer_get_icon('docs', $slotinfo) . "</span>";
+        $list .= "<span style=\"cursor:help;\"> " .
+            organizer_get_fa_icon('fa fa-info-circle', $slotinfo) . "</span>";
     }
 
     return $list;
@@ -1591,9 +1581,9 @@ function organizer_get_participant_list($params, $slot, $app) {
     $studentview = $params['mode'] == ORGANIZER_TAB_STUDENT_VIEW;
     $groupmode = organizer_is_group_mode();
     if ($slot->visibility == ORGANIZER_VISIBILITY_ANONYMOUS) {
-        $slotvisibilitystr = organizer_get_icon('anon', get_string('slot_anonymous', 'organizer'));
+        $slotvisibilitystr = organizer_get_fa_icon('fa fa-user-secret', get_string('slot_anonymous', 'organizer'));
     } else if ($slot->visibility == ORGANIZER_VISIBILITY_SLOT) {
-        $slotvisibilitystr = organizer_get_icon('slotanon', get_string('slot_slotvisible', 'organizer'));
+        $slotvisibilitystr = organizer_get_fa_icon('fa fa-user-times', get_string('slot_slotvisible', 'organizer'));
     } else {
         $slotvisibilitystr = "";
     }
@@ -1673,8 +1663,8 @@ function organizer_get_participant_list($params, $slot, $app) {
                 $content .= organizer_get_teacherapplicant_output($app->teacherapplicantid,
                         $app->teacherapplicanttimemodified) . '&nbsp;';
                 if ($app->comments) {
-                    $content .= organizer_popup_icon(ORGANIZER_ICON_STUDENT_COMMENT,
-                            organizer_filter_text($app->comments)) . "<br />";
+                    $content .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($app->comments))
+                        . "<br />";
                 } else {
                     $content .= "<br />";
                 }
@@ -1699,7 +1689,8 @@ function organizer_get_participant_list($params, $slot, $app) {
                     $namelink = organizer_get_name_link($appointment->userid);
                     if ($groupmode) {
                         if ($appointment->userid == $appointment->applicantid) {
-                            $namelink .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
+                            $namelink .= organizer_get_fa_icon('fa fa-star fa-2xs',
+                                get_string('applicant', 'organizer'));
                         }
                     } else {
                         $namelink .= organizer_get_teacherapplicant_output($appointment->teacherapplicantid,
@@ -1723,10 +1714,12 @@ function organizer_get_participant_list($params, $slot, $app) {
                 if ($app !== false) {
                     $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
                     if (!$notcollapsed) {
-                        $groupnameline = organizer_get_icon('plus-square', get_string('clicktohideshow'), null, null, 'collapseicon').$groupname;
+                        $groupnameline = organizer_get_icon('plus-square',
+                                get_string('clicktohideshow'), null, null, 'collapseicon').$groupname;
                         $groupnameline .= html_writer::span(organizer_get_teacherapplicant_output($app->teacherapplicantid,
                             $app->teacherapplicanttimemodified));
-                        $groupnameline = html_writer::div($groupnameline, 'collapseclick font-italic', array( 'data-target' => '.s'.$slot->id));
+                        $groupnameline = html_writer::div($groupnameline, 'collapseclick font-italic',
+                            array( 'data-target' => '.s'.$slot->id));
                     } else {
                         $groupnameline = $groupname;
                         $groupnameline .= html_writer::span(organizer_get_teacherapplicant_output($app->teacherapplicantid,
@@ -1744,11 +1737,11 @@ function organizer_get_participant_list($params, $slot, $app) {
                 $list .= html_writer::start_span($class, array('style' => 'display: table-row'));
                 $list .= html_writer::start_span('', array('style' => 'display: table-cell'));
                 $identity = organizer_get_user_identity($appointment->userid);
-                $identity = $identity != "" ? " ({$identity})" : "";
-                $list .= organizer_get_name_link($appointment->userid) . $identity;
+                $identity = $identity ? "<span class='organizer_identity ml-1'>({$identity})</span>" : "";
+                $list .= organizer_get_name_link($appointment->userid);
                 if ($groupmode) {
                     if (organizer_is_group_mode() && $appointment->userid == $appointment->applicantid) {
-                        $list .= organizer_get_img('pix/applicant.gif', 'applicant', get_string('applicant', 'organizer'));
+                        $list .= organizer_get_fa_icon('fa fa-star fa-2xs', get_string('applicant', 'organizer'));
                     }
                 } else {
                     $list .= organizer_get_teacherapplicant_output(
@@ -1756,6 +1749,7 @@ function organizer_get_participant_list($params, $slot, $app) {
                         $appointment->teacherapplicanttimemodified
                     );
                 }
+                $list .= $identity;
                 $list .= html_writer::end_span();
                 $list .= organizer_app_details($appointment);
                 $list .= html_writer::end_span();
@@ -1767,11 +1761,17 @@ function organizer_get_participant_list($params, $slot, $app) {
     return $content;
 }
 
-function organizer_get_attended_icon($appointment) {
+function organizer_get_attended_icon($appointment, $gradeactive) {
     if (isset($appointment->attended) && $appointment->attended == 1) {
-        return organizer_get_icon('yes', get_string('reg_status_slot_attended', 'organizer'));
+        return organizer_get_fa_icon('fa fa-circle fa-xs ml-1 mr-1 green',
+            get_string('reg_status_slot_attended', 'organizer'));
     } else {
-        return organizer_get_icon('no', get_string('reg_status_slot_not_attended', 'organizer'));
+        if ($gradeactive) {
+            return organizer_get_fa_icon('fa fa-circle-o fa-xs ml-1 mr-1',
+                get_string('reg_status_slot_not_attended', 'organizer'));
+        } else {
+            return "";
+        }
     }
 }
 
@@ -1799,85 +1799,97 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
     return '<img src="' . $src . '" alt="' . $alt . '" title="' . $title . '" id="' . $id . '" ' . $other . ' />';
 }
 
-function organizer_get_icon_msg($infotxt, $icon, $textclass='', $link=null) {
-    global $OUTPUT;
-    if ($link) {
-        $output = html_writer::div($OUTPUT->pix_icon($icon, $infotxt, 'mod_organizer').$link);
+function organizer_get_icon_msg($infotxt, $type, $textclass='', $link=null) {
+    if ($type == 'message_info') {
+        $icon = organizer_get_fa_icon("fa fa-info-circle mr-1 grey", $infotxt);
     } else {
-        $output = html_writer::div($OUTPUT->pix_icon($icon, $infotxt, 'mod_organizer').
-            html_writer::span($infotxt, 'text-left '.$textclass));
+        $icon = organizer_get_fa_icon("fa fa-warning mr-1 grey", $infotxt);
+    }
+    if ($link) {
+        $output = html_writer::div($icon.$link);
+    } else {
+        $output = html_writer::div($icon.html_writer::span($infotxt, 'text-left '.$textclass));
     }
     return $output;
+}
+function organizer_get_fa_icon($classes, $tooltiptext = "", $other = "") {
+    if ($tooltiptext) {
+        $other .= $tooltiptext ?
+            "data-toggle='tooltip' data-html='true' title='$tooltiptext' aria-label='$tooltiptext'" : '';
+    }
+    return "<i class='$classes' $other></i>";
 }
 
 function organizer_get_icon($iconname, $string, $size="small", $id="", $class="") {
     global $OUTPUT;
-    if ($size == "big") {
-        $alt = "";
-        $title = "";
-        $other = 'width="32" height="32"';
-        if ($string) {
-            $alt = $string;
-            $title = $string;
-            $other .= ' data-toggle="tooltip"';
-        }
-        $icon = organizer_get_img('pix/' . $iconname . '.png', $alt, $title, $id, $other);
-    } else {
-        $attributes = $id != '' ? array('id' => $id) : array();
-        $alt = "";
-        if ($string) {
-            $attributes['data-toggle'] = "tooltip";
-            $attributes['title'] = $string;
-            $attributes['class'] = 'ml-1 '.$class;
-            $alt = $string;
-        }
-        $icon = $OUTPUT->pix_icon($iconname, $alt, 'mod_organizer', $attributes);
+
+    $attributes = $id != '' ? array('id' => $id) : array();
+    $alt = "";
+    if ($string) {
+        $attributes['data-toggle'] = "tooltip";
+        $attributes['title'] = $string;
+        $attributes['aria-label'] = $string;
+        $attributes['class'] = $class;
+        $alt = $string;
     }
-    return $icon;
+    return $icon = $OUTPUT->pix_icon($iconname, $alt, 'mod_organizer', $attributes);
 }
 
 
 function organizer_slot_status($params, $slot) {
     $slotx = new organizer_slot($slot);
 
+    $slotisfull = $slotx->is_full();
     $slotevaluated = $slotx->is_evaluated();
     $slotpastdue = $slotx->is_past_due();
     $slotpastdeadline = $slotx->is_past_deadline();
     $slothasparticipants = $slotx->has_participants();
+    $gradingactive = $slotx->gradingisactive();
 
-    $slotnoparticipants = !$slotevaluated && ($slotpastdue || $slotpastdeadline) && !$slothasparticipants;
-    $slotpending = !$slotevaluated && $slotpastdue && $slothasparticipants;
-    $slotgradeable = !$slotevaluated && $slotpastdeadline && $slothasparticipants;
-    $slotdueempty = !$slotpastdeadline && !$slothasparticipants;
-    $slotdue = !$slotpastdeadline && $slothasparticipants;
+    $slotpending = $slotpastdue && $slothasparticipants && $gradingactive;
 
     $actionurl = new moodle_url(
         '/mod/organizer/slots_eval.php',
         array('id' => $params['id'], 'slot' => $slotx->id)
     );
 
-    if ($slotevaluated) {
-        return '<a href="' . $actionurl->out(false) . '">'
-                . organizer_get_icon('yes', get_string('img_title_evaluated', 'organizer'), "big") . '</a>';
-    } else if ($slotpending) {
-        return '<a href="' . $actionurl->out(false) . '">'
-                . organizer_get_icon('pending', get_string('img_title_pending', 'organizer'), "big") . '</a>';
-    } else if ($slotgradeable) {
-        return '<a href="' . $actionurl->out(false) . '">'
-                . organizer_get_icon(
-                    'student_slot_past_deadline',
-                    get_string('img_title_past_deadline', 'organizer'), "big"
-                ) . '</a>';
-    } else if ($slotdueempty) {
-        return organizer_get_icon('student_slot_available', get_string('img_title_due', 'organizer'), "big");
-    } else if ($slotdue) {
-        return '<a href="' . $actionurl->out(false) . '">'
-                . organizer_get_icon('student_slot_available', get_string('img_title_due', 'organizer'), "big")
-                . '</a>';
-    } else if ($slotnoparticipants) {
-        return organizer_get_icon('no_participants', get_string('img_title_no_participants', 'organizer'), "big");
-    } else {
-        print_error("This shouldn't happen.");
+    if ($slotpastdue) {  // Slot starttime has passed.
+        if ($slotevaluated) {
+            return '<a href="' . $actionurl->out(false) . '">'
+                . organizer_get_fa_icon("fa fa-check-square fa-2x text-primary",
+                get_string('img_title_evaluated', 'organizer'));
+        } else {
+            if ($slotpending) {
+                return '<a href="'.$actionurl->out(false).'">'.organizer_get_fa_icon("fa fa-flag-o fa-2x text-primary",
+                    get_string('img_title_pending', 'organizer')) . '</a>';
+            } else {
+                if ($slotisfull) {
+                    return organizer_get_fa_icon("fa fa-circle fa-2x text-primary",
+                        get_string('img_title_full', 'organizer'));
+                } else if ($slothasparticipants) {
+                    return organizer_get_fa_icon("fa fa-dot-circle-o fa-2x text-primary",
+                        get_string('img_title_past_deadline', 'organizer'));
+                } else {
+                    return organizer_get_fa_icon("fa fa-remove fa-2x text-primary",
+                        get_string('img_title_no_participants', 'organizer'));
+                }
+            }
+        }
+    } else { // Slot starttime not reached.
+        $slotcolor = $slotpastdeadline ? "slotovercolor" : "slotactivecolor";
+        if ($slotisfull) {
+            return organizer_get_fa_icon("fa fa-circle fa-2x $slotcolor",
+                get_string('img_title_full', 'organizer'));
+        } else {
+            $imgtitle = $slotpastdeadline ? "img_title_past_deadline" : "img_title_due";
+            if ($slothasparticipants) {
+                return organizer_get_fa_icon("fa fa-dot-circle-o fa-2x $slotcolor",
+                    get_string($imgtitle, 'organizer'));
+            } else {
+                return organizer_get_fa_icon("fa fa-circle-o fa-2x $slotcolor",
+                    get_string($imgtitle, 'organizer'));
+            }
+        }
     }
 }
 
@@ -1936,48 +1948,50 @@ function organizer_slot_commands($slotid, $params) {
 }
 
 function organizer_slot_reg_status($organizer, $slot, $onlyownslotsmsg = null) {
-    global $DB;
 
     $slotx = new organizer_slot($slot);
 
     $app = organizer_get_slot_user_appointment($slotx);
 
     if ($slotx->organizer_expired()) {
-        $output = organizer_get_icon('organizer_expired',
-            get_string('reg_status_organizer_expired', 'organizer'), "big");
+        $output = organizer_get_fa_icon('fa fa-calendar-times-o fa-2x',
+            get_string('reg_status_organizer_expired', 'organizer'));
     } else if ($slotx->is_past_due()) {
         if ($app) {
             if (!isset($app->attended)) {
                 if ($organizer->grade != 0) {
-                    $output = organizer_get_icon('pending',
-                        get_string('reg_status_slot_pending', 'organizer'), "big");
+                    $output = organizer_get_fa_icon('fa fa-flag fa-2x slotovercolor',
+                        get_string('reg_status_slot_pending', 'organizer'));
                 } else {
-                    $output = organizer_get_icon('student_slot_expired',
-                        get_string('reg_status_slot_expired', 'organizer'), "big");
+                    $output = organizer_get_fa_icon('fa fa-circle fa-2x slotovercolor',
+                        get_string('reg_status_slot_expired', 'organizer'));
                 }
             } else if ($app->attended == 0) {
-                $output = organizer_get_icon('no', get_string('reg_status_slot_not_attended', 'organizer'), "big");
+                $output = organizer_get_fa_icon('fa fa-check-square-o fa-2x slotovercolor',
+                    get_string('reg_status_slot_not_attended', 'organizer'));
             } else if ($app->attended == 1) {
-                $output = organizer_get_icon('yes', get_string('reg_status_slot_attended', 'organizer'), "big");
+                $output = organizer_get_fa_icon('fa fa-check-square fa-2x slotovercolor',
+                    get_string('reg_status_slot_attended', 'organizer'));
             }
         } else {
-            $output = organizer_get_icon('student_slot_expired',
+            $output = organizer_get_fa_icon('fa fa-remove fa-2x slotovercolor',
                 get_string('reg_status_slot_expired', 'organizer'), "big");
         }
     } else if ($slotx->is_past_deadline()) {
-        $output = organizer_get_icon('student_slot_past_deadline',
-            get_string('reg_status_slot_past_deadline', 'organizer'), "big");
+        $output = organizer_get_fa_icon('fa fa-calendar-times-o fa-2x slotovercolor',
+            get_string('reg_status_slot_past_deadline', 'organizer'));
     } else {
         if ($slotx->is_full()) {
             if ($app) {
-                $output = organizer_get_icon('status_not_occured', get_string('reg_not_occured', 'organizer'), "big");
+                $output = organizer_get_fa_icon('fa fa-check-circle fa-2x slotactivecolor',
+                    get_string('reg_not_occured', 'organizer'));
             } else {
-                $output = organizer_get_icon('student_slot_full',
-                    get_string('reg_status_slot_full', 'organizer'), "big");
+                $output = organizer_get_fa_icon('fa fa-circle fa-2x slotactivecolor',
+                    get_string('reg_status_slot_full', 'organizer'));
             }
         } else {
-            $output = organizer_get_icon('student_slot_available',
-                get_string('reg_status_slot_available', 'organizer'), "big");
+            $output = organizer_get_fa_icon('fa fa-circle-o fa-2x slotactivecolor',
+                get_string('reg_status_slot_available', 'organizer'));
         }
     }
 
@@ -2042,11 +2056,14 @@ function organizer_participants_action($params, $slot) {
             array('id' => $params['id'], 'slot' => $slotx->id)
         );
         $commentbtndisabled = $organizerdisabled || !$slotx->organizer_groupmode_user_has_access();
-        $commentbtn = $OUTPUT->single_button(
-            $commenturl, get_string("btn_comment", 'organizer'), 'post',
-            array('disabled' => $commentbtndisabled)
-        );
-        $commentbtn = "<br/>".$commentbtn;
+        $commentlabel = get_string("btn_comment", 'organizer');
+        if ($commentbtndisabled) {
+            $commentbtn = '<a href="#" class="action disabled">' . $commentlabel .
+                organizer_get_fa_icon('fa fa-commenting text-secondary ml-1', $commentlabel) . '</a>';
+        } else {
+            $commentbtn = '<a href="' . $commenturl . '" class="action">' . $commentlabel .
+                organizer_get_fa_icon('fa fa-commenting ml-1', $commentlabel)  . '</a>';
+        }
     }
 
     return organizer_get_reg_button($action, $slotx->id, $params, $disabled).$commentbtn;
@@ -2066,6 +2083,7 @@ function organizer_get_reg_button($action, $slotid, $params, $disabled = false) 
         $out = $OUTPUT->single_button(
             $actionurl, get_string("btn_$action", 'organizer'), 'post', array('disabled' => $disabled)
         );
+        $out = str_replace("btn-secondary", "btn-primary mb-2", $out);
     }
     return $out;
 }
@@ -2078,28 +2096,29 @@ function organizer_get_assign_button($slotid, $params) {
         array('id' => $params['id'], 'mode' => $params['mode'], 'assignid' => $params['assignid'], 'slot' => $slotid)
     );
 
-    return $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'), 'post');
+    $out = $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'), 'post');
+    $out = str_replace("btn-secondary", "btn-primary", $out);
+
+    return $out;
 }
 
 function organizer_get_status_icon_new($status, $organizer) {
     switch ($status) {
         case ORGANIZER_APP_STATUS_ATTENDED:
-            return organizer_get_icon('status_attended', get_string('reg_status_slot_attended', 'organizer'), "big");
+            return organizer_get_fa_icon('fa fa-check-square-o fa-2x slotovercolor',
+                get_string('reg_status_slot_attended', 'organizer'));
         case ORGANIZER_APP_STATUS_PENDING:
             if ($organizer->grade) {
-                  return organizer_get_icon('status_pending', get_string('reg_status_slot_pending', 'organizer'), "big");
+                  return organizer_get_fa_icon('fa fa-flag fa-2x', get_string('reg_status_slot_pending', 'organizer'));
             } else {
-                return "";
+                return organizer_get_fa_icon('fa fa-circle fa-2x slotovercolor',
+                    get_string('reg_status_slot_pending', 'organizer'));
             }
         case ORGANIZER_APP_STATUS_REGISTERED:
-            return organizer_get_icon('status_not_occured', get_string('reg_status_registered', 'organizer'), "big");
+            return organizer_get_fa_icon('fa fa-circle fa-2x green', get_string('reg_status_registered', 'organizer'));
         case ORGANIZER_APP_STATUS_NOT_REGISTERED:
-            return organizer_get_icon(
-                'status_not_registered',
-                get_string('reg_status_not_registered', 'organizer'), "big"
-            );
-        default:
-            print_error("Wrong status code: $status");
+            return organizer_get_fa_icon('fa fa-remove fa-2x slotovercolor',
+                get_string('reg_status_not_registered', 'organizer'));
     }
 }
 
@@ -2126,17 +2145,6 @@ function organizer_get_countdown($time) {
     $min = intval(($time % $secsinhour) / $secsinmin);
     $sec = intval($time % $secsinmin);
     return array($days, $hrs, $min, $sec);
-}
-
-function organizer_popup_icon($type, $content) {
-    $icons = array(
-            ORGANIZER_ICON_STUDENT_COMMENT => 'feedback2',
-            ORGANIZER_ICON_TEACHER_COMMENT => 'feedback2',
-            ORGANIZER_ICON_TEACHER_FEEDBACK => 'feedback',
-    );
-    $iconid = organizer_register_popup($type, $content);
-    $output = organizer_get_icon($icons[$type], $content, '', $iconid);
-    return $output;
 }
 
 function organizer_slot_is_free($slot, $userid, $assignmentview = null) {
@@ -2171,23 +2179,23 @@ function organizer_register_popup() {
 
 function organizer_write_places_inqueue_position($a) {
     $output = "";
-    $output .= "<span style=\"color: red;\">&nbsp;(" . get_string('places_inqueue_withposition', 'organizer', $a) . ")</span>";
+    $output .= organizer_get_fa_icon("fa fa-coffee mr-1 ml-1")."<span class='mr-1 text-danger font-italic'>" .
+        get_string('places_inqueue_withposition', 'organizer', $a) . "</span>";
     return $output;
 }
 
 function organizer_write_places_inqueue($a, $slot, $params) {
     $output = "";
-    $output .= "<span style=\"color: red;\">&nbsp;(" . get_string('places_inqueue', 'organizer', $a);
+    $output .= "<span class='mr-1 font-italic'>" . get_string('places_inqueue', 'organizer', $a);
     if ($params['mode'] != ORGANIZER_TAB_STUDENT_VIEW || $slot->visibility == ORGANIZER_VISIBILITY_ALL) {
         if (organizer_is_group_mode()) {
             $wlinfo = organizer_get_entries_queue_group($slot);
         } else {
             $wlinfo = organizer_get_entries_queue($slot);
         }
-            $output .= "<span style=\"cursor:help;\"> " .
-                    organizer_get_icon('docs', $wlinfo) . "</span>";
+            $output .= organizer_get_fa_icon('fa fa-info-circle ml-1', $wlinfo);
     }
-    $output .= ")</span>";
+    $output .= "</span>";
     return $output;
 }
 
@@ -2209,7 +2217,7 @@ function organizer_get_entries_queue($slot) {
         foreach ($queueentries as $qe) {
             $i++;
             $output .= $lf . $i . ". " . $qe->firstname . " " . $qe->lastname;
-            $lf = "\n";
+            $lf = "<br>";
         }
     }
 
@@ -2221,7 +2229,7 @@ function organizer_get_entries_queue_group($slot) {
 
     $output = "";
     $paramssql = array('slotid' => $slot->id);
-    $slotquery = 'SELECT DISTINCT g.id, g.name, q.id
+    $slotquery = 'SELECT DISTINCT g.name as gname, q.id
 				FROM {organizer_slots} s
 				INNER JOIN {organizer_slot_queues} q ON s.id = q.slotid
 				INNER JOIN {groups} g ON g.id = q.groupid
@@ -2233,8 +2241,8 @@ function organizer_get_entries_queue_group($slot) {
         $lf = "";
         foreach ($queueentries as $qe) {
             $i++;
-            $output .= $lf . $i . ". " . $qe->name;
-            $lf = "\n";
+            $output .= $lf . $i . ". " . $qe->gname;
+            $lf = "<br>";
         }
     }
 
