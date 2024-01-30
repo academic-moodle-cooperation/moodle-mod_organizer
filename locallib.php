@@ -2125,7 +2125,7 @@ function organizer_multiplebookings_status($slotsbooked, $organizer) {
 }
 
 /**
- * How many slots a participant has left
+ * How many bookings a participant has left
  *
  * @param object $organizer  organizer instance
  * @param int $userid ID of user
