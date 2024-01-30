@@ -2307,11 +2307,11 @@ function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg
 
     $out = html_writer::start_div('userstatusbar_tr', array('title' => $msg));
     if ($minreached) {
-        $classstrfull = 'fa fa-check-circle-o fa-2x mr-2 text-success';
+        $classstrfull = 'fa fa-check-circle fa-2x mr-2 text-success';
         $classstrempty = 'fa fa-circle-o fa-2x mr-2 text-success';
         $classstatusmsg = 'text-success font-weight-bolder';
     } else {
-        $classstrfull = 'fa fa-check-circle-o fa-2x mr-1 text-info';
+        $classstrfull = 'fa fa-check-circle fa-2x mr-1 text-info';
         $classstrempty = 'fa fa-circle-o fa-2x mr-1 text-info';
         $classstatusmsg = 'text-info font-weight-bolder';
     }
