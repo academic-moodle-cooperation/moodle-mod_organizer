@@ -944,6 +944,15 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                     if ($entry->status == ORGANIZER_APP_STATUS_INVALID) {
                         continue;
                     }
+                    if ($params['psort'] == 'id') {
+                        $orderby = "idnumber {$params['pdir']}, lastname ASC, firstname ASC";
+                    } else {
+                        $orderby = "lastname {$params['pdir']}, firstname {$params['pdir']}, idnumber ASC";
+                    }
+                    if (!$groupmembers = get_enrolled_users($context, 'mod/organizer:register',
+                        $entry->id, 'u.id', $orderby, 0, 0, true)) {
+                        continue;
+                    }
                     if ($slotswitch != $entry->slotid or $groupswitch != $entry->id) {
                         $slotswitch = $entry->slotid;
                         $groupswitch = $entry->id;
@@ -970,13 +979,6 @@ function organizer_organizer_generate_registration_table_content($columns, $para
                                     $cell = $row->cells[] = new html_table_cell($list);
                                     break;
                                 case 'participants':
-                                    if ($params['psort'] == 'id') {
-                                        $orderby = "idnumber {$params['pdir']}, lastname ASC, firstname ASC";
-                                    } else {
-                                        $orderby = "lastname {$params['pdir']}, firstname {$params['pdir']}, idnumber ASC";
-                                    }
-                                    $groupmembers = get_enrolled_users($context, 'mod/organizer:register',
-                                        $entry->id, 'u.id', $orderby, 0, 0, true);
                                     $members = array_keys($groupmembers);
                                     $list = "<span style='display: table'>";
                                     foreach ($members as $member) {
