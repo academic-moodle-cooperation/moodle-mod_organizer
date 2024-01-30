@@ -1853,7 +1853,7 @@ function organizer_slot_status($params, $slot) {
                 get_string('img_title_evaluated', 'organizer'));
         } else {
             if ($slotpending) {
-                return '<a href="'.$actionurl->out(false).'">'.organizer_get_fa_icon("fa fa-flag- fa-2x text-primary",
+                return '<a href="'.$actionurl->out(false).'">'.organizer_get_fa_icon("fa fa-flag fa-2x text-primary",
                     get_string('img_title_pending', 'organizer')) . '</a>';
             } else {
                 if ($slotisfull) {
