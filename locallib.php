@@ -731,7 +731,7 @@ function organizer_update_slot($data) {
 function organizer_delete_appointment_slot($id) {
     global $DB, $USER;
 
-    if ($slot = !$DB->get_record('organizer_slots', array('id' => $id))) {
+    if (!$slot = $DB->get_record('organizer_slots', array('id' => $id))) {
         return false;
     }
 
@@ -739,9 +739,6 @@ function organizer_delete_appointment_slot($id) {
     $appointments = $DB->get_records('organizer_slot_appointments', array('slotid' => $id));
     $notifiedusers = 0;
     if (count($appointments) > 0) {
-        // Someone was already registered to this slot.
-        $slotx = new organizer_slot($id);
-
         foreach ($appointments as $appointment) {
             $reciever = intval($appointment->userid);
             organizer_send_message($USER, $reciever, $slot, 'slotdeleted_notify_student');
@@ -1251,8 +1248,6 @@ function organizer_get_course_module_data($id = null, $n = null) {
         $organizer = $DB->get_record('organizer', array('id' => $n), '*', MUST_EXIST);
         $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
-    } else {
-        print_error('organizer_get_course_module_data: You must specify a course_module ID or an instance ID');
     }
 
     $context = context_module::instance($cm->id, MUST_EXIST);
