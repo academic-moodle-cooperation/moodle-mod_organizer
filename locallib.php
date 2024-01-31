@@ -2191,7 +2191,8 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
         foreach ($entries as $entry) {
             $entryids[] = $entry->id;
         }
-        $countentries = count($entryids);
+        $context = context_course::instance($organizer->course);
+        $countentries = count_enrolled_users($context, 'mod/organizer:register', null, true);
     }
     if (empty($entryids)) {
         $entryids = array(0);
