@@ -133,8 +133,9 @@ function organizer_make_messages_section($params) {
 function organizer_make_sendreminder_section($params, $context) {
     global $OUTPUT;
     if (has_capability("mod/organizer:sendreminders", $context)) {
-        $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id']));
+        $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id'], 'mode' => '3'));
         $output = $OUTPUT->single_button($sendurl, get_string("btn_sendall", 'organizer'), true);
+        $output = str_replace("btn-secondary", "btn-primary", $output);
         return organizer_make_section('infobox_messaging', $output);
     } else {
         return '';

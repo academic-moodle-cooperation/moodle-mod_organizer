@@ -20,6 +20,7 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -30,9 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // Required for the form rendering.
 require_once("$CFG->libdir/formslib.php");
-require_once(dirname(__FILE__) . '/slotlib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
-require_once(dirname(__FILE__) . '/view_lib.php');
 
 class organizer_remind_all_form extends moodleform {
 
@@ -51,8 +50,10 @@ class organizer_remind_all_form extends moodleform {
         $mform->setType('mode', PARAM_INT);
         $mform->addElement('hidden', 'action', 'remindall');
         $mform->setType('action', PARAM_ALPHANUMEXT);
-        $mform->addElement('hidden', 'user', $recipient);
-        $mform->setType('user', PARAM_INT);
+        $mform->addElement('hidden', 'recipient', $recipient);
+        $mform->setType('recipient', PARAM_INT);
+        $mform->addElement('hidden', 'recipients', $recipients);
+        $mform->setType('recipients', PARAM_INT);
 
         list(, $course, $organizer, ) = organizer_get_course_module_data();
 
@@ -66,13 +67,11 @@ class organizer_remind_all_form extends moodleform {
                 $mform->addElement('static', '', '', get_string('organizer_remind_all_recepients_pl', 'organizer', $a));
             }
             $groupnameswitch = true;
+            $recipientslist = array();
             foreach ($recipients as $recepient) {
                 $identity = organizer_get_user_identity($recepient);
                 $identity = $identity != "" ? "({$identity})" : "";
-                $mform->addElement(
-                    'static', '', '',
-                    organizer_get_name_link($recepient->id) . $identity
-                );
+                $recipientslist[] = organizer_get_name_link($recepient->id) . $identity;
                 // Get groupname of first recipient's group.
                 if ($organizer->isgrouporganizer && $groupnameswitch) {
                     $group = organizer_fetch_user_group($recepient->id, $organizer->id);
@@ -80,7 +79,10 @@ class organizer_remind_all_form extends moodleform {
                     $groupnameswitch = false;
                 }
             }
-            $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_organizer_remind_all', 'organizer'));
+            $mform->addElement('static', '', '', html_writer::alist($recipientslist,
+                array('class' => 'generalbox'), 'ul'));
+            $buttonarray[] = &$mform->createElement('submit', 'confirm',
+                get_string('confirm_organizer_remind_all', 'organizer'));
         } else {
             $mform->addElement('static', '', '', get_string('organizer_remind_all_no_recepients', 'organizer'));
             $buttonarray[] = &$mform->createElement(
