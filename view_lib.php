@@ -714,7 +714,7 @@ function organizer_get_span_cell($text, $colspan) {
     return $cell;
 }
 
-function organizer_organizer_organizer_get_status_table_entries_group($params) {
+function organizer_get_reg_status_table_entries_group($params) {
     global $DB;
     list($cm, , $organizer, ) = organizer_get_course_module_data();
 
@@ -817,7 +817,7 @@ function organizer_organizer_organizer_get_status_table_entries_group($params) {
  * @throws coding_exception
  * @throws dml_exception
  */
-function organizer_organizer_get_status_table_entries($params) {
+function organizer_get_reg_status_table_entries($params) {
     global $DB;
     list(, , $organizer, $context) = organizer_get_course_module_data();
 
@@ -1488,7 +1488,7 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     );
     $remindurl = new moodle_url(
         '/mod/organizer/send_reminder.php',
-        array('id' => $params['id'], 'user' => $entry->id)
+        array('id' => $params['id'], 'recipient' => $entry->id, 'mode' => '3')
     );
     $assignurl = new moodle_url(
         '/mod/organizer/view.php',
@@ -1524,14 +1524,14 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $button->url = $remindurl;
     // If max booking is not reached => show reminder button.
     $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true) || !$maxnotreached;
-    $button->icon = "fa fa-paper-plane-o";
+    $button->icon = "fa fa-paper-plane-o fw";
     $buttons[] = $button;
 
     // Assign button.
     $button = new stdClass();
     $button->text = get_string("btn_assign", 'organizer');
     $button->url = $assignurl;
-    $button->icon = "fa fa-plus";
+    $button->icon = "fa fa-calendar-plus-o fw";
     // If max booking is not reached => show assign button.
     $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true) || !$maxnotreached;
     $buttons[] = $button;
@@ -1540,7 +1540,7 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $button = new stdClass();
     $button->text = get_string("btn_deleteappointment", 'organizer');
     $button->url = $deleteurl;
-    $button->icon = "fa fa-times";
+    $button->icon = "fa fa-trash fw";
     // If it is a trainer assigned slot show button for deleting the appointment.
     $button->disabled = !$entry->teacherapplicantid || !has_capability('mod/organizer:deleteslots', $context, null, true);
     $buttons[] = $button;
@@ -1867,7 +1867,7 @@ function organizer_slot_status($params, $slot) {
                 get_string('img_title_evaluated', 'organizer'));
         } else {
             if ($slotpending) {
-                return '<a href="'.$actionurl->out(false).'">'.organizer_get_fa_icon("fa fa-flag fa-2x text-primary",
+                return '<a href="'.$actionurl->out(false).'">'.organizer_get_fa_icon("fa fa-flag-o fa-2x text-primary",
                     get_string('img_title_pending', 'organizer')) . '</a>';
             } else {
                 if ($slotisfull) {
@@ -1877,7 +1877,7 @@ function organizer_slot_status($params, $slot) {
                     return organizer_get_fa_icon("fa fa-dot-circle-o fa-2x text-primary",
                         get_string('img_title_past_deadline', 'organizer'));
                 } else {
-                    return organizer_get_fa_icon("fa fa-remove fa-2x text-primary",
+                    return organizer_get_fa_icon("fa fa-ban fa-2x text-primary",
                         get_string('img_title_no_participants', 'organizer'));
                 }
             }
@@ -1967,7 +1967,7 @@ function organizer_slot_reg_status($organizer, $slot, $onlyownslotsmsg = null) {
         if ($app) {
             if (!isset($app->attended)) {
                 if ($organizer->grade != 0) {
-                    $output = organizer_get_fa_icon('fa fa-flag fa-2x slotovercolor',
+                    $output = organizer_get_fa_icon('fa fa-flag-o fa-2x slotovercolor',
                         get_string('reg_status_slot_pending', 'organizer'));
                 } else {
                     $output = organizer_get_fa_icon('fa fa-circle fa-2x slotovercolor',
@@ -2123,15 +2123,15 @@ function organizer_get_status_icon_new($status, $organizer) {
                 get_string('reg_status_slot_attended', 'organizer'));
         case ORGANIZER_APP_STATUS_PENDING:
             if ($organizer->grade) {
-                  return organizer_get_fa_icon('fa fa-flag fa-2x', get_string('reg_status_slot_pending', 'organizer'));
+                  return organizer_get_fa_icon('fa fa-flag-o fa-2x', get_string('reg_status_slot_pending', 'organizer'));
             } else {
                 return organizer_get_fa_icon('fa fa-circle fa-2x slotovercolor',
-                    get_string('reg_status_slot_pending', 'organizer'));
+                    get_string('reg_status_registered', 'organizer'));
             }
         case ORGANIZER_APP_STATUS_REGISTERED:
             return organizer_get_fa_icon('fa fa-circle fa-2x green', get_string('reg_status_registered', 'organizer'));
         case ORGANIZER_APP_STATUS_NOT_REGISTERED:
-            return organizer_get_fa_icon('fa fa-remove fa-2x slotovercolor',
+            return organizer_get_fa_icon('fa fa-ban fa-2x slotovercolor',
                 get_string('reg_status_not_registered', 'organizer'));
     }
 }

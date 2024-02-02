@@ -35,11 +35,8 @@ require_once(dirname(__FILE__) . '/messaging.php');
 
 $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHANUMEXT);
-$recipient = optional_param('user', null, PARAM_INT);
-$slot = optional_param('slot', null, PARAM_INT);
-$slots = organizer_get_param_slots();
-$app = optional_param('app', null, PARAM_INT);
-$tsort = optional_param('tsort', null, PARAM_ALPHA);
+$recipient = optional_param('recipient', null, PARAM_INT);
+$recipients = optional_param_array('$recipients', array(), PARAM_INT);
 
 list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
@@ -51,18 +48,20 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 if ($recipient != null) {
     $recipients = array();
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $recipients = groups_get_members($recipient, $fields = 'u.id, u.idnumber', $sort = 'lastname ASC');
+        $recipients = get_enrolled_users($context, 'mod/organizer:register', $recipient, 'u.id',
+            'lastname', null, null, true);
     } else {
         $recipients = $DB->get_records_list('user', 'id', array($recipient));
     }
+    $counter = count($recipients);
+} else if ($recipients) {
+    $recipients = $DB->get_records_list('user', 'id', $recipients);
     $counter = count($recipients);
 } else {
     // Send reminders to all students without enough appointments.
     $counter = 0;
     $recipients = array();
-
-    $entries = organizer_organizer_get_status_table_entries(array('sort' => ''));
-
+    $entries = organizer_organizer_get_reg_status_table_entries(array('sort' => ''));
     if ($entries->valid()) {
         // Filter all not registered and not attended.
         $entrybefore = 0;
@@ -94,19 +93,14 @@ if ($recipient != null) {
     $entries->close();
 }
 
-
-
-
 $mform = new organizer_remind_all_form(
-    null, array('id' => $cm->id, 'mode' => $mode,
-    'slots' => $slots, 'recipients' => $recipients, 'recipient' => $recipient)
+    null, array('id' => $cm->id, 'mode' => $mode, 'recipients' => $recipients, 'recipient' => $recipient)
 );
 
 if ($data = $mform->get_data()) {
     $infoboxmessage = "";
     $a = new stdClass();
-    $recipient = $data->user;
-    $count = organizer_remind_all($recipient, $data->message_custommessage['text']);
+    $count = organizer_remind_all($data->recipient, $data->recipients, $data->message_custommessage['text']);
     $a->count = $count;
     if ($count == 1) {
         $infoboxmessage .= $OUTPUT->notification(get_string('message_info_reminders_sent_sg', 'organizer', $a),
@@ -130,11 +124,8 @@ if ($data = $mform->get_data()) {
 } else {
     organizer_display_form($mform, get_string('organizer_remind_all_title', 'organizer'));
 }
-print_error('If you see this, something went wrong with delete action!');
 
-die;
-
-function organizer_remind_all($recipient = null, $custommessage = "") {
+function organizer_remind_all($recipient = null, $recipients = array(), $custommessage = "") {
     global $DB;
 
     list($cm, , $organizer, $context) = organizer_get_course_module_data();
@@ -143,8 +134,11 @@ function organizer_remind_all($recipient = null, $custommessage = "") {
         if (!organizer_is_group_mode()) {
                $entries = $DB->get_records_list('user', 'id', array($recipient));
         } else {
-               $entries = organizer_fetch_groupusers($recipient);
+            $entries = get_enrolled_users($context, 'mod/organizer:register',
+                $recipient, 'u.id', null, null, null, true);
         }
+    } else if ($recipients) {
+        $entries = $DB->get_records_list('user', 'id', $recipients);
     } else if (!organizer_is_group_mode()) {
         $entries = get_enrolled_users($context, 'mod/organizer:register');
     } else {

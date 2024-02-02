@@ -2043,9 +2043,9 @@ function organizer_print_setuserprefs_and_triggerevent($data, $cm, $context) {
  */
 function organizer_get_registrationview_entries($groupmode, $params) {
     if ($groupmode) {
-        $entries = organizer_organizer_organizer_get_status_table_entries_group($params);
+        $entries = organizer_get_reg_status_table_entries_group($params);
     } else {
-        $entries = organizer_organizer_get_status_table_entries($params);
+        $entries = organizer_get_reg_status_table_entries($params);
     }
     return $entries;
 }
@@ -2177,13 +2177,16 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
     $underminimum = 0;
     $maxreached = 0;
 
+    $context = context_course::instance($organizer->course);
     $entryids = array();
     if ($groupmode) {
         $currentgroup = 0;
         foreach ($entries as $entry) {
             $entryids[] = $entry->id;
             if ($entry->id != $currentgroup) {
-                $countentries++;
+                if (count_enrolled_users($context, 'mod/organizer:register', $entry->id, true)) {
+                    $countentries++;
+                }
                 $currentgroup = $entry->id;
             }
         }
@@ -2191,7 +2194,6 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
         foreach ($entries as $entry) {
             $entryids[] = $entry->id;
         }
-        $context = context_course::instance($organizer->course);
         $countentries = count_enrolled_users($context, 'mod/organizer:register', null, true);
     }
     if (empty($entryids)) {

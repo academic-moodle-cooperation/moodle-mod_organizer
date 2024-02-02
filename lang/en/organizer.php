@@ -680,7 +680,7 @@ $string['nocalendareventslotcreation'] = 'No calendar events for empty slots';
 $string['nocalendareventslotcreation_help'] = 'If you check this option no calendar events will be created when creating slots. Only appointments will create slot calendar events.';
 $string['nofreeslots'] = 'No free slots available.';
 $string['nogroup'] = 'No group';
-$string['nolocationplaceholder'] = '<to be defined>';
+$string['nolocationplaceholder'] = '_to be defined_';
 $string['noparticipants'] = 'No participants';
 $string['norightpage'] = 'You are not allowed to call up this page.';
 $string['nosingleslotprintfields'] = 'Printing is not possible. There are no user fields defined. See the organizer settings.';
@@ -762,7 +762,7 @@ $string['privacy:metadata:useridqueue'] = 'Identifier of the user who made this 
 $string['queue'] = 'Waiting queues';
 $string['queue_help'] = 'Waiting queues allow users to register to a time slot even if the maximum number of participants is already reached.
 		Users are added to a waiting queue and assigned to the slot (in order) as soon as a slot becomes available.';
-$string['recipientname'] = '<recipient name>';
+$string['recipientname'] = '_recipient name_';
 $string['reg_not_occured'] = 'This slot has not occurred yet';
 $string['reg_status'] = 'Registration status';
 $string['reg_status_not_registered'] = 'Not registered';
