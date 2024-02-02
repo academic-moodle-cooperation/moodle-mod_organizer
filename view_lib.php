@@ -1501,48 +1501,60 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
 
     $buttons = array();
 
-    // If entry is appointment => show grade button.
-    if ($entry->status != ORGANIZER_APP_STATUS_NOT_REGISTERED && $organizer->grade != 0) {
-        $button = new stdClass();
-        $button->text = get_string("btn_eval_short", 'organizer');
-        $button->url = $evalurl;
-        $button->disabled = !$evalenabled;
-        $buttons[] = $button;
-    }
-    // If max booking is not reached => show reminder and assign button.
+    // Grade button.
+    $button = new stdClass();
+    $button->text = get_string("btn_eval_short", 'organizer');
+    $button->url = $evalurl;
+    // If entry is appointment => grade button active.
+    $button->disabled = !$evalenabled ||
+        !($entry->status != ORGANIZER_APP_STATUS_NOT_REGISTERED && $organizer->grade != 0);
+    $button->icon = "fa fa-th-list";
+    $buttons[] = $button;
+
     if ($groupmode) {
         $booked = organizer_count_bookedslots($organizer->id, null, $entry->id);
     } else {
         $booked = organizer_count_bookedslots($organizer->id, $entry->id, null);
     }
-    if (organizer_multiplebookings_status($booked, $organizer) != USERSLOTS_MAX_REACHED) {
-        $button = new stdClass();
-        $button->text = get_string("btn_remind", 'organizer');
-        $button->url = $remindurl;
-        $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true);
-        $buttons[] = $button;
-        $button = new stdClass();
-        $button->text = get_string("btn_assign", 'organizer');
-        $button->url = $assignurl;
-        $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
-        $buttons[] = $button;
-    }
+    $maxnotreached = organizer_multiplebookings_status($booked, $organizer) != USERSLOTS_MAX_REACHED;
+
+    // Reminder button.
+    $button = new stdClass();
+    $button->text = get_string("btn_remind", 'organizer');
+    $button->url = $remindurl;
+    // If max booking is not reached => show reminder button.
+    $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true) || !$maxnotreached;
+    $button->icon = "fa fa-paper-plane-o";
+    $buttons[] = $button;
+
+    // Assign button.
+    $button = new stdClass();
+    $button->text = get_string("btn_assign", 'organizer');
+    $button->url = $assignurl;
+    $button->icon = "fa fa-plus";
+    // If max booking is not reached => show assign button.
+    $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true) || !$maxnotreached;
+    $buttons[] = $button;
+
+    // Delete appointment button.
+    $button = new stdClass();
+    $button->text = get_string("btn_deleteappointment", 'organizer');
+    $button->url = $deleteurl;
+    $button->icon = "fa fa-times";
     // If it is a trainer assigned slot show button for deleting the appointment.
-    if ($entry->teacherapplicantid && has_capability('mod/organizer:deleteslots', $context, null, true)) {
-        $button = new stdClass();
-        $button->text = get_string("btn_deleteappointment", 'organizer');
-        $button->url = $deleteurl;
-        $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true);
-        $buttons[] = $button;
-    }
+    $button->disabled = !$entry->teacherapplicantid || !has_capability('mod/organizer:deleteslots', $context, null, true);
+    $buttons[] = $button;
 
     $output = "";
 
     foreach ($buttons as $button) {
         if ($button->disabled) {
-            $output .= '<a href="#" class="action disabled">' . $button->text . '</a>';
+            $button->icon .= " d-inline-block icon text-secondary";
+            $output .= organizer_get_fa_icon($button->icon, $button->text);
         } else {
-            $output .= '<a href="' . $button->url . '" class="action">' . $button->text . '</a>';
+            $button->icon .= " d-inline-block icon text-primary";
+            $output .= '<a href="' . $button->url . '">' .
+                organizer_get_fa_icon($button->icon, $button->text) . '</a>';
         }
     }
 
