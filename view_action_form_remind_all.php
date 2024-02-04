@@ -59,11 +59,11 @@ class organizer_remind_all_form extends moodleform {
             $recipientscount = count($recipientsarr);
         } else if ($data['recipient']) {
             if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                $recipientsarr = array_keys(get_enrolled_users($context, 'mod/organizer:register', $data['recipient'], 'u.id',
-                    'lastname,firstname', null, null, true));
+                $recipientsarr = array_keys(get_enrolled_users($context, 'mod/organizer:register', $data['recipient'],
+                    'u.id', 'lastname,firstname', null, null, true));
                 $recipientscount = count($recipientsarr);
                 $groupname = organizer_fetch_groupname($data['recipient']);
-           } else {
+            } else {
                 $recipientsarr = array($data['recipient']);
                 $recipientscount = 1;
             }
