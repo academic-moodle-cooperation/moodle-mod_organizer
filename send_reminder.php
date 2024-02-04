@@ -49,19 +49,20 @@ if ($recipient != null) {
     $recipients = array();
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $recipients = get_enrolled_users($context, 'mod/organizer:register', $recipient, 'u.id',
-            'lastname', null, null, true);
+            'lastname,firstname', null, null, true);
     } else {
         $recipients = $DB->get_records_list('user', 'id', array($recipient));
     }
     $counter = count($recipients);
 } else if ($recipients) {
-    $recipients = $DB->get_records_list('user', 'id', $recipients);
     $counter = count($recipients);
+    $recipients = $DB->get_records_list('user', 'id', $recipients, 'lastname,firstname');
+    $recipientsstr = $recipients ? implode(",", $recipients) : "";
 } else {
     // Send reminders to all students without enough appointments.
     $counter = 0;
     $recipients = array();
-    $entries = organizer_organizer_get_reg_status_table_entries(array('sort' => ''));
+    $entries = organizer_get_reg_status_table_entries(array('sort' => ''));
     if ($entries->valid()) {
         // Filter all not registered and not attended.
         $entrybefore = 0;
@@ -84,23 +85,30 @@ if ($recipient != null) {
                 }
                 if ($in) {
                     $counter++;
-                    $recipients[] = $entry;
+                    $recipients[] = $entry->id;
                 }
                 $entrybefore = $entry->id;
             }
         }
+        $recipientsstr = $recipients ? implode(",", $recipients) : "";
     }
     $entries->close();
 }
 
 $mform = new organizer_remind_all_form(
-    null, array('id' => $cm->id, 'mode' => $mode, 'recipients' => $recipients, 'recipient' => $recipient)
+    null, array(
+        'id' => $cm->id,
+        'mode' => $mode,
+        'recipients' => $recipientsstr ?? '',
+        'recipient' => $recipient,
+        )
 );
 
 if ($data = $mform->get_data()) {
     $infoboxmessage = "";
     $a = new stdClass();
-    $count = organizer_remind_all($data->recipient, $data->recipients, $data->message_custommessage['text']);
+    $recipients = $data->recipients ? explode(",", $data->recipients) : array();
+    $count = organizer_remind_all($data->recipient, $recipients, $data->message_custommessage['text']);
     $a->count = $count;
     if ($count == 1) {
         $infoboxmessage .= $OUTPUT->notification(get_string('message_info_reminders_sent_sg', 'organizer', $a),
