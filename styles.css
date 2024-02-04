@@ -30,6 +30,10 @@
     background-color: #E8F1F8  !important; // #c1dbf9
 }
 
+#organizer_main_cointainer table tr.past_due_reg td {
+    background-color: #E8F1F8  !important; // #c1dbf9
+}
+
 #organizer_main_cointainer table tr.affected_slot td {
     background-color: Lightgreen  !important;
 }

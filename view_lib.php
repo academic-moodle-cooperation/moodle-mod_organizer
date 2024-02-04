@@ -197,20 +197,16 @@ function organizer_generate_registration_status_view($params, $instance) {
     $output .= organizer_make_infobox($params, $instance->organizer, $instance->context);
 
     $columns = array('status');
-
     if ($instance->organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $columns[] = 'group';
         $columns[] = 'participants';
-        $columns[] = 'appdetails';
     } else {
         $columns[] = 'participants';
-        $columns[] = 'appdetails';
     }
-
     $columns = array_merge($columns, array('bookings', 'datetime', 'location', 'teacher', 'actions'));
-
-    $align = array('center', 'left', 'center', 'left', 'left', 'left', 'center');
     $sortable = array('status', 'group');
+    $align = array_fill(0, count($columns), 'center');
+    $align[1] = $align[5]  = 'left';
 
     $table = new html_table();
     $table->id = 'slot_overview';
@@ -957,10 +953,19 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                         $slotswitch = $entry->slotid;
                         $groupswitch = $entry->id;
                         $row = new html_table_row();
-
-                        if ($entry->starttime) {
-                            $row->attributes['class'] = 'registered';
+                        $rowclass = '';
+                        $slotevaluated = false;
+                        if ($entry->slotid) {
+                            $slotx = new organizer_slot($entry->slotid);
+                            if ($slotx->is_past_due()) {
+                                $rowclass .= ' past_due_reg';
+                            }
+                            $slotevaluated = $slotx->is_evaluated();
                         }
+                        if ($entry->starttime) {
+                            $rowclass .= ' registered';
+                        }
+                        $row->attributes['class'] = $rowclass;
                         foreach ($columns as $column) {
                             switch ($column) {
                                 case 'group':
@@ -1009,10 +1014,11 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                                 case 'status':
                                     if ($entry->starttime) {
                                         $cell = $row->cells[] = new html_table_cell(
-                                            organizer_get_status_icon_new($entry->status, $organizer));
+                                            organizer_get_status_icon_reg($entry->status, $organizer, $slotevaluated));
                                     } else {
                                         $cell = $row->cells[] = new html_table_cell(
-                                        organizer_get_status_icon_new(ORGANIZER_APP_STATUS_NOT_REGISTERED, $organizer));
+                                        organizer_get_status_icon_reg(ORGANIZER_APP_STATUS_NOT_REGISTERED,
+                                            $organizer, $slotevaluated));
                                     }
                                     $cell->style .= " text-align: center;";
                                     break;
@@ -1028,10 +1034,6 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                                         $cell = $row->cells[] = new html_table_cell('-');
                                         $cell->style .= " text-align: center;";
                                     }
-                                    break;
-                                case 'appdetails':
-                                    $cell = $row->cells[] = new html_table_cell('-');
-                                    $cell->style .= " text-align: center;";
                                     break;
                                 case 'location':
                                     if ($entry->starttime) {
@@ -1062,31 +1064,43 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                             $cell->style .= ' vertical-align: middle;';
                         }  // Foreach column.
                         $rows[] = $row;
-                    } else {  // Slotswitch and groupswitch.
-                        continue;
                     }// Slotswitch and groupswitch.
                 }  // Foreach entry.
             } else {  // No groupmode.
                 foreach ($entries as $entry) {
                     $row = new html_table_row();
-                    if ($entry->starttime) {
-                        $row->attributes['class'] = 'registered';
+                    $rowclass = '';
+                    $slotevaluated = false;
+                    if ($entry->slotid) {
+                        $slotx = new organizer_slot($entry->slotid);
+                        if ($slotx->is_past_due()) {
+                            $rowclass .= ' past_due_reg';
+                        }
+                        $slotevaluated = $entry->attended || $entry->grade || $entry->feedback;
                     }
-
+                    if ($entry->starttime) {
+                        $rowclass .= ' registered';
+                    }
+                    $row->attributes['class'] = $rowclass;
                     foreach ($columns as $column) {
                         switch ($column) {
                             case 'group':
                             case 'participants':
                                 $identity = organizer_get_user_identity($entry);
                                 $identity = $identity != "" ? " ({$identity})" : "";
-                                $cell = $row->cells[] = new html_table_cell(
-                                    organizer_get_name_link($entry->id) . $identity .
+                                $text = organizer_get_name_link($entry->id) . $identity .
                                     organizer_get_teacherapplicant_output($entry->teacherapplicantid,
-                                        $entry->teacherapplicanttimemodified));
+                                        $entry->teacherapplicanttimemodified);
+                                if ($entry->appid) {
+                                    $text .= organizer_reg_organizer_app_details($organizer, null,
+                                        $entry->slotid, $entry->id);
+                                }
+                                $cell = $row->cells[] = new html_table_cell($text);
                                 break;
                             case 'status':
                                 $cell = $row->cells[] = new
-                                html_table_cell(organizer_get_status_icon_new($entry->status, $organizer));
+                                    html_table_cell(organizer_get_status_icon_reg($entry->status,
+                                    $organizer, $slotevaluated));
                                 break;
                             case 'bookings':
                                 $cell = $row->cells[] = new html_table_cell(
@@ -1148,7 +1162,6 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                                 $cell->style .= " text-align: center;";
                                 break;
                         }
-
                         $cell->style .= ' vertical-align: middle;';
                     }
                     $rows[] = $row;
@@ -1428,7 +1441,7 @@ function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $useri
         }
     }
 
-    return $list ? $list : '-';
+    return $list;
 }
 
 function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupid = 0) {
@@ -2116,23 +2129,28 @@ function organizer_get_assign_button($slotid, $params) {
     return $out;
 }
 
-function organizer_get_status_icon_new($status, $organizer) {
-    switch ($status) {
-        case ORGANIZER_APP_STATUS_ATTENDED:
-            return organizer_get_fa_icon('fa fa-check-square-o fa-2x slotovercolor',
-                get_string('reg_status_slot_attended', 'organizer'));
-        case ORGANIZER_APP_STATUS_PENDING:
-            if ($organizer->grade) {
-                  return organizer_get_fa_icon('fa fa-flag-o fa-2x', get_string('reg_status_slot_pending', 'organizer'));
-            } else {
-                return organizer_get_fa_icon('fa fa-circle fa-2x slotovercolor',
-                    get_string('reg_status_registered', 'organizer'));
-            }
-        case ORGANIZER_APP_STATUS_REGISTERED:
-            return organizer_get_fa_icon('fa fa-circle fa-2x green', get_string('reg_status_registered', 'organizer'));
-        case ORGANIZER_APP_STATUS_NOT_REGISTERED:
-            return organizer_get_fa_icon('fa fa-ban fa-2x slotovercolor',
-                get_string('reg_status_not_registered', 'organizer'));
+function organizer_get_status_icon_reg($status, $organizer, $slotevaluated = false) {
+    if ($slotevaluated) {
+        return organizer_get_fa_icon("fa fa-check-square fa-2x text-primary",
+            get_string('img_title_evaluated', 'organizer'));
+    } else {
+        switch ($status) {
+            case ORGANIZER_APP_STATUS_ATTENDED:
+                return organizer_get_fa_icon('fa fa-check-square-o fa-2x slotovercolor',
+                    get_string('reg_status_slot_attended', 'organizer'));
+            case ORGANIZER_APP_STATUS_PENDING:
+                if ($organizer->grade) {
+                    return organizer_get_fa_icon('fa fa-flag-o fa-2x', get_string('reg_status_slot_pending', 'organizer'));
+                } else {
+                    return organizer_get_fa_icon('fa fa-circle fa-2x slotovercolor',
+                        get_string('reg_status_registered', 'organizer'));
+                }
+            case ORGANIZER_APP_STATUS_REGISTERED:
+                return organizer_get_fa_icon('fa fa-circle fa-2x green', get_string('reg_status_registered', 'organizer'));
+            case ORGANIZER_APP_STATUS_NOT_REGISTERED:
+                return organizer_get_fa_icon('fa fa-ban fa-2x slotovercolor',
+                    get_string('reg_status_not_registered', 'organizer'));
+        }
     }
 }
 
