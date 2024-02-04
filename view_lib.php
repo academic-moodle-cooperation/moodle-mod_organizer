@@ -216,7 +216,7 @@ function organizer_generate_registration_status_view($params, $instance) {
     $table->id = 'slot_overview';
     $table->attributes['class'] = 'generaltable boxaligncenter overview';
     $table->head = organizer_generate_reg_table_header($columns, $sortable, $params);
-    $table->data = organizer_organizer_generate_registration_table_content(
+    $table->data = organizer_generate_registration_table_content(
         $columns, $params, $instance->organizer, $instance->context
     );
     $table->align = $align;
@@ -926,7 +926,7 @@ function organizer_get_reg_status_table_entries($params) {
  * @throws coding_exception
  * @throws dml_exception
  */
-function organizer_organizer_generate_registration_table_content($columns, $params, $organizer, $context) {
+function organizer_generate_registration_table_content($columns, $params, $organizer, $context) {
 
     $groupmode = $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS;
 
