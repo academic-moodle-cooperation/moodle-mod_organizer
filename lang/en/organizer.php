@@ -885,6 +885,7 @@ $string['searchfilter'] = 'Search / Filter';
 $string['sec'] = 'sec';
 $string['sec_pl'] = 'secs';
 $string['select'] = 'Select slots';
+$string['select_all_entries'] = 'Select all entries';
 $string['select_all_slots'] = 'Select all visible slots';
 $string['select_help'] = 'Select one ore more slots you want to work with.';
 $string['selectedgrouplist'] = 'Selected groups';

@@ -63,10 +63,9 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
         break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             // Button for sending reminders to all participants without an appointment.
-            if ($entries = organizer_get_registrationview_entries(
-                $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS, $params)) {
-                $output .= organizer_make_sendreminder_section($params, $context);
-            }
+            $entries = organizer_get_registrationview_entries(
+                $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS, $params);
+            $output .= organizer_make_sendreminder_section($params, $context, $organizer);
             $output .= organizer_make_registrationstatistic_section($organizer, $entries);
             $jsparams->registrationview = 1;
         break;
@@ -78,6 +77,8 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
         // Display section with predefined filter view options like "hidden slots only" etc..
         $output .= organizer_make_slotoptions_section($params['mode'], $organizer);
+    } else {
+        $output .= organizer_make_appointmentsstatus_section($organizer);
     }
     // Display search field for fulltext search.
     $output .= organizer_make_filtersection($params['mode']);
@@ -130,16 +131,18 @@ function organizer_make_messages_section($params) {
         return '';
     }
 }
-function organizer_make_sendreminder_section($params, $context) {
+function organizer_make_sendreminder_section($params, $context, $organizer) {
     global $OUTPUT;
-    if (has_capability("mod/organizer:sendreminders", $context)) {
-        $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id'], 'mode' => '3'));
-        $output = $OUTPUT->single_button($sendurl, get_string("btn_sendall", 'organizer'), true);
+    $recipients = organizer_get_reminder_recipients($organizer);
+    $disabled = !$recipients || !has_capability("mod/organizer:sendreminders", $context);
+    $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id'], 'mode' => '3'));
+    $output = $OUTPUT->single_button($sendurl, get_string("btn_sendall", 'organizer'),
+        true, array('disabled' => $disabled));
+    if (!$disabled) {
         $output = str_replace("btn-secondary", "btn-primary", $output);
-        return organizer_make_section('infobox_messaging', $output);
-    } else {
-        return '';
     }
+    $output .= " (" . count($recipients) . ")";
+    return organizer_make_section('infobox_messaging', $output);
 }
 function organizer_make_description_section($organizer, $cmid) {
     global $OUTPUT, $PAGE;
@@ -454,4 +457,8 @@ function organizer_make_addslotbutton_section($params, $organizerexpired) {
     $output .= html_writer::end_div();
 
     return $output;
+}
+function organizer_make_appointmentsstatus_section($organizer) {
+    $output = organizer_appointmentsstatus_bar($organizer);
+    return organizer_make_section("", $output);
 }
