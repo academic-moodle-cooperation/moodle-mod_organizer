@@ -48,8 +48,8 @@ class organizer_remind_all_form extends moodleform {
         $mform->setType('action', PARAM_ALPHANUMEXT);
         $mform->addElement('hidden', 'recipient', $data['recipient']);
         $mform->setType('recipient', PARAM_INT);
-        $mform->addElement('hidden', 'recipients', $data['recipients']);
-        $mform->setType('recipients', PARAM_ALPHANUMEXT);
+        $mform->addElement('hidden', 'recipientsstr', $data['recipients']);
+        $mform->setType('recipientsstr', PARAM_TEXT);
 
         list(, $course, $organizer, $context) = organizer_get_course_module_data();
 

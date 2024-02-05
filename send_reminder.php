@@ -36,7 +36,7 @@ require_once(dirname(__FILE__) . '/messaging.php');
 $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $recipient = optional_param('recipient', null, PARAM_INT);
-$recipients = optional_param_array('$recipients', array(), PARAM_INT);
+$recipients = optional_param_array('recipients', array(), PARAM_INT);
 
 list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
@@ -54,8 +54,20 @@ if ($recipient != null) {
         $recipients = $DB->get_records_list('user', 'id', array($recipient));
     }
 } else if ($recipients) {
-    $recipients = $DB->get_records_list('user', 'id', $recipients, 'lastname,firstname');
-    $recipientsstr = $recipients ? implode(",", $recipients) : "";
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $recipientsarr = array();
+        foreach ($recipients as $key => $recipientgroup) {
+            $members = organizer_fetch_groupusers($recipientgroup);
+            foreach ($members as $member) {
+                if (has_capability('mod/organizer:register', $context, $member->id)) {
+                    $recipientsarr[$member->id] = $member->id;
+                }
+        }
+    }
+    } else {
+        $recipientsarr = $DB->get_records_list('user', 'id', $recipients, 'lastname,firstname');
+    }
+    $recipientsstr = $recipientsarr ? implode(",", array_keys($recipientsarr)) : "";
 } else {
     // Send reminders to all students without enough appointments.
     $recipients = organizer_get_reminder_recipients($organizer);
@@ -74,7 +86,7 @@ $mform = new organizer_remind_all_form(
 if ($data = $mform->get_data()) {
     $infoboxmessage = "";
     $a = new stdClass();
-    $recipients = $data->recipients ? explode(",", $data->recipients) : array();
+    $recipients = $data->recipientsstr ? explode(",", $data->recipientsstr) : array();
     $count = organizer_remind_all($data->recipient, $recipients, $data->message_custommessage['text']);
     $a->count = $count;
     if ($count == 1) {

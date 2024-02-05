@@ -2364,6 +2364,7 @@ function organizer_remind_all($recipient = null, $recipients = array(), $customm
 
     list($cm, , $organizer, $context) = organizer_get_course_module_data();
 
+    $checkenough = false;
     if ($recipient != null) {
         if (!organizer_is_group_mode()) {
             $entries = $DB->get_records_list('user', 'id', array($recipient));
@@ -2375,6 +2376,7 @@ function organizer_remind_all($recipient = null, $recipients = array(), $customm
         $entries = $DB->get_records_list('user', 'id', $recipients);
     } else if (!organizer_is_group_mode()) {
         $entries = get_enrolled_users($context, 'mod/organizer:register');
+        $checkenough = true;
     } else {
         $query = "SELECT u.* FROM {user} u
             INNER JOIN {groups_members} gm ON u.id = gm.userid
@@ -2383,15 +2385,27 @@ function organizer_remind_all($recipient = null, $recipients = array(), $customm
             WHERE gg.groupingid = :grouping";
         $par = array('grouping' => $cm->groupingid);
         $entries = $DB->get_records_sql($query, $par);
+        $checkenough = true;
     }
 
-    $query = "SELECT DISTINCT u.id FROM {organizer} o
-        INNER JOIN {organizer_slots} s ON o.id = s.organizerid
-        INNER JOIN {organizer_slot_appointments} a ON s.id = a.slotid
-        INNER JOIN {user} u ON a.userid = u.id
-        WHERE o.id = :id AND (a.attended = 1 OR a.attended IS NULL)";
-    $par = array('id' => $organizer->id);
-    $nonrecepients = $DB->get_fieldset_sql($query, $par);
+    $nonrecepients = array();
+    if ($checkenough) {
+        foreach ($entries as $entry) {
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                if (organizer_multiplebookings_status(
+                        organizer_count_bookedslots($organizer->id, null, $entry->id),
+                        $organizer) == USERSLOTS_MIN_REACHED) {
+                    $nonrecepients[] = $entry->id;
+                }
+            } else {
+                if (organizer_multiplebookings_status(
+                        organizer_count_bookedslots($organizer->id, $entry->id, null),
+                        $organizer) == USERSLOTS_MIN_REACHED) {
+                    $nonrecepients[] = $entry->id;
+                }
+            }
+        }
+    }
 
     $count = 0;
     foreach ($entries as $entry) {
