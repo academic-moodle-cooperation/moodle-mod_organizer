@@ -1656,7 +1656,7 @@ function organizer_get_participant_list($params, $slot, $app) {
         $orderby = " ORDER BY u.lastname $dir, u.firstname $dir, u.idnumber ASC";
     } else if (isset($params['psort']) && $params['psort'] == 'id') {
         $orderby = " ORDER BY u.idnumber $dir, u.lastname ASC, u.firstname ASC";
-    } else  {
+    } else {
         $orderby = " ORDER BY u.lastname $dir, u.firstname $dir, u.idnumber ASC";
     }
     $query = "SELECT a.*, u.firstname, u.lastname, u.idnumber
