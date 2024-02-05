@@ -62,8 +62,8 @@ if ($recipient != null) {
                 if (has_capability('mod/organizer:register', $context, $member->id)) {
                     $recipientsarr[$member->id] = $member->id;
                 }
+            }
         }
-    }
     } else {
         $recipientsarr = $DB->get_records_list('user', 'id', $recipients, 'lastname,firstname');
     }
