@@ -2451,7 +2451,7 @@ function organizer_get_reminder_recipients($organizer) {
                 if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                     $members = organizer_fetch_groupusers($entry->id);
                     foreach ($members as $member) {
-                        if (has_capability('mod/organizer:register', $context, $member->id)) {
+                        if (has_capability('mod/organizer:register', $context, $member->id, false)) {
                             $recipients[] = $member->id;
                         }
                     }

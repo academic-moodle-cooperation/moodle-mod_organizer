@@ -324,6 +324,7 @@ $string['err_fullminute'] = 'The duration has to be a full minute.';
 $string['err_fullminutegap'] = 'The gap has to be a full minute.';
 $string['err_isgrouporganizer_app'] = 'Cannot change group mode as there already exist scheduled appointments in this organizer!';
 $string['err_location'] = 'You must enter a location!';
+$string['err_norecipients'] = 'No recipients were selected!';
 $string['err_noslots'] = 'No slots were selected!';
 $string['err_posint'] = 'You must enter a positive integer!';
 $string['err_startdate'] = 'Start date cannot be set before today\'s date ({$a->now})!';

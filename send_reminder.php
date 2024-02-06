@@ -37,8 +37,15 @@ $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $recipient = optional_param('recipient', null, PARAM_INT);
 $recipients = optional_param_array('recipients', array(), PARAM_INT);
+$bulkaction = optional_param('bulkaction', '', PARAM_TEXT);
 
 list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
+
+if ($bulkaction && !$recipients) {
+    $redirecturl = $redirecturl->out();
+    $msg = get_string('err_norecipients', 'organizer');
+    redirect($redirecturl, $msg);
+}
 
 require_login($course, false, $cm);
 
@@ -59,7 +66,7 @@ if ($recipient != null) {
         foreach ($recipients as $key => $recipientgroup) {
             $members = organizer_fetch_groupusers($recipientgroup);
             foreach ($members as $member) {
-                if (has_capability('mod/organizer:register', $context, $member->id)) {
+                if (has_capability('mod/organizer:register', $context, $member->id, false)) {
                     $recipientsarr[$member->id] = $member->id;
                 }
             }

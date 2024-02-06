@@ -352,12 +352,13 @@ function organizer_generate_reg_actionlink_bar($params) {
 
     $output = '<div name="actionlink_bar" class="buttons mdl-align">';
     $output .= html_writer::span(get_string('selectedslots', 'organizer'));
-    $actions['edit'] = get_string('btn_remind', 'organizer');
+    $actions['sendreminder'] = get_string('btn_remind', 'organizer');
     $output .= html_writer::select(
-        $actions, 'bulkaction', array('edit' => get_string('actionlink_edit', 'organizer')), null,
+        $actions, 'bulkaction', array('sendreminder' => get_string('btn_remind', 'organizer')), null,
         array('style' => 'margin-left:0.3em;margin-right:0.3em;')
     );
-    $output .= '<input type="submit" class="btn btn-primary" value="' . get_string('btn_start', 'organizer') . '"/>';
+    $output .= '<input type="submit" class="btn btn-primary" name="bulkactionbutton" value="' .
+        get_string('btn_start', 'organizer') . '"/>';
     $output .= '</div>';
 
     return $output;
@@ -987,7 +988,6 @@ function organizer_generate_registration_table_content($columns, $params, $organ
         if ($entries->valid()) {
             $rows = array();
             $queueable = organizer_is_queueable();
-
             if ($groupmode) {
                 $slotswitch = "";
                 $groupswitch = "";
@@ -995,6 +995,7 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                     if ($entry->status == ORGANIZER_APP_STATUS_INVALID) {
                         continue;
                     }
+                    $bookingnotpossible = organizer_bookingnotpossible($groupmode, $organizer, $entry->id);
                     if ($params['psort'] == 'id') {
                         $orderby = "idnumber {$params['pdir']}, lastname ASC, firstname ASC";
                     } else {
@@ -1024,9 +1025,13 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                         foreach ($columns as $column) {
                             switch ($column) {
                                 case 'select':
+                                    $attributes = array('class' => 'checkbox_slot');
+                                    if ($bookingnotpossible) {
+                                        $attributes['disabled'] = true;
+                                    }
                                     $cell = $row->cells[] = new html_table_cell(
                                         html_writer::checkbox('recipients[]', $entry->id, false, '',
-                                            array('class' => 'checkbox_slot')
+                                            $attributes
                                         )
                                     );
                                     break;
@@ -1133,6 +1138,7 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                 }  // Foreach entry.
             } else {  // No groupmode.
                 foreach ($entries as $entry) {
+                    $bookingnotpossible = organizer_bookingnotpossible($groupmode, $organizer, $entry->id);
                     $row = new html_table_row();
                     $rowclass = '';
                     $slotevaluated = false;
@@ -1150,9 +1156,13 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                     foreach ($columns as $column) {
                         switch ($column) {
                             case 'select':
+                                $attributes = array('class' => 'checkbox_slot');
+                                if ($bookingnotpossible) {
+                                    $attributes['disabled'] = true;
+                                }
                                 $cell = $row->cells[] = new html_table_cell(
                                     html_writer::checkbox('recipients[]', $entry->id, false, '',
-                                        array('class' => 'checkbox_slot')
+                                        $attributes
                                     )
                                 );
                                 break;
@@ -1571,7 +1581,6 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
         '/mod/organizer/slots_eval.php',
         array('id' => $params['id'], 'slots[]' => $entry->slotid)
     );
-    list ($slotscount, $places) = organizer_get_freeplaces($organizer);
     $remindurl = new moodle_url(
         '/mod/organizer/send_reminder.php',
         array('id' => $params['id'], 'recipient' => $entry->id, 'mode' => '3')
@@ -1597,12 +1606,7 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $button->icon = "fa fa-th-list";
     $buttons[] = $button;
 
-    if ($groupmode) {
-        $booked = organizer_count_bookedslots($organizer->id, null, $entry->id);
-    } else {
-        $booked = organizer_count_bookedslots($organizer->id, $entry->id, null);
-    }
-    $maxnotreached = organizer_multiplebookings_status($booked, $organizer) != USERSLOTS_MAX_REACHED;
+    $bookingnotpossible = organizer_bookingnotpossible($groupmode, $organizer, $entry->id);
 
     // Reminder button.
     $button = new stdClass();
@@ -1610,7 +1614,7 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $button->url = $remindurl;
     // If max booking is not reached => show reminder button.
     $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true) ||
-        !$maxnotreached || !$places;
+        $bookingnotpossible;
     $button->icon = "fa fa-paper-plane-o fw";
     $buttons[] = $button;
 
@@ -1621,7 +1625,7 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $button->icon = "fa fa-calendar-plus-o fw";
     // If max booking is not reached => show assign button.
     $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true) ||
-        !$maxnotreached || !$places;
+        $bookingnotpossible;
     $buttons[] = $button;
 
     // Delete appointment button.
@@ -2039,7 +2043,7 @@ function organizer_slot_status($params, $slot) {
 }
 
 function organizer_slot_commands($slotid, $params) {
-    global $OUTPUT, $PAGE;
+    global $PAGE;
 
     $outstr = "";
 
@@ -2554,4 +2558,17 @@ function organizer_get_freeplaces($organizer) {
         }
     }
     return [$slotscount, $places];
+}
+
+function organizer_bookingnotpossible($groupmode, $organizer, $entryid) {
+
+    if ($groupmode) {
+        $booked = organizer_count_bookedslots($organizer->id, null, $entryid);
+    } else {
+        $booked = organizer_count_bookedslots($organizer->id, $entryid, null);
+    }
+    $maxnotreached = organizer_multiplebookings_status($booked, $organizer) != USERSLOTS_MAX_REACHED;
+    list (, $places) = organizer_get_freeplaces($organizer);
+
+    return !$maxnotreached || !$places;
 }

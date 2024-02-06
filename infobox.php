@@ -42,7 +42,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
 
     // Module description section
     $output .= organizer_make_description_section($organizer);
- 
+
     $jsparams = new stdClass();
     $jsparams->studentview = 0;
     $jsparams->registrationview = 0;
@@ -131,10 +131,14 @@ function organizer_make_messages_section($params) {
 function organizer_make_sendreminder_section($params, $context, $organizer) {
     global $OUTPUT;
     $recipients = organizer_get_reminder_recipients($organizer);
-    $disabled = !$recipients || !has_capability("mod/organizer:sendreminders", $context);
+    $attributes = array();
+    list(, $places) = organizer_get_freeplaces($organizer);
+    if ($disabled = !$recipients || !has_capability("mod/organizer:sendreminders", $context) || !$places) {
+        $attributes['disabled'] = true;
+    }
     $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id'], 'mode' => '3'));
     $output = $OUTPUT->single_button($sendurl, get_string("btn_sendall", 'organizer'),
-        true, array('disabled' => $disabled));
+        true, $attributes);
     if (!$disabled) {
         $output = str_replace("btn-secondary", "btn-primary", $output);
     }
