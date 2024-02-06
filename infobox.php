@@ -159,10 +159,10 @@ function organizer_make_description_section($organizer, $cmid) {
             $a = new stdClass();
             $a->groupname = $group->name;
             $infotxt = get_string('grouporganizer_desc_hasgroup', 'organizer', $a);
-            $output .= organizer_get_icon_msg($infotxt, 'message_info', '');
+            $output .= organizer_get_icon_msg('group', $infotxt);
         } else {
             $infotxt = get_string('grouporganizer_desc_novalidgroup', 'organizer');
-            $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder');
+            $output .= organizer_get_icon_msg('nogroup', $infotxt);
         }
     }
     if (isset($organizer->duedate)) {
@@ -174,20 +174,20 @@ function organizer_make_description_section($organizer, $cmid) {
                 $link = html_writer::link($modediturl, get_string('infobox_organizer_expires', 'organizer', $a));
             }
             $infotxt = get_string('infobox_organizer_expires', 'organizer', $a);
-            $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
+            $output .= organizer_get_icon_msg('expires', $infotxt);
         } else {
             if (has_capability("mod/organizer:editslots", $context)) {
                 $link = html_writer::link($modediturl, get_string('infobox_organizer_expired', 'organizer', $a));
             }
             $infotxt = get_string('infobox_organizer_expired', 'organizer', $a);
-            $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder', $link);
+            $output .= organizer_get_icon_msg('expired', $infotxt);
         }
     } else {
         if (has_capability("mod/organizer:editslots", $context)) {
             $link = html_writer::link($modediturl, get_string('infobox_organizer_never_expires', 'organizer'));
         }
         $infotxt = get_string('infobox_organizer_never_expires', 'organizer');
-        $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
+        $output .= organizer_get_icon_msg('neverexpires', $infotxt);
     }
     $link = "";
     if ($organizer->grade != 0) {
@@ -195,13 +195,13 @@ function organizer_make_description_section($organizer, $cmid) {
             $link = html_writer::link($modediturl, get_string('grading_desc_grade', 'organizer'));
         }
         $infotxt = get_string('grading_desc_grade', 'organizer');
-        $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
+        $output .= organizer_get_icon_msg('grade', $infotxt);
     } else {
         if (has_capability("mod/organizer:editslots", $context)) {
             $link = html_writer::link($modediturl, get_string('grading_desc_nograde', 'organizer'));
         }
         $infotxt = get_string('grading_desc_nograde', 'organizer');
-        $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder', $link);
+        $output .= organizer_get_icon_msg('nograde', $infotxt);
     }
     $link = "";
     if ($organizer->queue != 0) {
@@ -209,13 +209,13 @@ function organizer_make_description_section($organizer, $cmid) {
             $link = html_writer::link($modediturl, get_string('waitinglists_desc_active', 'organizer'));
         }
         $infotxt = get_string('waitinglists_desc_active', 'organizer');
-        $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
+        $output .= organizer_get_icon_msg('queues', $infotxt);
     } else {
         if (has_capability("mod/organizer:editslots", $context)) {
             $link = html_writer::link($modediturl, get_string('waitinglists_desc_notactive', 'organizer'));
         }
         $infotxt = get_string('waitinglists_desc_notactive', 'organizer');
-        $output .= organizer_get_icon_msg($infotxt, 'message_warning', 'font-weight-bolder', $link);
+        $output .= organizer_get_icon_msg('noqueues', $infotxt);
     }
     $link = "";
     $a = new stdClass();
@@ -225,7 +225,11 @@ function organizer_make_description_section($organizer, $cmid) {
         $link = html_writer::link($modediturl, get_string('infobox_minmax', 'organizer', $a));
     }
     $infotxt = get_string('infobox_minmax', 'organizer', $a);
-    $output .= organizer_get_icon_msg($infotxt, 'message_info', '', $link);
+    if ($a->max == 1) {
+        $output .= organizer_get_icon_msg('minmax1', $infotxt);
+    } else {
+        $output .= organizer_get_icon_msg('minmax', $infotxt);
+    }
 
     return $OUTPUT->box($output, 'generalbox', 'intro');
 }

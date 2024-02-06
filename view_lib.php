@@ -1896,18 +1896,43 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
     return '<img src="' . $src . '" alt="' . $alt . '" title="' . $title . '" id="' . $id . '" ' . $other . ' />';
 }
 
-function organizer_get_icon_msg($infotxt, $type, $textclass='', $link=null) {
-    if ($type == 'message_info') {
-        $icon = organizer_get_fa_icon("fa fa-info-circle mr-1 grey", $infotxt);
-    } else {
-        $icon = organizer_get_fa_icon("fa fa-warning mr-1 grey", $infotxt);
+function organizer_get_icon_msg($name, $infotxt) {
+    switch ($name) {
+        case 'group':
+            $out = organizer_get_fa_icon_stacked('fa-square-o fa-stack-2x', 'fa-group fa-stack-1x', $infotxt);
+            break;
+        case 'nogroup':
+            $out = organizer_get_fa_icon_stacked('fa-group fa-stack-1x', 'fa-exclamation fa-stack-2x text-danger', $infotxt);
+            break;
+        case 'expires':
+            $out = organizer_get_fa_icon_stacked('fa-square-o fa-stack-2x', 'fa-hourglass-end fa-stack-1x', $infotxt);
+            break;
+        case 'expired':
+            $out = organizer_get_fa_icon_stacked('fa-hourglass fa-stack-1x', 'fa-ban fa-stack-2x', $infotxt);
+            break;
+        case 'neverexpires':
+            $out = organizer_get_fa_icon_stacked('fa-square-o fa-stack-2x', 'fa-hourglass-o fa-stack-1x', $infotxt);
+            break;
+        case 'grade':
+            $out = organizer_get_fa_icon_stacked('fa-square-o fa-stack-2x', 'fa-th-list fa-stack-1x', $infotxt);
+            break;
+        case 'nograde':
+            $out = organizer_get_fa_icon_stacked('fa-th-list fa-stack-1x', 'fa-ban text-danger fa-stack-2x', $infotxt);
+            break;
+        case 'queues':
+            $out = organizer_get_fa_icon_stacked('fa-square-o fa-stack-2x', 'fa-coffee fa-stack-1x', $infotxt);
+            break;
+        case 'noqueues':
+            $out = organizer_get_fa_icon_stacked('fa-coffee fa-stack-1x', 'fa-ban fa-stack-2x', $infotxt);
+            break;
+        case 'minmax1':
+            $out = organizer_get_fa_icon_stacked('fa-square-o fa-stack-2x', 'fa-file-o fa-stack-1x', $infotxt);
+            break;
+        case 'minmax':
+            $out = organizer_get_fa_icon_stacked('fa-square-o fa-stack-2x', 'fa-files-o fa-stack-1x', $infotxt);
+            break;
     }
-    if ($link) {
-        $output = html_writer::div($icon.$link);
-    } else {
-        $output = html_writer::div($icon.html_writer::span($infotxt, 'text-left '.$textclass));
-    }
-    return $output;
+    return $out;
 }
 function organizer_get_fa_icon($classes, $tooltiptext = "", $other = "") {
     if ($tooltiptext) {
@@ -1915,6 +1940,18 @@ function organizer_get_fa_icon($classes, $tooltiptext = "", $other = "") {
             "data-toggle='tooltip' data-html='true' title='$tooltiptext' aria-label='$tooltiptext'" : '';
     }
     return "<i class='$classes' $other></i>";
+}
+
+function organizer_get_fa_icon_stacked($classesback, $classesfront, $tooltiptext = "", $other = "") {
+    if ($tooltiptext) {
+        $other .= $tooltiptext ?
+            "data-toggle='tooltip' data-html='true' title='$tooltiptext' aria-label='$tooltiptext'" : '';
+    }
+    $out = "<span class='fa-stack fa-lg' $other>";
+    $out .= "<i class='fa $classesback'></i>";
+    $out .= "<i class='fa $classesfront'></i>";
+    $out .= '</span>';
+    return $out;
 }
 
 function organizer_get_icon($iconname, $string, $size="small", $id="", $class="") {
