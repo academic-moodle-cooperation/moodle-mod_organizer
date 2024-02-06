@@ -1897,26 +1897,27 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
 }
 
 function organizer_get_icon_msg($name, $infotxt) {
+    $out = "";
     switch ($name) {
         case 'group':
             $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
                 'fa-group fa-stack-1x text-primary', $infotxt);
             break;
         case 'nogroup':
-            $out = organizer_get_fa_icon_stacked('fa-group fa-stack-1x text-danger',
-                'fa-exclamation fa-stack-2x text-danger', $infotxt);
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-danger',
+                'fa-group fa-stack-1x text-danger', $infotxt);
             break;
         case 'expires':
             $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
                 'fa-hourglass-3 fa-stack-1x text-primary', $infotxt);
             break;
         case 'expired':
-            $out = organizer_get_fa_icon_stacked('fa-clock-o fa-stack-1x text-danger',
-                'fa-circle-thin fa-stack-2x text-danger', $infotxt);
+            $out = organizer_get_fa_icon_stacked('fa-hourglass fa-stack-1x text-danger',
+                'fa-ban fa-stack-2x text-danger', $infotxt);
             break;
         case 'neverexpires':
-            $out = organizer_get_fa_icon_stacked('fa-clock-o fa-stack-1x text-primary',
-                'fa-ban fa-stack-2x text-primary', $infotxt);
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-secondary',
+                'fa-hourglass fa-stack-1x text-secondary', $infotxt);
             break;
         case 'grade':
             $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
