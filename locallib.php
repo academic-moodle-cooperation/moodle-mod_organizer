@@ -2422,12 +2422,13 @@ function organizer_remind_all($recipient = null, $recipients = array(), $customm
 
 function organizer_get_reminder_recipients($organizer) {
 
+    $params = array('group' => 0, 'sort' => '', 'dir' => '', 'psort' => '', 'pdir' => '');
     $recipients = array();
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizer->id);
-        $entries = organizer_get_reg_status_table_entries_group(array('sort' => '', 'psort' => ''));
+        $entries = organizer_get_reg_status_table_entries_group($params);
     } else {
-        $entries = organizer_get_reg_status_table_entries(array('sort' => '', 'psort' => ''));
+        $entries = organizer_get_reg_status_table_entries($params);
     }
     if ($entries->valid()) {
         // Select all users which have not reached the minimum of bookings.

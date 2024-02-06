@@ -764,8 +764,12 @@ function organizer_get_reg_status_table_entries_group($params) {
     global $DB;
     list($cm, , $organizer, ) = organizer_get_course_module_data();
 
-    $groups = groups_get_all_groups($cm->course, 0, $cm->groupingid, 'g.id');
-    $groupids = array_keys($groups);
+    if ($params['group'] == 0) {
+        $groups = groups_get_all_groups($cm->course, 0, $cm->groupingid, 'g.id');
+        $groupids = array_keys($groups);
+    } else {
+        $groupids = array($params['group']);
+    }
     if (!$groupids || count($groupids) == 0) {
         return array();
     }
@@ -868,7 +872,7 @@ function organizer_get_reg_status_table_entries($params) {
     global $DB;
     list(, , $organizer, $context) = organizer_get_course_module_data();
 
-    $students = get_enrolled_users($context, 'mod/organizer:register', 0, 'u.id', null, 0, 0, true);
+    $students = get_enrolled_users($context, 'mod/organizer:register', $params['group'], 'u.id', null, 0, 0, true);
     $studentids = array_keys($students);
     if (!$studentids || count($studentids) == 0) {
         return array();

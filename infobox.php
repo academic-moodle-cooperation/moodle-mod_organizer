@@ -79,6 +79,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
         $output .= organizer_make_slotoptions_section($params['mode'], $organizer);
     } else {
         $output .= organizer_make_appointmentsstatus_section($organizer);
+        $output .= groups_print_activity_menu($PAGE->cm, $PAGE->url, true);
     }
     // Display search field for fulltext search.
     $output .= organizer_make_filtersection($params['mode']);
