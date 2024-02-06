@@ -41,12 +41,8 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     $output .= organizer_make_messages_section($params);
 
     // Module description section
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS ||
-        time() > $organizer->allowregistrationsfromdate) {
-        // Group and duedate informations.
-        $output .= organizer_make_description_section($organizer, $params['id']);
-    }
-
+    $output .= organizer_make_description_section($organizer);
+ 
     $jsparams = new stdClass();
     $jsparams->studentview = 0;
     $jsparams->registrationview = 0;
@@ -145,12 +141,8 @@ function organizer_make_sendreminder_section($params, $context, $organizer) {
     $output .= " (" . count($recipients) . ")";
     return organizer_make_section('infobox_messaging', $output);
 }
-function organizer_make_description_section($organizer, $cmid) {
-    global $OUTPUT, $PAGE;
-
-    $modediturl = new moodle_url('/course/modedit.php', array('update' => $cmid, 'return' => 1));
-    $context = $PAGE->context;
-    $link = "";
+function organizer_make_description_section($organizer) {
+    global $OUTPUT;
 
     $output = "";
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
@@ -170,60 +162,33 @@ function organizer_make_description_section($organizer, $cmid) {
         $a->date = userdate($organizer->duedate, get_string('fulldatetemplate', 'organizer'));
         $a->time = userdate($organizer->duedate, get_string('timetemplate', 'organizer'));
         if ($organizer->duedate > time()) {
-            if (has_capability("mod/organizer:editslots", $context)) {
-                $link = html_writer::link($modediturl, get_string('infobox_organizer_expires', 'organizer', $a));
-            }
             $infotxt = get_string('infobox_organizer_expires', 'organizer', $a);
             $output .= organizer_get_icon_msg('expires', $infotxt);
         } else {
-            if (has_capability("mod/organizer:editslots", $context)) {
-                $link = html_writer::link($modediturl, get_string('infobox_organizer_expired', 'organizer', $a));
-            }
             $infotxt = get_string('infobox_organizer_expired', 'organizer', $a);
             $output .= organizer_get_icon_msg('expired', $infotxt);
         }
     } else {
-        if (has_capability("mod/organizer:editslots", $context)) {
-            $link = html_writer::link($modediturl, get_string('infobox_organizer_never_expires', 'organizer'));
-        }
         $infotxt = get_string('infobox_organizer_never_expires', 'organizer');
         $output .= organizer_get_icon_msg('neverexpires', $infotxt);
     }
-    $link = "";
     if ($organizer->grade != 0) {
-        if (has_capability("mod/organizer:editslots", $context)) {
-            $link = html_writer::link($modediturl, get_string('grading_desc_grade', 'organizer'));
-        }
         $infotxt = get_string('grading_desc_grade', 'organizer');
         $output .= organizer_get_icon_msg('grade', $infotxt);
     } else {
-        if (has_capability("mod/organizer:editslots", $context)) {
-            $link = html_writer::link($modediturl, get_string('grading_desc_nograde', 'organizer'));
-        }
         $infotxt = get_string('grading_desc_nograde', 'organizer');
         $output .= organizer_get_icon_msg('nograde', $infotxt);
     }
-    $link = "";
     if ($organizer->queue != 0) {
-        if (has_capability("mod/organizer:editslots", $context)) {
-            $link = html_writer::link($modediturl, get_string('waitinglists_desc_active', 'organizer'));
-        }
         $infotxt = get_string('waitinglists_desc_active', 'organizer');
         $output .= organizer_get_icon_msg('queues', $infotxt);
     } else {
-        if (has_capability("mod/organizer:editslots", $context)) {
-            $link = html_writer::link($modediturl, get_string('waitinglists_desc_notactive', 'organizer'));
-        }
         $infotxt = get_string('waitinglists_desc_notactive', 'organizer');
         $output .= organizer_get_icon_msg('noqueues', $infotxt);
     }
-    $link = "";
     $a = new stdClass();
     $a->min = $organizer->userslotsmin;
     $a->max = $organizer->userslotsmax;
-    if (has_capability("mod/organizer:editslots", $context)) {
-        $link = html_writer::link($modediturl, get_string('infobox_minmax', 'organizer', $a));
-    }
     $infotxt = get_string('infobox_minmax', 'organizer', $a);
     if ($a->max == 1) {
         $output .= organizer_get_icon_msg('minmax1', $infotxt);
