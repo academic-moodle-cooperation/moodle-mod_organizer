@@ -64,11 +64,11 @@ class organizer_delete_slots_form extends moodleform {
             $mform->addElement('static', '', '', '<b>' . get_string('deleteheader', 'organizer') . '</b>');
 
             foreach ($slots as $slot) {
-                $slot = new organizer_slot($slot);
+                $slotx = new organizer_slot($slot);
                 $deletableslots = true;
                 $mform->addElement('hidden', 'slots[]', $slot->id);
                 $mform->setType('slots[]', PARAM_INT);
-                if (!$slot->has_participants()) {
+                if (!$slotx->has_participants()) {
                     $out = html_writer::start_div();
                     $out .= html_writer::span(organizer_date_time($slot, true), '');
                     $out .= html_writer::span($slot->location, 'ml-2');
@@ -82,8 +82,8 @@ class organizer_delete_slots_form extends moodleform {
             }
             $exceptions = false;
             foreach ($slots as $slot) {
-                $slot = new organizer_slot($slot);
-                if ($slot->has_participants()) {
+                $slotx = new organizer_slot($slot);
+                if ($slotx->has_participants()) {
                     $exceptions = true;
                     break;
                 }
@@ -91,8 +91,8 @@ class organizer_delete_slots_form extends moodleform {
             if ($exceptions) {
                 $mform->addElement('static', '', '', '<br/><b>' . get_string('deletekeep', 'organizer') . '</b>');
                 foreach ($slots as $slot) {
-                    $slot = new organizer_slot($slot);
-                    if ($slot->has_participants()) {
+                    $slotx = new organizer_slot($slot);
+                    if ($slotx->has_participants()) {
                         $out = html_writer::start_div();
                         $out .= html_writer::span(organizer_date_time($slot, true), '');
                         $out .= html_writer::span($slot->location, 'ml-2');

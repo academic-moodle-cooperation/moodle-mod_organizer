@@ -501,6 +501,10 @@ class organizer_slot {
     public function get_id() {
         return $this->slot->id;
     }
+
+    public function get_location() {
+        return $this->slot->location;
+    }
 }
 
 function organizer_user_has_access($slotid) {
