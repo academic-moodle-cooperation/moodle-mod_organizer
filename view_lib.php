@@ -2330,9 +2330,9 @@ function organizer_slot_is_free($slot, $userid, $assignmentview = null) {
         }
     }
     if (!$ispastdue && !$slotx->is_full() && $slotx->is_available() ) {
-        $apps = organizer_get_all_user_appointments($slotx->organizerid, $userid);
+        $apps = organizer_get_all_user_appointments($slot->organizerid, $userid);
         foreach ($apps as $app) {  // Is own slot?
-            if ($app->slotid == $slotx->id) {
+            if ($app->slotid == $slot->id) {
                 return false;
             }
         }
