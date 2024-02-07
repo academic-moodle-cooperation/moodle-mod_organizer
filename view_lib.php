@@ -140,7 +140,7 @@ function organizer_generate_appointments_view($params, $instance) {
 
     $columns = array('select', 'singleslotcommands', 'datetime', 'location', 'participants', 'teacher', 'details');
     $align = array('center', 'center', 'left', 'left', 'left', 'left', 'center');
-    $sortable = array('datetime', 'location');
+    $sortable = array('datetime', 'location', 'participants');
 
     $table = new html_table();
     $table->id = 'slot_overview';
@@ -192,25 +192,23 @@ function organizer_generate_student_view($params, $instance) {
 }
 
 function organizer_generate_registration_status_view($params, $instance) {
-    $output = organizer_generate_tab_row($params, $instance->context);
+    global $PAGE;
+    $PAGE->requires->js_call_amd('mod_organizer/initcheckboxes', 'init', array(false));
 
+    $output = organizer_generate_tab_row($params, $instance->context);
     $output .= organizer_make_infobox($params, $instance->organizer, $instance->context);
 
-    $columns = array('status');
-
+    $columns = array('select', 'status');
     if ($instance->organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $columns[] = 'group';
         $columns[] = 'participants';
-        $columns[] = 'appdetails';
     } else {
         $columns[] = 'participants';
-        $columns[] = 'appdetails';
     }
-
     $columns = array_merge($columns, array('bookings', 'datetime', 'location', 'teacher', 'actions'));
-
-    $align = array('center', 'left', 'center', 'left', 'left', 'left', 'center');
     $sortable = array('status', 'group');
+    $align = array_fill(0, count($columns), 'center');
+    $align[2] = $align[6]  = 'left';
 
     $table = new html_table();
     $table->id = 'slot_overview';
@@ -221,7 +219,10 @@ function organizer_generate_registration_status_view($params, $instance) {
     );
     $table->align = $align;
 
+    $output .= organizer_begin_reg_form($params);
     $output .= organizer_render_table_with_footer($table);
+    $output .= organizer_generate_reg_actionlink_bar($params);
+    $output .= organizer_end_form();
 
     return $output;
 }
@@ -255,6 +256,16 @@ function organizer_generate_assignment_view($params, $instance) {
 
 function organizer_begin_form($params) {
     $url = new moodle_url('/mod/organizer/view_action.php');
+    $output = '<form name="viewform" action="' . $url->out() . '" method="post">';
+    $output .= '<input type="hidden" name="id" value="' . $params['id'] . '" />';
+    $output .= '<input type="hidden" name="mode" value="' . $params['mode'] . '" />';
+    $output .= '<input type="hidden" name="sesskey" value="' . sesskey() . '" />';
+
+    return $output;
+}
+
+function organizer_begin_reg_form($params) {
+    $url = new moodle_url('/mod/organizer/send_reminder.php');
     $output = '<form name="viewform" action="' . $url->out() . '" method="post">';
     $output .= '<input type="hidden" name="id" value="' . $params['id'] . '" />';
     $output .= '<input type="hidden" name="mode" value="' . $params['mode'] . '" />';
@@ -332,8 +343,28 @@ function organizer_generate_actionlink_bar($context, $organizerexpired) {
     return $output;
 }
 
+function organizer_generate_reg_actionlink_bar($params) {
 
-function organizer_generate_table_header($columns, $sortable, $params, $usersort = false) {
+    list(, , , $context) = organizer_get_course_module_data($params['id']);
+    if (!has_capability("mod/organizer:sendreminders", $context)) {
+        return "";
+    }
+
+    $output = '<div name="actionlink_bar" class="buttons mdl-align">';
+    $output .= html_writer::span(get_string('selectedslots', 'organizer'));
+    $actions['sendreminder'] = get_string('btn_remind', 'organizer');
+    $output .= html_writer::select(
+        $actions, 'bulkaction', array('sendreminder' => get_string('btn_remind', 'organizer')), null,
+        array('style' => 'margin-left:0.3em;margin-right:0.3em;')
+    );
+    $output .= '<input type="submit" class="btn btn-primary" name="bulkactionbutton" value="' .
+        get_string('btn_start', 'organizer') . '"/>';
+    $output .= '</div>';
+
+    return $output;
+}
+
+function organizer_generate_table_header($columns, $sortable, $params) {
     global $OUTPUT;
 
     $header = array();
@@ -345,8 +376,9 @@ function organizer_generate_table_header($columns, $sortable, $params, $usersort
                 $columndir = 'ASC';
             } else {
                 $columndir = $params['dir'] == 'ASC' ? 'DESC' : 'ASC';
-                $columnicon = $params['dir'] == 'ASC' ? 'up' : 'down';
-                $columnicon = ' ' . $OUTPUT->pix_icon('t/' . $columnicon, get_string($columnicon));
+                $icon = $params['dir'] == 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
+                $columnstr = $params['dir'] == 'ASC' ? 'up' : 'down';
+                $columnicon = organizer_get_fa_icon("fa $icon ml-1", get_string($columnstr));
             }
             $viewurl = new moodle_url(
                 '/mod/organizer/view.php',
@@ -364,7 +396,7 @@ function organizer_generate_table_header($columns, $sortable, $params, $usersort
             );
         } else if ($column == 'singleslotcommands') {
             $cell = new html_table_cell(get_string("th_actions", 'organizer') . $columnhelpicon);
-        } else if ($column == 'participants' && $usersort) {
+        } else if ($column == 'participants') {
             $cell = organizer_get_participants_tableheadercell($params, $column, $columnhelpicon);
         } else {
             $cell = new html_table_cell(get_string("th_{$column}", 'organizer') . $columnhelpicon);
@@ -376,7 +408,6 @@ function organizer_generate_table_header($columns, $sortable, $params, $usersort
 }
 
 function organizer_generate_reg_table_header($columns, $sortable, $params) {
-    global $OUTPUT;
 
     $header = array();
     foreach ($columns as $column) {
@@ -386,8 +417,9 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
                 $columndir = 'ASC';
             } else {
                 $columndir = $params['dir'] == 'ASC' ? 'DESC' : 'ASC';
-                $columnicon = $params['dir'] == 'ASC' ? 'up' : 'down';
-                $columnicon = ' ' . $OUTPUT->pix_icon('t/' . $columnicon, get_string($columnicon));
+                $icon = $params['dir'] == 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
+                $columnstr = $params['dir'] == 'ASC' ? 'up' : 'down';
+                $columnicon = organizer_get_fa_icon("fa $icon ml-1", get_string($columnstr));
             }
 
             $viewurl = new moodle_url(
@@ -404,8 +436,9 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
                 $columndir = 'ASC';
             } else {
                 $columndir = $params['dir'] == 'ASC' ? 'DESC' : 'ASC';
-                $columnicon = $params['dir'] == 'ASC' ? 'up' : 'down';
-                $columnicon = ' ' . $OUTPUT->pix_icon('t/' . $columnicon, get_string($columnicon));
+                $icon = $params['dir'] == 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
+                $columnstr = $params['dir'] == 'ASC' ? 'up' : 'down';
+                $columnicon = organizer_get_fa_icon("fa $icon ml-1", get_string($columnstr));
             }
             $viewurl = new moodle_url(
                 '/mod/organizer/view.php',
@@ -413,8 +446,10 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
             );
             if ($params['sort'] == 'name') {
                 $namedir = $params['dir'] == 'ASC' ? 'DESC' : 'ASC';
-                $nameicon = $params['dir'] == 'ASC' ? 'up' : 'down';
-                $nameicon = ' ' . $OUTPUT->pix_icon('t/' . $nameicon, get_string($nameicon));
+                $icon = $params['dir'] == 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
+                $namestr = $params['dir'] == 'ASC' ? 'up' : 'down';
+                $nameicon = organizer_get_fa_icon("fa $icon ml-1", get_string($namestr));
+
             } else {
                 $namedir = 'ASC';
                 $nameicon = '';
@@ -422,8 +457,9 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
 
             if ($params['sort'] == 'id') {
                 $iddir = $params['dir'] == 'ASC' ? 'DESC' : 'ASC';
-                $idicon = $params['dir'] == 'ASC' ? 'up' : 'down';
-                $idicon = ' ' . $OUTPUT->pix_icon('t/' . $idicon, get_string($idicon));
+                $icon = $params['dir'] == 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
+                $idstr = $params['dir'] == 'ASC' ? 'up' : 'down';
+                $idicon = organizer_get_fa_icon("fa $icon ml-1", get_string($idstr));
             } else {
                 $iddir = 'ASC';
                 $idicon = '';
@@ -448,6 +484,13 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
         } else if ($column == 'participants') {
             $columnhelpicon = "";
             $cell = organizer_get_participants_tableheadercell($params, $column, $columnhelpicon);
+        } else if ($column == 'select') {
+            $cell = new html_table_cell(
+                html_writer::checkbox(
+                    'select', null, false, '',
+                    array('title' => get_string('select_all_entries', 'organizer'))
+                )
+            );
         } else {
             $cell = new html_table_cell(get_string("th_{$column}", 'organizer'));
         }
@@ -464,7 +507,11 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
     $translate = array('datetime' => "starttime {$params['dir']}", 'location' => "location {$params['dir']}",
             'teacher' => "lastname {$params['dir']}, firstname {$params['dir']}");
 
-    $order = $translate[$params['sort']];
+    if ($params['sort'] != 'participants') {
+        $order = $translate[$params['sort']];
+    } else {
+        $order = "starttime ASC";
+    }
 
     $apps = organizer_get_all_user_appointments($organizer);
     $userslots = array_column($apps, 'slotid', 'id');
@@ -718,8 +765,12 @@ function organizer_get_reg_status_table_entries_group($params) {
     global $DB;
     list($cm, , $organizer, ) = organizer_get_course_module_data();
 
-    $groups = groups_get_all_groups($cm->course, 0, $cm->groupingid, 'g.id');
-    $groupids = array_keys($groups);
+    if ($params['group'] == 0) {
+        $groups = groups_get_all_groups($cm->course, 0, $cm->groupingid, 'g.id');
+        $groupids = array_keys($groups);
+    } else {
+        $groupids = array($params['group']);
+    }
     if (!$groupids || count($groupids) == 0) {
         return array();
     }
@@ -736,7 +787,7 @@ function organizer_get_reg_status_table_entries_group($params) {
     } else if ($params['sort'] == 'name') {
         $orderby = "ORDER BY g.name $dir";
     } else if ($params['sort'] == 'id') {
-        $orderby = "ORDER BY g.id $dir";
+        $orderby = "ORDER BY g.idnumber $dir";
     } else {
         $orderby = "ORDER BY g.name ASC, status ASC";
     }
@@ -747,6 +798,7 @@ function organizer_get_reg_status_table_entries_group($params) {
     $query = "SELECT DISTINCT
         g.id,
         g.name,
+        g.idnumber,
         a2.id AS appid,
         CASE
             WHEN a2.id IS NOT NULL AND a2.attended = 1
@@ -819,10 +871,12 @@ function organizer_get_reg_status_table_entries_group($params) {
  */
 function organizer_get_reg_status_table_entries($params) {
     global $DB;
-    list(, , $organizer, $context) = organizer_get_course_module_data();
+    list($cm, , $organizer, $context) = organizer_get_course_module_data();
 
-    $students = get_enrolled_users($context, 'mod/organizer:register', 0, 'u.id', null, 0, 0, true);
-    $studentids = array_keys($students);
+    $students = get_enrolled_users($context, 'mod/organizer:register', $params['group'], 'u.id', null, 0, 0, true);
+    $info = new \core_availability\info_module(cm_info::create($cm));
+    $filtered = $info->filter_user_list($students);
+    $studentids = array_keys($filtered);
     if (!$studentids || count($studentids) == 0) {
         return array();
     }
@@ -936,7 +990,6 @@ function organizer_generate_registration_table_content($columns, $params, $organ
         if ($entries->valid()) {
             $rows = array();
             $queueable = organizer_is_queueable();
-
             if ($groupmode) {
                 $slotswitch = "";
                 $groupswitch = "";
@@ -944,6 +997,7 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                     if ($entry->status == ORGANIZER_APP_STATUS_INVALID) {
                         continue;
                     }
+                    $bookingnotpossible = organizer_bookingnotpossible($groupmode, $organizer, $entry->id);
                     if ($params['psort'] == 'id') {
                         $orderby = "idnumber {$params['pdir']}, lastname ASC, firstname ASC";
                     } else {
@@ -957,14 +1011,37 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                         $slotswitch = $entry->slotid;
                         $groupswitch = $entry->id;
                         $row = new html_table_row();
-
-                        if ($entry->starttime) {
-                            $row->attributes['class'] = 'registered';
+                        $rowclass = '';
+                        $slotevaluated = false;
+                        if ($entry->slotid) {
+                            $slotx = new organizer_slot($entry->slotid);
+                            if ($slotx->is_past_due()) {
+                                $rowclass .= ' past_due_reg';
+                            }
+                            $slotevaluated = $slotx->is_evaluated();
                         }
+                        if ($entry->starttime) {
+                            $rowclass .= ' registered';
+                        }
+                        $row->attributes['class'] = $rowclass;
                         foreach ($columns as $column) {
                             switch ($column) {
+                                case 'select':
+                                    $attributes = array('class' => 'checkbox_slot');
+                                    if ($bookingnotpossible) {
+                                        $attributes['disabled'] = true;
+                                    }
+                                    $cell = $row->cells[] = new html_table_cell(
+                                        html_writer::checkbox('recipients[]', $entry->id, false, '',
+                                            $attributes
+                                        )
+                                    );
+                                    break;
                                 case 'group':
                                     $list = $entry->name;
+                                    if ($entry->idnumber) {
+                                        $list .= " (". $entry->idnumber . ")";
+                                    }
                                     if ($entry->starttime) {
                                         $list .= organizer_get_teacherapplicant_output(
                                             $entry->teacherapplicantid,
@@ -1009,10 +1086,11 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                                 case 'status':
                                     if ($entry->starttime) {
                                         $cell = $row->cells[] = new html_table_cell(
-                                            organizer_get_status_icon_new($entry->status, $organizer));
+                                            organizer_get_status_icon_reg($entry->status, $organizer, $slotevaluated));
                                     } else {
                                         $cell = $row->cells[] = new html_table_cell(
-                                        organizer_get_status_icon_new(ORGANIZER_APP_STATUS_NOT_REGISTERED, $organizer));
+                                        organizer_get_status_icon_reg(ORGANIZER_APP_STATUS_NOT_REGISTERED,
+                                            $organizer, $slotevaluated));
                                     }
                                     $cell->style .= " text-align: center;";
                                     break;
@@ -1028,10 +1106,6 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                                         $cell = $row->cells[] = new html_table_cell('-');
                                         $cell->style .= " text-align: center;";
                                     }
-                                    break;
-                                case 'appdetails':
-                                    $cell = $row->cells[] = new html_table_cell('-');
-                                    $cell->style .= " text-align: center;";
                                     break;
                                 case 'location':
                                     if ($entry->starttime) {
@@ -1062,31 +1136,55 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                             $cell->style .= ' vertical-align: middle;';
                         }  // Foreach column.
                         $rows[] = $row;
-                    } else {  // Slotswitch and groupswitch.
-                        continue;
                     }// Slotswitch and groupswitch.
                 }  // Foreach entry.
             } else {  // No groupmode.
                 foreach ($entries as $entry) {
+                    $bookingnotpossible = organizer_bookingnotpossible($groupmode, $organizer, $entry->id);
                     $row = new html_table_row();
-                    if ($entry->starttime) {
-                        $row->attributes['class'] = 'registered';
+                    $rowclass = '';
+                    $slotevaluated = false;
+                    if ($entry->slotid) {
+                        $slotx = new organizer_slot($entry->slotid);
+                        if ($slotx->is_past_due()) {
+                            $rowclass .= ' past_due_reg';
+                        }
+                        $slotevaluated = $entry->attended || $entry->grade || $entry->feedback;
                     }
-
+                    if ($entry->starttime) {
+                        $rowclass .= ' registered';
+                    }
+                    $row->attributes['class'] = $rowclass;
                     foreach ($columns as $column) {
                         switch ($column) {
+                            case 'select':
+                                $attributes = array('class' => 'checkbox_slot');
+                                if ($bookingnotpossible) {
+                                    $attributes['disabled'] = true;
+                                }
+                                $cell = $row->cells[] = new html_table_cell(
+                                    html_writer::checkbox('recipients[]', $entry->id, false, '',
+                                        $attributes
+                                    )
+                                );
+                                break;
                             case 'group':
                             case 'participants':
                                 $identity = organizer_get_user_identity($entry);
                                 $identity = $identity != "" ? " ({$identity})" : "";
-                                $cell = $row->cells[] = new html_table_cell(
-                                    organizer_get_name_link($entry->id) . $identity .
+                                $text = organizer_get_name_link($entry->id) . $identity .
                                     organizer_get_teacherapplicant_output($entry->teacherapplicantid,
-                                        $entry->teacherapplicanttimemodified));
+                                        $entry->teacherapplicanttimemodified);
+                                if ($entry->appid) {
+                                    $text .= organizer_reg_organizer_app_details($organizer, null,
+                                        $entry->slotid, $entry->id);
+                                }
+                                $cell = $row->cells[] = new html_table_cell($text);
                                 break;
                             case 'status':
                                 $cell = $row->cells[] = new
-                                html_table_cell(organizer_get_status_icon_new($entry->status, $organizer));
+                                    html_table_cell(organizer_get_status_icon_reg($entry->status,
+                                    $organizer, $slotevaluated));
                                 break;
                             case 'bookings':
                                 $cell = $row->cells[] = new html_table_cell(
@@ -1148,7 +1246,6 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                                 $cell->style .= " text-align: center;";
                                 break;
                         }
-
                         $cell->style .= ' vertical-align: middle;';
                     }
                     $rows[] = $row;
@@ -1428,7 +1525,7 @@ function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $useri
         }
     }
 
-    return $list ? $list : '-';
+    return $list;
 }
 
 function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupid = 0) {
@@ -1511,19 +1608,15 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $button->icon = "fa fa-th-list";
     $buttons[] = $button;
 
-    if ($groupmode) {
-        $booked = organizer_count_bookedslots($organizer->id, null, $entry->id);
-    } else {
-        $booked = organizer_count_bookedslots($organizer->id, $entry->id, null);
-    }
-    $maxnotreached = organizer_multiplebookings_status($booked, $organizer) != USERSLOTS_MAX_REACHED;
+    $bookingnotpossible = organizer_bookingnotpossible($groupmode, $organizer, $entry->id);
 
     // Reminder button.
     $button = new stdClass();
     $button->text = get_string("btn_remind", 'organizer');
     $button->url = $remindurl;
     // If max booking is not reached => show reminder button.
-    $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true) || !$maxnotreached;
+    $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true) ||
+        $bookingnotpossible;
     $button->icon = "fa fa-paper-plane-o fw";
     $buttons[] = $button;
 
@@ -1533,7 +1626,8 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $button->url = $assignurl;
     $button->icon = "fa fa-calendar-plus-o fw";
     // If max booking is not reached => show assign button.
-    $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true) || !$maxnotreached;
+    $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true) ||
+        $bookingnotpossible;
     $buttons[] = $button;
 
     // Delete appointment button.
@@ -1566,7 +1660,9 @@ function organizer_get_participant_list($params, $slot, $app) {
 
     // Fetch relevant data.
     $dir = isset($params['pdir']) ? $params['pdir'] : 'ASC';
-    if (isset($params['psort']) && $params['psort'] == 'name') {
+    if (isset($params['sort']) && $params['sort'] == 'participants') {
+        $orderby = " ORDER BY u.lastname ASC, u.firstname ".$params['dir'];
+    } else if (isset($params['psort']) && $params['psort'] == 'name') {
         $orderby = " ORDER BY u.lastname $dir, u.firstname $dir, u.idnumber ASC";
     } else if (isset($params['psort']) && $params['psort'] == 'id') {
         $orderby = " ORDER BY u.idnumber $dir, u.lastname ASC, u.firstname ASC";
@@ -1806,18 +1902,60 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
     return '<img src="' . $src . '" alt="' . $alt . '" title="' . $title . '" id="' . $id . '" ' . $other . ' />';
 }
 
-function organizer_get_icon_msg($infotxt, $type, $textclass='', $link=null) {
-    if ($type == 'message_info') {
-        $icon = organizer_get_fa_icon("fa fa-info-circle mr-1 grey", $infotxt);
-    } else {
-        $icon = organizer_get_fa_icon("fa fa-warning mr-1 grey", $infotxt);
+function organizer_get_icon_msg($name, $infotxt) {
+    $out = "";
+    switch ($name) {
+        case 'group':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
+                'fa-group fa-stack-1x text-primary', $infotxt);
+            break;
+        case 'nogroup':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-danger',
+                'fa-group fa-stack-1x text-danger', $infotxt);
+            break;
+        case 'expires':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
+                'fa-hourglass-3 fa-stack-1x text-primary', $infotxt);
+            break;
+        case 'expired':
+            $out = organizer_get_fa_icon_stacked('fa-hourglass fa-stack-1x text-danger',
+                'fa-ban fa-stack-2x text-danger', $infotxt);
+            break;
+        case 'neverexpires':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-secondary',
+                'fa-hourglass fa-stack-1x text-secondary', $infotxt);
+            break;
+        case 'grade':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
+                'fa-th-list fa-stack-1x text-primary', $infotxt);
+            break;
+        case 'nograde':
+            $out = organizer_get_fa_icon_stacked('fa-th-list fa-stack-1x text-primary',
+                'fa-ban fa-stack-2x text-primary', $infotxt);
+            break;
+        case 'queues':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
+                'fa-coffee fa-stack-1x text-primary', $infotxt);
+            break;
+        case 'noqueues':
+            $out = organizer_get_fa_icon_stacked('fa-coffee fa-stack-1x text-primary',
+                'fa-ban fa-stack-2x text-primary', $infotxt);
+            break;
+        case 'minmax1':
+            $out = "";
+            break;
+        case 'minmax':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
+                    'fa-files-o fa-stack-1x text-primary', $infotxt).$infotxt;
+            break;
+        case 'enoughplaces':
+            $out = organizer_get_fa_icon('fa fa-check-circle text-success mr-1', $infotxt).$infotxt;
+            break;
+        case 'notenoughplaces':
+            $out = organizer_get_fa_icon('fa fa-exclamation-circle text-warning mr-1', $infotxt).$infotxt;
+            break;
     }
-    if ($link) {
-        $output = html_writer::div($icon.$link);
-    } else {
-        $output = html_writer::div($icon.html_writer::span($infotxt, 'text-left '.$textclass));
-    }
-    return $output;
+    return $out;
 }
 function organizer_get_fa_icon($classes, $tooltiptext = "", $other = "") {
     if ($tooltiptext) {
@@ -1825,6 +1963,18 @@ function organizer_get_fa_icon($classes, $tooltiptext = "", $other = "") {
             "data-toggle='tooltip' data-html='true' title='$tooltiptext' aria-label='$tooltiptext'" : '';
     }
     return "<i class='$classes' $other></i>";
+}
+
+function organizer_get_fa_icon_stacked($classesback, $classesfront, $tooltiptext = "", $other = "") {
+    if ($tooltiptext) {
+        $other .= $tooltiptext ?
+            "data-toggle='tooltip' data-html='true' title='$tooltiptext' aria-label='$tooltiptext'" : '';
+    }
+    $out = "<span class='fa-stack fa-lg' $other>";
+    $out .= "<i class='fa $classesback'></i>";
+    $out .= "<i class='fa $classesfront'></i>";
+    $out .= '</span>';
+    return $out;
 }
 
 function organizer_get_icon($iconname, $string, $size="small", $id="", $class="") {
@@ -1901,7 +2051,7 @@ function organizer_slot_status($params, $slot) {
 }
 
 function organizer_slot_commands($slotid, $params) {
-    global $OUTPUT, $PAGE;
+    global $PAGE;
 
     $outstr = "";
 
@@ -1913,9 +2063,9 @@ function organizer_slot_commands($slotid, $params) {
                 '/mod/organizer/slots_edit.php',
                 array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
         );
-        $outstr .= \html_writer::link($actionurl,
-                $OUTPUT->image_icon('t/edit', get_string('btn_editsingle', 'organizer')),
-                array('class' => 'editbutton', 'title' => get_string('btn_editsingle', 'organizer')));
+        $outstr .= \html_writer::link($actionurl, organizer_get_fa_icon(
+            "fa fa-pencil fa-fw", get_string('btn_editsingle', 'organizer'))
+        );
     }
 
     // DELETE.
@@ -1924,9 +2074,9 @@ function organizer_slot_commands($slotid, $params) {
                 '/mod/organizer/slots_delete.php',
                 array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
         );
-        $outstr .= \html_writer::link($actionurl,
-                $OUTPUT->image_icon('t/delete', get_string('btn_deletesingle', 'organizer')),
-                array('class' => 'deletebutton', 'title' => get_string('btn_deletesingle', 'organizer')));
+        $outstr .= \html_writer::link($actionurl, organizer_get_fa_icon(
+                "fa fa-trash fa-fw", get_string('btn_deletesingle', 'organizer'))
+        );
     }
 
     // PRINT.
@@ -1935,9 +2085,9 @@ function organizer_slot_commands($slotid, $params) {
                 '/mod/organizer/slots_printdetail.php',
                 array('id' => $params['id'], 'slot' => $slotid, 'mode' => $params['mode'])
         );
-        $outstr .= \html_writer::link($actionurl,
-                $OUTPUT->image_icon('t/print', get_string('btn_printsingle', 'organizer')),
-                array('class' => 'printbutton', 'title' => get_string('btn_printsingle', 'organizer')));
+        $outstr .= \html_writer::link($actionurl, organizer_get_fa_icon(
+                "fa fa-print fa-fw", get_string('btn_printsingle', 'organizer'))
+        );
     }
 
     // GRADE/EVALUATE.
@@ -1946,9 +2096,9 @@ function organizer_slot_commands($slotid, $params) {
                 '/mod/organizer/slots_eval.php',
                 array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
         );
-        $outstr .= \html_writer::link($actionurl,
-                $OUTPUT->image_icon('t/grades', get_string('btn_evalsingle', 'organizer')),
-                array('class' => 'gradesbutton', 'title' => get_string('btn_evalsingle', 'organizer')));
+        $outstr .= \html_writer::link($actionurl, organizer_get_fa_icon(
+                "fa fa-th-list fa-fw", get_string('btn_evalsingle', 'organizer'))
+        );
     }
 
     return $outstr;
@@ -2116,23 +2266,30 @@ function organizer_get_assign_button($slotid, $params) {
     return $out;
 }
 
-function organizer_get_status_icon_new($status, $organizer) {
-    switch ($status) {
-        case ORGANIZER_APP_STATUS_ATTENDED:
-            return organizer_get_fa_icon('fa fa-check-square-o fa-2x slotovercolor',
-                get_string('reg_status_slot_attended', 'organizer'));
-        case ORGANIZER_APP_STATUS_PENDING:
-            if ($organizer->grade) {
-                  return organizer_get_fa_icon('fa fa-flag-o fa-2x', get_string('reg_status_slot_pending', 'organizer'));
-            } else {
-                return organizer_get_fa_icon('fa fa-circle fa-2x slotovercolor',
+function organizer_get_status_icon_reg($status, $organizer, $slotevaluated = false) {
+    if ($slotevaluated) {
+        return organizer_get_fa_icon("fa fa-check-square fa-2x text-primary",
+            get_string('img_title_evaluated', 'organizer'));
+    } else {
+        switch ($status) {
+            case ORGANIZER_APP_STATUS_ATTENDED:
+                return organizer_get_fa_icon('fa fa-check-square-o fa-2x slotovercolor',
+                    get_string('reg_status_slot_attended', 'organizer'));
+            case ORGANIZER_APP_STATUS_PENDING:
+                if ($organizer->grade) {
+                    return organizer_get_fa_icon('fa fa-flag-o fa-2x slotovercolor',
+                        get_string('reg_status_slot_pending', 'organizer'));
+                } else {
+                    return organizer_get_fa_icon('fa fa-circle fa-2x slotovercolor',
+                        get_string('reg_status_registered', 'organizer'));
+                }
+            case ORGANIZER_APP_STATUS_REGISTERED:
+                return organizer_get_fa_icon('fa fa-circle fa-2x slotactivecolor',
                     get_string('reg_status_registered', 'organizer'));
-            }
-        case ORGANIZER_APP_STATUS_REGISTERED:
-            return organizer_get_fa_icon('fa fa-circle fa-2x green', get_string('reg_status_registered', 'organizer'));
-        case ORGANIZER_APP_STATUS_NOT_REGISTERED:
-            return organizer_get_fa_icon('fa fa-ban fa-2x slotovercolor',
-                get_string('reg_status_not_registered', 'organizer'));
+            case ORGANIZER_APP_STATUS_NOT_REGISTERED:
+                return organizer_get_fa_icon('fa fa-circle-thin fa-2x slotovercolor',
+                    get_string('reg_status_not_registered', 'organizer'));
+        }
     }
 }
 
@@ -2298,27 +2455,28 @@ function organizer_slotpages_header() {
 }
 
 function organizer_get_participants_tableheadercell($params, $column, $columnhelpicon) {
-    global $OUTPUT;
 
-    if ($params['psort'] == 'name') {
-        $namedir = $params['pdir'] == 'ASC' ? 'DESC' : 'ASC';
-        $nameicon = $params['pdir'] == 'ASC' ? 'up' : 'down';
-        $nameicon = ' ' . $OUTPUT->pix_icon('t/' . $nameicon, get_string($nameicon));
-        $urln = new moodle_url(
-            '/mod/organizer/view.php',
-            array('id' => $params['id'], 'mode' => $params['mode'], 'psort' => 'name', 'pdir' => $namedir)
-        );
-        $links = html_writer::link($urln, get_string("th_{$column}", 'organizer')) . $nameicon;
-    } else if ($params['sort'] == 'participant') {
+    if ($params['sort'] == 'participant') {
         $participantdir = $params['dir'] == 'ASC' ? 'DESC' : 'ASC';
-        $participanticon = $params['dir'] == 'ASC' ? 'up' : 'down';
-        $participanticon = ' ' . $OUTPUT->pix_icon('t/' . $participanticon, get_string($participanticon));
+        $icon = $params['dir'] == 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
+        $participantstr = $params['dir'] == 'ASC' ? 'up' : 'down';
+        $participanticon = organizer_get_fa_icon("fa $icon ml-1", get_string($participantstr));
         $urlp = new moodle_url(
             '/mod/organizer/view.php',
             array('id' => $params['id'], 'mode' => $params['mode'], 'sort' => 'participant',
                 'dir' => $participantdir)
         );
         $links = html_writer::link($urlp, get_string("th_{$column}", 'organizer')) . $participanticon . " ";
+    } else if ($params['psort'] == 'name') {
+        $namedir = $params['pdir'] == 'ASC' ? 'DESC' : 'ASC';
+        $icon = $params['pdir'] == 'ASC' ? 'fa-sort-up' : 'fa-sort-down';
+        $namestr = $params['pdir'] == 'ASC' ? 'up' : 'down';
+        $nameicon = organizer_get_fa_icon("fa $icon ml-1", get_string($namestr));
+        $urln = new moodle_url(
+            '/mod/organizer/view.php',
+            array('id' => $params['id'], 'mode' => $params['mode'], 'psort' => 'name', 'pdir' => $namedir)
+        );
+        $links = html_writer::link($urln, get_string("th_{$column}", 'organizer')) . $nameicon;
     }
 
     $cell = new html_table_cell($links . $columnhelpicon);
@@ -2367,6 +2525,29 @@ function organizer_appointmentsstatus_bar($organizer) {
         }
         $a->tooless = $tooless;
     }
+
+    list ($slotscount, $places) = organizer_get_freeplaces($organizer);
+
+    $a->slots = $slotscount;
+    $a->places = $places;
+    if ($a->places == 1) {
+        $msg = get_string('infobox_appointmentsstatus_sg', 'mod_organizer', $a);
+    } else {
+        $msg = get_string('infobox_appointmentsstatus_pl', 'mod_organizer', $a);
+    }
+    if ($places >= $tooless) {
+        $output = organizer_get_icon_msg('enoughplaces', $msg);
+    } else {
+        $output = organizer_get_icon_msg('notenoughplaces', $msg);
+    }
+
+    return $output;
+
+}
+
+function organizer_get_freeplaces($organizer) {
+    global $DB;
+
     $slotscount = 0;
     $places = 0;
     $paramssql = array('organizerid' => $organizer->id);
@@ -2383,20 +2564,18 @@ function organizer_appointmentsstatus_bar($organizer) {
             $places += $diff > 0 ? $diff : 0;
         }
     }
-    $a->slots = $slotscount;
-    $a->places = $places;
-    if ($a->places == 1) {
-        $msg = get_string('infobox_appointmentsstatus_sg', 'mod_organizer', $a);
-    } else {
-        $msg = get_string('infobox_appointmentsstatus_pl', 'mod_organizer', $a);
-    }
-    if ($places >= $tooless) {
-        $output = organizer_get_icon_msg($msg, 'message_info', 'text-info');
-    } else {
-        $output = organizer_get_icon_msg($msg, 'message_warning', 'font-weight-bolder');
-    }
-    $output = html_writer::div($output, 'mt-3 mb-3 d-block');
+    return [$slotscount, $places];
+}
 
-    return $output;
+function organizer_bookingnotpossible($groupmode, $organizer, $entryid) {
 
+    if ($groupmode) {
+        $booked = organizer_count_bookedslots($organizer->id, null, $entryid);
+    } else {
+        $booked = organizer_count_bookedslots($organizer->id, $entryid, null);
+    }
+    $maxnotreached = organizer_multiplebookings_status($booked, $organizer) != USERSLOTS_MAX_REACHED;
+    list (, $places) = organizer_get_freeplaces($organizer);
+
+    return !$maxnotreached || !$places;
 }

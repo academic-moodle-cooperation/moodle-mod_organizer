@@ -2193,8 +2193,8 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
     } else {
         foreach ($entries as $entry) {
             $entryids[] = $entry->id;
+            $countentries++;
         }
-        $countentries = count_enrolled_users($context, 'mod/organizer:register', null, true);
     }
     if (empty($entryids)) {
         $entryids = array(0);
@@ -2358,4 +2358,110 @@ function organizer_date_time_plain($slot) {
     $datestr = "$datefrom-$dateto";
     return $datestr;
 
+}
+function organizer_remind_all($recipient = null, $recipients = array(), $custommessage = "") {
+    global $DB;
+
+    list($cm, , $organizer, $context) = organizer_get_course_module_data();
+
+    $checkenough = false;
+    if ($recipient != null) {
+        if (!organizer_is_group_mode()) {
+            $entries = $DB->get_records_list('user', 'id', array($recipient));
+        } else {
+            $entries = get_enrolled_users($context, 'mod/organizer:register',
+                $recipient, 'u.id', null, null, null, true);
+        }
+    } else if ($recipients) {
+        $entries = $DB->get_records_list('user', 'id', $recipients);
+    } else if (!organizer_is_group_mode()) {
+        $entries = get_enrolled_users($context, 'mod/organizer:register');
+        $checkenough = true;
+    } else {
+        $query = "SELECT u.* FROM {user} u
+            INNER JOIN {groups_members} gm ON u.id = gm.userid
+            INNER JOIN {groups} g ON gm.groupid = g.id
+            INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
+            WHERE gg.groupingid = :grouping";
+        $par = array('grouping' => $cm->groupingid);
+        $entries = $DB->get_records_sql($query, $par);
+        $checkenough = true;
+    }
+
+    $nonrecepients = array();
+    if ($checkenough) {
+        foreach ($entries as $entry) {
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                if (organizer_multiplebookings_status(
+                        organizer_count_bookedslots($organizer->id, null, $entry->id),
+                        $organizer) == USERSLOTS_MIN_REACHED) {
+                    $nonrecepients[] = $entry->id;
+                }
+            } else {
+                if (organizer_multiplebookings_status(
+                        organizer_count_bookedslots($organizer->id, $entry->id, null),
+                        $organizer) == USERSLOTS_MIN_REACHED) {
+                    $nonrecepients[] = $entry->id;
+                }
+            }
+        }
+    }
+
+    $count = 0;
+    foreach ($entries as $entry) {
+        if (!in_array($entry->id, $nonrecepients)) {
+            organizer_prepare_and_send_message(
+                array('user' => $entry->id, 'organizer' => $organizer,
+                    'custommessage' => $custommessage), 'register_reminder_student'
+            );
+            $count++;
+        }
+    }
+    return $count;
+}
+
+function organizer_get_reminder_recipients($organizer) {
+
+    $params = array('group' => 0, 'sort' => '', 'dir' => '', 'psort' => '', 'pdir' => '');
+    $recipients = array();
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizer->id);
+        $entries = organizer_get_reg_status_table_entries_group($params);
+    } else {
+        $entries = organizer_get_reg_status_table_entries($params);
+    }
+    if ($entries->valid()) {
+        // Select all users which have not reached the minimum of bookings.
+        foreach ($entries as $entry) {
+            $in = false;
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                if (organizer_multiplebookings_status(
+                        organizer_count_bookedslots($organizer->id, null, $entry->id),
+                        $organizer) == USERSLOTS_MIN_NOT_REACHED) {
+                    $in = true;
+                }
+            } else {
+                if (organizer_multiplebookings_status(
+                        organizer_count_bookedslots($organizer->id, $entry->id, null),
+                        $organizer) == USERSLOTS_MIN_NOT_REACHED) {
+                    $in = true;
+                }
+            }
+            if ($in) {
+                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                    $members = organizer_fetch_groupusers($entry->id);
+                    foreach ($members as $member) {
+                        if (has_capability('mod/organizer:register', $context, $member->id, false)) {
+                            $recipients[] = $member->id;
+                        }
+                    }
+                } else {
+                    $recipients[] = $entry->id;
+                }
+            }
+        }
+    }
+    $entries->close();
+
+    return $recipients;
 }

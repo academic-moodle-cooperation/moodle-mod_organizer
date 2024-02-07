@@ -27,7 +27,11 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 #organizer_main_cointainer table tr.past_due td {
-    background-color: #E8F1F8  !important; // #c1dbf9
+    background-color: #E8F1F8  !important;
+}
+
+#organizer_main_cointainer table tr.past_due_reg td {
+    background-color: #E8F1F8  !important;
 }
 
 #organizer_main_cointainer table tr.affected_slot td {
@@ -167,10 +171,22 @@
 
 .organizer_filterblock {
     display: block;
+/*    margin-block-start: 1em; */
+    margin-block-end: 0.5em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    margin-left: 0!important;
+    margin-right: 0!important;
+}
+.organizer_filterblock_reg {
+    display: block;
     margin-block-start: 1em;
-    margin-block-end: 1em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
+    margin-block-end: 0.75em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    border-top: 1px solid lightgrey;
+    margin-left: 0!important;
+    margin-right: 0!important;
 }
 
 #id_export_settings_header {

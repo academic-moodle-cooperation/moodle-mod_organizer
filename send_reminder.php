@@ -36,9 +36,16 @@ require_once(dirname(__FILE__) . '/messaging.php');
 $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $recipient = optional_param('recipient', null, PARAM_INT);
-$recipients = optional_param_array('$recipients', array(), PARAM_INT);
+$recipients = optional_param_array('recipients', array(), PARAM_INT);
+$bulkaction = optional_param('bulkaction', '', PARAM_TEXT);
 
 list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
+
+if ($bulkaction && !$recipients) {
+    $redirecturl = $redirecturl->out();
+    $msg = get_string('err_norecipients', 'organizer');
+    redirect($redirecturl, $msg);
+}
 
 require_login($course, false, $cm);
 
@@ -53,46 +60,25 @@ if ($recipient != null) {
     } else {
         $recipients = $DB->get_records_list('user', 'id', array($recipient));
     }
-    $counter = count($recipients);
 } else if ($recipients) {
-    $counter = count($recipients);
-    $recipients = $DB->get_records_list('user', 'id', $recipients, 'lastname,firstname');
-    $recipientsstr = $recipients ? implode(",", $recipients) : "";
-} else {
-    // Send reminders to all students without enough appointments.
-    $counter = 0;
-    $recipients = array();
-    $entries = organizer_get_reg_status_table_entries(array('sort' => ''));
-    if ($entries->valid()) {
-        // Filter all not registered and not attended.
-        $entrybefore = 0;
-        foreach ($entries as $entry) {
-            if ($entry->id != $entrybefore) {
-                $in = false;
-                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-                    $group = organizer_fetch_user_group($entry->id, $organizer->id);
-                    if (organizer_multiplebookings_status(
-                            organizer_count_bookedslots($organizer->id, null, $group->id),
-                                $organizer) == USERSLOTS_MIN_NOT_REACHED) {
-                        $in = true;
-                    }
-                } else {
-                    if (organizer_multiplebookings_status(
-                            organizer_count_bookedslots($organizer->id, $entry->id, null),
-                                $organizer) == USERSLOTS_MIN_NOT_REACHED) {
-                        $in = true;
-                    }
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $recipientsarr = array();
+        foreach ($recipients as $key => $recipientgroup) {
+            $members = organizer_fetch_groupusers($recipientgroup);
+            foreach ($members as $member) {
+                if (has_capability('mod/organizer:register', $context, $member->id, false)) {
+                    $recipientsarr[$member->id] = $member->id;
                 }
-                if ($in) {
-                    $counter++;
-                    $recipients[] = $entry->id;
-                }
-                $entrybefore = $entry->id;
             }
         }
-        $recipientsstr = $recipients ? implode(",", $recipients) : "";
+    } else {
+        $recipientsarr = $DB->get_records_list('user', 'id', $recipients, 'lastname,firstname');
     }
-    $entries->close();
+    $recipientsstr = $recipientsarr ? implode(",", array_keys($recipientsarr)) : "";
+} else {
+    // Send reminders to all students without enough appointments.
+    $recipients = organizer_get_reminder_recipients($organizer);
+    $recipientsstr = $recipients ? implode(",", $recipients) : "";
 }
 
 $mform = new organizer_remind_all_form(
@@ -107,7 +93,7 @@ $mform = new organizer_remind_all_form(
 if ($data = $mform->get_data()) {
     $infoboxmessage = "";
     $a = new stdClass();
-    $recipients = $data->recipients ? explode(",", $data->recipients) : array();
+    $recipients = $data->recipientsstr ? explode(",", $data->recipientsstr) : array();
     $count = organizer_remind_all($data->recipient, $recipients, $data->message_custommessage['text']);
     $a->count = $count;
     if ($count == 1) {
@@ -131,51 +117,4 @@ if ($data = $mform->get_data()) {
     redirect($redirecturl);
 } else {
     organizer_display_form($mform, get_string('organizer_remind_all_title', 'organizer'));
-}
-
-function organizer_remind_all($recipient = null, $recipients = array(), $custommessage = "") {
-    global $DB;
-
-    list($cm, , $organizer, $context) = organizer_get_course_module_data();
-
-    if ($recipient != null) {
-        if (!organizer_is_group_mode()) {
-               $entries = $DB->get_records_list('user', 'id', array($recipient));
-        } else {
-            $entries = get_enrolled_users($context, 'mod/organizer:register',
-                $recipient, 'u.id', null, null, null, true);
-        }
-    } else if ($recipients) {
-        $entries = $DB->get_records_list('user', 'id', $recipients);
-    } else if (!organizer_is_group_mode()) {
-        $entries = get_enrolled_users($context, 'mod/organizer:register');
-    } else {
-        $query = "SELECT u.* FROM {user} u
-            INNER JOIN {groups_members} gm ON u.id = gm.userid
-            INNER JOIN {groups} g ON gm.groupid = g.id
-            INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
-            WHERE gg.groupingid = :grouping";
-        $par = array('grouping' => $cm->groupingid);
-        $entries = $DB->get_records_sql($query, $par);
-    }
-
-    $query = "SELECT DISTINCT u.id FROM {organizer} o
-        INNER JOIN {organizer_slots} s ON o.id = s.organizerid
-        INNER JOIN {organizer_slot_appointments} a ON s.id = a.slotid
-        INNER JOIN {user} u ON a.userid = u.id
-        WHERE o.id = :id AND (a.attended = 1 OR a.attended IS NULL)";
-    $par = array('id' => $organizer->id);
-    $nonrecepients = $DB->get_fieldset_sql($query, $par);
-
-    $count = 0;
-    foreach ($entries as $entry) {
-        if (!in_array($entry->id, $nonrecepients)) {
-            organizer_prepare_and_send_message(
-                array('user' => $entry->id, 'organizer' => $organizer,
-                'custommessage' => $custommessage), 'register_reminder_student'
-            );
-            $count++;
-        }
-    }
-    return $count;
 }

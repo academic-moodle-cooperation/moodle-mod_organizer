@@ -161,6 +161,7 @@ function organizer_load_params($instance) {
     $params = array();
     $params['id'] = required_param('id', PARAM_INT);
     $params['mode'] = optional_param('mode', 0, PARAM_INT);
+    $params['group'] = optional_param('group', 0, PARAM_INT);
 
     if ($params['mode'] == 0) {
         if (has_capability('mod/organizer:addslots', $instance->context, null, true)) {
