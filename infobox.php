@@ -396,39 +396,12 @@ function organizer_make_filtersection_reg() {
     $output .= html_writer::tag('input', null,
         array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
     $output .= html_writer::end_span();
-
-    $displaymyslotsonly = false;
-    $displayregistrationsonly = $displayfreeslots = $displayallparticipants =
-        false;
-    if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
-        $showmyslotsonly = substr($prefs, 0, 1) ? true : false;
-        $showfreeslotsonly = substr($prefs, 1, 1) ? true : false;
-        $showregistrationsonly = substr($prefs, 4, 1) ? true : false;
-        $showallparticipants = substr($prefs, 5, 1) ? true : false;
-    } else {
-        $showmyslotsonly = $showfreeslotsonly = $showregistrationsonly = false;
-        $showallparticipants = true;
-    }
-    if ($displaymyslotsonly) {
-        $output .= html_writer::checkbox('show_my_slots_only', '1', $showmyslotsonly,
-            get_string('infobox_showmyslotsonly', 'organizer'),
-            array('id' => 'show_my_slots_only', 'class' => 'slotoptions'));
-    }
-    if ($displayfreeslots) {
-        $output .= html_writer::checkbox('show_free_slots_only', '1', $showfreeslotsonly,
-            get_string('infobox_showfreeslots', 'organizer'),
-            array('id' => 'show_free_slots_only', 'class' => 'slotoptions'));
-    }
-    if ($displayregistrationsonly) {
-        $output .= html_writer::checkbox('show_registrations_only', '1', $showregistrationsonly,
-            get_string('infobox_showregistrationsonly', 'organizer'),
-            array('id' => 'show_registrations_only', 'class' => 'slotoptions'));
-    }
     $output .= html_writer::end_div();  // Filter options.
 
     $output .= html_writer::start_div('span6 ml-5 pt-2');
     $output .= groups_print_activity_menu($PAGE->cm, $PAGE->url, true);
     $output .= html_writer::end_div();
+    
     $output .= html_writer::end_div(); // Row.
 
     $output .= html_writer::div('', 'clearer');
