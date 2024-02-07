@@ -871,10 +871,12 @@ function organizer_get_reg_status_table_entries_group($params) {
  */
 function organizer_get_reg_status_table_entries($params) {
     global $DB;
-    list(, , $organizer, $context) = organizer_get_course_module_data();
+    list($cm, , $organizer, $context) = organizer_get_course_module_data();
 
     $students = get_enrolled_users($context, 'mod/organizer:register', $params['group'], 'u.id', null, 0, 0, true);
-    $studentids = array_keys($students);
+    $info = new \core_availability\info_module(cm_info::create($cm));
+    $filtered = $info->filter_user_list($students);
+    $studentids = array_keys($filtered);
     if (!$studentids || count($studentids) == 0) {
         return array();
     }
@@ -1946,6 +1948,12 @@ function organizer_get_icon_msg($name, $infotxt) {
             $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
                     'fa-files-o fa-stack-1x text-primary', $infotxt).$infotxt;
             break;
+        case 'enoughplaces':
+            $out = organizer_get_fa_icon('fa fa-check-circle text-success mr-1', $infotxt).$infotxt;
+            break;
+        case 'notenoughplaces':
+            $out = organizer_get_fa_icon('fa fa-exclamation-circle text-warning mr-1', $infotxt).$infotxt;
+            break;
     }
     return $out;
 }
@@ -2528,11 +2536,10 @@ function organizer_appointmentsstatus_bar($organizer) {
         $msg = get_string('infobox_appointmentsstatus_pl', 'mod_organizer', $a);
     }
     if ($places >= $tooless) {
-        $output = organizer_get_icon_msg($msg, 'message_info', 'text-info');
+        $output = organizer_get_icon_msg('enoughplaces', $msg);
     } else {
-        $output = organizer_get_icon_msg($msg, 'message_warning', 'font-weight-bolder');
+        $output = organizer_get_icon_msg('notenoughplaces', $msg);
     }
-    $output = html_writer::div($output, 'mt-3 mb-3 d-block');
 
     return $output;
 

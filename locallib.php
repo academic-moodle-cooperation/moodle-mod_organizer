@@ -2193,8 +2193,8 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
     } else {
         foreach ($entries as $entry) {
             $entryids[] = $entry->id;
+            $countentries++;
         }
-        $countentries = count_enrolled_users($context, 'mod/organizer:register', null, true);
     }
     if (empty($entryids)) {
         $entryids = array(0);

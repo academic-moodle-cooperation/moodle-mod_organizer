@@ -73,12 +73,11 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
         // Display section with predefined filter view options like "hidden slots only" etc..
         $output .= organizer_make_slotoptions_section($params['mode'], $organizer);
+        $output .= organizer_make_filtersection();
     } else {
         $output .= organizer_make_appointmentsstatus_section($organizer);
-        $output .= groups_print_activity_menu($PAGE->cm, $PAGE->url, true);
+        $output .= organizer_make_filtersection_reg();
     }
-    // Display search field for fulltext search.
-    $output .= organizer_make_filtersection($params['mode']);
 
     $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams->studentview,
         $jsparams->registrationview, $USER->id));
@@ -88,7 +87,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
 function organizer_make_section($name, $content, $hidden = false) {
     $output = "";
     if ($name) {
-        if ($name != 'infobox_messages') {
+        if ($name != 'infobox_messages' && $name != 'infobox_messaging') {
             $output = '<div id="' . $name . '_box" class="block_course_overview block"' .
                 ($hidden ? ' style="display: none;"' : '') . '>';
             $output .= '<div id="' . $name . '_header" class="header"><div class="title"><h2>'
@@ -136,13 +135,14 @@ function organizer_make_sendreminder_section($params, $context, $organizer) {
     if ($disabled = !$recipients || !has_capability("mod/organizer:sendreminders", $context) || !$places) {
         $attributes['disabled'] = true;
     }
+    $buttonlabel = get_string("btn_start", 'organizer');
+    $buttonlabel .= " (" . count($recipients) . ")";
     $sendurl = new moodle_url('send_reminder.php', array('id' => $params['id'], 'mode' => '3'));
-    $output = $OUTPUT->single_button($sendurl, get_string("btn_sendall", 'organizer'),
-        true, $attributes);
+    $output = html_writer::div(get_string("btn_sendall", 'organizer') .
+        $OUTPUT->single_button($sendurl, $buttonlabel, true, $attributes), 'ml-1');
     if (!$disabled) {
         $output = str_replace("btn-secondary", "btn-primary", $output);
     }
-    $output .= " (" . count($recipients) . ")";
     return organizer_make_section('infobox_messaging', $output);
 }
 function organizer_make_description_section($organizer) {
@@ -252,7 +252,7 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
     return organizer_make_section('infobox_myslot', $output);
 }
 function organizer_make_registrationstatistic_section($organizer, $entries) {
-    $barwidth = 30;
+    $barwidth = 25;
     $a = new stdClass();
     $a->min = $organizer->userslotsmin;
     $a->max = $organizer->userslotsmax;
@@ -328,7 +328,7 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
 
     return organizer_make_section('infobox_registrationstatistic', $out);
 }
-function organizer_make_filtersection($mode) {
+function organizer_make_filtersection() {
     global $OUTPUT;
 
     // Display filter - options.
@@ -339,9 +339,9 @@ function organizer_make_filtersection($mode) {
         array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
     $output .= html_writer::end_span();
 
-    $displaymyslotsonly = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
+    $displaymyslotsonly = true;
     $displayregistrationsonly = $displayfreeslots = $displayallparticipants =
-        $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
+        true;
     if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
         $showmyslotsonly = substr($prefs, 0, 1) ? true : false;
         $showfreeslotsonly = substr($prefs, 1, 1) ? true : false;
@@ -368,7 +368,7 @@ function organizer_make_filtersection($mode) {
     }
     $output .= html_writer::end_div();
 
-    if ($mode == ORGANIZER_TAB_APPOINTMENTS_VIEW) {
+    if (true) {
         $output .= html_writer::start_div();
         $output .= html_writer::span('', 'text-info', array('id' => 'counttabrows'));
         $output .= html_writer::span(get_string('infobox_counter_slotrows', 'mod_organizer'), 'ml-1 text-info');
@@ -384,6 +384,57 @@ function organizer_make_filtersection($mode) {
 
     return $output;
 }
+function organizer_make_filtersection_reg() {
+    global $OUTPUT, $PAGE;
+
+    $output = html_writer::start_div('row organizer_filterblock_reg');
+
+    // Display filter - options and input field.
+    $output .= html_writer::start_div('span6 pt-3');
+    $output .= html_writer::start_span('', array('id' => 'organizer_filterfield')).
+        get_string('searchfilter', 'organizer').$OUTPUT->help_icon('filtertable', 'organizer', '');
+    $output .= html_writer::tag('input', null,
+        array('type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable'));
+    $output .= html_writer::end_span();
+
+    $displaymyslotsonly = false;
+    $displayregistrationsonly = $displayfreeslots = $displayallparticipants =
+        false;
+    if ($prefs = get_user_preferences('mod_organizer_slotsviewoptions', false)) {
+        $showmyslotsonly = substr($prefs, 0, 1) ? true : false;
+        $showfreeslotsonly = substr($prefs, 1, 1) ? true : false;
+        $showregistrationsonly = substr($prefs, 4, 1) ? true : false;
+        $showallparticipants = substr($prefs, 5, 1) ? true : false;
+    } else {
+        $showmyslotsonly = $showfreeslotsonly = $showregistrationsonly = false;
+        $showallparticipants = true;
+    }
+    if ($displaymyslotsonly) {
+        $output .= html_writer::checkbox('show_my_slots_only', '1', $showmyslotsonly,
+            get_string('infobox_showmyslotsonly', 'organizer'),
+            array('id' => 'show_my_slots_only', 'class' => 'slotoptions'));
+    }
+    if ($displayfreeslots) {
+        $output .= html_writer::checkbox('show_free_slots_only', '1', $showfreeslotsonly,
+            get_string('infobox_showfreeslots', 'organizer'),
+            array('id' => 'show_free_slots_only', 'class' => 'slotoptions'));
+    }
+    if ($displayregistrationsonly) {
+        $output .= html_writer::checkbox('show_registrations_only', '1', $showregistrationsonly,
+            get_string('infobox_showregistrationsonly', 'organizer'),
+            array('id' => 'show_registrations_only', 'class' => 'slotoptions'));
+    }
+    $output .= html_writer::end_div();  // Filter options.
+
+    $output .= html_writer::start_div('span6 ml-5 pt-2');
+    $output .= groups_print_activity_menu($PAGE->cm, $PAGE->url, true);
+    $output .= html_writer::end_div();
+    $output .= html_writer::end_div(); // Row.
+
+    $output .= html_writer::div('', 'clearer');
+
+    return $output;
+}
 function organizer_make_slotoptions_section($mode, $organizer) {
     global $OUTPUT;
 
@@ -394,7 +445,7 @@ function organizer_make_slotoptions_section($mode, $organizer) {
     }
 
     // Display show more - options.
-    $output .= html_writer::start_div();
+    $output .= html_writer::start_div('mt-3');
     $output .= html_writer::span(get_string('showmore', 'organizer').
         $OUTPUT->help_icon('slotoptionstable', 'organizer'));
     $displayhiddenslots = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
@@ -415,7 +466,7 @@ function organizer_make_slotoptions_section($mode, $organizer) {
             get_string('infobox_showslots', 'organizer'),
             array('id' => 'show_past_slots', 'class' => 'slotoptions'));
     }
-    $output .= html_writer::end_div();;
+    $output .= html_writer::end_div();
 
     return organizer_make_section('infobox_slotoverview', $output);
 }
@@ -433,6 +484,6 @@ function organizer_make_addslotbutton_section($params, $organizerexpired) {
     return $output;
 }
 function organizer_make_appointmentsstatus_section($organizer) {
-    $output = organizer_appointmentsstatus_bar($organizer);
+    $output = html_writer::div(organizer_appointmentsstatus_bar($organizer), 'mb-3 mt-1');
     return organizer_make_section("", $output);
 }
