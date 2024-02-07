@@ -482,7 +482,8 @@ class organizer_slot {
         }
     }
 
-    private function load_queue_group() {
+    private function load_queue_group()
+    {
         global $DB;
         if (!$this->queuegroup) {
             $sql = "SELECT q.groupid FROM (SELECT groupid, slotid FROM {organizer_slot_queues} ORDER BY id asc) q
@@ -492,7 +493,7 @@ class organizer_slot {
             $this->queuegroup = $DB->get_records_sql($sql, $paramssql);
         }
     }
-    
+
     public function __set(string $name, mixed $value): void {
 
     }

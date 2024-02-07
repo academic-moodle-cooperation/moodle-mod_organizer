@@ -609,7 +609,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
             }
             $slotpastdue = $slotx->is_past_due();
             $myslotastrainer = false;
-            if ($trainerids = organizer_get_slot_trainers($slotx->id)) {
+            if ($trainerids = organizer_get_slot_trainers($slotx->slot->id)) {
                 if (in_array($USER->id, $trainerids)) {
                     $myslotastrainer = true;
                 }
@@ -2007,7 +2007,7 @@ function organizer_slot_status($params, $slot) {
 
     $actionurl = new moodle_url(
         '/mod/organizer/slots_eval.php',
-        array('id' => $params['id'], 'slot' => $slotx->id)
+        array('id' => $params['id'], 'slot' => $slotx->slot->id)
     );
 
     if ($slotpastdue) {  // Slot starttime has passed.
