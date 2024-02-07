@@ -401,7 +401,7 @@ function organizer_make_filtersection_reg() {
     $output .= html_writer::start_div('span6 ml-5 pt-2');
     $output .= groups_print_activity_menu($PAGE->cm, $PAGE->url, true);
     $output .= html_writer::end_div();
-    
+
     $output .= html_writer::end_div(); // Row.
 
     $output .= html_writer::div('', 'clearer');
