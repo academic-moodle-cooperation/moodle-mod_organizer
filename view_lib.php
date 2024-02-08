@@ -609,7 +609,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
             }
             $slotpastdue = $slotx->is_past_due();
             $myslotastrainer = false;
-            if ($trainerids = organizer_get_slot_trainers($slotx->id)) {
+            if ($trainerids = organizer_get_slot_trainers($slot->id)) {
                 if (in_array($USER->id, $trainerids)) {
                     $myslotastrainer = true;
                 }
@@ -2007,7 +2007,7 @@ function organizer_slot_status($params, $slot) {
 
     $actionurl = new moodle_url(
         '/mod/organizer/slots_eval.php',
-        array('id' => $params['id'], 'slot' => $slotx->id)
+        array('id' => $params['id'], 'slot' => $slot->id)
     );
 
     if ($slotpastdue) {  // Slot starttime has passed.
@@ -2217,7 +2217,7 @@ function organizer_participants_action($params, $slot) {
     if ($isuserslot) {
         $commenturl = new moodle_url(
             '/mod/organizer/comment_edit.php',
-            array('id' => $params['id'], 'slot' => $slotx->id)
+            array('id' => $params['id'], 'slot' => $slotx->get_id())
         );
         $commentbtndisabled = $organizerdisabled || !$slotx->organizer_groupmode_user_has_access();
         $commentlabel = get_string("btn_comment", 'organizer');
@@ -2230,7 +2230,7 @@ function organizer_participants_action($params, $slot) {
         }
     }
 
-    return organizer_get_reg_button($action, $slotx->id, $params, $disabled).$commentbtn;
+    return organizer_get_reg_button($action, $slotx->get_id(), $params, $disabled).$commentbtn;
 
 }
 
@@ -2330,9 +2330,9 @@ function organizer_slot_is_free($slot, $userid, $assignmentview = null) {
         }
     }
     if (!$ispastdue && !$slotx->is_full() && $slotx->is_available() ) {
-        $apps = organizer_get_all_user_appointments($slotx->organizerid, $userid);
+        $apps = organizer_get_all_user_appointments($slot->organizerid, $userid);
         foreach ($apps as $app) {  // Is own slot?
-            if ($app->slotid == $slotx->id) {
+            if ($app->slotid == $slot->id) {
                 return false;
             }
         }
@@ -2400,7 +2400,7 @@ function organizer_get_entries_queue_group($slot) {
 
     $output = "";
     $paramssql = array('slotid' => $slot->id);
-    $slotquery = 'SELECT DISTINCT g.name as gname, q.id
+    $slotquery = 'SELECT DISTINCT g.id, g.name as gname, q.id
 				FROM {organizer_slots} s
 				INNER JOIN {organizer_slot_queues} q ON s.id = q.slotid
 				INNER JOIN {groups} g ON g.id = q.groupid

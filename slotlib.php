@@ -38,7 +38,7 @@ function organizer_get_slot_user_appointment($slotx, $userid = null, $mergegroup
 
     $organizer = $slotx->get_organizer();
 
-    $paramssql = array('slotid' => $slotx->id, 'userid' => $userid);
+    $paramssql = array('slotid' => $slotx->get_id(), 'userid' => $userid);
     $query = "SELECT a.* FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.id = :slotid AND a.userid = :userid" .
@@ -48,7 +48,7 @@ function organizer_get_slot_user_appointment($slotx, $userid = null, $mergegroup
     $app = reset($apps);
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
-        $paramssql = array('slotid' => $slotx->id, 'groupid' => $app->groupid);
+        $paramssql = array('slotid' => $slotx->get_id(), 'groupid' => $app->groupid);
         $query = "SELECT a.* FROM {organizer_slot_appointments} a
                 INNER JOIN {organizer_slots} s ON a.slotid = s.id
                 WHERE s.id = :slotid AND a.groupid = :groupid
@@ -182,46 +182,6 @@ function organizer_get_all_group_appointments($organizer, $groupid) {
 
     return $groupapps;
 }
-
-function organizer_get_next_user_appointment($organizer, $userid = null) {
-    global $DB, $USER, $CFG;
-
-    if ($userid == null) {
-        $userid = $USER->id;
-    }
-
-    if (is_number($organizer) && $organizer == intval($organizer)) {
-        $organizer = $DB->get_record('organizer', array('id' => $organizer));
-    }
-
-    $todaymidnight = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
-
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        require_once($CFG->dirroot . '/mod/organizer/locallib.php');
-        if ($group = organizer_fetch_user_group($userid, $organizer->id)) {
-            $paramssql = array('organizerid' => $organizer->id, 'groupid' => $group->id, 'todaymidnight' => $todaymidnight);
-            $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
-                  INNER JOIN {organizer_slots} s ON a.slotid = s.id
-                  WHERE s.organizerid = :organizerid AND a.groupid = :groupid AND s.starttime > :todaymidnight
-                  ORDER BY s.starttime ASC";
-            $apps = $DB->get_records_sql($query, $paramssql);
-            $app = reset($apps);
-        } else {
-            $app = null;
-        }
-    } else {
-        $paramssql = array('organizerid' => $organizer->id, 'userid' => $userid, 'todaymidnight' => $todaymidnight);
-        $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
-                  INNER JOIN {organizer_slots} s ON a.slotid = s.id
-                  WHERE s.organizerid = :organizerid AND a.userid = :userid AND s.starttime > :todaymidnight
-                  ORDER BY s.starttime ASC";
-        $apps = $DB->get_records_sql($query, $paramssql);
-        $app = reset($apps);
-    }
-
-    return $app;
-}
-
 
 class organizer_slot {
 
@@ -492,23 +452,14 @@ class organizer_slot {
             $this->queuegroup = $DB->get_records_sql($sql, $paramssql);
         }
     }
-}
 
-function organizer_user_has_access($slotid) {
-    global $DB;
-    $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-    $moduleid = $DB->get_field('modules', 'id', array('name' => 'organizer'));
-    $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
-    $courseid = $DB->get_field('course_modules', 'course', array('module' => $moduleid, 'instance' => $organizer->id));
-    $groups = groups_get_user_groups($courseid);
-    $groupingid = $DB->get_field(
-        'course_modules', 'groupingid',
-        array('module' => $moduleid, 'instance' => $organizer->id)
-    );
-    if (!isset($groups[$groupingid]) || !count($groups[$groupingid])) {
-        return false;
+    public function __set(string $name, mixed $value): void {
+
     }
-    return true;
+
+    public function get_id() {
+        return $this->slot->id;
+    }
 }
 
 function organizer_get_slot_trainers($slotid, $withname = false) {
