@@ -442,8 +442,7 @@ class organizer_slot {
         }
     }
 
-    private function load_queue_group()
-    {
+    private function load_queue_group() {
         global $DB;
         if (!$this->queuegroup) {
             $sql = "SELECT q.groupid FROM (SELECT groupid, slotid FROM {organizer_slot_queues} ORDER BY id asc) q
