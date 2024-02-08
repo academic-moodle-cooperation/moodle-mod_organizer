@@ -34,8 +34,8 @@ variables:
     - moodle-plugin-ci behat --profile chrome
   parallel:
     matrix:
-      - MOODLE_BRANCH: [ "MOODLE_402_STABLE" ]
-        PHP_VERSION: [ "8.2" ]
+      - MOODLE_BRANCH: [ "MOODLE_403_STABLE" ]
+        PHP_VERSION: [ "8.1" ]
 
 test:postgres:
   <<: *job_configuration
