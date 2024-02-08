@@ -60,6 +60,11 @@ $PAGE->set_title($instance->organizer->name);
 $PAGE->set_heading($instance->course->fullname);
 $PAGE->set_activity_record($instance->organizer);
 
+$organizerconfig = get_config('organizer');
+if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
+    $PAGE->add_body_class('limitedwidth');
+}
+
 if ($instance->organizer->hidecalendar != 1) {
     organizer_add_calendar();
 }
