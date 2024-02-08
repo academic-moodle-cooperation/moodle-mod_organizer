@@ -2400,7 +2400,7 @@ function organizer_get_entries_queue_group($slot) {
 
     $output = "";
     $paramssql = array('slotid' => $slot->id);
-    $slotquery = 'SELECT DISTINCT g.name as gname, q.id
+    $slotquery = 'SELECT DISTINCT g.id, g.name as gname, q.id
 				FROM {organizer_slots} s
 				INNER JOIN {organizer_slot_queues} q ON s.id = q.slotid
 				INNER JOIN {groups} g ON g.id = q.groupid
