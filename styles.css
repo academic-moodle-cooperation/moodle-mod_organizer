@@ -180,11 +180,10 @@
 }
 .organizer_filterblock_reg {
     display: block;
-    margin-block-start: 1em;
-    margin-block-end: 0.75em;
+/*    margin-block-start: 1em;   */
+    margin-block-end: 0.5em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    border-top: 1px solid lightgrey;
     margin-left: 0!important;
     margin-right: 0!important;
 }

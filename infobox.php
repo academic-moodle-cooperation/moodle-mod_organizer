@@ -76,7 +76,8 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
         $output .= organizer_make_filtersection();
     } else {
         $output .= organizer_make_appointmentsstatus_section($organizer);
-        $output .= organizer_make_filtersection_reg();
+        $output .= organizer_make_filtersection_reg($organizer->isgrouporganizer ==
+            ORGANIZER_GROUPMODE_EXISTINGGROUPS);
     }
 
     $PAGE->requires->js_call_amd('mod_organizer/initinfobox', 'init', array($jsparams->studentview,
@@ -332,7 +333,7 @@ function organizer_make_filtersection() {
     global $OUTPUT;
 
     // Display filter - options.
-    $output = html_writer::start_div('organizer_filterblock');
+    $output = html_writer::start_div('organizer_filterblock pt-1');
     $output .= html_writer::start_span('', array('id' => 'organizer_filterfield')).
         get_string('searchfilter', 'organizer').$OUTPUT->help_icon('filtertable', 'organizer', '');
     $output .= html_writer::tag('input', null,
@@ -384,13 +385,14 @@ function organizer_make_filtersection() {
 
     return $output;
 }
-function organizer_make_filtersection_reg() {
+function organizer_make_filtersection_reg($groupmode) {
     global $OUTPUT, $PAGE;
 
     $output = html_writer::start_div('row organizer_filterblock_reg');
 
+    $groupselectorstyle = $groupmode ? "span6" : "";
     // Display filter - options and input field.
-    $output .= html_writer::start_div('span6 pt-3');
+    $output .= html_writer::start_div("$groupselectorstyle pt-3");
     $output .= html_writer::start_span('', array('id' => 'organizer_filterfield')).
         get_string('searchfilter', 'organizer').$OUTPUT->help_icon('filtertable', 'organizer', '');
     $output .= html_writer::tag('input', null,
@@ -398,9 +400,11 @@ function organizer_make_filtersection_reg() {
     $output .= html_writer::end_span();
     $output .= html_writer::end_div();  // Filter options.
 
-    $output .= html_writer::start_div('span6 ml-5 pt-2');
-    $output .= groups_print_activity_menu($PAGE->cm, $PAGE->url, true);
-    $output .= html_writer::end_div();
+    if ($groupmode) {
+        $output .= html_writer::start_div("$groupselectorstyle ml-5 pt-2");
+        $output .= groups_print_activity_menu($PAGE->cm, $PAGE->url, true);
+        $output .= html_writer::end_div();
+    }
 
     $output .= html_writer::end_div(); // Row.
 
