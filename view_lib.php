@@ -336,7 +336,8 @@ function organizer_generate_actionlink_bar($context, $organizerexpired) {
         $actions, 'bulkaction', array('edit' => get_string('actionlink_edit', 'organizer')), null,
         array('style' => 'margin-left:0.3em;margin-right:0.3em;')
     );
-    $output .= '<input type="submit" class="btn btn-primary" value="' . get_string('btn_start', 'organizer') . '"/>';
+    $output .= '<input type="submit" id="bulkactionbutton" disabled class="btn btn-primary" value="' .
+        get_string('btn_start', 'organizer') . '"/>';
 
     $output .= '</div>';
 
@@ -357,7 +358,7 @@ function organizer_generate_reg_actionlink_bar($params) {
         $actions, 'bulkaction', array('sendreminder' => get_string('btn_remind', 'organizer')), null,
         array('style' => 'margin-left:0.3em;margin-right:0.3em;')
     );
-    $output .= '<input type="submit" class="btn btn-primary" name="bulkactionbutton" value="' .
+    $output .= '<input type="submit" class="btn btn-primary" name="bulkactionbutton" id="bulkactionbutton" disabled value="' .
         get_string('btn_start', 'organizer') . '"/>';
     $output .= '</div>';
 

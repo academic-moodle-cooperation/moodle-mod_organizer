@@ -52,7 +52,7 @@ define(
                             $(this).css('offsetHeight') === 0) || $(this).css('display') === 'none') {
                             $(this).find('input[type=checkbox]').prop('checked', false);
                         } else {
-                            $(this).find('input[type=checkbox]').prop('checked', checked);
+                            $(this).find('input:not([disabled])[type=checkbox]').prop('checked', checked);
                         }
                     }
                 );
@@ -63,6 +63,17 @@ define(
 
             $('#slot_overview thead').find('input[type=checkbox]').on('click', organizer_check_all);
             $('#slot_overview tfoot').find('input[type=checkbox]').on('click', organizer_check_all);
+            $("input:not([disabled])[type=checkbox]").click(function() {
+                $("#bulkactionbutton").attr("disabled", true);
+                $('#slot_overview').find('input:not([disabled])[type=checkbox]').each(
+                    function() {
+                        if ($(this).prop('checked') == true) {
+                            $("#bulkactionbutton").attr("disabled", false);
+                            return false;
+                        }
+                    }
+                );
+            });
         };
 
         return instance;
