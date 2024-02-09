@@ -73,7 +73,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
         // Display section with predefined filter view options like "hidden slots only" etc..
         $output .= organizer_make_slotoptions_section($params['mode'], $organizer);
-        $output .= organizer_make_filtersection();
+        $output .= organizer_make_filtersection($params['mode']);
     } else {
         $output .= organizer_make_appointmentsstatus_section($organizer);
         $output .= organizer_make_filtersection_reg($organizer->isgrouporganizer ==
@@ -329,7 +329,7 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
 
     return organizer_make_section('infobox_registrationstatistic', $out);
 }
-function organizer_make_filtersection() {
+function organizer_make_filtersection($mode) {
     global $OUTPUT;
 
     // Display filter - options.
@@ -352,10 +352,12 @@ function organizer_make_filtersection() {
         $showmyslotsonly = $showfreeslotsonly = $showregistrationsonly = false;
         $showallparticipants = true;
     }
-    if ($displaymyslotsonly) {
-        $output .= html_writer::checkbox('show_my_slots_only', '1', $showmyslotsonly,
-            get_string('infobox_showmyslotsonly', 'organizer'),
-            array('id' => 'show_my_slots_only', 'class' => 'slotoptions'));
+    if ($mode != ORGANIZER_TAB_STUDENT_VIEW) {
+        if ($displaymyslotsonly) {
+            $output .= html_writer::checkbox('show_my_slots_only', '1', $showmyslotsonly,
+                get_string('infobox_showmyslotsonly', 'organizer'),
+                array('id' => 'show_my_slots_only', 'class' => 'slotoptions'));
+        }
     }
     if ($displayfreeslots) {
         $output .= html_writer::checkbox('show_free_slots_only', '1', $showfreeslotsonly,
@@ -369,17 +371,16 @@ function organizer_make_filtersection() {
     }
     $output .= html_writer::end_div();
 
-    if (true) {
-        $output .= html_writer::start_div();
-        $output .= html_writer::span('', 'text-info', array('id' => 'counttabrows'));
-        $output .= html_writer::span(get_string('infobox_counter_slotrows', 'mod_organizer'), 'ml-1 text-info');
-        if ($displayallparticipants) {
-            $output .= html_writer::checkbox('show_all_participants', '1', $showallparticipants,
-                get_string('infobox_showallparticipants', 'organizer'),
-                array('id' => 'show_all_participants', 'class' => 'slotoptions'));
-        }
-        $output .= html_writer::end_div();
+    // Write empty slotcounter.
+    $output .= html_writer::start_div();
+    $output .= html_writer::span('', 'text-info', array('id' => 'counttabrows'));
+    $output .= html_writer::span(get_string('infobox_counter_slotrows', 'mod_organizer'), 'ml-1 text-info');
+    if ($displayallparticipants) {
+        $output .= html_writer::checkbox('show_all_participants', '1', $showallparticipants,
+            get_string('infobox_showallparticipants', 'organizer'),
+            array('id' => 'show_all_participants', 'class' => 'slotoptions'));
     }
+    $output .= html_writer::end_div();
 
     $output .= html_writer::div('', 'clearer');
 
