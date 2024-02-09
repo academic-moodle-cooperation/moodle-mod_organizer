@@ -26,150 +26,150 @@
  * @copyright     2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#organizer_main_cointainer table tr.past_due td {
+.path-mod-organizer #organizer_main_cointainer table tr.past_due td {
     background-color: #E8F1F8  !important;
 }
 
-#organizer_main_cointainer table tr.past_due_reg td {
+.path-mod-organizer #organizer_main_cointainer table tr.past_due_reg td {
     background-color: #E8F1F8  !important;
 }
 
-#organizer_main_cointainer table tr.affected_slot td {
+.path-mod-organizer #organizer_main_cointainer table tr.affected_slot td {
     background-color: Lightgreen  !important;
 }
 
-#organizer_main_cointainer table tr.unavailable td {
+.path-mod-organizer #organizer_main_cointainer table tr.unavailable td {
     color: gray !important;
 }
 
-#organizer_main_cointainer table tr.unavailable td.c2 {
+.path-mod-organizer #organizer_main_cointainer table tr.unavailable td.c2 {
     font-style: italic;
 }
 
-#organizer_main_cointainer table.overview {
+.path-mod-organizer #organizer_main_cointainer table.overview {
     width: 95% !important;
 }
 
-#organizer_main_cointainer table.overview td {
+.path-mod-organizer #organizer_main_cointainer table.overview td {
     border: 1px solid #FFF !important;
 }
 
-#organizer_main_cointainer fieldset.preview {
+.path-mod-organizer #organizer_main_cointainer fieldset.preview {
     width: 100%;
 }
 
-#organizer_main_cointainer div.datapreviewtitle{
+.path-mod-organizer #organizer_main_cointainer div.datapreviewtitle{
     margin-bottom: -2em;
     font-weight: bold;
     margin-left: 1.5em;
 }
 
 /* Fix here sn. */
-#organizer_main_cointainer div.forced_scroll {
+.path-mod-organizer #organizer_main_cointainer div.forced_scroll {
     border: solid 1px #ddd;
     margin-left: 10px;
     margin-right: 10px;
     padding-top: 2em;
 }
 
-#organizer_main_cointainer div.forced_scroll table {
+.path-mod-organizer #organizer_main_cointainer div.forced_scroll table {
     min-width: 1024px;
     width: 97%;
     margin: 1em;
 }
 
-#organizer_main_cointainer div.forced_scroll td {
+.path-mod-organizer #organizer_main_cointainer div.forced_scroll td {
     white-space: nowrap;
     border: solid 1px #ddd;
     border-collapse: collapse;
 }
 
-#organizer_main_cointainer tr.registered_slot td {
+.path-mod-organizer #organizer_main_cointainer tr.registered_slot td {
     background-color: Lightgreen !important;
 }
 
-#organizer_main_cointainer div.singlebutton button {
+.path-mod-organizer #organizer_main_cointainer div.singlebutton button {
     margin: 20px 5px;
 }
 
-#organizer_main_cointainer span.countdown_normal {
+.path-mod-organizer #organizer_main_cointainer span.countdown_normal {
     background-color: LightGreen;
 }
 
-#organizer_main_cointainer span.countdown_hurry {
+.path-mod-organizer #organizer_main_cointainer span.countdown_hurry {
     background-color: Yellow;
 }
 
-#organizer_main_cointainer span.countdown_critical {
+.path-mod-organizer #organizer_main_cointainer span.countdown_critical {
     background-color: rgb(255, 204, 153);
 }
 
-#organizer_main_cointainer span.countdown_passed {
+.path-mod-organizer #organizer_main_cointainer span.countdown_passed {
     background-color: #F0F0F0;
 }
 
-#organizer_main_cointainer span.nobreak {
+.path-mod-organizer #organizer_main_cointainer span.nobreak {
     white-space: nowrap;
 }
 
-#organizer_main_cointainer div.organizerinfo {
+.path-mod-organizer #organizer_main_cointainer div.organizerinfo {
     width: 50% !important;
 }
 
-#organizer_main_cointainer table.print_preview td {
+.path-mod-organizer #organizer_main_cointainer table.print_preview td {
     border: 1px solid #FFF !important;
     border-collapse: collapse;
 }
 
-#organizer_main_cointainer table.print-preview {
+.path-mod-organizer #organizer_main_cointainer table.print-preview {
     width: 100%;
 }
 
-#organizer_main_cointainer table.coloredrows th {
+.path-mod-organizer #organizer_main_cointainer table.coloredrows th {
     white-space: nowrap;
 }
 
-#organizer_main_cointainer table.coloredrows .r0 {
+.path-mod-organizer #organizer_main_cointainer table.coloredrows .r0 {
     background-color: #f0f0f0;
     white-space: nowrap;
 }
 
-#organizer_main_cointainer table.coloredrows .r1 {
+.path-mod-organizer #organizer_main_cointainer table.coloredrows .r1 {
     background-color: #fafafa;
     white-space: nowrap;
 }
 
-#page-mod-organizer-view div#organizer_popup_header div.title h2 {
+.path-mod-organizer #page-mod-organizer-view div#organizer_popup_header div.title h2 {
     width: 100%;
 }
 
-#organizer_main_cointainer fieldset#id_slotdetails input[readonly='readonly'] {
+.path-mod-organizer #organizer_main_cointainer fieldset#id_slotdetails input[readonly='readonly'] {
     background: #ffffff;
     color: #6d6d6d;
     border: 1px solid #afafaf;
     cursor: default;
 }
 
-#organizer_main_cointainer a.action {
+.path-mod-organizer #organizer_main_cointainer a.action {
     white-space: nowrap;
     display: block;
 }
 
-#organizer_main_cointainer a.disabled {
+.path-mod-organizer #organizer_main_cointainer a.disabled {
     color: grey;
 }
 
-#organizer_main_cointainer .finalgrade {
+.path-mod-organizer #organizer_main_cointainer .finalgrade {
     margin-left: 0.1em;
     cursor: help;
     color: red;
 }
 
-#slot_overview th {
+.path-mod-organizer #slot_overview th {
     background-color: inherit;
 }
 
-.organizer_filterblock {
+.path-mod-organizer .organizer_filterblock {
     display: block;
 /*    margin-block-start: 1em; */
     margin-block-end: 0.5em;
@@ -178,7 +178,7 @@
     margin-left: 0!important;
     margin-right: 0!important;
 }
-.organizer_filterblock_reg {
+.path-mod-organizer .organizer_filterblock_reg {
     display: block;
 /*    margin-block-start: 1em;   */
     margin-block-end: 0.5em;
@@ -188,7 +188,7 @@
     margin-right: 0!important;
 }
 
-#id_export_settings_header {
+.path-mod-organizer #id_export_settings_header {
     border-bottom: none !important;
 }
 
@@ -243,6 +243,23 @@
     color: dimgrey;
 }
 
-#organizer_main_cointainer .icon.fa.fa-question-circle.text-info.fa-fw  {
+.path-mod-organizer #organizer_main_cointainer .icon.fa.fa-question-circle.text-info.fa-fw  {
     margin-left: 0.2rem !important;
+}
+
+.path-mod-organizer #id_slotscontainer .col-md-9.form-inline.align-items-start.felement label.form-check {
+    border: solid 1px lightgrey;
+    background-color: lightgrey;
+    padding: 1rem;
+    border-radius: 1rem;
+    margin-top: 1rem;
+}
+
+.path-mod-organizer #id_slotscontainer .col-md-9.form-inline.align-items-start.felement .d-block::before {
+    font: var(--fa-font-solid);
+    content: "\f007";
+    margin-right: 0.25rem;
+}
+.path-mod-organizer #fitem_id_groupname {
+    font-weight: bold;
 }
