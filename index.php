@@ -54,6 +54,12 @@ $PAGE->set_url('/mod/organizer/index.php', array('id' => $course->id));
 $PAGE->navbar->add(get_string("modulenameplural", "organizer"));
 $PAGE->set_title($course->fullname);
 $PAGE->set_heading($course->shortname);
+$organizerconfig = get_config('organizer');
+if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
+    $PAGE->add_body_class('limitedwidth');
+}
+
+
 echo $OUTPUT->header();
 
 // Get all the appropriate data.

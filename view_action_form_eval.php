@@ -44,7 +44,6 @@ class organizer_evaluate_slots_form extends moodleform {
 
         $mform = $this->_form;
         $data = $this->_customdata;
-        $context = context_module::instance($data['id']);
 
         $mform->addElement('hidden', 'id', $data['id']);
         $mform->setType('id', PARAM_INT);
@@ -109,7 +108,7 @@ class organizer_evaluate_slots_form extends moodleform {
             if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && count($apps) != 0) {
                 $app = reset($apps);
                 $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
-                $mform->addElement($mform->createElement('static', '', '', $groupname));
+                $mform->addElement($mform->createElement('static', 'groupname', '', $groupname));
             }
 
             // If no apps write it and deactivate slot.
@@ -135,7 +134,7 @@ class organizer_evaluate_slots_form extends moodleform {
                     $grademenu = organizer_make_grades_menu_organizer($maxgrade);
                     $appgroup[] = $mform->createElement('select', 'grade', '', $grademenu);
                 }
-                $appgroup[] = $mform->createElement('static', '', '',
+                $appgroup[] = $mform->createElement('static', '', '', '&nbsp;' .
                     get_string('eval_feedback', 'organizer') . ':&nbsp;');
                 $appgroup[] = $mform->createElement('text', 'feedback', null, array('class' => 'w-25'));
                 $mform->disabledif ("{$name}[attended]", $checkboxname);

@@ -1561,10 +1561,9 @@ function organizer_sortout_hiddenslots($slots) {
 function organizer_get_user_identity($user) {
     global $CFG, $DB;
 
-    if ($dontshowidentity = get_config('mod_organizer', 'dontshowidentity')) {
+    if (get_config('organizer', 'dontshowidentity')) {
         return "";
     }
-
     if (is_object($user)) {
         $id = $user->id;
     } else {
@@ -1577,7 +1576,6 @@ function organizer_get_user_identity($user) {
 
     $identity = "";
     $identityfields = explode(',', $CFG->showuseridentity);
-
     if (in_array('idnumber', $identityfields)) {
         $identity = $DB->get_field_select('user', 'idnumber', "id = {$id}");
     } else {

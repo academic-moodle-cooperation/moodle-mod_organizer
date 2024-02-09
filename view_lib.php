@@ -336,7 +336,8 @@ function organizer_generate_actionlink_bar($context, $organizerexpired) {
         $actions, 'bulkaction', array('edit' => get_string('actionlink_edit', 'organizer')), null,
         array('style' => 'margin-left:0.3em;margin-right:0.3em;')
     );
-    $output .= '<input type="submit" class="btn btn-primary" value="' . get_string('btn_start', 'organizer') . '"/>';
+    $output .= '<input type="submit" id="bulkactionbutton" disabled class="btn btn-primary" value="' .
+        get_string('btn_start', 'organizer') . '"/>';
 
     $output .= '</div>';
 
@@ -357,7 +358,7 @@ function organizer_generate_reg_actionlink_bar($params) {
         $actions, 'bulkaction', array('sendreminder' => get_string('btn_remind', 'organizer')), null,
         array('style' => 'margin-left:0.3em;margin-right:0.3em;')
     );
-    $output .= '<input type="submit" class="btn btn-primary" name="bulkactionbutton" value="' .
+    $output .= '<input type="submit" class="btn btn-primary" name="bulkactionbutton" id="bulkactionbutton" disabled value="' .
         get_string('btn_start', 'organizer') . '"/>';
     $output .= '</div>';
 
@@ -1345,7 +1346,7 @@ function organizer_app_details($appointment) {
 
     $list = '<span style="display: table-cell;">';
     if ($appointment->comments) {
-        $list .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($appointment->comments));
+        $list .= organizer_get_fa_icon('fa fa-comment text-primary ml-1', organizer_filter_text($appointment->comments));
     }
     $list .= '</span>';
 
@@ -1484,11 +1485,13 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
 
     if (isset($slot->teachercomments)) {
         if ($slot->teachercomments) {
-            $output .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($slot->teachercomments));
+            $output .= organizer_get_fa_icon('fa fa-comment text-primary ml-1',
+                organizer_filter_text($slot->teachercomments));
         }
     } else {
         if ($slot->comments) {
-            $output .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($slot->comments));
+            $output .= organizer_get_fa_icon('fa fa-comment text-primary ml-1',
+                organizer_filter_text($slot->comments));
         }
     }
 
@@ -1518,10 +1521,11 @@ function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $useri
             }
         }
         if (isset($appointment->feedback) && $appointment->feedback != '') {
-            $list .= $appointment->feedback ? organizer_get_fa_icon('fa fa-file-text-o ml-1', $appointment->feedback) : "";
+            $list .= $appointment->feedback ? organizer_get_fa_icon('fa fa-file-text-o ml-1',
+                $appointment->feedback) : "";
         }
         if (isset($appointment->comments) && $appointment->comments != '') {
-            $list .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($appointment->comments));
+            $list .= organizer_get_fa_icon('fa fa-comment text-primary ml-1', organizer_filter_text($appointment->comments));
         }
     }
 
@@ -1581,7 +1585,7 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $evalenabled = has_capability('mod/organizer:evalslots', $context, null, true);
     $evalurl = new moodle_url(
         '/mod/organizer/slots_eval.php',
-        array('id' => $params['id'], 'slots[]' => $entry->slotid)
+        array('id' => $params['id'], 'slots[]' => $entry->slotid, 'mode' => '3')
     );
     $remindurl = new moodle_url(
         '/mod/organizer/send_reminder.php',
@@ -1766,8 +1770,8 @@ function organizer_get_participant_list($params, $slot, $app) {
                 $content .= organizer_get_teacherapplicant_output($app->teacherapplicantid,
                         $app->teacherapplicanttimemodified) . '&nbsp;';
                 if ($app->comments) {
-                    $content .= organizer_get_fa_icon('fa fa-comment-o ml-1', organizer_filter_text($app->comments))
-                        . "<br />";
+                    $content .= organizer_get_fa_icon('fa fa-comment text-primary ml-1',
+                            organizer_filter_text($app->comments)) . "<br />";
                 } else {
                     $content .= "<br />";
                 }
@@ -2159,7 +2163,7 @@ function organizer_slot_reg_status($organizer, $slot, $onlyownslotsmsg = null) {
 }
 
 function organizer_participants_action($params, $slot) {
-    global $OUTPUT, $USER;
+    global $USER;
 
     $slotx = new organizer_slot($slot);
     list(, , $organizer, $context) = organizer_get_course_module_data();
@@ -2438,6 +2442,8 @@ function organizer_slotpages_header() {
 
     require_login($course, false, $cm);
 
+    $organizerconfig = get_config('organizer');
+
     $url = new moodle_url('/mod/organizer/view_action.php');
     $url->param('id', $cm->id);
     $url->param('mode', $mode);
@@ -2448,6 +2454,10 @@ function organizer_slotpages_header() {
     $PAGE->set_pagelayout('standard');
     $PAGE->set_title($organizer->name);
     $PAGE->set_heading($course->fullname);
+
+    if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
+        $PAGE->add_body_class('limitedwidth');
+    }
 
     $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
 
