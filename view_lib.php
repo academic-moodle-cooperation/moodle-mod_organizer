@@ -1730,7 +1730,7 @@ function organizer_get_participant_list($params, $slot, $app) {
                 }
             }
         }
-        if ($countapps && !$notcollapsed) {
+        if ($countapps && !$notcollapsed && $slot->visibility != ORGANIZER_VISIBILITY_ANONYMOUS) {
             $firstline = organizer_get_icon('plus-square', get_string('clicktohideshow'), null, null, 'collapseicon').$firstline.$slotvisibilitystr;
             $firstline = html_writer::div($firstline, 'collapseclick text-nowrap', array( 'data-target' => '.s'.$slot->id));
         } else {
