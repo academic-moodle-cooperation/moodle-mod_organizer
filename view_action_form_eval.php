@@ -44,7 +44,6 @@ class organizer_evaluate_slots_form extends moodleform {
 
         $mform = $this->_form;
         $data = $this->_customdata;
-        $context = context_module::instance($data['id']);
 
         $mform->addElement('hidden', 'id', $data['id']);
         $mform->setType('id', PARAM_INT);
