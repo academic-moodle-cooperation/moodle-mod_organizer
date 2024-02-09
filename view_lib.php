@@ -185,7 +185,7 @@ function organizer_generate_student_view($params, $instance) {
                 userdate($instance->organizer->allowregistrationsfromdate)
             );
         }
-        $output .= html_writer::div($message, '', array('id' => 'intro'));
+        $output .= html_writer::div($message, 'alert alert-info', array('id' => 'intro'));
     }
 
     return $output;
@@ -1730,7 +1730,7 @@ function organizer_get_participant_list($params, $slot, $app) {
                 }
             }
         }
-        if ($countapps && !$studentview && !$notcollapsed) {
+        if ($countapps && !$notcollapsed && $slot->visibility != ORGANIZER_VISIBILITY_ANONYMOUS) {
             $firstline = organizer_get_icon('plus-square', get_string('clicktohideshow'), null, null, 'collapseicon').$firstline.$slotvisibilitystr;
             $firstline = html_writer::div($firstline, 'collapseclick text-nowrap', array( 'data-target' => '.s'.$slot->id));
         } else {
@@ -1791,8 +1791,10 @@ function organizer_get_participant_list($params, $slot, $app) {
             $showparticipants = ($slot->visibility == ORGANIZER_VISIBILITY_ALL) || $ismyslot;
             if ($showparticipants) {
                 $content .= html_writer::start_span('', array('style' => 'display: table'));
+                $apps = count($appointments);
                 foreach ($appointments as $appointment) {
-                    $content .= html_writer::start_span('', array('style' => 'display: table-row'));
+                    $class = $apps || $groupmode ? 'mycollapse s'.$slot->id : '';
+                    $content .= html_writer::start_span($class, array('style' => 'display: table-row'));
                     $namelink = organizer_get_name_link($appointment->userid);
                     if ($groupmode) {
                         if ($appointment->userid == $appointment->applicantid) {

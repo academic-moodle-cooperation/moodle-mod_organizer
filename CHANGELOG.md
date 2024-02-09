@@ -1,8 +1,23 @@
 CHANGELOG
 =========
 
-4.3.0 (2024-01-11)
+4.3.0 (2024-02-08)
 ------------------
+* [FIXED]   Student view: Fix "Show all participants" option, remove the broken "Show only my slots"-filter option
+* [FIXED]   Registration view: Do not list groups which have no members
+* [FIXED]   Do not send group messages to group trainers
+* [FIXED]   Fix dynamic property warnings in php 8.2
+* [FIXED]   Admin setting "hide identity" fixed
+* [FIXED]   Registration view: Do not check disabled checkboxes when "Checking all"
+* [FIXED]   After grading: return to calling page
+* [FEATURE] Make all icons font-awesome 4.7
+* [FEATURE] New Admin setting: Content width optionally in Moodle 4.x style (=smaller)
+* [FEATURE] Bulk-actions: Start-buttons not enabled unless there is at least one checked checkbox
+* [FEATURE] Improve design of Grading slots-panel
+* [FEATURE] Registration view: Add the possibility to send reminders to a manually selected list of users
+* [FEATURE] Registration view: Disable send reminders- and assign-buttons if there is no free place or the booking's maximum is reached
+* [FEATURE] Registration view: If organizer instance is in moodle group-mode a group selector can be used to filter the participants list
+* [FEATURE] Registration view: Only participants who's access is not restricted by trainer defined instance restrictions are listed. 
 * Moodle 4.3 compatible version
 
 4.2.3 (2023-11-17)
