@@ -53,6 +53,7 @@ $PAGE->set_url($url);
 $organizerconfig = get_config('organizer');
 if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
     $PAGE->add_body_class('limitedwidth');
+    $params['limitedwidth'] = true;
 }
 
 $mform = new organizer_delete_appointment_form(null, array('id' => $cm->id, 'appid' => $appid));

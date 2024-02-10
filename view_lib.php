@@ -138,9 +138,15 @@ function organizer_generate_appointments_view($params, $instance) {
     $output .= organizer_begin_form($params);
     $output .= organizer_make_infobox($params, $instance->organizer, $instance->context, $organizerexpired);
 
-    $columns = array('select', 'singleslotcommands', 'datetime', 'location', 'participants', 'teacher', 'details');
-    $align = array('center', 'center', 'left', 'left', 'left', 'left', 'center');
-    $sortable = array('datetime', 'location', 'participants');
+    if ($params['limitedwidth']) {
+        $columns = array('select', 'singleslotcommands', 'datetime', 'participants', 'teacher', 'details');
+        $align = array('center', 'center', 'left', 'left', 'left', 'center');
+        $sortable = array('datetime', 'participants');
+    } else {
+        $columns = array('select', 'singleslotcommands', 'datetime', 'location', 'participants', 'teacher', 'details');
+        $align = array('center', 'center', 'left', 'left', 'left', 'left', 'center');
+        $sortable = array('datetime', 'location', 'participants');
+    }
 
     $table = new html_table();
     $table->id = 'slot_overview';
@@ -161,9 +167,15 @@ function organizer_generate_student_view($params, $instance) {
     $output .= organizer_make_infobox($params, $instance->organizer, $instance->context);
 
     if (time() > $instance->organizer->allowregistrationsfromdate ) {
-        $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
-        $align = array('left', 'left', 'left', 'left', 'center', 'center');
-        $sortable = array('datetime', 'location');
+        if ($params['limitedwidth']) {
+            $columns = array('datetime', 'participants', 'teacher', 'status', 'actions');
+            $align = array('left', 'left', 'left', 'center', 'center');
+            $sortable = array('datetime');
+        } else {
+            $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
+            $align = array('left', 'left', 'left', 'left', 'center', 'center');
+            $sortable = array('datetime', 'location');
+        }
 
         $table = new html_table();
         $table->id = 'slot_overview';
@@ -205,10 +217,14 @@ function organizer_generate_registration_status_view($params, $instance) {
     } else {
         $columns[] = 'participants';
     }
-    $columns = array_merge($columns, array('bookings', 'datetime', 'location', 'teacher', 'actions'));
     $sortable = array('status', 'group');
+    if ($params['limitedwidth']) {
+        $columns = array_merge($columns, array('bookings', 'datetime', 'teacher', 'actions'));
+    } else {
+        $columns = array_merge($columns, array('bookings', 'datetime', 'location', 'teacher', 'actions'));
+    }
     $align = array_fill(0, count($columns), 'center');
-    $align[2] = $align[6]  = 'left';
+    $align[2] = $align[4] = $align[5] = 'left';
 
     $table = new html_table();
     $table->id = 'slot_overview';
@@ -238,9 +254,15 @@ function organizer_generate_assignment_view($params, $instance) {
     }
     $output = organizer_make_section('assign', $content);
 
-    $columns = array('datetime', 'location', 'participants', 'teacher', 'actions');
-    $align = array('left', 'left', 'left', 'left', 'center');
-    $sortable = array('datetime', 'location');
+    if ($params['limitedwidth']) {
+        $columns = array('datetime', 'participants', 'teacher', 'actions');
+        $align = array('left', 'left', 'left', 'center');
+        $sortable = array('datetime');
+    } else {
+        $columns = array('datetime', 'location', 'participants', 'teacher', 'actions');
+        $align = array('left', 'left', 'left', 'left', 'center');
+        $sortable = array('datetime', 'location');
+    }
 
     $table = new html_table();
     $table->id = 'slot_overview';
@@ -682,15 +704,23 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                         $cell = $row->cells[] = new html_table_cell(organizer_slot_commands($slot->id, $params));
                     break;
                     case 'datetime':
-                        $cell = $row->cells[] = new html_table_cell(organizer_date_time($slot, true));
+                        if ($params['limitedwidth']) {
+                            $llink = organizer_location_link($slot);
+                            $text = organizer_date_time($slot, true);
+                            if ($llink != "-") {
+                                $text .= "<br>".$llink;
+                            }
+                            $cell = $row->cells[] = new html_table_cell($text);
+                        } else {
+                            $cell = $row->cells[] = new html_table_cell(organizer_date_time($slot, true));
+                        }
                     break;
                     case 'location':
                         $cell = $row->cells[] = new html_table_cell(organizer_location_link($slot));
                     break;
                     case 'participants':
                         $cell = $row->cells[] = new html_table_cell(
-                                organizer_get_participant_list($params, $slot, $app)
-                        );
+                                organizer_get_participant_list($params, $slot, $app));
                     break;
                     case 'teacher':
                         $cell = $row->cells[] = new html_table_cell(organizer_trainer_data($params, $slot, $trainerids));
@@ -1101,11 +1131,27 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                                     $cell->style .= " text-align: center;";
                                     break;
                                 case 'datetime':
-                                    if ($entry->starttime) {
-                                        $cell = $row->cells[] = new html_table_cell(organizer_date_time($entry, true));
+                                    if ($params['limitedwidth']) {
+                                        if ($entry->starttime) {
+                                            $text = organizer_date_time($entry, true);
+                                            $llink = organizer_location_link($entry);
+                                            if ($llink != "-") {
+                                                $text .= "<br>".$llink;
+                                            }
+                                        } else {
+                                            $text = "-";
+                                        }
+                                        $cell = $row->cells[] = new html_table_cell($text);
+                                        if ($text == "-") {
+                                            $cell->style .= " text-align: center;";
+                                        }
                                     } else {
-                                        $cell = $row->cells[] = new html_table_cell('-');
-                                        $cell->style .= " text-align: center;";
+                                        if ($entry->starttime) {
+                                            $cell = $row->cells[] = new html_table_cell(organizer_date_time($entry, true));
+                                        } else {
+                                            $cell = $row->cells[] = new html_table_cell('-');
+                                            $cell->style .= " text-align: center;";
+                                        }
                                     }
                                     break;
                                 case 'location':
@@ -1193,10 +1239,27 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                                 $cell->style .= " text-align: center;";
                                 break;
                             case 'datetime':
-                                $text = organizer_date_time($entry, true);
-                                $cell = $row->cells[] = new html_table_cell($text);
-                                if ($text == "-") {
-                                    $cell->style = " text-align: center;";
+                                if ($params['limitedwidth']) {
+                                    if ($entry->starttime) {
+                                        $text = organizer_date_time($entry, true);
+                                        $llink = organizer_location_link($entry);
+                                        if ($llink != "_") {
+                                            $text .= "<br>".$llink;
+                                        }
+                                    } else {
+                                        $text = "-";
+                                    }
+                                    $cell = $row->cells[] = new html_table_cell($text);
+                                    if ($text == "-") {
+                                        $cell->style .= " text-align: center;";
+                                    }
+                                } else {
+                                    if ($entry->starttime) {
+                                        $cell = $row->cells[] = new html_table_cell(organizer_date_time($entry, true));
+                                    } else {
+                                        $cell = $row->cells[] = new html_table_cell('-');
+                                        $cell->style .= " text-align: center;";
+                                    }
                                 }
                                 break;
                             case 'appdetails':
@@ -1290,6 +1353,12 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
                     switch ($column) {
                         case 'datetime':
                             $text = organizer_date_time($slot, true);
+                            if ($params['limitedwidth']) {
+                                $llink = organizer_location_link($slot);
+                                if ($llink != "-") {
+                                    $text .= "<br>".$llink;
+                                }
+                            }
                             $cell = $row->cells[] = new html_table_cell($text);
                             if ($text == '-') {
                                 $cell->style .= " text-align:center;";
@@ -2016,24 +2085,30 @@ function organizer_slot_status($params, $slot) {
         array('id' => $params['id'], 'slot' => $slot->id)
     );
 
+    if ($params['limitedwidth']) {
+        $sizeclass = "1x";
+    } else {
+        $sizeclass = "2x";
+    }
     if ($slotpastdue) {  // Slot starttime has passed.
         if ($slotevaluated) {
             return '<a href="' . $actionurl->out(false) . '">'
-                . organizer_get_fa_icon("fa fa-check-square fa-2x text-primary",
+                . organizer_get_fa_icon("fa fa-check-square fa-$sizeclass text-primary",
                 get_string('img_title_evaluated', 'organizer'));
         } else {
             if ($slotpending) {
-                return '<a href="'.$actionurl->out(false).'">'.organizer_get_fa_icon("fa fa-flag-o fa-2x text-primary",
+                return '<a href="'.$actionurl->out(false).'">'.
+                    organizer_get_fa_icon("fa fa-flag-o fa-$sizeclass text-primary",
                     get_string('img_title_pending', 'organizer')) . '</a>';
             } else {
                 if ($slotisfull) {
-                    return organizer_get_fa_icon("fa fa-circle fa-2x text-primary",
+                    return organizer_get_fa_icon("fa fa-circle fa-$sizeclass text-primary",
                         get_string('img_title_full', 'organizer'));
                 } else if ($slothasparticipants) {
-                    return organizer_get_fa_icon("fa fa-dot-circle-o fa-2x text-primary",
+                    return organizer_get_fa_icon("fa fa-dot-circle-o fa-$sizeclass text-primary",
                         get_string('img_title_past_deadline', 'organizer'));
                 } else {
-                    return organizer_get_fa_icon("fa fa-ban fa-2x text-primary",
+                    return organizer_get_fa_icon("fa fa-ban fa-$sizeclass text-primary",
                         get_string('img_title_no_participants', 'organizer'));
                 }
             }
@@ -2041,15 +2116,15 @@ function organizer_slot_status($params, $slot) {
     } else { // Slot starttime not reached.
         $slotcolor = $slotpastdeadline ? "slotovercolor" : "slotactivecolor";
         if ($slotisfull) {
-            return organizer_get_fa_icon("fa fa-circle fa-2x $slotcolor",
+            return organizer_get_fa_icon("fa fa-circle fa-$sizeclass $slotcolor",
                 get_string('img_title_full', 'organizer'));
         } else {
             $imgtitle = $slotpastdeadline ? "img_title_past_deadline" : "img_title_due";
             if ($slothasparticipants) {
-                return organizer_get_fa_icon("fa fa-dot-circle-o fa-2x $slotcolor",
+                return organizer_get_fa_icon("fa fa-dot-circle-o fa-$sizeclass $slotcolor",
                     get_string($imgtitle, 'organizer'));
             } else {
-                return organizer_get_fa_icon("fa fa-circle-o fa-2x $slotcolor",
+                return organizer_get_fa_icon("fa fa-circle-o fa-$sizeclass $slotcolor",
                     get_string($imgtitle, 'organizer'));
             }
         }
@@ -2111,49 +2186,57 @@ function organizer_slot_commands($slotid, $params) {
 }
 
 function organizer_slot_reg_status($organizer, $slot, $onlyownslotsmsg = null) {
+    global $PAGE;
 
     $slotx = new organizer_slot($slot);
 
     $app = organizer_get_slot_user_appointment($slotx);
 
+    $pagebodyclasses = $PAGE->bodyclasses;
+    if (strpos($pagebodyclasses, 'limitedwidth')) {
+        $sizeclass = "1x";
+    } else {
+        $sizeclass = "2x";
+    }
+
     if ($slotx->organizer_expired()) {
-        $output = organizer_get_fa_icon('fa fa-calendar-times-o fa-2x',
+        $output = organizer_get_fa_icon("fa fa-calendar-times-o fa-$sizeclass",
             get_string('reg_status_organizer_expired', 'organizer'));
     } else if ($slotx->is_past_due()) {
         if ($app) {
             if (!isset($app->attended)) {
                 if ($organizer->grade != 0) {
-                    $output = organizer_get_fa_icon('fa fa-flag-o fa-2x slotovercolor',
+                    $output = organizer_get_fa_icon("fa fa-flag-o fa-$sizeclass slotovercolor",
                         get_string('reg_status_slot_pending', 'organizer'));
                 } else {
-                    $output = organizer_get_fa_icon('fa fa-circle fa-2x slotovercolor',
+                    $output = organizer_get_fa_icon("fa fa-circle fa-$sizeclass slotovercolor",
                         get_string('reg_status_slot_expired', 'organizer'));
                 }
             } else if ($app->attended == 0) {
-                $output = organizer_get_fa_icon('fa fa-check-square-o fa-2x slotovercolor',
+                $output = organizer_get_fa_icon("fa fa-check-square-o fa-$sizeclass slotovercolor",
                     get_string('reg_status_slot_not_attended', 'organizer'));
             } else if ($app->attended == 1) {
-                $output = organizer_get_fa_icon('fa fa-check-square fa-2x slotovercolor',
+                $output = organizer_get_fa_icon("fa fa-check-square fa-$sizeclass slotovercolor",
                     get_string('reg_status_slot_attended', 'organizer'));
             }
         } else {
-            $output = organizer_get_fa_icon('fa fa-remove fa-2x slotovercolor',
+            $output = organizer_get_fa_icon("fa fa-remove fa-$sizeclass slotovercolor",
                 get_string('reg_status_slot_expired', 'organizer'), "big");
         }
     } else if ($slotx->is_past_deadline()) {
-        $output = organizer_get_fa_icon('fa fa-calendar-times-o fa-2x slotovercolor',
+        $output = organizer_get_fa_icon("fa fa-calendar-times-o fa-$sizeclass slotovercolor",
             get_string('reg_status_slot_past_deadline', 'organizer'));
     } else {
         if ($slotx->is_full()) {
             if ($app) {
-                $output = organizer_get_fa_icon('fa fa-check-circle fa-2x slotactivecolor',
+                $output = organizer_get_fa_icon("fa fa-check-circle fa-$sizeclass slotactivecolor",
                     get_string('reg_not_occured', 'organizer'));
             } else {
-                $output = organizer_get_fa_icon('fa fa-circle fa-2x slotactivecolor',
+                $output = organizer_get_fa_icon("fa fa-circle fa-$sizeclass slotactivecolor",
                     get_string('reg_status_slot_full', 'organizer'));
             }
         } else {
-            $output = organizer_get_fa_icon('fa fa-circle-o fa-2x slotactivecolor',
+            $output = organizer_get_fa_icon("fa fa-circle-o fa-$sizeclass slotactivecolor",
                 get_string('reg_status_slot_available', 'organizer'));
         }
     }
@@ -2273,27 +2356,37 @@ function organizer_get_assign_button($slotid, $params) {
 }
 
 function organizer_get_status_icon_reg($status, $organizer, $slotevaluated = false) {
+    global $PAGE;
+
+    $pagebodyclasses = $PAGE->bodyclasses;
+    if (strpos($pagebodyclasses, 'limitedwidth')) {
+        $sizeclass = "1x";
+    } else {
+        $sizeclass = "2x";
+    }
+    
+    
     if ($slotevaluated) {
-        return organizer_get_fa_icon("fa fa-check-square fa-2x text-primary",
+        return organizer_get_fa_icon("fa fa-check-square fa-$sizeclass text-primary",
             get_string('img_title_evaluated', 'organizer'));
     } else {
         switch ($status) {
             case ORGANIZER_APP_STATUS_ATTENDED:
-                return organizer_get_fa_icon('fa fa-check-square-o fa-2x slotovercolor',
+                return organizer_get_fa_icon("fa fa-check-square-o fa-$sizeclass slotovercolor",
                     get_string('reg_status_slot_attended', 'organizer'));
             case ORGANIZER_APP_STATUS_PENDING:
                 if ($organizer->grade) {
-                    return organizer_get_fa_icon('fa fa-flag-o fa-2x slotovercolor',
+                    return organizer_get_fa_icon("fa fa-flag-o fa-$sizeclass slotovercolor",
                         get_string('reg_status_slot_pending', 'organizer'));
                 } else {
-                    return organizer_get_fa_icon('fa fa-circle fa-2x slotovercolor',
+                    return organizer_get_fa_icon("fa fa-circle fa-$sizeclass slotovercolor",
                         get_string('reg_status_registered', 'organizer'));
                 }
             case ORGANIZER_APP_STATUS_REGISTERED:
-                return organizer_get_fa_icon('fa fa-circle fa-2x slotactivecolor',
+                return organizer_get_fa_icon("fa fa-circle fa-$sizeclass slotactivecolor",
                     get_string('reg_status_registered', 'organizer'));
             case ORGANIZER_APP_STATUS_NOT_REGISTERED:
-                return organizer_get_fa_icon('fa fa-circle-thin fa-2x slotovercolor',
+                return organizer_get_fa_icon("fa fa-circle-thin fa-$sizeclass slotovercolor",
                     get_string('reg_status_not_registered', 'organizer'));
         }
     }
@@ -2459,6 +2552,7 @@ function organizer_slotpages_header() {
 
     if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
         $PAGE->add_body_class('limitedwidth');
+    $params['limitedwidth'] = true;
     }
 
     $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
