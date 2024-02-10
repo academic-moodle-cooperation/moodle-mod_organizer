@@ -2364,8 +2364,7 @@ function organizer_get_status_icon_reg($status, $organizer, $slotevaluated = fal
     } else {
         $sizeclass = "2x";
     }
-    
-    
+
     if ($slotevaluated) {
         return organizer_get_fa_icon("fa fa-check-square fa-$sizeclass text-primary",
             get_string('img_title_evaluated', 'organizer'));
@@ -2552,7 +2551,7 @@ function organizer_slotpages_header() {
 
     if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
         $PAGE->add_body_class('limitedwidth');
-    $params['limitedwidth'] = true;
+        $params['limitedwidth'] = true;
     }
 
     $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
