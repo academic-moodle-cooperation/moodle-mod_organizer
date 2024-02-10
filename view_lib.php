@@ -1505,7 +1505,7 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
         return '-';
     }
 
-    $limitedwidth =  $params['limitedwidth'] ?? false;
+    $limitedwidth = $params['limitedwidth'] ?? false;
 
     $query = "SELECT a.*
     FROM {organizer_slot_appointments} a
