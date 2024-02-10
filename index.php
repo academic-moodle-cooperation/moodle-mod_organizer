@@ -57,6 +57,7 @@ $PAGE->set_heading($course->shortname);
 $organizerconfig = get_config('organizer');
 if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
     $PAGE->add_body_class('limitedwidth');
+    $params['limitedwidth'] = true;
 }
 
 

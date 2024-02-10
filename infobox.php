@@ -239,8 +239,13 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
         $output .= $statusbar;
     }
     if (count($apps) > 0) {
-        $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
-        $align = array('left', 'left', 'left', 'left', 'center', 'center');
+        if ($params['limitedwidth']) {
+            $columns = array('datetime', 'participants', 'teacher', 'status', 'actions');
+            $align = array('left', 'left', 'left', 'center', 'center');
+        } else {
+            $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
+            $align = array('left', 'left', 'left', 'left', 'center', 'center');
+        }
         $sortable = array();
         $table = new html_table();
         $table->id = 'my_slot_overview';
@@ -402,7 +407,12 @@ function organizer_make_filtersection_reg($groupmode) {
     $output .= html_writer::end_div();  // Filter options.
 
     if ($groupmode) {
-        $output .= html_writer::start_div("$groupselectorstyle ml-5 pt-2");
+        $pagebodyclasses = $PAGE->bodyclasses;
+        if (strpos($pagebodyclasses, 'limitedwidth')) {
+            $output .= html_writer::start_div("$groupselectorstyle pt-2");
+        } else {
+            $output .= html_writer::start_div("$groupselectorstyle ml-5 pt-2");
+        }
         $output .= groups_print_activity_menu($PAGE->cm, $PAGE->url, true);
         $output .= html_writer::end_div();
     }
