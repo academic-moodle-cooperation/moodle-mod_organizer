@@ -87,6 +87,9 @@ if ($mform->is_cancelled()) {
             'success');
     }
 
+    $data->slot_trainer = $data->slot_trainer ?? "-";
+    $data->slot_location = $data->slot_location ?? "-";
+    $data->slot_comments = $data->slots_comments ?? "-";
     organizer_prepare_and_send_message($data, 'edit_notify_teacher');
     organizer_prepare_and_send_message($data, 'edit_notify_student');
 

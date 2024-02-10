@@ -286,22 +286,20 @@ $string['edit_notify_teacher:fullmessage'] = 'Hello {$a->receivername}!
 
 As a part of the course {$a->courseid} {$a->coursefullname}, the details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.
 
-Teacher: {$a->slot_teacher}
+Teacher(s): {$a->slot_teacher}
 Location: {$a->slot_location}
 Max. participants: {$a->slot_maxparticipants}
-Comments:
-{$a->slot_comments}
+Comments: {$a->slot_comments}
 
 Moodle Messaging System';
 $string['edit_notify_teacher:group:fullmessage'] = 'Hello {$a->receivername}!
 
 As a part of the course {$a->courseid} {$a->coursefullname}, the details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.
 
-Teacher: {$a->slot_teacher}
+Teacher(s): {$a->slot_teacher}
 Location: {$a->slot_location}
 Max. participants: {$a->slot_maxparticipants}
-Comments:
-{$a->slot_comments}
+Comments: {$a->slot_comments}
 
 Moodle Messaging System';
 $string['edit_notify_teacher:group:smallmessage'] = 'The details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.';
