@@ -1505,6 +1505,8 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
         return '-';
     }
 
+    $limitedwidth =  $params['limitedwidth'] ?? false;
+
     $query = "SELECT a.*
     FROM {organizer_slot_appointments} a
     WHERE a.slotid = :slotid";
@@ -1545,8 +1547,12 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
         $output = "";
         $connector = "";
         foreach ($trainerids as $trainerid) {
-            $output .= $connector . organizer_get_name_link($trainerid);
-            $connector = "<br>";
+            if ($limitedwidth) {
+                $output .= organizer_get_userpicture_link($trainerid);
+            } else {
+                $output .= $connector . organizer_get_name_link($trainerid);
+                $connector = "<br>";
+            }
         }
     } else {
         $output = '<em>' . get_string('teacherinvisible', 'organizer') . '</em>';

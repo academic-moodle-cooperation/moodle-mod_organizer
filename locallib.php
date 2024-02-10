@@ -77,6 +77,7 @@ function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $endd
 
     return $DB->get_records_sql($query, $params);
 }
+
 /**
  *
  * @param number $user
@@ -95,6 +96,27 @@ function organizer_get_name_link($user = 0) {
     $profileurl = new moodle_url('/user/view.php', array('id' => $user->id, 'course' => $COURSE->id));
     $name = get_string('fullname_template', 'organizer', $user);
     return html_writer::link($profileurl, $name);
+}
+
+function organizer_get_userpicture_link($user = 0) {
+    global $DB, $USER, $COURSE;
+    if (!$user) {
+        $user = $USER;
+    } else if (is_number($user)) {
+        $user = $DB->get_record('user', array('id' => $user));
+    } else if (!($user instanceof stdClass)) {
+        return false;
+    }
+
+    $initials = mb_strtoupper(
+        mb_substr($user->firstname, 0, 1, 'UTF-8') .
+        mb_substr($user->lastname, 0, 1, 'UTF-8'),
+        'UTF-8');
+    $profileurl = new moodle_url('/user/view.php', array('id' => $user->id, 'course' => $COURSE->id));
+    $name = get_string('fullname_template', 'organizer', $user);
+    $spaninit = html_writer::span($initials, 'userinitials size-35');
+    $spantext = html_writer::span($name, 'userinitialstext');
+    return html_writer::link($profileurl, $spaninit.$spantext, array('title' => $name, 'class' => 'd-inline-block aabtn'));
 }
 
 /**
