@@ -1039,7 +1039,7 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                         $entry->id, 'u.id', $orderby, 0, 0, true)) {
                         continue;
                     }
-                    if ($slotswitch != $entry->slotid or $groupswitch != $entry->id) {
+                    if ($slotswitch != $entry->slotid || $groupswitch != $entry->id) {
                         $slotswitch = $entry->slotid;
                         $groupswitch = $entry->id;
                         $row = new html_table_row();
