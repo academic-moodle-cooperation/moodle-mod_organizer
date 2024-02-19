@@ -95,7 +95,7 @@ $newurl = $redirecturl->out();
 $event = \mod_organizer\event\appointment_assigned::create(
     array(
         'objectid' => $PAGE->cm->id,
-        'context' => $PAGE->context
+        'context' => $PAGE->context,
     )
 );
 $event->trigger();

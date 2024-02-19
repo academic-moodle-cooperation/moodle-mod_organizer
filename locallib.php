@@ -2044,7 +2044,7 @@ function organizer_print_setuserprefs_and_triggerevent($data, $cm, $context) {
     $event = \mod_organizer\event\appointment_list_printed::create(
         array(
             'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
+            'context' => $PAGE->context,
         )
     );
     $event->trigger();

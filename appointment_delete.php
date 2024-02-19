@@ -66,7 +66,7 @@ if ($data = $mform->get_data()) {
             $event = \mod_organizer\event\appointment_deleted::create(
                 array(
                     'objectid' => $cm->id,
-                    'context' => $context
+                    'context' => $context,
                 )
             );
             $groupname = organizer_fetch_groupname($app->groupid);
@@ -81,7 +81,7 @@ if ($data = $mform->get_data()) {
             $event = \mod_organizer\event\appointment_deleted::create(
                 array(
                     'objectid' => $cm->id,
-                    'context' => $context
+                    'context' => $context,
                 )
             );
             $infoboxmessage .= $OUTPUT->notification(get_string('message_info_appointment_deleted', 'organizer'),

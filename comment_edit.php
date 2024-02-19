@@ -68,7 +68,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     $event = \mod_organizer\event\appointment_commented::create(
         array(
             'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
+            'context' => $PAGE->context,
         )
     );
     $event->trigger();

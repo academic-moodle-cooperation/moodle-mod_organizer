@@ -687,7 +687,7 @@ function xmldb_organizer_upgrade($oldversion) {
             'type' => CALENDAR_EVENT_TYPE_ACTION,
             'modulename' => 'organizer',
             'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
-            'oldtype' => CALENDAR_EVENT_TYPE_STANDARD
+            'oldtype' => CALENDAR_EVENT_TYPE_STANDARD,
         ];
         $DB->execute($sql, $params);
         $params['eventtype'] = ORGANIZER_CALENDAR_EVENTTYPE_SLOT;

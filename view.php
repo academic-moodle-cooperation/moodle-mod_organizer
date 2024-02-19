@@ -87,7 +87,7 @@ switch ($params['mode']) {
             $event = \mod_organizer\event\slot_viewed::create(
                 array(
                     'objectid' => $PAGE->cm->id,
-                    'context' => $PAGE->context
+                    'context' => $PAGE->context,
                 )
             );
             $event->trigger();
@@ -116,7 +116,7 @@ switch ($params['mode']) {
             $event = \mod_organizer\event\registrations_viewed::create(
                 array(
                     'objectid' => $PAGE->cm->id,
-                    'context' => $PAGE->context
+                    'context' => $PAGE->context,
                 )
             );
             $event->trigger();

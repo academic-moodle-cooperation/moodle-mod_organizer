@@ -85,7 +85,7 @@ if ($data = $mform->get_data()) {
     $event = \mod_organizer\event\appointment_evaluated::create(
         array(
             'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
+            'context' => $PAGE->context,
         )
     );
     $event->trigger();

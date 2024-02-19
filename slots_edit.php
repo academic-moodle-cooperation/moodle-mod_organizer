@@ -100,7 +100,7 @@ if ($mform->is_cancelled()) {
     $event = \mod_organizer\event\slot_updated::create(
         array(
             'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
+            'context' => $PAGE->context,
         )
     );
     $event->trigger();
