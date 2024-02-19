@@ -50,7 +50,7 @@
 .path-mod-organizer #organizer_main_cointainer fieldset.preview {
     width: 100%;
 }
-.path-mod-organizer #organizer_main_cointainer div.datapreviewtitle{
+.path-mod-organizer #organizer_main_cointainer div.datapreviewtitle {
     margin-bottom: -2em;
     font-weight: bold;
     margin-left: 1.5em;
@@ -117,7 +117,7 @@
     width: 100%;
 }
 .path-mod-organizer #organizer_main_cointainer fieldset#id_slotdetails input[readonly='readonly'] {
-    background: #ffffff;
+    background: #fff;
     color: #6d6d6d;
     border: 1px solid #afafaf;
     cursor: default;
