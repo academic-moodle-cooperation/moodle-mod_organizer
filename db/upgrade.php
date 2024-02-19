@@ -710,7 +710,7 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021062301, 'organizer');
     }
 
-    if ($oldversion < 2023053100) {
+    if ($oldversion < 2022112803) {
         $table = new xmldb_table('organizer');
 
         $field = new xmldb_field('userslotsmin', XMLDB_TYPE_INTEGER, '4', null, false, null, '1', 'enableprintslotuserfields');
@@ -735,7 +735,7 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2023053100, 'organizer');
+        upgrade_mod_savepoint(true, 2022112803, 'organizer');
     }
 
     return true;
