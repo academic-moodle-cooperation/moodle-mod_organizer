@@ -156,7 +156,7 @@ function organizer_generate_appointments_view($params, $instance) {
     $table->align = $align;
 
     $output .= organizer_render_table_with_footer($table);
-    $output .= organizer_generate_actionlink_bar($instance->context, $organizerexpired);
+    $output .= organizer_generate_actionlink_bar($instance->context, $organizerexpired, $instance->organizer);
     $output .= organizer_end_form();
 
     return $output;
@@ -334,7 +334,7 @@ function organizer_generate_tab_row($params, $context) {
     }
 }
 
-function organizer_generate_actionlink_bar($context, $organizerexpired) {
+function organizer_generate_actionlink_bar($context, $organizerexpired, $organizer) {
 
     $output = '<div name="actionlink_bar" class="buttons mdl-align">';
 
@@ -350,7 +350,7 @@ function organizer_generate_actionlink_bar($context, $organizerexpired) {
     if (has_capability("mod/organizer:printslots", $context, null, true)) {
         $actions['print'] = get_string('actionlink_print', 'organizer');
     }
-    if (has_capability("mod/organizer:evalslots", $context, null, true)) {
+    if (has_capability("mod/organizer:evalslots", $context, null, true) && $organizer->grade) {
         $actions['eval'] = get_string('actionlink_eval', 'organizer');
     }
 
@@ -701,7 +701,8 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                             );
                     break;
                     case 'singleslotcommands':
-                        $cell = $row->cells[] = new html_table_cell(organizer_slot_commands($slot->id, $params));
+                        $cell = $row->cells[] = new html_table_cell(organizer_slot_commands($slot->id, $params,
+                            $organizer->grade));
                     break;
                     case 'datetime':
                         if ($params['limitedwidth']) {
@@ -1657,7 +1658,6 @@ function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupid = 
 
 function organizer_teacher_action($params, $entry, $context, $organizer, $groupmode) {
 
-    $evalenabled = has_capability('mod/organizer:evalslots', $context, null, true);
     $evalurl = new moodle_url(
         '/mod/organizer/slots_eval.php',
         array('id' => $params['id'], 'slots[]' => $entry->slotid, 'mode' => '3')
@@ -1678,14 +1678,16 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $buttons = array();
 
     // Grade button.
-    $button = new stdClass();
-    $button->text = get_string("btn_eval_short", 'organizer');
-    $button->url = $evalurl;
-    // If entry is appointment => grade button active.
-    $button->disabled = !$evalenabled ||
-        !($entry->status != ORGANIZER_APP_STATUS_NOT_REGISTERED && $organizer->grade != 0);
-    $button->icon = "fa fa-th-list";
-    $buttons[] = $button;
+    if ($organizer->grade) {
+        $button = new stdClass();
+        $button->text = get_string("btn_eval_short", 'organizer');
+        $button->url = $evalurl;
+        // If entry is appointment => grade button active.
+        $button->disabled = !has_capability('mod/organizer:evalslots', $context, null, true)
+            || $entry->status == ORGANIZER_APP_STATUS_NOT_REGISTERED;
+        $button->icon = "fa fa-th-list";
+        $buttons[] = $button;
+    }
 
     $bookingnotpossible = organizer_bookingnotpossible($groupmode, $organizer, $entry->id);
 
@@ -1710,13 +1712,15 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $buttons[] = $button;
 
     // Delete appointment button.
-    $button = new stdClass();
-    $button->text = get_string("btn_deleteappointment", 'organizer');
-    $button->url = $deleteurl;
-    $button->icon = "fa fa-trash fw";
-    // If it is a trainer assigned slot show button for deleting the appointment.
-    $button->disabled = !$entry->teacherapplicantid || !has_capability('mod/organizer:deleteslots', $context, null, true);
-    $buttons[] = $button;
+    if ($entry->teacherapplicantid) {
+        $button = new stdClass();
+        $button->text = get_string("btn_deleteappointment", 'organizer');
+        $button->url = $deleteurl;
+        $button->icon = "fa fa-trash fw";
+        // If it is a trainer assigned slot show button for deleting the appointment.
+        $button->disabled = !has_capability('mod/organizer:deleteslots', $context, null, true);
+        $buttons[] = $button;
+    }
 
     $output = "";
 
@@ -2097,7 +2101,7 @@ function organizer_slot_status($params, $slot) {
     }
 }
 
-function organizer_slot_commands($slotid, $params) {
+function organizer_slot_commands($slotid, $params, $grades) {
     global $PAGE;
 
     $outstr = "";
@@ -2138,7 +2142,7 @@ function organizer_slot_commands($slotid, $params) {
     }
 
     // GRADE/EVALUATE.
-    if (has_capability("mod/organizer:evalslots", $context)) {
+    if (has_capability("mod/organizer:evalslots", $context) && $grades) {
         $actionurl = new moodle_url(
                 '/mod/organizer/slots_eval.php',
                 array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
