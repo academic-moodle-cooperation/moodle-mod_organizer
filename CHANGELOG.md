@@ -6,6 +6,7 @@ CHANGELOG
 * [FIXED]   Fix organizerconfig problems if config is empty
 * [FIXED]   Going back to simple icons in description section
 * [FIXED]   Show grade buttons only if grading is active
+* backporting organizer version 4.3
 
 4.3.0 (2024-02-08)
 ------------------
