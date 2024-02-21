@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.2.1 (2024-02-21)
+------------------
+* Moodle 4.2 compatible version
+
 4.3.0 (2024-02-08)
 ------------------
 * [FIXED]   Student view: Fix "Show all participants" option, remove the broken "Show only my slots"-filter option
