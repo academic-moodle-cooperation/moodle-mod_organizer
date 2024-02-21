@@ -1,9 +1,15 @@
 CHANGELOG
 =========
 
-4.2.1 (2024-02-21)
+4.2.4 (2024-02-21)
 ------------------
-* Moodle 4.2 compatible version
+* backporting organizer version 4.3 and cherry picking version 4.1.3
+
+4.1.3 (2024-02-21)
+------------------
+* [FIXED]   Fix organizerconfig problems if config is empty
+* [FIXED]   Going back to simple icons in description section
+* [FIXED]   Show grade buttons only if grading is active
 
 4.3.0 (2024-02-08)
 ------------------
