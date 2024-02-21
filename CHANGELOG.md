@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+4.1.3 (2024-02-21)
+------------------
+* [FIXED]   Fix organizerconfig problems if config is empty
+* [FIXED]   Going back to simple icons in description section
+* [FIXED]   Show grade buttons only if grading is active
+
 4.3.0 (2024-02-08)
 ------------------
 * [FIXED]   Student view: Fix "Show all participants" option, remove the broken "Show only my slots"-filter option
