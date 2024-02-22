@@ -142,9 +142,9 @@ class organizer_assign_slot_form extends moodleform {
         $slotx = new organizer_slot($slot);
         if (!$slotx->is_past_due() && !$slotx->is_full() && $slotx->is_available() ) {
 
-               $apps = organizer_get_all_user_appointments($slotx->organizerid, $userid);
+               $apps = organizer_get_all_user_appointments($slot->organizerid, $userid);
             foreach ($apps as $app) {
-                if ($app->slotid == $slotx->get_id()) {
+                if ($app->slotid == $slot->id) {
                     return false;
                 }
             }

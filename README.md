@@ -1,11 +1,11 @@
-Organizer Module
+Organizer
 ================
 
 This file is part of the mod_organizer plugin for Moodle - <http://moodle.org/>
 
 *Author:*    Thomas Niedermaier, Ivan Sakic, Katarzyna Potocka, Simeon Naydenov
 
-*Copyright:* 2022 [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
+*Copyright:* [Academic Moodle Cooperation](http://www.academic-moodle-cooperation.org)
 
 *License:*   [GNU GPL v3 or later](http://www.gnu.org/copyleft/gpl.html)
 
@@ -13,78 +13,35 @@ This file is part of the mod_organizer plugin for Moodle - <http://moodle.org/>
 Description
 -----------
 
-The Organizer module allows participants to subscribe to events, which can be created easily and
-efficiently by teachers.
-
-The Organizer consists of three tabs:
-
-* **Events:** provides an overview of all available and past events and allows teachers to create
-  new events, delete and edit existing events, assess events in which people have enrolled and
-  print all selected events.
-
-* **Students' view:** shows a simplified view of the enrolment page as seen by participants.
-
-* **Enrolment status:** provides a detailed overview of participants' enrolments. This tab allows
-  teachers to send reminders to students who have not enrolled yet.
-
-Teachers have access to all three tabs, whereas students can only access the second tab "students'
-view".
-
-**Group organizer:**
-
-If a group organizer was created, a grouping must be selected in the settings for which the
-organizer is to be used. As soon as one participant enrols, all other group members are enrolled as
-well and are notified about time and place of the event.
-
-Note: Students can be enrolled in only one group of this grouping.
+The organizer enables students to register for appointments, which can be created by teachers.
 
 
-Example
+Usage
 -------
 
-Create events for group meetings for submitting a project to allow students to enrol in an event of
-their choice. The events should, for example, be created for the two upcoming weeks to take place
-from Tuesdays to Thursdays, 8 a.m. to 12 p.m., at 15 minutes each. Enrolments, changes and
-unenrolments should be possible up to two days prior to the event, or at least by a specific date.
-Students' attendance and grades are to be documented.
-
-
-Requirements
-------------
-
-The plugin is available for Moodle 2.5+.
+Create appointments for group submission meetings for project work so that students can register independently for a desired appointment. For example, the appointments should be set up for 15 minutes each on Tuesday to Thursday between 8:00 and 12:00 over the next two weeks. Registration, deregistration and re-registration should be possible up to 2 days before the respective appointment. Student attendance and assessments should be documented.
 
 
 Installation
 ------------
 
-* Copy the module code directly to the mod/organizer directory.
+* Copy the code directly to the mod/organizer directory.
 
 * Log into Moodle as administrator.
 
-* Open the administration area (http://your-moodle-site/admin) to start the installation
-  automatically.
+* Open the administration area (http://your-moodle-site/admin) to start the installation automatically.
 
 
-Admin Settings
+Privacy API
 --------------
 
-As an administrator you can set the default values instance-wide on the settings page for
-administrators in the organizer module:
-
-* Best grade (text field)
-* E-mail notification (drop down)
-* Send a summary of events (drop down)
-* Final deadline (drop down)
-* Relative deadline (drop down)
-
+The plugin fully implements the Moodle Privacy API.
+ 
 
 Documentation
 -------------
 
-You can find a cheat sheet for the plugin on the [AMC
-website](https://www.academic-moodle-cooperation.org/en/module/organizer/) and a video tutorial in
-german only in the [AMC YouTube Channel](https://www.youtube.com/c/AMCAcademicMoodleCooperation).
+You can find a documentation for the plugin on the [AMC website](https://academic-moodle-cooperation.org/mod_organizer/).
 
 
 Bug Reports / Support

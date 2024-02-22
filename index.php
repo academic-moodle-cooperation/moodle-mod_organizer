@@ -42,10 +42,7 @@ require_course_login($course);
 $PAGE->set_pagelayout('incourse');
 
 $event = \mod_organizer\event\course_module_instance_list_viewed::create(
-    array(
-        'context' => context_course::instance($course->id)
-    )
-);
+    array('context' => context_course::instance($course->id)));
 $event->trigger();
 
 // Print the header.
@@ -54,6 +51,13 @@ $PAGE->set_url('/mod/organizer/index.php', array('id' => $course->id));
 $PAGE->navbar->add(get_string("modulenameplural", "organizer"));
 $PAGE->set_title($course->fullname);
 $PAGE->set_heading($course->shortname);
+$organizerconfig = get_config('organizer');
+if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
+    $PAGE->add_body_class('limitedwidth');
+    $params['limitedwidth'] = true;
+}
+
+
 echo $OUTPUT->header();
 
 // Get all the appropriate data.
@@ -98,7 +102,7 @@ foreach ($organizers as $organizer) {
     }
 
     $row = array();
-    if ($course->format == 'weeks' or $course->format == 'topics') {
+    if ($course->format == 'weeks' || $course->format == 'topics') {
         $row[] = $organizer->section;
     }
 

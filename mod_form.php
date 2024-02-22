@@ -61,7 +61,7 @@ class mod_organizer_mod_form extends moodleform_mod {
             }
         } else {
             $organizerconfig = get_config('organizer');
-            $activateduedatecheckbox = $organizerconfig->absolutedeadline != 'never';
+            $activateduedatecheckbox = $organizerconfig->absolutedeadline ?? "" != 'never';
         }
         $params = new \stdClass();
         $params->activatecheckbox = $activateduedatecheckbox;
@@ -111,7 +111,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->setDefault('duedate', mktime(0, 0, 0, date('m'), date('d'), date('y') + 1) - (5 * 60));
         $mform->setType('duedate', PARAM_INT);
         $mform->addHelpButton('duedate', 'absolutedeadline', 'organizer');
-        if ($organizerconfig->absolutedeadline != 'never') {
+        if (isset($organizerconfig->absolutedeadline) && $organizerconfig->absolutedeadline != 'never') {
             $absdefault = strtotime($organizerconfig->absolutedeadline);
             $mform->setDefault('duedate', $absdefault);
         }
@@ -149,7 +149,9 @@ class mod_organizer_mod_form extends moodleform_mod {
         // Relative Deadline.
         $mform->addElement('duration', 'relativedeadline', get_string('relativedeadline', 'organizer'));
         $mform->setType('relativedeadline', PARAM_INT);
-        $mform->setDefault('relativedeadline', $organizerconfig->relativedeadline);
+        if (isset($organizerconfig->relativedeadline)) {
+            $mform->setDefault('relativedeadline', $organizerconfig->relativedeadline);
+        }
         $mform->addHelpButton('relativedeadline', 'relativedeadline', 'organizer');
 
         // Grouporganizer.
@@ -179,7 +181,9 @@ class mod_organizer_mod_form extends moodleform_mod {
         $pickeroptions[1] = get_string('messages_re_unreg', 'organizer');
         $pickeroptions[2] = get_string('messages_all', 'organizer');
         $mform->addElement('select', 'emailteachers', get_string('emailteachers', 'organizer'), $pickeroptions);
-        $mform->setDefault('emailteachers', $organizerconfig->emailteachers);
+        if (isset($organizerconfig->emailteachers)) {
+            $mform->setDefault('emailteachers', $organizerconfig->emailteachers);
+        }
         $mform->addHelpButton('emailteachers', 'emailteachers', 'organizer');
 
         // Queing.
@@ -212,7 +216,9 @@ class mod_organizer_mod_form extends moodleform_mod {
         $itemnumber = 0;
         $component = "mod_organizer";
         $gradefieldname = component_gradeitems::get_field_name_for_itemnumber($component, $itemnumber, 'grade');
-        $mform->setDefault($gradefieldname, $organizerconfig->maximumgrade);
+        if (isset($organizerconfig->maximumgrade)) {
+            $mform->setDefault($gradefieldname, $organizerconfig->maximumgrade);
+        }
 
         // Print slot userfields.
         // Header.

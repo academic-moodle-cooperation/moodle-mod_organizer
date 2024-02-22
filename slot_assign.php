@@ -51,6 +51,11 @@ $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title($organizer->name);
 $PAGE->set_heading($course->fullname);
+$organizerconfig = get_config('organizer');
+if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
+    $PAGE->add_body_class('limitedwidth');
+    $params['limitedwidth'] = true;
+}
 
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => 3));
 
@@ -90,7 +95,7 @@ $newurl = $redirecturl->out();
 $event = \mod_organizer\event\appointment_assigned::create(
     array(
         'objectid' => $PAGE->cm->id,
-        'context' => $PAGE->context
+        'context' => $PAGE->context,
     )
 );
 $event->trigger();

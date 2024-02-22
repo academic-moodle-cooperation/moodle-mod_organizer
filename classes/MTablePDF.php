@@ -138,6 +138,15 @@ class MTablePDF extends \pdf {
     private $data = array();
 
     /**
+     * @var $header
+     */
+    private $header = array();
+    /**
+     * @var $header
+     */
+    private $align = array();
+
+    /**
      * Constructor
      *
      * @param char     $orientation  Orientation to use for PDF export

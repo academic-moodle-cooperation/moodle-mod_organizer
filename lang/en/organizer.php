@@ -161,7 +161,7 @@ $string['availableslotsfor'] = 'Available slots for';
 $string['back'] = 'Back';
 $string['btn_add'] = 'Add new slots';
 $string['btn_assign'] = 'Assign slot';
-$string['btn_comment'] = 'Edit comment';
+$string['btn_comment'] = 'Edit your comment';
 $string['btn_delete'] = 'Remove selected slots';
 $string['btn_deleteappointment'] = 'Delete appointment';
 $string['btn_deletesingle'] = 'Remove selected slot';
@@ -179,7 +179,7 @@ $string['btn_remind'] = 'Send reminder';
 $string['btn_reregister'] = 'Re-register';
 $string['btn_save'] = 'Save comment';
 $string['btn_send'] = 'Send';
-$string['btn_sendall'] = 'Send reminders to all participants without enough appointments';
+$string['btn_sendall'] = 'Send reminders to all participants without enough appointments:';
 $string['btn_start'] = 'Start';
 $string['btn_unqueue'] = 'Remove from Queue';
 $string['btn_unregister'] = 'Unregister';
@@ -189,6 +189,8 @@ $string['cannot_eval'] = 'Cannot evaluate, the student has a ';
 $string['changegradewarning'] = 'This organizer has graded appointments and changing the grade settings will not automatically re-calculate existing grades. You must re-grade all existing appointments, if you wish to change the grade.';
 $string['cfg_dontshowidentity'] = 'Hide identity';
 $string['cfg_dontshowidentity_desc'] = 'Hide participant\'s identity in slot list';
+$string['cfg_limitedwidth'] = 'Smaller content area';
+$string['cfg_limitedwidth_desc'] = 'Use smaller moodle 4.x-style content area in organizer. Moodle default is used but can possibly be stretched by long table entries.';
 $string['collision'] = 'Warning! Collision detected with following event(s) and/or slot(s):';
 $string['configabsolutedeadline'] = 'The default offset of the date and time selector from the current date and time.';
 $string['configahead'] = 'ahead';
@@ -284,22 +286,20 @@ $string['edit_notify_teacher:fullmessage'] = 'Hello {$a->receivername}!
 
 As a part of the course {$a->courseid} {$a->coursefullname}, the details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.
 
-Teacher: {$a->slot_teacher}
+Teacher(s): {$a->slot_teacher}
 Location: {$a->slot_location}
 Max. participants: {$a->slot_maxparticipants}
-Comments:
-{$a->slot_comments}
+Comments: {$a->slot_comments}
 
 Moodle Messaging System';
 $string['edit_notify_teacher:group:fullmessage'] = 'Hello {$a->receivername}!
 
 As a part of the course {$a->courseid} {$a->coursefullname}, the details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.
 
-Teacher: {$a->slot_teacher}
+Teacher(s): {$a->slot_teacher}
 Location: {$a->slot_location}
 Max. participants: {$a->slot_maxparticipants}
-Comments:
-{$a->slot_comments}
+Comments: {$a->slot_comments}
 
 Moodle Messaging System';
 $string['edit_notify_teacher:group:smallmessage'] = 'The details of the time slot on {$a->date} at {$a->time} have been changed by {$a->sendername}.';
@@ -324,6 +324,7 @@ $string['err_fullminute'] = 'The duration has to be a full minute.';
 $string['err_fullminutegap'] = 'The gap has to be a full minute.';
 $string['err_isgrouporganizer_app'] = 'Cannot change group mode as there already exist scheduled appointments in this organizer!';
 $string['err_location'] = 'You must enter a location!';
+$string['err_norecipients'] = 'No recipients were selected!';
 $string['err_noslots'] = 'No slots were selected!';
 $string['err_posint'] = 'You must enter a positive integer!';
 $string['err_startdate'] = 'Start date cannot be set before today\'s date ({$a->now})!';
@@ -499,8 +500,9 @@ $string['hidecalendar_help'] = 'Check to hide the calendar in this organizer';
 $string['hour'] = 'hr';
 $string['hour_pl'] = 'hrs';
 $string['id'] = 'ID';
-$string['img_title_due'] = 'The slot is due';
+$string['img_title_due'] = 'The slot is bookable';
 $string['img_title_evaluated'] = 'The slot is evaluated';
+$string['img_title_full'] = 'The slot is full';
 $string['img_title_no_participants'] = 'The slot had no participants';
 $string['img_title_past_deadline'] = 'The slot is past its deadline';
 $string['img_title_pending'] = 'The slot is pending evaluation';
@@ -509,8 +511,8 @@ $string['includetraineringroups_help'] = 'If you check the checkbox not only the
 $string['infobox_app_countdown'] = 'Time left to the appointment: {$a->days} days, {$a->hours} hours, {$a->minutes} minutes, {$a->seconds} seconds';
 $string['infobox_app_inprogress'] = 'The appointment is in progress.';
 $string['infobox_app_occured'] = 'The appointment has already occurred.';
-$string['infobox_appointmentsstatus_pl'] = '{$a->tooless} booking(s) are due. There are {$a->places} free places in {$a->slots} up-coming slot(s).';
-$string['infobox_appointmentsstatus_sg'] = '{$a->tooless} booking(s) are due. There is {$a->places} free place in {$a->slots} up-coming slot(s).';
+$string['infobox_appointmentsstatus_pl'] = '{$a->tooless} booking(s) is/are due. There are {$a->places} free places in {$a->slots} up-coming slot(s).';
+$string['infobox_appointmentsstatus_sg'] = '{$a->tooless} booking(s) is/are due. There is {$a->places} free place in {$a->slots} up-coming slot(s).';
 $string['infobox_counter_slotrows'] = 'slots shown.';
 $string['infobox_deadline_countdown'] = 'Time left to deadline: {$a->days} days, {$a->hours} hours, {$a->minutes} minutes, {$a->seconds} seconds';
 $string['infobox_deadline_passed'] = 'Registration deadline passed. You can no longer change registrations.';
@@ -538,7 +540,7 @@ $string['infobox_myslot_userslots_min_reached_group'] = 'Your group has booked t
 $string['infobox_myslot_userslots_status'] = '{$a->booked} of {$a->max} slots booked.';
 $string['infobox_organizer_expired'] = 'This organizer expired on {$a->date} at {$a->time}';
 $string['infobox_organizer_expires'] = 'This organizer will expire on {$a->date} at {$a->time}.';
-$string['infobox_organizer_never_expires'] = 'This organizer doesn\'t expire.';
+$string['infobox_organizer_never_expires'] = 'This organizer does not expire.';
 $string['infobox_registrationstatistic_title'] = 'Summary';
 $string['infobox_showallparticipants'] = 'Show all participants';
 $string['infobox_showfreeslots'] = 'Free slots only';
@@ -582,8 +584,8 @@ $string['message_error_slot_full_group'] = 'This timeslot is already taken!';
 $string['message_error_slot_full_single'] = 'This timeslot has no free places left!';
 $string['message_error_unknown_unqueue'] = 'Your waiting list entry could not be removed! Unknown error.';
 $string['message_error_unknown_unregister'] = 'Your registration could not be removed! Unknown error.';
-$string['message_info_appointment_deleted'] = 'The appointment was deleted. The participant has been notified.';
-$string['message_info_appointment_deleted_group'] = 'The appointments of one group have been deleted. The participants have been notified.';
+$string['message_info_appointment_deleted'] = 'The appointment was deleted. The participant has NOT been notified.';
+$string['message_info_appointment_deleted_group'] = 'The appointments of one group have been deleted. The participants have NOT been notified.';
 $string['message_info_appointment_not_deleted'] = 'A problem occured when deleting the appointment(s).';
 $string['message_info_queued'] = 'You was added to a slot\'s waiting list.';
 $string['message_info_queued_group'] = 'Your group was added to a slot\'s waiting list';
@@ -679,6 +681,7 @@ $string['nocalendareventslotcreation'] = 'No calendar events for empty slots';
 $string['nocalendareventslotcreation_help'] = 'If you check this option no calendar events will be created when creating slots. Only appointments will create slot calendar events.';
 $string['nofreeslots'] = 'No free slots available.';
 $string['nogroup'] = 'No group';
+$string['nolocationplaceholder'] = '_to be defined_';
 $string['noparticipants'] = 'No participants';
 $string['norightpage'] = 'You are not allowed to call up this page.';
 $string['nosingleslotprintfields'] = 'Printing is not possible. There are no user fields defined. See the organizer settings.';
@@ -725,7 +728,7 @@ $string['pasttimeslotstringphp'] = '{$a->slots} slots could not be created becau
 $string['pdf_notactive'] = 'not active';
 $string['pdfsettings'] = 'PDF settings';
 $string['places_inqueue'] = '{$a->inqueue} on waiting list';
-$string['places_inqueue_withposition'] = '{$a->queueposition}. position on waiting list';
+$string['places_inqueue_withposition'] = 'You are {$a->queueposition}. on waiting list';
 $string['places_taken_pl'] = '{$a->numtakenplaces}/{$a->totalplaces} places taken';
 $string['places_taken_sg'] = '{$a->numtakenplaces}/{$a->totalplaces} place taken';
 $string['pluginadministration'] = 'Organizer administration';
@@ -760,7 +763,7 @@ $string['privacy:metadata:useridqueue'] = 'Identifier of the user who made this 
 $string['queue'] = 'Waiting queues';
 $string['queue_help'] = 'Waiting queues allow users to register to a time slot even if the maximum number of participants is already reached.
 		Users are added to a waiting queue and assigned to the slot (in order) as soon as a slot becomes available.';
-$string['recipientname'] = '<recipient name>';
+$string['recipientname'] = '_recipient name_';
 $string['reg_not_occured'] = 'This slot has not occurred yet';
 $string['reg_status'] = 'Registration status';
 $string['reg_status_not_registered'] = 'Not registered';
@@ -883,6 +886,7 @@ $string['searchfilter'] = 'Search / Filter';
 $string['sec'] = 'sec';
 $string['sec_pl'] = 'secs';
 $string['select'] = 'Select slots';
+$string['select_all_entries'] = 'Select all entries';
 $string['select_all_slots'] = 'Select all visible slots';
 $string['select_help'] = 'Select one ore more slots you want to work with.';
 $string['selectedgrouplist'] = 'Selected groups';

@@ -52,6 +52,11 @@ $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title($organizer->name);
 $PAGE->set_heading($course->fullname);
+$organizerconfig = get_config('organizer');
+if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
+    $PAGE->add_body_class('limitedwidth');
+    $params['limitedwidth'] = true;
+}
 
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode));
 
@@ -83,6 +88,9 @@ if ($mform->is_cancelled()) {
             'success');
     }
 
+    $data->slot_trainer = $data->slot_trainer ?? "-";
+    $data->slot_location = $data->slot_location ?? "-";
+    $data->slot_comments = $data->slots_comments ?? "-";
     organizer_prepare_and_send_message($data, 'edit_notify_teacher');
     organizer_prepare_and_send_message($data, 'edit_notify_student');
 
@@ -92,7 +100,7 @@ if ($mform->is_cancelled()) {
     $event = \mod_organizer\event\slot_updated::create(
         array(
             'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
+            'context' => $PAGE->context,
         )
     );
     $event->trigger();

@@ -379,7 +379,7 @@ function organizer_update_grades($organizer, $userid = 0) {
                                 $sum += $value->rawgrade;
                             }
                         }
-                        $grade->rawgrade = $sum / $i;
+                        $grade->rawgrade = $i ? $sum / $i : 0;
                         break;
                     case GRADEAGGREGATIONMETHOD_SUM:
                         $sum = 0;
@@ -722,7 +722,8 @@ SQL;
     $apps = $DB->get_records_sql($appsquery, $params);
     foreach ($apps as $app) {
         $customdata = ['showsendername' => intval($app->teachervisible == 1)];
-        $success &= organizer_send_message_from_trainer(intval($app->userid), $app, 'appointment_reminder_student', null, $customdata);
+        $success &= organizer_send_message_from_trainer(intval($app->userid), $app,
+            'appointment_reminder_student', null, $customdata);
     }
 
     if (empty($apps)) {
@@ -775,7 +776,6 @@ SQL;
         $found = false;
         foreach ($slots as $slot) {
             if ($slot->trainerid == $trainerid) {
-                $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
                 $time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
                 $digest .= "$time @ $slot->location\n";
                 $found = true;
@@ -789,6 +789,7 @@ SQL;
         }
 
         if ($found) {
+            // Reminder for trainer in cron job.
             $success &= $thissuccess = organizer_send_message(
                 intval($trainerid), intval($trainerid), reset($slots),
                 'appointment_reminder_teacher', $digest
@@ -809,8 +810,6 @@ function organizer_create_digest($trainerid) {
     global $DB;
     $now = time();
 
-    $success = true;
-
     $params = array('now' => $now, 'trainerid' => $trainerid);
 
     $slotsquery = 'SELECT s.*, t.trainerid, t.slotid FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t
@@ -830,6 +829,7 @@ function organizer_create_digest($trainerid) {
         $DB->execute("UPDATE {organizer_slots} SET notified = 1 WHERE id = $slot->slotid");
     }
 
+    // Send digest from trainer to itself. Is this used??
     $success = organizer_send_message($trainerid, $trainerid, $slot, 'appointment_reminder_teacher:digest', $digest);
 
     return $success;
@@ -1100,7 +1100,7 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
     $intro = strip_pluginfile_content($eventdescription);
     $event->description = array(
             'text' => $intro,
-            'format' => $organizer->introformat
+            'format' => $organizer->introformat,
     );
     $event->modulename = 'organizer';
     $event->instance = $organizer->id;
@@ -1164,7 +1164,7 @@ function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eve
     $intro = strip_pluginfile_content($eventdescription);
     $data->description = array(
             'text' => $intro,
-            'format' => $organizer->introformat
+            'format' => $organizer->introformat,
     );
     if ($uuid) {
         $data->uuid = $uuid;

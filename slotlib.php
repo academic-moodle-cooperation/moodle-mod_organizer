@@ -183,46 +183,6 @@ function organizer_get_all_group_appointments($organizer, $groupid) {
     return $groupapps;
 }
 
-function organizer_get_next_user_appointment($organizer, $userid = null) {
-    global $DB, $USER, $CFG;
-
-    if ($userid == null) {
-        $userid = $USER->id;
-    }
-
-    if (is_number($organizer) && $organizer == intval($organizer)) {
-        $organizer = $DB->get_record('organizer', array('id' => $organizer));
-    }
-
-    $todaymidnight = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
-
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        require_once($CFG->dirroot . '/mod/organizer/locallib.php');
-        if ($group = organizer_fetch_user_group($userid, $organizer->id)) {
-            $paramssql = array('organizerid' => $organizer->id, 'groupid' => $group->id, 'todaymidnight' => $todaymidnight);
-            $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
-                  INNER JOIN {organizer_slots} s ON a.slotid = s.id
-                  WHERE s.organizerid = :organizerid AND a.groupid = :groupid AND s.starttime > :todaymidnight
-                  ORDER BY s.starttime ASC";
-            $apps = $DB->get_records_sql($query, $paramssql);
-            $app = reset($apps);
-        } else {
-            $app = null;
-        }
-    } else {
-        $paramssql = array('organizerid' => $organizer->id, 'userid' => $userid, 'todaymidnight' => $todaymidnight);
-        $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
-                  INNER JOIN {organizer_slots} s ON a.slotid = s.id
-                  WHERE s.organizerid = :organizerid AND a.userid = :userid AND s.starttime > :todaymidnight
-                  ORDER BY s.starttime ASC";
-        $apps = $DB->get_records_sql($query, $paramssql);
-        $app = reset($apps);
-    }
-
-    return $app;
-}
-
-
 class organizer_slot {
 
     private $slot;
@@ -330,7 +290,7 @@ class organizer_slot {
         $this->load_appointments();
 
         foreach ($this->apps as $app) {
-            if (!isset($app->attended)) {
+            if (($app->attended ?? -1) < 0) {
                 return false;
             }
         }
@@ -356,6 +316,11 @@ class organizer_slot {
             }
         }
         return true;
+    }
+
+    public function gradingisactive() {
+        $this->load_organizer();
+        return $this->organizer->grade;
     }
 
 
@@ -493,25 +458,8 @@ class organizer_slot {
     }
 
     public function get_id() {
-        return $this->slot->id ?? 0;
+        return $this->slot->id;
     }
-}
-
-function organizer_user_has_access($slotid) {
-    global $DB;
-    $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-    $moduleid = $DB->get_field('modules', 'id', array('name' => 'organizer'));
-    $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
-    $courseid = $DB->get_field('course_modules', 'course', array('module' => $moduleid, 'instance' => $organizer->id));
-    $groups = groups_get_user_groups($courseid);
-    $groupingid = $DB->get_field(
-        'course_modules', 'groupingid',
-        array('module' => $moduleid, 'instance' => $organizer->id)
-    );
-    if (!isset($groups[$groupingid]) || !count($groups[$groupingid])) {
-        return false;
-    }
-    return true;
 }
 
 function organizer_get_slot_trainers($slotid, $withname = false) {

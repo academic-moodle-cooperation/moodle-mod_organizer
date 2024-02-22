@@ -20,22 +20,26 @@ variables:
     - cd ../..
     - moodle-db-isready
     - moodle-plugin-ci install --moodle="moodle-upstream-core" --db-host=$DB_HOST --db-port=$DB_PORT
+    - eval $(failed setup-command)
   script:
     - moodle-plugin-ci phplint
     - moodle-plugin-ci phpcpd
     - moodle-plugin-ci phpmd
-    - moodle-plugin-ci codechecker
+    - moodle-plugin-ci phpcs
     - moodle-plugin-ci validate
     - moodle-plugin-ci savepoints
     - moodle-plugin-ci mustache
-#    - moodle-plugin-ci grunt
-#    - moodle-plugin-ci phpdoc
+    #- moodle-plugin-ci grunt
+    #- moodle-plugin-ci phpdoc
     - moodle-plugin-ci phpunit
     - moodle-plugin-ci behat --profile chrome
+    - failed result
+  after_script:
+    - failed report
   parallel:
     matrix:
       - MOODLE_BRANCH: [ "MOODLE_402_STABLE" ]
-        PHP_VERSION: [ "8.2" ]
+        PHP_VERSION: [ "8.1" ]
 
 test:postgres:
   <<: *job_configuration
