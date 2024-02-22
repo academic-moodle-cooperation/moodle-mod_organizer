@@ -30,8 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * The appointment_removed event class.
  **/
-class appointment_removed extends \core\event\base
-{
+class appointment_removed extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'd'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
@@ -49,11 +48,5 @@ class appointment_removed extends \core\event\base
 
     public function get_url() {
         return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
-    }
-
-    public function get_legacy_logdata() {
-        // Override if you are migrating an add_to_log() call.
-        return array($this->courseid, 'mod_organizer', 'unregister',
-            $this->objectid, $this->contextinstanceid);
     }
 }

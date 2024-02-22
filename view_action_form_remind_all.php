@@ -20,6 +20,7 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -30,21 +31,14 @@ defined('MOODLE_INTERNAL') || die();
 
 // Required for the form rendering.
 require_once("$CFG->libdir/formslib.php");
-require_once(dirname(__FILE__) . '/slotlib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
-require_once(dirname(__FILE__) . '/view_lib.php');
 
-class organizer_remind_all_form extends moodleform
-{
+class organizer_remind_all_form extends moodleform {
 
     protected function definition() {
 
         $mform = $this->_form;
         $data = $this->_customdata;
-
-        $recipients = $data['recipients'];
-        $recipientscount = count($recipients);
-        $recipient = $data['recipient'];
 
         $mform->addElement('hidden', 'id', $data['id']);
         $mform->setType('id', PARAM_INT);
@@ -52,10 +46,28 @@ class organizer_remind_all_form extends moodleform
         $mform->setType('mode', PARAM_INT);
         $mform->addElement('hidden', 'action', 'remindall');
         $mform->setType('action', PARAM_ALPHANUMEXT);
-        $mform->addElement('hidden', 'user', $recipient);
-        $mform->setType('user', PARAM_INT);
+        $mform->addElement('hidden', 'recipient', $data['recipient']);
+        $mform->setType('recipient', PARAM_INT);
+        $mform->addElement('hidden', 'recipientsstr', $data['recipients']);
+        $mform->setType('recipientsstr', PARAM_TEXT);
 
-        list(, $course, $organizer, ) = organizer_get_course_module_data();
+        list(, $course, $organizer, $context) = organizer_get_course_module_data();
+
+        $recipientscount = 0;
+        if ($data['recipients']) {
+            $recipientsarr = $data['recipients'] ? explode(",", $data['recipients']) : array();
+            $recipientscount = count($recipientsarr);
+        } else if ($data['recipient']) {
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                $recipientsarr = array_keys(get_enrolled_users($context, 'mod/organizer:register', $data['recipient'],
+                    'u.id', 'lastname,firstname', null, null, true));
+                $recipientscount = count($recipientsarr);
+                $groupname = organizer_fetch_groupname($data['recipient']);
+            } else {
+                $recipientsarr = array($data['recipient']);
+                $recipientscount = 1;
+            }
+        }
 
         $buttonarray = array();
         if ($recipientscount > 0) {
@@ -67,22 +79,34 @@ class organizer_remind_all_form extends moodleform
                 $mform->addElement('static', '', '', get_string('organizer_remind_all_recepients_pl', 'organizer', $a));
             }
             $groupnameswitch = true;
-            foreach ($recipients as $recepient) {
+            $recipientslist = array();
+            foreach ($recipientsarr as $recepient) {
                 $identity = organizer_get_user_identity($recepient);
                 $identity = $identity != "" ? "({$identity})" : "";
-                $mform->addElement(
-                    'static', '', '',
-                    organizer_get_name_link($recepient->id) . $identity
-                );
-                // Get groupname of first recipient's group.
-                if ($organizer->isgrouporganizer && $groupnameswitch) {
-                    $group = organizer_fetch_user_group($recepient->id, $organizer->id);
-                    $groupname = organizer_fetch_groupname($group->id);
-                    $groupnameswitch = false;
-                }
+                $recipientslist[] = organizer_get_name_link($recepient) . $identity;
             }
-            $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_organizer_remind_all', 'organizer'));
-        } else {
+            $mform->addElement('static', '', '', html_writer::alist($recipientslist,
+                array('class' => 'generalbox'), 'ul'));
+            $buttonarray[] = &$mform->createElement('submit', 'confirm',
+                get_string('confirm_organizer_remind_all', 'organizer'));
+            $strautomessage = "register_reminder_student";
+            $strautomessage .= ($organizer->isgrouporganizer == 0) ? "" : ":group";
+            $strautomessage .= ":fullmessage";
+
+            $a = new stdClass();
+            $a->receivername = get_string('recipientname', 'organizer');
+            $a->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
+            $a->coursefullname = $course->fullname;
+            $a->custommessage = "";
+            $a->groupname = isset($groupname) ? $groupname : "";
+            $mform->addElement(
+                'static', 'message_autogenerated', get_string('message_autogenerated2', 'organizer'),
+                nl2br(str_replace("\n\n\n", "\n", get_string($strautomessage, 'organizer', $a)))
+            );
+
+            $mform->addElement('editor', 'message_custommessage', get_string('message_custommessage', 'organizer'));
+            $mform->addHelpButton('message_custommessage', 'message_custommessage', 'organizer');
+        } else { // No recipients.
             $mform->addElement('static', '', '', get_string('organizer_remind_all_no_recepients', 'organizer'));
             $buttonarray[] = &$mform->createElement(
                 'submit', 'confirm', get_string('confirm_organizer_remind_all', 'organizer'),
@@ -90,25 +114,6 @@ class organizer_remind_all_form extends moodleform
             );
         }
         $buttonarray[] = &$mform->createElement('cancel');
-
-        $strautomessage = "register_reminder_student";
-        $strautomessage .= ($organizer->isgrouporganizer == 0) ? "" : ":group";
-        $strautomessage .= ":fullmessage";
-
-        $a = new stdClass();
-        $a->receivername = get_string('recipientname', 'organizer');
-        $a->courseid = ($course->idnumber == "") ? "" : $course->idnumber . ' ';
-        $a->coursefullname = $course->fullname;
-        $a->custommessage = "";
-        $a->groupname = isset($groupname) ? $groupname : "";
-        $mform->addElement(
-            'static', 'message_autogenerated', get_string('message_autogenerated2', 'organizer'),
-            nl2br(str_replace("\n\n\n", "\n", get_string($strautomessage, 'organizer', $a)))
-        );
-
-        $mform->addElement('editor', 'message_custommessage', get_string('message_custommessage', 'organizer'));
-        $mform->addHelpButton('message_custommessage', 'message_custommessage', 'organizer');
-
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
     }

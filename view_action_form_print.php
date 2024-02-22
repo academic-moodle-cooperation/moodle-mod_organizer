@@ -32,8 +32,7 @@ require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
-class organizer_print_slots_form extends moodleform
-{
+class organizer_print_slots_form extends moodleform {
 
     private $_selcols;
 
@@ -158,15 +157,15 @@ class organizer_print_slots_form extends moodleform
     }
 
     private function _create_preview_table($columns) {
-        global $PAGE, $OUTPUT, $cm, $CFG;
+        global $PAGE, $OUTPUT, $cm, $CFG, $USER;
 
-        user_preference_allow_ajax_update('mod_organizer_noprintfields', PARAM_TEXT);
+        $USER->ajax_updatable_user_prefs['mod_organizer_noprintfields'] = PARAM_TEXT;
 
         $param = new \stdClass();
         $param->iconminus = $OUTPUT->image_icon('t/switch_minus', get_string('hide'), 'moodle', array(
-            'id' => 'xxx', 'col' => 'yyy', 'style' => 'cursor:pointer;margin-left:2px;'));
+            'id' => 'xxx', 'col' => 'yyy', 'style' => 'cursor:pointer;margin-left:3px;'));
         $param->iconplus = $OUTPUT->image_icon('t/switch_plus', get_string('show'), 'moodle', array(
-            'id' => 'xxx', 'col' => 'yyy', 'style' => 'cursor:pointer;margin-left:2px;'));
+            'id' => 'xxx', 'col' => 'yyy', 'style' => 'cursor:pointer;margin-left:3px;'));
         $PAGE->requires->js_call_amd('mod_organizer/printform', 'init', array($param));
 
         $isgrouporganizer = organizer_is_group_mode();
@@ -184,8 +183,10 @@ class organizer_print_slots_form extends moodleform
             }
         }
 
-        $iconup = $OUTPUT->image_icon('t/up', get_string('up'), 'moodle');
-        $icondown = $OUTPUT->image_icon('t/down', get_string('down'), 'moodle');
+        $iconup = $OUTPUT->image_icon('t/up', get_string('up'), 'moodle',
+            array('style' => 'cursor:pointer;margin-left:3px;'));
+        $icondown = $OUTPUT->image_icon('t/down', get_string('down'), 'moodle',
+            array('style' => 'cursor:pointer;margin-left:3px;'));
 
         $header = array();
         $noprintfieldsarray = array();
@@ -230,6 +231,7 @@ class organizer_print_slots_form extends moodleform
 
             $cell = new html_table_cell(html_writer::link($url, get_string("th_{$column}", 'organizer') . $icon, $linkarray));
             $cell->header = true;
+            $cell->attributes['class'] = 'text-nowrap p-2';
             $header[] = $cell;
         }
         $table->head = $header;
@@ -297,7 +299,7 @@ class organizer_print_slots_form extends moodleform
                                 $content = "<span name='{$column}_cell'>" . $datetime . '</span>';
                                 $cell = new html_table_cell($content);
                                 $cell->rowspan = $entry->rowspan;
-                                $cell->style = 'vertical-align: middle;';
+                                $cell->attributes['class'] = 'align-middle p-2';
                                 $row->cells[] = $cell;
                         break;
                         case 'location':
@@ -305,7 +307,7 @@ class organizer_print_slots_form extends moodleform
                             $content = "<span name='{$column}_cell'>" . $location . '</span>';
                             $cell = new html_table_cell($content);
                             $cell->rowspan = $entry->rowspan;
-                            $cell->style = 'vertical-align: middle;';
+                            $cell->attributes['class'] = 'align-middle p-2';
                             $row->cells[] = $cell;
                         break;
                         case 'teacher':
@@ -322,14 +324,14 @@ class organizer_print_slots_form extends moodleform
                             $content = "<span name='{$column}_cell'>" . $name . '</span>';
                             $cell = new html_table_cell($content);
                             $cell->rowspan = $entry->rowspan;
-                            $cell->style = 'vertical-align: middle;';
+                            $cell->attributes['class'] = 'align-middle p-2';
                             $row->cells[] = $cell;
                         break;
                         case 'teachercomments':
                             $content = "<span name='{$column}_cell'>" . organizer_filter_text($entry->teachercomments) . '</span>';
                             $cell = new html_table_cell($content);
                             $cell->rowspan = $entry->rowspan;
-                            $cell->style = 'vertical-align: middle;';
+                            $cell->attributes['class'] = 'align-middle p-2';
                             $row->cells[] = $cell;
                             break;
                         case 'groupname':
@@ -340,7 +342,7 @@ class organizer_print_slots_form extends moodleform
                             }
                             $cell = new html_table_cell($content);
                             $cell->rowspan = $entry->rowspan;
-                            $cell->style = 'vertical-align: middle;';
+                            $cell->attributes['class'] = 'align-middle p-2';
                             $row->cells[] = $cell;
                         break;
                         default:
@@ -355,53 +357,55 @@ class organizer_print_slots_form extends moodleform
                         $a->firstname = $entry->firstname;
                         $a->lastname = $entry->lastname;
                         $name = get_string('fullname_template', 'organizer', $a);
-                        $content = "<span name='{$column}_cell'>" . $name . '</span>';
+                        $content = html_writer::start_span('', array('name' => $column.'_cell'));
+                        $content .= $name;
                         if (!$isgrouporganizer) {
                             $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
                         }
+                        $content .= html_writer::end_span();
                         $cell = new html_table_cell($content);
-                        $cell->style = 'vertical-align: middle;';
+                        $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
                     break;
                     case 'email':
                         $content = "<span name='{$column}_cell'>" . $entry->email . '</span>';
                         $cell = new html_table_cell($content);
-                        $cell->style = 'vertical-align: middle;';
+                        $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
                     break;
                     case 'idnumber':
                         $idnumber = (isset($entry->idnumber) && $entry->idnumber !== '') ? $entry->idnumber : '';
                         $content = "<span name='{$column}_cell'>" . $idnumber . '</span>';
                         $cell = new html_table_cell($content);
-                        $cell->style = 'vertical-align: middle;';
+                        $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
                     break;
                     case 'attended':
                         $attended = isset($entry->attended) ? ($entry->attended == 1 ? 'Yes' : 'No') : '';
                         $content = "<span name='{$column}_cell'>" . $attended . '</span>';
                         $cell = new html_table_cell($content);
-                        $cell->style = 'vertical-align: middle;';
+                        $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
                     break;
                     case 'grade':
                         $grade = isset($entry->grade) && $entry->grade >= 0 ? sprintf("%01.2f", $entry->grade) : '';
                         $content = "<span name='{$column}_cell'>" . $grade . '</span>';
                         $cell = new html_table_cell($content);
-                        $cell->style = 'vertical-align: middle;';
+                        $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
                     break;
                     case 'feedback':
                         $feedback = isset($entry->feedback) && $entry->feedback !== '' ? $entry->feedback : '';
                         $content = "<span name='{$column}_cell'>" . $feedback . '</span>';
                         $cell = new html_table_cell($content);
-                        $cell->style = 'vertical-align: middle;';
+                        $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
                     break;
                     case 'comments':
                         $comments = isset($entry->comments) && $entry->comments !== '' ? $entry->comments : '';
                         $content = "<span name='{$column}_cell'>" . organizer_filter_text($comments) . '</span>';
                         $cell = new html_table_cell($content);
-                        $cell->style = 'vertical-align: middle;';
+                        $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
                         break;
                     case 'datetime':

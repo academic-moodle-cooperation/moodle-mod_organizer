@@ -51,6 +51,11 @@ $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title($organizer->name);
 $PAGE->set_heading($course->fullname);
+$organizerconfig = get_config('organizer');
+if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
+    $PAGE->add_body_class('limitedwidth');
+    $params['limitedwidth'] = true;
+}
 
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => 3));
 
@@ -77,9 +82,11 @@ if (organizer_is_group_mode()) {
 
 $sent = organizer_prepare_and_send_message($data, 'assign_notify_student'); // Message.
 if ($sent) {  // If slot not in the past.
-    $redirectmsg = get_string('assignsuccess', 'organizer');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('assignsuccess',
+        'organizer'), 'success');
 } else {
-    $redirectmsg = get_string('assignsuccessnotsent', 'organizer');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('assignsuccessnotsent',
+        'organizer'), 'error');
 }
 organizer_prepare_and_send_message($data, 'assign_notify_teacher'); // Message.
 
@@ -88,12 +95,12 @@ $newurl = $redirecturl->out();
 $event = \mod_organizer\event\appointment_assigned::create(
     array(
         'objectid' => $PAGE->cm->id,
-        'context' => $PAGE->context
+        'context' => $PAGE->context,
     )
 );
 $event->trigger();
 
-redirect($newurl, $redirectmsg, 5);
+redirect($newurl);
 
 print_error('If you see this, something went wrong!');
 

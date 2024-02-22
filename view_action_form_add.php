@@ -39,14 +39,16 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class organizer_add_slots_form extends moodleform
-{
+class organizer_add_slots_form extends moodleform {
 
     private $pickeroptionshours;
 
     private $pickeroptionsminutes;
 
     private $weekdays;
+
+    private $spacing;
+
     /**
      *
      * {@inheritDoc}
@@ -57,6 +59,13 @@ class organizer_add_slots_form extends moodleform
 
         $this->_init_arrays();
         $this->_add_scroll_fix();
+
+        $pagebodyclasses = $PAGE->bodyclasses;
+        if (strpos($pagebodyclasses, 'limitedwidth')) {
+            $this->spacing = '';
+        } else {
+            $this->spacing = ORGANIZER_SPACING;
+        }
 
         $mform = &$this->_form;
         $data = &$this->_customdata;
@@ -177,7 +186,7 @@ class organizer_add_slots_form extends moodleform
         $mform->insertElementBefore(
             $mform->createElement(
                 'group', 'availablefromgroup', get_string('availablefrom', 'organizer'), $group,
-                ORGANIZER_SPACING, false
+                $this->spacing, false
             ), 'notificationtime'
         );
         $mform->addHelpButton('availablefromgroup', 'availablefrom', 'organizer');
@@ -210,8 +219,8 @@ class organizer_add_slots_form extends moodleform
             $slotgroup = $this->_create_day_slot_group($newslotindex);
             $grouplabel = get_string("weekdaylabel", "organizer") . " " . ($newslotindex + 1);
             $mform->insertElementBefore(
-                $mform->createElement('group', "slotgroup{$newslotindex}", $grouplabel, $slotgroup, ORGANIZER_SPACING, false
-                ), 'other'
+                $mform->createElement('group', "slotgroup{$newslotindex}", $grouplabel,
+                    $slotgroup, $this->spacing, false), 'other'
             );
         }
 
@@ -224,8 +233,8 @@ class organizer_add_slots_form extends moodleform
         $forecasttotalgroup[] = $mform->createElement("html",
                 "<div name='organizer_newslots_forecasttotal' class='col-md-9 form-inline felement'></div>");
         $mform->insertElementBefore(
-                $mform->createElement('group', "forecasttotalgroup", "&nbsp;", $forecasttotalgroup, ORGANIZER_SPACING, false
-                ), 'other'
+                $mform->createElement('group', "forecasttotalgroup", "&nbsp;",
+                    $forecasttotalgroup, $this->spacing, false), 'other'
         );
 
         $mform->insertElementBefore(
@@ -255,7 +264,7 @@ class organizer_add_slots_form extends moodleform
         }
         $params->relativedeadline = $organizer->relativedeadline;
         $params->relativedeadlinestring = get_string('infobox_deadline_passed_slot', 'organizer');
-        $params->allowcreationofpasttimeslots = $organizerconfig->allowcreationofpasttimeslots;
+        $params->allowcreationofpasttimeslots = $organizerconfig->allowcreationofpasttimeslots ?? null;
         $params->pasttimeslotsstring = get_string('pasttimeslotstring', 'organizer');
 
         $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', array($params));
@@ -484,7 +493,7 @@ class organizer_add_slots_form extends moodleform
                 $mform->insertElementBefore(
                     $mform->createElement(
                         'group', 'organizer_slotgroup{$day}',
-                        $grouplabel, $slotgroup, ORGANIZER_SPACING, false
+                        $grouplabel, $slotgroup, $this->spacing, false
                     ), 'other'
                 );
         }

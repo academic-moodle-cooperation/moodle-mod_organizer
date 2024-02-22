@@ -77,6 +77,7 @@ function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $endd
 
     return $DB->get_records_sql($query, $params);
 }
+
 /**
  *
  * @param number $user
@@ -95,6 +96,27 @@ function organizer_get_name_link($user = 0) {
     $profileurl = new moodle_url('/user/view.php', array('id' => $user->id, 'course' => $COURSE->id));
     $name = get_string('fullname_template', 'organizer', $user);
     return html_writer::link($profileurl, $name);
+}
+
+function organizer_get_userpicture_link($user = 0) {
+    global $DB, $USER, $COURSE;
+    if (!$user) {
+        $user = $USER;
+    } else if (is_number($user)) {
+        $user = $DB->get_record('user', array('id' => $user));
+    } else if (!($user instanceof stdClass)) {
+        return false;
+    }
+
+    $initials = mb_strtoupper(
+        mb_substr($user->firstname, 0, 1, 'UTF-8') .
+        mb_substr($user->lastname, 0, 1, 'UTF-8'),
+        'UTF-8');
+    $profileurl = new moodle_url('/user/view.php', array('id' => $user->id, 'course' => $COURSE->id));
+    $name = get_string('fullname_template', 'organizer', $user);
+    $spaninit = html_writer::span($initials, 'userinitials size-35');
+    $spantext = html_writer::span($name, 'userinitialstext');
+    return html_writer::link($profileurl, $spaninit.$spantext, array('title' => $name, 'class' => 'd-inline-block aabtn'));
 }
 
 /**
@@ -232,7 +254,7 @@ function organizer_add_new_slots($data) {
                             $collisionmessage = "";
                             foreach ($collisions as $collision) {
                                 if ($head) {
-                                    $collisionmessage .= '<span class="error">' .
+                                    $collisionmessage .= '<span class="warning">' .
                                         get_string('collision', 'organizer') . '</span><br />';
                                     $head = false;
                                 }
@@ -667,6 +689,9 @@ function organizer_update_slot($data) {
             if ($trainermodified) {
                 $trainers = organizer_get_slot_trainers($slot->id);
                 if ($deletions = array_diff($trainers, $data->trainerid)) {
+                    if (empty($deletions)) {
+                        $deletions = array(0);
+                    }
                     list($insql, $inparams) = $DB->get_in_or_equal($deletions, SQL_PARAMS_NAMED);
                     $eventids = $DB->get_fieldset_select(
                             'organizer_slot_trainer', 'eventid', 'slotid = ' . $slot->id . ' AND trainerid ' . $insql, $inparams
@@ -740,8 +765,9 @@ function organizer_delete_appointment_slot($id) {
         $slot = new organizer_slot($id);
 
         foreach ($appointments as $appointment) {
-            $reciever = intval($appointment->userid);
-            organizer_send_message($USER, $reciever, $slot, 'slotdeleted_notify_student');
+            $receiver = intval($appointment->userid);
+            // App delete when slot delete: Send notification to participant.
+            organizer_send_message($USER, $receiver, $slot, 'slotdeleted_notify_student', null, null, true);
             $DB->delete_records('event', array('id' => $appointment->eventid));
             $notifiedusers++;
         }
@@ -757,6 +783,46 @@ function organizer_delete_appointment_slot($id) {
     $DB->delete_records('organizer_slots', array('id' => $id));
 
     return $notifiedusers;
+}
+
+function organizer_delete_appointment($id) {
+    global $DB, $USER;
+
+    if (!$appointment = $DB->get_record('organizer_slot_appointments', array('id' => $id))) {
+        return false;
+    }
+
+    // Send a message to the participant.
+    $slot = new organizer_slot($appointment->slotid);
+    $receiver = intval($appointment->userid);
+    // App delete: Send notification to participant.
+    organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
+    $DB->delete_records('event', array('id' => $appointment->eventid));
+    $DB->delete_records('organizer_slot_appointments', array('id' => $id));
+
+    return true;
+}
+
+function organizer_delete_appointment_group($slotid, $groupid) {
+    global $DB, $USER;
+
+    $slot = new organizer_slot($slotid);
+
+    if (!$appointments = $DB->get_records('organizer_slot_appointments',
+        array('slotid' => $slotid, 'groupid' => $groupid))) {
+        return false;
+    }
+
+    foreach ($appointments as $appointment) {
+        // Send a message to the participant.
+        $receiver = intval($appointment->userid);
+        // App delete group: Send notification to participant.
+        organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student', null, null, true);
+        $DB->delete_records('event', array('id' => $appointment->eventid));
+        $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
+    }
+
+    return true;
 }
 
 function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
@@ -814,7 +880,7 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
         $userid = $USER->id;
     }
 
-       $organizer = $slotobj->get_organizer();
+    $organizer = $slotobj->get_organizer();
     if (!$organizer->queue) {
            return false;
     }
@@ -822,13 +888,12 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
 
     $ok = true;
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $groupid) {
-        $memberids = $DB->get_fieldset_select(
-            'groups_members', 'userid', "groupid = :groupid",
-            array('groupid' => $groupid)
-        );
+        $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
+        $context = context_module::instance($cm->id, MUST_EXIST);
+        $members = get_enrolled_users($context, 'mod/organizer:register', $groupid, 'u.id', null, 0, 0, true);
 
-        foreach ($memberids as $memberid) {
-            $ok = organizer_queue_single_appointment($slotid, $memberid, $userid, $groupid);
+        foreach ($members as $member) {
+            $ok = organizer_queue_single_appointment($slotid, $member->id, $userid, $groupid);
         }
     } else {
         $ok = organizer_queue_single_appointment($slotid, $userid);
@@ -837,9 +902,9 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
     return $ok;
 }
 
-function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
-                                        $sendmessage = false, $teacherapplicantid = null, $slotnotfull = false) {
-    global $DB, $USER, $CFG;
+function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sendmessage = false,
+                                        $teacherapplicantid = null, $slotnotfull = false) {
+    global $DB, $USER;
 
     if (!$userid) {
         $userid = $USER->id;
@@ -864,16 +929,17 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
     $organizer = $slot->get_organizer();
     $ok = true;
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
+        $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
+        $context = context_module::instance($cm->id, MUST_EXIST);
+        $members = get_enrolled_users($context, 'mod/organizer:register', $groupid, 'u.id', null, 0, 0, true);
         $generatetrainerevents = true;
-        foreach ($memberids as $memberid) {
-            if ($ok = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid,
+        foreach ($members as $member) {
+            if ($ok = organizer_register_single_appointment($slotid, $member->id, $USER->id, $groupid,
                 $teacherapplicantid, $generatetrainerevents, null, $organizer->id)) {
                 if ($sendmessage) {
-                    $receiver = core_user::get_user($memberid);
-                    /* Here we have some overlap with functions organizer_send_message_from_trainer,
-                     * but they don't fit exactly for our usecase. */
-                    organizer_send_message($from, $receiver, $slot, 'register_promotion_student');
+                    $receiver = core_user::get_user($member->id);
+                    // Register App groupmode: Send notification to group member.
+                    organizer_send_message($from, $receiver, $slot, 'register_promotion_student', null, null, true);
                 }
                 $generatetrainerevents = false;
             }
@@ -883,8 +949,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0,
             $teacherapplicantid, true, null, $organizer->id)) {
             if ($sendmessage) {
                 $receiver = core_user::get_user($userid);
-                /* Here we have some overlap with functions organizer_send_message_from_trainer,
-                 * but they don't fit exactly for our usecase. */
+                // Register App single mode: Send notification to participant.
                 organizer_send_message($from, $receiver, $slot, 'register_promotion_student');
             }
         }
@@ -900,17 +965,6 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     global $DB;
 
     list($cm, , $organizer, ) = organizer_get_course_module_data(null, $ogranizerid);
-
-    $params = array('organizerid' => $organizer->id, 'userid' => $userid);
-    $query = "SELECT COUNT(*) FROM {organizer_slot_appointments}
-                    INNER JOIN {organizer_slots} ON {organizer_slot_appointments}.slotid = {organizer_slots}.id
-                    WHERE {organizer_slots}.organizerid = :organizerid
-                    AND {organizer_slot_appointments}.userid = :userid
-                    AND ( {organizer_slot_appointments}.allownewappointments IS NULL OR
-                    {organizer_slot_appointments}.allownewappointments = 0 )";
-    if ($alreadyapps = $DB->count_records_sql($query, $params)) {
-        return false;
-    }
 
     $appointment = new stdClass();
     $appointment->slotid = $slotid;
@@ -939,7 +993,14 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     $DB->update_record('organizer_slot_appointments', $appointment);
 
     if (organizer_hasqueue($organizer->id)) {
-        organizer_delete_user_from_any_queue($organizer->id, $userid);
+        if ($groupid) {
+            $booked = organizer_count_bookedslots($organizer->id, null, $groupid);
+        } else {
+            $booked = organizer_count_bookedslots($organizer->id, $userid, null);
+        }
+        if (organizer_multiplebookings_status($booked, $organizer) == USERSLOTS_MAX_REACHED) {
+            organizer_delete_user_from_any_queue($organizer->id, $userid);
+        }
     }
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPBOOKING ||
@@ -978,44 +1039,45 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
     $organizerid = $DB->get_field_sql($query, $params);
     $organizer = $DB->get_record('organizer', array('id' => $organizerid));
 
-    $slot = new organizer_slot($slotid);
-    if ($slot->is_full()) {
+    $slotx = new organizer_slot($slotid);
+    if ($slotx->is_full()) {
         return false;
     }
 
     $okregister = true;
     $okunregister = true;
     if (organizer_is_group_mode()) {
-        $memberids = $DB->get_fieldset_select('groups_members', 'userid', "groupid = {$groupid}");
-
+        $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
+        $context = context_module::instance($cm->id, MUST_EXIST);
+        $members = get_enrolled_users($context, 'mod/organizer:register', $groupid, 'u.id', null, 0, 0, true);
         // Events for the trainers will only be generated with the first participants registration.
         $generatetrainerevents = true;
-        foreach ($memberids as $memberid) {
-            if ($app = organizer_get_last_user_appointment($slot->organizerid, $memberid)) {
-                $okunregister = organizer_unregister_single_appointment($app->slotid, $memberid);
+        foreach ($members as $member) {
+            if ($app = organizer_get_last_user_appointment($organizer, $member->id)) {
+                $okunregister = organizer_unregister_single_appointment($app->slotid, $member->id, $organizer);
             }
-            $okregister = organizer_register_single_appointment($slotid, $memberid, $USER->id, $groupid,
+            $okregister = organizer_register_single_appointment($slotid, $member->id, $USER->id, $groupid,
                 null, $generatetrainerevents);
             $generatetrainerevents = false;
         }
     } else {
-        if ($app = organizer_get_last_user_appointment($slot->organizerid)) {
-            $okunregister = organizer_unregister_single_appointment($app->slotid, $USER->id);
+        if ($app = organizer_get_last_user_appointment($organizer)) {
+            $okunregister = organizer_unregister_single_appointment($app->slotid, $USER->id, $organizer);
         }
         $okregister = organizer_register_single_appointment($slotid, $USER->id, 0, 0, null, true);
     }
 
-    if (organizer_hasqueue($slot->organizerid)) {
-         $slotx = new organizer_slot($app->slotid);
+    if (organizer_hasqueue($organizerid)) {
+         $slotx = new organizer_slot($slotid);
         if (organizer_is_group_mode()) {
             if ($next = $slotx->get_next_in_queue_group()) {
-                $okregister = organizer_register_appointment($app->slotid, $next->groupid, 0, true);
-                organizer_delete_from_queue($app->slotid, null, $next->groupid);
+                $okregister = organizer_register_appointment($slotid, $next->groupid, 0, true);
+                organizer_delete_from_queue($slotid, null, $next->groupid);
             }
         } else {
             if ($next = $slotx->get_next_in_queue()) {
-                $okregister = organizer_register_appointment($app->slotid, 0, $next->userid, true);
-                organizer_delete_from_queue($app->slotid, $next->userid);
+                $okregister = organizer_register_appointment($slotid, 0, $next->userid, true);
+                organizer_delete_from_queue($slotid, $next->userid);
             }
         }
     }
@@ -1023,7 +1085,7 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
     if (isset($app->slotid) && (!isset($organizer->nocalendareventslotcreation) || !$organizer->nocalendareventslotcreation)) {
         $course = $DB->get_record('course', array('id' => $organizer->course), 'id', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
-        if (!$participants = organizer_fetch_slotparticipants($app->slotid)) {
+        if (!organizer_fetch_slotparticipants($app->slotid)) {
             $trainers = organizer_get_slot_trainers($app->slotid);
             foreach ($trainers as $trainer) {
                 if ($eventid = $DB->get_field('organizer_slot_trainer', 'eventid',
@@ -1053,33 +1115,22 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
     return $okregister && $okunregister;
 }
 
-function organizer_get_active_appointment($userid, $organizerid) {
-    global $DB;
-
-    $params = array('organizerid' => $organizerid, 'userid' => $userid);
-    $query = "SELECT * FROM {organizer_slot_appointments} INNER JOIN {organizer_slots} ON
-            {organizer_slot_appointments}.slotid = {organizer_slots}.id WHERE
-            {organizer_slot_appointments}.userid = :userid AND {organizer_slots}.organizerid = :organizerid";
-    $appointment = $DB->get_record_sql($query, $params);
-    if (isset($appointment) && !isset($appointment->attended)) {
-        return $appointment;
-    }
-    return null;
-}
-
 function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
     global $DB, $USER;
 
     $ok = true;
+    $organizer = $DB->get_record('organizer', array('id' => $organizerid));
 
-    if (organizer_is_group_mode()) {
-        $memberids = $DB->get_fieldset_select('groups_members', 'userid', 'groupid = ?', array($groupid));
+    if ($groupid) {
+        $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
+        $context = context_module::instance($cm->id, MUST_EXIST);
+        $members = get_enrolled_users($context, 'mod/organizer:register', $groupid, 'u.id', null, 0, 0, true);
 
-        foreach ($memberids as $memberid) {
-            $ok = organizer_unregister_single_appointment($slotid, $memberid);
+        foreach ($members as $member) {
+            $ok = organizer_unregister_single_appointment($slotid, $member->id, $organizer);
         }
     } else {
-        $ok = organizer_unregister_single_appointment($slotid, $USER->id);
+        $ok = organizer_unregister_single_appointment($slotid, $USER->id, $organizer);
     }
 
     if (organizer_hasqueue($organizerid)) {
@@ -1088,11 +1139,19 @@ function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
             if ($next = $slotx->get_next_in_queue_group()) {
                 organizer_register_appointment($slotid, $next->groupid, 0, true);
                 organizer_delete_from_queue($slotid, null, $next->groupid);
+                $booked = organizer_count_bookedslots($organizerid, null, $next->groupid);
+                if (organizer_multiplebookings_status($booked, $organizerid) == USERSLOTS_MAX_REACHED) {
+                    organizer_delete_user_from_any_queue($organizerid, null, $next->groupid);
+                }
             }
         } else {
             if ($next = $slotx->get_next_in_queue()) {
                 organizer_register_appointment($slotid, 0, $next->userid, true);
                 organizer_delete_from_queue($slotid, $next->userid);
+                $booked = organizer_count_bookedslots($organizerid, $next->userid, null);
+                if (organizer_multiplebookings_status($booked, $organizerid) == USERSLOTS_MAX_REACHED) {
+                    organizer_delete_user_from_any_queue($organizerid, $next->userid, null);
+                }
             }
         }
     }
@@ -1180,7 +1239,6 @@ function organizer_evaluate_slots($data) {
             }
 
             $newapp->feedback = isset($app['feedback']) ? $app['feedback'] : "";
-            $newapp->allownewappointments = $app['allownewappointments'];
 
             $DB->update_record('organizer_slot_appointments', $newapp);
 
@@ -1196,7 +1254,7 @@ function organizer_evaluate_slots($data) {
 function organizer_get_course_module_data($id = null, $n = null) {
     global $DB;
 
-    $id = $id == null ? optional_param('id', 0, PARAM_INT) : $id; // Course_module ID, or.
+    $id = $id === null ? optional_param('id', 0, PARAM_INT) : $id; // Course_module ID, or.
     $n = $n == null ? optional_param('o', 0, PARAM_INT) : $n; // Organizer instance ID.
 
     if ($id) {
@@ -1367,6 +1425,9 @@ function organizer_fetch_hidecalendar() {
 function organizer_fetch_table_entries($slots, $orderby="") {
     global $DB;
 
+    if (empty($slots)) {
+        $slots = array(0);
+    }
     list($insql, $inparams) = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
 
     $params = array();
@@ -1522,9 +1583,9 @@ function organizer_sortout_hiddenslots($slots) {
 function organizer_get_user_identity($user) {
     global $CFG, $DB;
 
-    $identity = "";
-    $identityfields = explode(',', $CFG->showuseridentity);
-
+    if (get_config('organizer', 'dontshowidentity')) {
+        return "";
+    }
     if (is_object($user)) {
         $id = $user->id;
     } else {
@@ -1534,6 +1595,9 @@ function organizer_get_user_identity($user) {
             return "";
         }
     }
+
+    $identity = "";
+    $identityfields = explode(',', $CFG->showuseridentity);
     if (in_array('idnumber', $identityfields)) {
         $identity = $DB->get_field_select('user', 'idnumber', "id = {$id}");
     } else {
@@ -1761,7 +1825,7 @@ function organizer_fetch_printdetail_entries($slot) {
         $fieldname = $socialfield->shortname;
         $paramname = 'u_' . $fieldname . '_fieldid';
         $socialselect .= "$tablename.data AS $fieldname, ";
-        $socialjoin .= "LEFT JOIN {user_info_data} $tablename ON $tablename.userid = a.userid AND $tablename.fieldid = :$paramname";
+        $socialjoin .= " LEFT JOIN {user_info_data} $tablename ON $tablename.userid = a.userid AND $tablename.fieldid = :$paramname";
         $params[$paramname] = $socialfield->id;
     }
 
@@ -1980,7 +2044,7 @@ function organizer_print_setuserprefs_and_triggerevent($data, $cm, $context) {
     $event = \mod_organizer\event\appointment_list_printed::create(
         array(
             'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
+            'context' => $PAGE->context,
         )
     );
     $event->trigger();
@@ -1999,13 +2063,12 @@ function organizer_print_setuserprefs_and_triggerevent($data, $cm, $context) {
  */
 function organizer_get_registrationview_entries($groupmode, $params) {
     if ($groupmode) {
-        $entries = organizer_organizer_organizer_get_status_table_entries_group($params);
+        $entries = organizer_get_reg_status_table_entries_group($params);
     } else {
-        $entries = organizer_organizer_get_status_table_entries($params);
+        $entries = organizer_get_reg_status_table_entries($params);
     }
     return $entries;
 }
-
 
 /**
  * Obtains slots parameters if present
@@ -2023,4 +2086,402 @@ function organizer_get_param_slots() {
         }
     }
     return $slots;
+}
+
+/**
+ * How many slots a participant has booked
+ *
+ * @param int $organizerid  ID of organizer instance
+ * @param int $userid ID of user
+ * @param int $groupid ID of group (if instance is groupmode)
+ *
+ * @return int $slots
+ */
+function organizer_count_bookedslots($organizerid, $userid = null, $groupid = null) {
+    global $DB, $USER;
+
+    if ($userid == null && $groupid == null) {
+        $userid = $USER->id;
+    }
+    if ($userid) {
+        $paramssql = array('userid' => $userid, 'organizerid' => $organizerid);
+        $query = "SELECT count(*) FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.userid = :userid";
+    } else {
+        $paramssql = array('groupid' => $groupid, 'organizerid' => $organizerid);
+        $query = "SELECT count(DISTINCT s.id) FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.groupid = :groupid";
+    }
+    $slots = $DB->count_records_sql($query, $paramssql);
+
+    return $slots;
+}
+
+/**
+ * What is the multiple slots bookings status for the given amount of user bookings in this organizer instance
+ *
+ * @param int $slotsbooked amount of booked slots of a user
+ * @param object $organizer this organizer instance
+ *
+ * @return int $status 0 for min not reached, 1 for min reached, 2 for max_reached
+ */
+function organizer_multiplebookings_status($slotsbooked, $organizer) {
+    global $DB;
+
+    if (is_number($organizer)) {
+        $organizer = $DB->get_record('organizer', array('id' => $organizer), 'userslotsmin, userslotsmax', MUST_EXIST);
+    }
+
+    if ($slotsbooked >= $organizer->userslotsmax) {
+        $status = USERSLOTS_MAX_REACHED;
+    } else if ($slotsbooked >= $organizer->userslotsmin) {
+        $status = USERSLOTS_MIN_REACHED;
+    } else {
+        $status = USERSLOTS_MIN_NOT_REACHED;
+    }
+    return $status;
+}
+
+/**
+ * How many bookings a participant has left
+ *
+ * @param object $organizer  organizer instance
+ * @param int $userid ID of user
+ * @param int $groupid ID of group (if instance is groupmode)
+ *
+ * @return int $slotsleft
+ */
+function organizer_multiplebookings_slotslefttobook($organizer, $userid = null, $groupid = null) {
+    global $DB, $USER;
+
+    if ($userid == null && $groupid == null) {
+        $userid = $USER->id;
+    }
+
+    if ($userid) {
+        $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
+        $query = "SELECT count(*) FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.userid = :userid";
+    } else {
+        $paramssql = array('groupid' => $groupid, 'organizerid' => $organizer->id);
+        $query = "SELECT count(DISTINCT s.id) FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.groupid = :groupid";
+    }
+    $bookedslots = $DB->count_records_sql($query, $paramssql);
+
+    $slotsleft = $organizer->userslotsmax - $bookedslots;
+
+    return $slotsleft < 0 ? 0 : $slotsleft;
+}
+
+/**
+ * Returns amount of course participants who have not booked the minimum of slots and have booked the maximum of slots.
+ *
+ * @param object $organizer organizer instance
+ * @param boolean $groupmode is organizer instance in groupmode
+ * @param objects $entries of registration view
+ * @param int $min required minimum of slots a user/group has to book
+ * @param int $max maximum of slots a user/group is allowed to book
+ *
+ * @return array $entries, $underminimum: participants booked under minimum, $maxreached: participants
+ * who have reached the max
+ */
+function organizer_registration_statistics($organizer, $groupmode, $entries, $min, $max) {
+    global $DB;
+
+    $countentries = 0;
+    $underminimum = 0;
+    $maxreached = 0;
+
+    $context = context_course::instance($organizer->course);
+    $entryids = array();
+    if ($groupmode) {
+        $currentgroup = 0;
+        foreach ($entries as $entry) {
+            $entryids[] = $entry->id;
+            if ($entry->id != $currentgroup) {
+                if (count_enrolled_users($context, 'mod/organizer:register', $entry->id, true)) {
+                    $countentries++;
+                }
+                $currentgroup = $entry->id;
+            }
+        }
+    } else {
+        foreach ($entries as $entry) {
+            $entryids[] = $entry->id;
+            $countentries++;
+        }
+    }
+    if (empty($entryids)) {
+        $entryids = array(0);
+    }
+    list($insql, $paramssql) = $DB->get_in_or_equal($entryids, SQL_PARAMS_NAMED);
+
+    if ($groupmode) {
+        $where = 's.organizerid = ' . $organizer->id . ' AND a.groupid ' . $insql;
+        $query = "SELECT a.groupid, count(DISTINCT s.id) as apps FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE $where
+            GROUP BY a.groupid";
+    } else {
+        $where = 's.organizerid = ' . $organizer->id . ' AND a.userid ' . $insql;
+        $query = "SELECT a.userid, count(DISTINCT a.id) as apps FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE $where
+            GROUP BY a.userid";
+    }
+    $groupedentries = $DB->get_recordset_sql($query, $paramssql);
+    $countgroupedentries = 0;
+    foreach ($groupedentries as $entry) {
+        $countgroupedentries++;
+        if ($entry->apps < $min) {
+            $underminimum++;
+        } else if ($entry->apps >= $max) {
+            $maxreached++;
+        }
+    }
+    $underminimum += $countentries - $countgroupedentries;
+
+    return [$countentries, $underminimum, $maxreached];
+}
+
+/**
+ * Returns amount of course participants who have not booked the minimum of slots yet.
+ *
+ * @param object $organizer organizer instance
+ * @param object $cm course module data of instance
+ *
+ * @return object $allparticipants, $participantsreachedminimum, $attendedparticipants
+ */
+function organizer_get_counters($organizer, $cm = null) {
+    global $DB;
+
+    if (!$cm) {
+        $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
+    }
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        $params = array('groupingid' => $cm->groupingid);
+        $query = 'SELECT {groups}.id FROM {groups}
+                INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
+                WHERE {groupings_groups}.groupingid = :groupingid';
+        $groups = $DB->get_records_sql($query, $params);
+        $attended = 0;
+        $registered = 0;
+        foreach ($groups as $group) {
+            $apps = organizer_get_all_group_appointments($organizer, $group->id);
+            if (organizer_multiplebookings_status(count($apps), $organizer) != USERSLOTS_MIN_NOT_REACHED) {
+                $registered ++;
+            }
+            foreach ($apps as $app) {
+                if ($app->attended == 1) {
+                    $attended++;
+                    break;
+                }
+            }
+        }
+        $total = count($groups);
+        $a = new stdClass();
+        $a->registered = $registered;
+        $a->attended = $attended;
+        $a->total = $total;
+    } else {
+        $context = context_module::instance($cm->id, MUST_EXIST);
+        $participants = get_enrolled_users($context, 'mod/organizer:register');
+        $attended = 0;
+        $registered = 0;
+        foreach ($participants as $participant) {
+            $apps = organizer_get_all_user_appointments($organizer, $participant->id);
+            if (organizer_multiplebookings_status(count($apps), $organizer) != USERSLOTS_MIN_NOT_REACHED) {
+                $registered ++;
+            }
+            foreach ($apps as $app) {
+                if ($app->attended == 1) {
+                    $attended++;
+                    break;
+                }
+            }
+        }
+        $total = count($participants);
+        $a = new stdClass();
+        $a->registered = $registered;
+        $a->attended = $attended;
+        $a->total = $total;
+    }
+
+    return $a;
+}
+
+/**
+ * Returns the html of a status bar indicating the user's status regarding his bookings.
+ *
+ * @param int $bookings amount of user bookings
+ * @param int $max max amount of bookings per user
+ * @param boolean $minreached if user has reached minimum of bookings
+ * @param string $statusmsg to be written
+ * @param string $msg for the tooltip
+ *
+ * @return object $out html output of status bar
+ */
+function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg) {
+
+    $out = html_writer::start_div('userstatusbar_tr', array('title' => $msg));
+    if ($minreached) {
+        $classstrfull = 'fa fa-check-circle fa-2x mr-2 text-success';
+        $classstrempty = 'fa fa-circle-o fa-2x mr-2 text-success';
+        $classstatusmsg = 'text-success font-weight-bolder';
+    } else {
+        $classstrfull = 'fa fa-check-circle fa-2x mr-1 text-info';
+        $classstrempty = 'fa fa-circle-o fa-2x mr-1 text-info';
+        $classstatusmsg = 'text-info font-weight-bolder';
+    }
+    $i = 1;
+    while ($i <= (int) $bookings) {
+        $out .= organizer_get_fa_icon($classstrfull, $statusmsg);
+        $i++;
+    }
+    while ($i <= (int) $max) {
+        $out .= organizer_get_fa_icon($classstrempty, $statusmsg);
+        $i++;
+    }
+    $out .= html_writer::span($statusmsg, $classstatusmsg);
+    $out .= html_writer::span($msg, 'ml-1 font-italic');
+    $out .= html_writer::end_div();
+
+    return $out;
+
+}
+
+function organizer_date_time_plain($slot) {
+    if (!isset($slot) || !isset($slot->starttime)) {
+        return '-';
+    }
+
+    list($unitname, $value) = organizer_figure_out_unit($slot->duration);
+    $duration = ($slot->duration / $value) . ' ' . $unitname;
+
+    // If slot is within a day.
+    if (userdate($slot->starttime, get_string('datetemplate', 'organizer')) ==
+        userdate($slot->starttime + $slot->duration, get_string('datetemplate', 'organizer'))) {
+        $datefrom = userdate($slot->starttime, get_string('datetemplate', 'organizer')) . " " .
+            userdate($slot->starttime, get_string('timetemplate', 'organizer'));
+        $dateto = userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
+    } else {
+        $datefrom = userdate($slot->starttime, get_string('fulldatetemplate', 'organizer')) . " " .
+            userdate($slot->starttime, get_string('timetemplate', 'organizer'));
+        $dateto = userdate($slot->starttime + $slot->duration, get_string('fulldatetemplate', 'organizer')) . " " .
+            userdate($slot->starttime + $slot->duration, get_string('timetemplate', 'organizer'));
+    }
+    $datestr = "$datefrom-$dateto";
+    return $datestr;
+
+}
+function organizer_remind_all($recipient = null, $recipients = array(), $custommessage = "") {
+    global $DB;
+
+    list($cm, , $organizer, $context) = organizer_get_course_module_data();
+
+    $checkenough = false;
+    if ($recipient != null) {
+        if (!organizer_is_group_mode()) {
+            $entries = $DB->get_records_list('user', 'id', array($recipient));
+        } else {
+            $entries = get_enrolled_users($context, 'mod/organizer:register',
+                $recipient, 'u.id', null, null, null, true);
+        }
+    } else if ($recipients) {
+        $entries = $DB->get_records_list('user', 'id', $recipients);
+    } else if (!organizer_is_group_mode()) {
+        $entries = get_enrolled_users($context, 'mod/organizer:register');
+        $checkenough = true;
+    } else {
+        $query = "SELECT u.* FROM {user} u
+            INNER JOIN {groups_members} gm ON u.id = gm.userid
+            INNER JOIN {groups} g ON gm.groupid = g.id
+            INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
+            WHERE gg.groupingid = :grouping";
+        $par = array('grouping' => $cm->groupingid);
+        $entries = $DB->get_records_sql($query, $par);
+        $checkenough = true;
+    }
+
+    $nonrecepients = array();
+    if ($checkenough) {
+        foreach ($entries as $entry) {
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                if (organizer_multiplebookings_status(
+                        organizer_count_bookedslots($organizer->id, null, $entry->id),
+                        $organizer) == USERSLOTS_MIN_REACHED) {
+                    $nonrecepients[] = $entry->id;
+                }
+            } else {
+                if (organizer_multiplebookings_status(
+                        organizer_count_bookedslots($organizer->id, $entry->id, null),
+                        $organizer) == USERSLOTS_MIN_REACHED) {
+                    $nonrecepients[] = $entry->id;
+                }
+            }
+        }
+    }
+
+    $count = 0;
+    foreach ($entries as $entry) {
+        if (!in_array($entry->id, $nonrecepients)) {
+            organizer_prepare_and_send_message(
+                array('user' => $entry->id, 'organizer' => $organizer,
+                    'custommessage' => $custommessage), 'register_reminder_student'
+            );
+            $count++;
+        }
+    }
+    return $count;
+}
+
+function organizer_get_reminder_recipients($organizer) {
+
+    $params = array('group' => 0, 'sort' => '', 'dir' => '', 'psort' => '', 'pdir' => '');
+    $recipients = array();
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizer->id);
+        $entries = organizer_get_reg_status_table_entries_group($params);
+    } else {
+        $entries = organizer_get_reg_status_table_entries($params);
+    }
+    if ($entries->valid()) {
+        // Select all users which have not reached the minimum of bookings.
+        foreach ($entries as $entry) {
+            $in = false;
+            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                if (organizer_multiplebookings_status(
+                        organizer_count_bookedslots($organizer->id, null, $entry->id),
+                        $organizer) == USERSLOTS_MIN_NOT_REACHED) {
+                    $in = true;
+                }
+            } else {
+                if (organizer_multiplebookings_status(
+                        organizer_count_bookedslots($organizer->id, $entry->id, null),
+                        $organizer) == USERSLOTS_MIN_NOT_REACHED) {
+                    $in = true;
+                }
+            }
+            if ($in) {
+                if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+                    $members = organizer_fetch_groupusers($entry->id);
+                    foreach ($members as $member) {
+                        if (has_capability('mod/organizer:register', $context, $member->id, false)) {
+                            $recipients[] = $member->id;
+                        }
+                    }
+                } else {
+                    $recipients[] = $entry->id;
+                }
+            }
+        }
+    }
+    $entries->close();
+
+    return $recipients;
 }

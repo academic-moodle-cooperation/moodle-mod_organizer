@@ -65,3 +65,4 @@ $messageproviders = array(
         'register_promotion_student' => array('capability' => 'mod/organizer:receivemessagesstudent',
                 'defaults' => array('popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN, 'email' => MESSAGE_FORCED)),
 );
+

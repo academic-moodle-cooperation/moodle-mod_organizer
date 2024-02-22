@@ -27,16 +27,16 @@ namespace mod_organizer\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
-use \core_privacy\local\metadata\collection;
-use \core_privacy\local\metadata\provider as metadataprovider;
-use \core_privacy\local\request\contextlist;
-use \core_privacy\local\request\plugin\provider as pluginprovider;
-use \core_privacy\local\request\user_preference_provider as preference_provider;
-use \core_privacy\local\request\writer;
-use \core_privacy\local\request\approved_contextlist;
-use \core_privacy\local\request\transform;
-use \core_privacy\local\request\helper;
-use \core_privacy\local\request\core_userlist_provider;
+use core_privacy\local\metadata\collection;
+use core_privacy\local\metadata\provider as metadataprovider;
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\plugin\provider as pluginprovider;
+use core_privacy\local\request\user_preference_provider as preference_provider;
+use core_privacy\local\request\writer;
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\transform;
+use core_privacy\local\request\helper;
+use core_privacy\local\request\core_userlist_provider;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\approved_userlist;
 
@@ -48,8 +48,7 @@ use core_privacy\local\request\approved_userlist;
  * @copyright  2018 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements metadataprovider, pluginprovider, core_userlist_provider
-{
+class provider implements metadataprovider, pluginprovider, core_userlist_provider {
     /**
      * Provides meta data that is stored about a user with mod_organizer
      *
@@ -103,7 +102,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'useridqueue' => $userid,
             'applicantidqueue' => $userid,
             'tuserid' => $userid,
-            'teacherapplicantid' => $userid
+            'teacherapplicantid' => $userid,
         ];
 
         $sql = "SELECT ctx.id
@@ -144,7 +143,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
         $params = [
             'modulename' => 'organizer',
             'contextid' => $context->id,
-            'contextlevel' => CONTEXT_MODULE
+            'contextlevel' => CONTEXT_MODULE,
         ];
 
         $sql = "SELECT oa.userid, oa.applicantid, oa.teacherapplicantid
@@ -244,7 +243,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'organizer3' => $organizer->organizerid,
             'teacherapplicantid' => $user->id,
             'organizer4' => $organizer->organizerid,
-            'trainerid' => $user->id
+            'trainerid' => $user->id,
         ];
 
         $sql = "
@@ -346,7 +345,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'attended' => transform::yesno($appointment->attended),
             'grade' => $appointment->grade,
             'comments' => $appointment->comments,
-            'allownewappointments' => transform::yesno($appointment->allownewappointments)
+            'allownewappointments' => transform::yesno($appointment->allownewappointments),
         ];
 
         writer::with_context($context)->export_data(['participant slot ' . $appointment->id], $appointmentdata);
@@ -385,7 +384,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'Appointment slot location' => $appointment->location,
             'Participant' => $appointment->userid,
             'Participant assigned by you' => "Yes",
-            'Assignment date' => transform::datetime($appointment->teacherapplicanttimemodified)
+            'Assignment date' => transform::datetime($appointment->teacherapplicanttimemodified),
         ];
 
         writer::with_context($context)->export_data(['teacherapplicant slot ' . $appointment->id], $appointmentdata);
@@ -402,7 +401,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'Appointment slot from' => transform::datetime($appointment->starttime),
             'Appointment slot to' => transform::datetime($appointment->starttime + $appointment->duration),
             'Appointment slot location' => $appointment->location,
-            'You are trainer of this slot' => "Yes"
+            'You are trainer of this slot' => "Yes",
         ];
 
         writer::with_context($context)->export_data(['teacher slot ' . $appointment->id], $appointmentdata);
@@ -529,6 +528,9 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
                 }
                 // Get slots of this organizer instance.
                 $slotids = $DB->get_fieldset_select('organizer_slots', 'id', 'organizerid = ?', [$organizer->id]);
+                if (empty($slotids)) {
+                    $slotids = array(0);
+                }
                 list($slotidssql, $slotidsparams) = $DB->get_in_or_equal($slotids, SQL_PARAMS_NAMED);
 
                 list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);

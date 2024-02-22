@@ -3,65 +3,72 @@ cache:
     - .composer/cache
 
 variables:
-  TRAVIS_BUILD_DIR: "$CI_PROJECT_DIR"
-  MUSTACHE_IGNORE_NAMES: "email_html_body.mustache, email_html.mustache, email_text.mustache"
+  CI_BUILD_DIR: "$CI_PROJECT_DIR"
   COMPOSER_HOME: "$CI_PROJECT_DIR/.composer/cache"
-  DOCKER_HOST: tcp://localhost:2375
-  DOCKER_TLS_CERTDIR: ""
 
-.postgres:
+  POSTGRES_USER: "postgres"
+  POSTGRES_HOST_AUTH_METHOD: "trust"
+
+  MYSQL_ROOT_HOST: "%"
+  MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+  MYSQL_CHARACTER_SET_SERVER: "utf8mb4"
+  MYSQL_COLLATION_SERVER: "utf8mb4_unicode_ci"
+
+.job_template: &job_configuration
+  image: quay.io/amc/moodle-plugin-ci:${PHP_VERSION}-node.16
   before_script:
-    # Wait until database is ready
-    - timeout 3m bash -c 'echo -e "DB...\c"; until </dev/tcp/127.0.0.1/5432; do echo -e ".\c"; sleep 1; done; echo "ok";' 2> /dev/null
     - cd ../..
-    - moodle-plugin-ci install --moodle="moodle-upstream-core" --db-user=moodleci --db-pass=moodleing --db-host=127.0.0.1
-  services:
-    - postgres:12
-    - docker:dind
-
-  variables:
-    DB: "pgsql"
-    POSTGRES_USER: "moodleci"
-    POSTGRES_PASSWORD: "moodleing"
-
-.mariadb:
-  before_script:
-    # Wait until database is ready
-    - timeout 3m bash -c 'echo -e "DB...\c"; until </dev/tcp/127.0.0.1/3306; do echo -e ".\c"; sleep 1; done; echo "ok";' 2> /dev/null
-    - cd ../..
-    - moodle-plugin-ci install --moodle="moodle-upstream-core" --db-user=root --db-pass=superrootpass --db-host=127.0.0.1
-  services:
-    - mariadb:10.4-bionic
-    - docker:dind
-
-  variables:
-    DB: "mariadb"
-    MYSQL_ROOT_PASSWORD: "superrootpass"
-
-.job_template: &job_definition
+    - moodle-db-isready
+    - moodle-plugin-ci install --moodle="moodle-upstream-core" --db-host=$DB_HOST --db-port=$DB_PORT
+    - eval $(failed setup-command)
   script:
     - moodle-plugin-ci phplint
     - moodle-plugin-ci phpcpd
     - moodle-plugin-ci phpmd
-    - moodle-plugin-ci codechecker
+    - moodle-plugin-ci phpcs
     - moodle-plugin-ci validate
     - moodle-plugin-ci savepoints
     - moodle-plugin-ci mustache
     #- moodle-plugin-ci grunt
     #- moodle-plugin-ci phpdoc
     - moodle-plugin-ci phpunit
-    - moodle-plugin-ci behat
+    - moodle-plugin-ci behat --profile chrome
+    - failed result
+  after_script:
+    - failed report
+  parallel:
+    matrix:
+      - MOODLE_BRANCH: [ "MOODLE_401_STABLE" ]
+        PHP_VERSION: [ "8.1" ]
 
-code_checker_pgsql:
-  extends: .postgres
-  <<: *job_definition
-  image: amcdev/moodle-plugin-ci:7.4-n.16
+test:postgres:
+  <<: *job_configuration
+  services:
+    - postgres:14
+    - docker:dind
   variables:
-    MOODLE_BRANCH: "master"
+    DB: pgsql
+    DB_HOST: postgres
+    DB_PORT: 5432
 
-code_checker_mariadb:
-  extends: .mariadb
-  <<: *job_definition
-  image: amcdev/moodle-plugin-ci:7.4-n.16
+test:mysql:
+  <<: *job_configuration
+  services:
+    - name: mysql:8.0.23
+      command: ["mysqld", "--port=6033"]
+    - docker:dind
   variables:
-    MOODLE_BRANCH: "master"
+    DB: mysqli
+    DB_HOST: mysql
+    DB_PORT: 6033
+
+test:mariadb:
+  <<: *job_configuration
+  services:
+    - mariadb:10.6
+    - docker:dind
+  variables:
+    DB: "mariadb"
+    DB_HOST: "mariadb"
+    DB_PORT: 3306
+

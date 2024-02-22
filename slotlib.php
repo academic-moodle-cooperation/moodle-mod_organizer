@@ -29,6 +29,54 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+function organizer_get_slot_user_appointment($slotx, $userid = null, $mergegroupapps = true, $getevaluated = false) {
+    global $DB, $USER;
+
+    if ($userid == null) {
+        $userid = $USER->id;
+    }
+
+    $organizer = $slotx->get_organizer();
+
+    $paramssql = array('slotid' => $slotx->get_id(), 'userid' => $userid);
+    $query = "SELECT a.* FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.id = :slotid AND a.userid = :userid" .
+        ($getevaluated ? " AND a.attended IS NOT NULL " : " ") .
+        "ORDER BY a.id DESC";
+    $apps = $DB->get_records_sql($query, $paramssql);
+    $app = reset($apps);
+
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
+        $paramssql = array('slotid' => $slotx->get_id(), 'groupid' => $app->groupid);
+        $query = "SELECT a.* FROM {organizer_slot_appointments} a
+                INNER JOIN {organizer_slots} s ON a.slotid = s.id
+                WHERE s.id = :slotid AND a.groupid = :groupid
+                ORDER BY a.id DESC";
+        $groupapps = $DB->get_records_sql($query, $paramssql);
+
+        $appcount = 0;
+        $someoneattended = false;
+        foreach ($groupapps as $groupapp) {
+            if ($groupapp->userid == $userid) {
+                $app = $groupapp;
+            }
+            if (isset($groupapp->attended)) {
+                $appcount++;
+                if ($groupapp->attended == 1) {
+                    $someoneattended = true;
+                }
+            }
+        }
+
+        if ($app) {
+            $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
+        }
+    }
+
+    return $app;
+}
+
 function organizer_get_last_user_appointment($organizer, $userid = null, $mergegroupapps = true, $getevaluated = false) {
     global $DB, $USER;
 
@@ -97,81 +145,45 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
     ORDER BY a.id DESC";
     $apps = $DB->get_records_sql($query, $paramssql);
 
-    $app = reset($apps);
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
-        $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
-        $query = "SELECT a.* FROM {organizer_slot_appointments} a
-        INNER JOIN {organizer_slots} s ON a.slotid = s.id
-        WHERE s.organizerid = :organizerid AND s.id = :slotid
-        ORDER BY a.id DESC";
-        $groupapps = $DB->get_records_sql($query, $paramssql);
-
-        $appcount = 0;
-        $someoneattended = false;
-        foreach ($groupapps as $groupapp) {
-            if ($groupapp->userid == $userid) {
-                $app = $groupapp;
-            }
-            if (isset($groupapp->attended)) {
-                $appcount++;
-                if ($groupapp->attended == 1) {
-                    $someoneattended = true;
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && count($apps) > 0) {
+        foreach ($apps as &$app) {
+            $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
+            $query = "SELECT a.* FROM {organizer_slot_appointments} a
+                        INNER JOIN {organizer_slots} s ON a.slotid = s.id
+                        WHERE s.organizerid = :organizerid AND s.id = :slotid
+                        ORDER BY a.id DESC";
+            $groupapps = $DB->get_records_sql($query, $paramssql);
+            $appcount = 0;
+            $someoneattended = false;
+            foreach ($groupapps as $groupapp) {
+                if (isset($groupapp->attended)) {
+                    $appcount++;
+                    if ($groupapp->attended == 1) {
+                        $someoneattended = true;
+                    }
                 }
             }
-        }
-
-        if ($app) {
             $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
         }
-
-        $apps = $groupapps;
     }
 
     return $apps;
 }
 
-function organizer_get_next_user_appointment($organizer, $userid = null) {
-    global $DB, $USER, $CFG;
+function organizer_get_all_group_appointments($organizer, $groupid) {
+    global $DB;
+    $params = array('groupid' => $groupid, 'organizerid' => $organizer->id);
+    $groupapps = $DB->get_records_sql(
+        'SELECT a.* FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE a.groupid = :groupid AND s.organizerid = :organizerid
+            ORDER BY a.id DESC', $params
+    );
 
-    if ($userid == null) {
-        $userid = $USER->id;
-    }
-
-    if (is_number($organizer) && $organizer == intval($organizer)) {
-        $organizer = $DB->get_record('organizer', array('id' => $organizer));
-    }
-
-    $todaymidnight = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
-
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        require_once($CFG->dirroot . '/mod/organizer/locallib.php');
-        if ($group = organizer_fetch_user_group($userid, $organizer->id)) {
-            $paramssql = array('organizerid' => $organizer->id, 'groupid' => $group->id, 'todaymidnight' => $todaymidnight);
-            $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
-                  INNER JOIN {organizer_slots} s ON a.slotid = s.id
-                  WHERE s.organizerid = :organizerid AND a.groupid = :groupid AND s.starttime > :todaymidnight
-                  ORDER BY s.starttime ASC";
-            $apps = $DB->get_records_sql($query, $paramssql);
-            $app = reset($apps);
-        } else {
-            $app = null;
-        }
-    } else {
-        $paramssql = array('organizerid' => $organizer->id, 'userid' => $userid, 'todaymidnight' => $todaymidnight);
-        $query = "SELECT a.*, s.starttime FROM {organizer_slot_appointments} a
-                  INNER JOIN {organizer_slots} s ON a.slotid = s.id
-                  WHERE s.organizerid = :organizerid AND a.userid = :userid AND s.starttime > :todaymidnight
-                  ORDER BY s.starttime ASC";
-        $apps = $DB->get_records_sql($query, $paramssql);
-        $app = reset($apps);
-    }
-
-    return $app;
+    return $groupapps;
 }
 
-
-class organizer_slot
-{
+class organizer_slot {
 
     private $slot;
     private $organizer;
@@ -278,14 +290,14 @@ class organizer_slot
         $this->load_appointments();
 
         foreach ($this->apps as $app) {
-            if (!isset($app->attended)) {
+            if (($app->attended ?? -1) < 0) {
                 return false;
             }
         }
         return count($this->apps) > 0;
     }
 
-    public function organizer_user_has_access() {
+    public function organizer_groupmode_user_has_access() {
         $this->load_organizer();
         global $DB;
         if ($this->organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
@@ -304,6 +316,11 @@ class organizer_slot
             }
         }
         return true;
+    }
+
+    public function gradingisactive() {
+        $this->load_organizer();
+        return $this->organizer->grade;
     }
 
 
@@ -349,7 +366,7 @@ class organizer_slot
         $position = 0;
 
         if ($groupid == 0) {
-               $group = organizer_fetch_my_group();
+            $group = organizer_fetch_my_group();
             $groupid = $group ? $group->id : 0;
         }
 
@@ -435,23 +452,14 @@ class organizer_slot
             $this->queuegroup = $DB->get_records_sql($sql, $paramssql);
         }
     }
-}
 
-function organizer_user_has_access($slotid) {
-    global $DB;
-    $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-    $moduleid = $DB->get_field('modules', 'id', array('name' => 'organizer'));
-    $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
-    $courseid = $DB->get_field('course_modules', 'course', array('module' => $moduleid, 'instance' => $organizer->id));
-    $groups = groups_get_user_groups($courseid);
-    $groupingid = $DB->get_field(
-        'course_modules', 'groupingid',
-        array('module' => $moduleid, 'instance' => $organizer->id)
-    );
-    if (!isset($groups[$groupingid]) || !count($groups[$groupingid])) {
-        return false;
+    public function __set(string $name, mixed $value): void {
+
     }
-    return true;
+
+    public function get_id() {
+        return $this->slot->id;
+    }
 }
 
 function organizer_get_slot_trainers($slotid, $withname = false) {

@@ -30,8 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/lib.php');
 
-class organizer_assign_slot_form extends moodleform
-{
+class organizer_assign_slot_form extends moodleform {
     /**
      * {@inheritDoc}
      * @see moodleform::definition()
@@ -143,9 +142,9 @@ class organizer_assign_slot_form extends moodleform
         $slotx = new organizer_slot($slot);
         if (!$slotx->is_past_due() && !$slotx->is_full() && $slotx->is_available() ) {
 
-               $apps = organizer_get_all_user_appointments($slotx->organizerid, $userid);
+               $apps = organizer_get_all_user_appointments($slot->organizerid, $userid);
             foreach ($apps as $app) {
-                if ($app->slotid == $slotx->id) {
+                if ($app->slotid == $slot->id) {
                     return false;
                 }
             }
@@ -168,7 +167,4 @@ class organizer_assign_slot_form extends moodleform
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
     }
-
-
-
 }

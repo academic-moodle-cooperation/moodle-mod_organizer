@@ -35,3 +35,4 @@ function xmldb_organizer_install() {
 
     // Nothing to do here yet.
 }
+

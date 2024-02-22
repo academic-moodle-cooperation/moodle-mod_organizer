@@ -34,14 +34,21 @@ require_once("$CFG->libdir/formslib.php");
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class organizer_edit_slots_form extends moodleform
-{
+class organizer_edit_slots_form extends moodleform {
     /**
      * {@inheritDoc}
      * @see moodleform::definition()
      */
+    private $spacing;
     protected function definition() {
         global $CFG, $PAGE;
+
+        $pagebodyclasses = $PAGE->bodyclasses;
+        if (strpos($pagebodyclasses, 'limitedwidth')) {
+            $this->spacing = '';
+        } else {
+            $this->spacing = ORGANIZER_SPACING;
+        }
 
         $params = new \stdClass();
         $params->imagepaths = array(
@@ -238,7 +245,7 @@ class organizer_edit_slots_form extends moodleform
         $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('visible', isset($defaults['visible']))
         );
-        $mform->addGroup($group, '', get_string('visible', 'organizer'), ORGANIZER_SPACING, false);
+        $mform->addGroup($group, '', get_string('visible', 'organizer'), $this->spacing, false);
         $mform->setDefault('visible', 1);
         $mform->disabledIf('visible', 'apps', 'neq', 0);
         $mform->addElement('hidden', 'mod_visible', 0);
@@ -250,7 +257,7 @@ class organizer_edit_slots_form extends moodleform
             $trainers, array('multiple' => 'true'));
         $group[] = $mform->createElement('static', '', '', $this->_warning_icon('teacherid', isset($defaults['trainerids'])));
         $mform->setType('trainerid', PARAM_INT);
-        $mform->addGroup($group, 'teachergrp', get_string('teacher', 'organizer'), ORGANIZER_SPACING, false);
+        $mform->addGroup($group, 'teachergrp', get_string('teacher', 'organizer'), $this->spacing, false);
         if (isset($defaults['trainerids'])) {
             $mform->setDefault('trainerid', $defaults['trainerids']);
         }
@@ -267,7 +274,7 @@ class organizer_edit_slots_form extends moodleform
         );
 
         $mform->setDefault('teachervisible', 1);
-        $mform->addGroup($group, '', get_string('teachervisible', 'organizer'), ORGANIZER_SPACING, false);
+        $mform->addGroup($group, '', get_string('teachervisible', 'organizer'), $this->spacing, false);
         $mform->addElement('hidden', 'mod_teachervisible', 0);
         $mform->setType('mod_teachervisible', PARAM_BOOL);
 
@@ -283,7 +290,7 @@ class organizer_edit_slots_form extends moodleform
             $mform->setType('location', PARAM_TEXT);
             $group[] = $mform->createElement('static', '', '',
                 $this->_warning_icon('location', isset($defaults['location'])));
-            $mform->addGroup($group, 'locationgroup', get_string('location', 'organizer'), ORGANIZER_SPACING, false);
+            $mform->addGroup($group, 'locationgroup', get_string('location', 'organizer'), $this->spacing, false);
             if ($locationmandatory = get_config('organizer', 'locationmandatory')) {
                 $mform->addRule('locationgroup', null, 'required');
             }
@@ -294,7 +301,7 @@ class organizer_edit_slots_form extends moodleform
             $group[] = $mform->createElement('autocomplete', 'location', null, $locations, array('tags' => true));
             $group[] = $mform->createElement('static', '', '', $this->_warning_icon('location', isset($defaults['location'])));
 
-            $mform->addGroup($group, 'locationgroup', get_string('location', 'organizer'), ORGANIZER_SPACING, false);
+            $mform->addGroup($group, 'locationgroup', get_string('location', 'organizer'), $this->spacing, false);
             if ($locationmandatory = get_config('organizer', 'locationmandatory')) {
                 $mform->addRule('locationgroup', null, 'required');
             }
@@ -313,7 +320,7 @@ class organizer_edit_slots_form extends moodleform
         );
         $mform->setType('locationlink', PARAM_URL);
 
-        $mform->addGroup($group, 'locationlinkgroup', get_string('locationlink', 'organizer'), ORGANIZER_SPACING, false);
+        $mform->addGroup($group, 'locationlinkgroup', get_string('locationlink', 'organizer'), $this->spacing, false);
         $mform->addElement('hidden', 'mod_locationlink', 0);
         $mform->setType('mod_locationlink', PARAM_BOOL);
 
@@ -326,7 +333,7 @@ class organizer_edit_slots_form extends moodleform
                 $this->_warning_icon('maxparticipants', isset($defaults['maxparticipants']))
             );
 
-            $mform->addGroup($group, 'maxparticipantsgroup', get_string('maxparticipants', 'organizer'), ORGANIZER_SPACING, false);
+            $mform->addGroup($group, 'maxparticipantsgroup', get_string('maxparticipants', 'organizer'), $this->spacing, false);
             $mform->addElement('hidden', 'mod_maxparticipants', 0);
             $mform->setType('mod_maxparticipants', PARAM_BOOL);
             $mform->setType('maxparticipants', PARAM_INT);
@@ -352,7 +359,7 @@ class organizer_edit_slots_form extends moodleform
         $mform->setDefault('availablefrom', isset($defaults['availablefrom']) ? $defaults['availablefrom'] : 604800);
         $mform->setDefault('availablefrom[now]', $defaults['now']);
 
-        $mform->addGroup($group, 'availablefromgroup', get_string('availablefrom', 'organizer'), ORGANIZER_SPACING, false);
+        $mform->addGroup($group, 'availablefromgroup', get_string('availablefrom', 'organizer'), $this->spacing, false);
 
         $mform->disabledIf('availablefrom[number]', 'availablefrom[now]', 'checked');
         $mform->disabledIf('availablefrom[timeunit]', 'availablefrom[now]', 'checked');
@@ -371,7 +378,7 @@ class organizer_edit_slots_form extends moodleform
         );
 
         $mform->setDefault('notificationtime', isset($defaults['notificationtime']) ? $defaults['notificationtime'] : 86400);
-        $mform->addGroup($group, 'notificationtimegroup', get_string('notificationtime', 'organizer'), ORGANIZER_SPACING, false);
+        $mform->addGroup($group, 'notificationtimegroup', get_string('notificationtime', 'organizer'), $this->spacing, false);
         $mform->addElement('hidden', 'mod_notificationtime', 0);
         $mform->setType('mod_notificationtime', PARAM_BOOL);
 
@@ -392,7 +399,7 @@ class organizer_edit_slots_form extends moodleform
         );
 
         $mform->setDefault('comments', '');
-        $mform->addGroup($group, '', get_string('appointmentcomments', 'organizer'), ORGANIZER_SPACING, false);
+        $mform->addGroup($group, '', get_string('appointmentcomments', 'organizer'), $this->spacing, false);
         $mform->addElement('hidden', 'mod_comments', 0);
         $mform->setType('mod_comments', PARAM_BOOL);
     }
@@ -474,9 +481,9 @@ class organizer_edit_slots_form extends moodleform
      */
     private function _warning_icon($name, $noshow = false) {
         if (!$noshow) {
-            $warningname = $name . '_warning';
+            $warningname = "id='".$name."_warning'";
             $text = get_string('warningtext1', 'organizer');
-            $columnicon = organizer_get_icon('warning', $text, "small", $warningname);
+            $columnicon = organizer_get_fa_icon('fa fa-warning', $text, $warningname);
             return $columnicon;
         } else {
             return '';

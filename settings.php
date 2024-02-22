@@ -109,9 +109,15 @@ if ($ADMIN->fulltree) {
                     get_string('allowcreationofpasttimeslots', 'organizer'),
                     get_string('configallowcreationofpasttimeslots', 'organizer'), 0, $yesno));
 
+    // Show participant's identity in registration view
+    $settings->add(new admin_setting_configcheckbox('organizer/dontshowidentity', get_string('cfg_dontshowidentity', 'organizer'),
+        get_string('cfg_dontshowidentity_desc', 'organizer'), 0));
+
+    // Use moodle 4.x smaller content design.
+    $settings->add(new admin_setting_configcheckbox('organizer/limitedwidth', get_string('cfg_limitedwidth', 'organizer'),
+        get_string('cfg_limitedwidth_desc', 'organizer'), 0));
 
     // Predefine locations for slots, make location mandatory.
-
     $settings->add(new admin_setting_heading('organizerlocationsettings', '',
         get_string('locationsettings', 'organizer')));
 
@@ -120,7 +126,7 @@ if ($ADMIN->fulltree) {
             get_string('locationmandatory', 'organizer'),
             null, 0));
 
-    $settings->add(new admin_setting_configtextarea('mod_organizer/locations', get_string('configlocationslist', 'organizer'),
+    $settings->add(new admin_setting_configtextarea('organizer/locations', get_string('configlocationslist', 'organizer'),
             get_string('configlocationslist_desc', 'organizer'), '', PARAM_TEXT, '60', '8'));
 
 

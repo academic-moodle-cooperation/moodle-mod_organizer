@@ -52,7 +52,11 @@ $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title($organizer->name);
 $PAGE->set_heading($course->fullname);
-$PAGE->add_body_class('limitedwidth');
+$organizerconfig = get_config('organizer');
+if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
+    $PAGE->add_body_class('limitedwidth');
+    $params['limitedwidth'] = true;
+}
 
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode));
 
@@ -61,7 +65,8 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode;
 require_capability('mod/organizer:editslots', $context);
 
 if (!$slots) {
-    $redirecturl->param('messages[]', 'message_warning_no_slots_selected');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected', 'organizer'),
+        'error');
     redirect($redirecturl);
 }
 
@@ -73,8 +78,21 @@ if ($mform->is_cancelled()) {
 } else if ($data = $mform->get_data()) {
     $slotids = organizer_update_slot($data);
 
+    $a = new stdClass();
+    $a->count = count($slotids);
+    if ($a->count == 1) {
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_slots_edited_sg',
+            'organizer', $a), 'success');
+    } else {
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_slots_edited_pl', 'organizer', $a),
+            'success');
+    }
+
+    $data->slot_trainer = $data->slot_trainer ?? "-";
+    $data->slot_location = $data->slot_location ?? "-";
+    $data->slot_comments = $data->slots_comments ?? "-";
     organizer_prepare_and_send_message($data, 'edit_notify_teacher');
-    organizer_prepare_and_send_message($data, 'edit_notify_student'); // Message.
+    organizer_prepare_and_send_message($data, 'edit_notify_student');
 
     $redirecturl->param('slots', implode(',', array_values($slotids)));
     $newurl = $redirecturl->out();
@@ -82,7 +100,7 @@ if ($mform->is_cancelled()) {
     $event = \mod_organizer\event\slot_updated::create(
         array(
             'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
+            'context' => $PAGE->context,
         )
     );
     $event->trigger();
