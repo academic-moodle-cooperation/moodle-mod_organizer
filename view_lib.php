@@ -301,36 +301,33 @@ function organizer_end_form() {
 }
 
 function organizer_generate_tab_row($params, $context) {
-    $tabrow = array();
+    global $OUTPUT;
+
+    $thirdnav = array();
+    $thirdnavlink = array();
+    $url = new moodle_url('/mod/organizer/view.php', array('id' => $params['id']));
 
     if (has_capability('mod/organizer:viewallslots', $context, null, true)) {
-        $targeturl = new moodle_url(
-            '/mod/organizer/view.php',
-            array('id' => $params['id'], 'mode' => ORGANIZER_TAB_APPOINTMENTS_VIEW)
-        );
-        $tabrow[] = new tabobject(ORGANIZER_TAB_APPOINTMENTS_VIEW, $targeturl, get_string('taballapp', 'organizer'));
+        $url->param('mode', ORGANIZER_TAB_APPOINTMENTS_VIEW);
+        $thirdnavlink[ORGANIZER_TAB_APPOINTMENTS_VIEW] = $url->out();
+        $thirdnav[$thirdnavlink[ORGANIZER_TAB_APPOINTMENTS_VIEW]] = get_string('taballapp', 'organizer');
     }
-
     if (has_capability('mod/organizer:viewregistrations', $context, null, true)) {
-        $targeturl = new moodle_url(
-            '/mod/organizer/view.php',
-            array('id' => $params['id'], 'mode' => ORGANIZER_TAB_REGISTRATION_STATUS_VIEW)
-        );
-        $tabrow[] = new tabobject(ORGANIZER_TAB_REGISTRATION_STATUS_VIEW, $targeturl, get_string('tabstatus', 'organizer'));
+        $url->param('mode', ORGANIZER_TAB_REGISTRATION_STATUS_VIEW);
+        $thirdnavlink[ORGANIZER_TAB_REGISTRATION_STATUS_VIEW] = $url->out();
+        $thirdnav[$thirdnavlink[ORGANIZER_TAB_REGISTRATION_STATUS_VIEW]] = get_string('tabstatus', 'organizer');
     }
-
     if (has_capability('mod/organizer:viewstudentview', $context, null, true)) {
-        $targeturl = new moodle_url('/mod/organizer/view.php', array('id' => $params['id'], 'mode' => ORGANIZER_TAB_STUDENT_VIEW));
-        $tabrow[] = new tabobject(ORGANIZER_TAB_STUDENT_VIEW, $targeturl, get_string('tabstud', 'organizer'));
+        $url->param('mode', ORGANIZER_TAB_STUDENT_VIEW);
+        $thirdnavlink[ORGANIZER_TAB_STUDENT_VIEW] = $url->out();
+        $thirdnav[$thirdnavlink[ORGANIZER_TAB_STUDENT_VIEW]] = get_string('tabstud', 'organizer');
     }
 
-    if (count($tabrow) > 1) {
-        $tabs = array($tabrow);
-        $output = print_tabs($tabs, $params['mode'], null, null, true);
-        $output = preg_replace('/<div class="tabtree">/', '<div class="tabtree" style="margin-bottom: 0em;">', $output);
-        return $output;
+    if (count($thirdnavlink) > 1) {
+        $urlselector = new \url_select($thirdnav, $thirdnavlink[$params['mode']]);
+        return $OUTPUT->render($urlselector);
     } else {
-        return ''; // If only one tab is enabled, hide the tab row altogether.
+        return ''; // If only one select option is enabled, hide the selector altogether.
     }
 }
 
