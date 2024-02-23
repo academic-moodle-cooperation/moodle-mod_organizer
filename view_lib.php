@@ -2594,15 +2594,17 @@ function organizer_appointmentsstatus_bar($organizer) {
         $a->tooless = $tooless;
     } else {
         $context = context_module::instance($cm->id, MUST_EXIST);
-        $participants = get_enrolled_users($context, 'mod/organizer:register', 0, 'u.id', null, 0, 0, true);
+        $students = get_enrolled_users($context, 'mod/organizer:register', 0, 'u.id', null, 0, 0, true);
+        $info = new \core_availability\info_module(cm_info::create($cm));
+        $filtered = $info->filter_user_list($students);
+        $studentids = array_keys($filtered);
         $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid 
         FROM {organizer_slot_appointments} sa INNER JOIN {organizer_slots} s ON sa.slotid = s.id 
         WHERE s.organizerid = :organizerid', ['organizerid' => $organizer->id]
         );
-        $participants = array_keys($participants);
-        $participants = array_merge($participants, $havebookings);
-        foreach ($participants as $participant) {
-            $apps = organizer_get_all_user_appointments($organizer, $participant);
+        $studentids = array_merge($studentids, $havebookings);
+        foreach ($studentids as $studentid) {
+            $apps = organizer_get_all_user_appointments($organizer, $studentid);
             $diff = $min - count($apps);
             $tooless += $diff > 0 ? $diff : 0;
         }
