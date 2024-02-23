@@ -908,6 +908,11 @@ function organizer_get_reg_status_table_entries($params) {
     $info = new \core_availability\info_module(cm_info::create($cm));
     $filtered = $info->filter_user_list($students);
     $studentids = array_keys($filtered);
+    $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid 
+        FROM {organizer_slot_appointments} sa INNER JOIN {organizer_slots} s ON sa.slotid = s.id 
+        WHERE s.organizerid = :organizerid', ['organizerid' => $organizer->id]
+    );
+    $studentids = array_merge($studentids, $havebookings);
     if (!$studentids || count($studentids) == 0) {
         return array();
     }
