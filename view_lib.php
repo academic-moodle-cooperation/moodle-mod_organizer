@@ -312,13 +312,11 @@ function organizer_generate_tab_row($params, $context) {
         $thirdnavlink[ORGANIZER_TAB_APPOINTMENTS_VIEW] = $url->out();
         $thirdnav[$thirdnavlink[ORGANIZER_TAB_APPOINTMENTS_VIEW]] = get_string('taballapp', 'organizer');
     }
-
     if (has_capability('mod/organizer:viewregistrations', $context, null, true)) {
         $url->param('mode', ORGANIZER_TAB_REGISTRATION_STATUS_VIEW);
         $thirdnavlink[ORGANIZER_TAB_REGISTRATION_STATUS_VIEW] = $url->out();
         $thirdnav[$thirdnavlink[ORGANIZER_TAB_REGISTRATION_STATUS_VIEW]] = get_string('tabstatus', 'organizer');
     }
-
     if (has_capability('mod/organizer:viewstudentview', $context, null, true)) {
         $url->param('mode', ORGANIZER_TAB_STUDENT_VIEW);
         $thirdnavlink[ORGANIZER_TAB_STUDENT_VIEW] = $url->out();
