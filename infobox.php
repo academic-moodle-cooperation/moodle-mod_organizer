@@ -96,7 +96,7 @@ function organizer_make_section($name, $content, $hidden = false) {
             $output .= '</div>';
         }
     }
-    $output .= '<div id="' . $name . '_content" class="content">';
+    $output .= '<div id="' . $name . '_content" class="content mt-1">';
     $output .= $content;
     $output .= '</div>';
     return $output;
