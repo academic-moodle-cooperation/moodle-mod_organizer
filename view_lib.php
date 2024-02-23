@@ -2576,6 +2576,7 @@ function organizer_appointmentsstatus_bar($organizer) {
     global $DB;
 
     $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
+    $context = context_module::instance($cm->id, MUST_EXIST);
 
     $a = new stdClass();
     $min = $organizer->userslotsmin;
@@ -2587,7 +2588,7 @@ function organizer_appointmentsstatus_bar($organizer) {
                 WHERE {groupings_groups}.groupingid = :groupingid';
         $groups = $DB->get_records_sql($query, $params);
         foreach ($groups as $group) {
-            if(!get_enrolled_users($context, 'mod/organizer:register', $group->id, 'u.id', $orderby, 0, 0, true)) {
+            if(!get_enrolled_users($context, 'mod/organizer:register', $group->id, 'u.id', null, 0, 0, true)) {
                 continue;
             }
             $apps = organizer_get_all_group_appointments($organizer, $group->id);
@@ -2596,7 +2597,6 @@ function organizer_appointmentsstatus_bar($organizer) {
         }
         $a->tooless = $tooless;
     } else {
-        $context = context_module::instance($cm->id, MUST_EXIST);
         $students = get_enrolled_users($context, 'mod/organizer:register', 0, 'u.id', null, 0, 0, true);
         $info = new \core_availability\info_module(cm_info::create($cm));
         $filtered = $info->filter_user_list($students);
