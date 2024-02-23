@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+4.3.1 (2024-02-23)
+------------------
+* [FIXED]   Email message: fix typo with empty comments
+* [FIXED]   Appointments view: No action button for grading if grading is not active
+* [FIXED]   Show participants with bookings in reg view regardless of access restrictions
+* [FIXED]   Moodle 4 third navigation select field instead of tab row
+* [FIXED]   Take restricted access into account also on appointmentstatus bar in reg view and dont count empty groups
+
 4.3.0 (2024-02-08)
 ------------------
 * [FIXED]   Student view: Fix "Show all participants" option, remove the broken "Show only my slots"-filter option
