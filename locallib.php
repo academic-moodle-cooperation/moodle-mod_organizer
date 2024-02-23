@@ -2212,6 +2212,7 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
         }
     } else {
         foreach ($entries as $entry) {
+            // Count participants and not bookings.
             if (!in_array($entry->id, $entryids))
             {
                 $entryids[] = $entry->id;
