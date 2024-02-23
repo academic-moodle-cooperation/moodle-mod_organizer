@@ -51,24 +51,24 @@ test:postgres:
     DB_HOST: postgres
     DB_PORT: 5432
 
-#test:mysql:
-#  <<: *job_configuration
-#  services:
-#    - name: mysql:8.0.23
-#      command: ["mysqld", "--port=6033"]
-#    - docker:dind
-#  variables:
-#    DB: mysqli
-#    DB_HOST: mysql
-#    DB_PORT: 6033
-#
-#test:mariadb:
-#  <<: *job_configuration
-#  services:
-#    - mariadb:10.6
-#    - docker:dind
-#  variables:
-#    DB: "mariadb"
-#    DB_HOST: "mariadb"
-#    DB_PORT: 3306
+test:mysql:
+  <<: *job_configuration
+  services:
+    - name: mysql:8.0.23
+      command: ["mysqld", "--port=6033"]
+    - docker:dind
+  variables:
+    DB: mysqli
+    DB_HOST: mysql
+    DB_PORT: 6033
+
+test:mariadb:
+  <<: *job_configuration
+  services:
+    - mariadb:10.6
+    - docker:dind
+  variables:
+    DB: "mariadb"
+    DB_HOST: "mariadb"
+    DB_PORT: 3306
 
