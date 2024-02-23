@@ -908,7 +908,7 @@ function organizer_get_reg_status_table_entries($params) {
     $studentids = array_keys($filtered);
     $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid 
         FROM {organizer_slot_appointments} sa INNER JOIN {organizer_slots} s ON sa.slotid = s.id 
-        WHERE s.organizer = :organizerid', ['organizerid' => $organizer->id]
+        WHERE s.organizerid = :organizerid', ['organizerid' => $organizer->id]
     );
     $studentids = array_merge($studentids, $havebookings);
     if (!$studentids || count($studentids) == 0) {
