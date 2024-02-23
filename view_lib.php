@@ -325,11 +325,11 @@ function organizer_generate_tab_row($params, $context) {
         $thirdnav[$thirdnavlink[ORGANIZER_TAB_STUDENT_VIEW]] = get_string('tabstud', 'organizer');
     }
 
-    if (count($thirdnavlink) > 0) {
+    if (count($thirdnavlink) > 1) {
         $urlselector = new \url_select($thirdnav, $thirdnavlink[$params['mode']]);
         return $OUTPUT->render($urlselector);
     } else {
-        return ''; // If only one tab is enabled, hide the tab row altogether.
+        return ''; // If only one select option is enabled, hide the selector altogether.
     }
 }
 
