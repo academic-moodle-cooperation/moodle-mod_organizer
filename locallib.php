@@ -2212,7 +2212,8 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
         }
     } else {
         foreach ($entries as $entry) {
-            if (is_enrolled($context, $entry->id, 'mod/organizer:register', true)) {
+            if (!in_array($entry->id, $entryids))
+            {
                 $entryids[] = $entry->id;
                 $countentries++;
             }
