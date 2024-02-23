@@ -753,7 +753,7 @@ function organizer_update_slot($data) {
 function organizer_delete_appointment_slot($id) {
     global $DB, $USER;
 
-    if (!$slot = $DB->get_record('organizer_slots', array('id' => $id))) {
+    if (!$DB->get_record('organizer_slots', array('id' => $id))) {
         return false;
     }
 
@@ -761,10 +761,11 @@ function organizer_delete_appointment_slot($id) {
     $appointments = $DB->get_records('organizer_slot_appointments', array('slotid' => $id));
     $notifiedusers = 0;
     if (count($appointments) > 0) {
+        $slotx = new organizer_slot($id);
         foreach ($appointments as $appointment) {
             $receiver = intval($appointment->userid);
             // App delete when slot delete: Send notification to participant.
-            organizer_send_message($USER, $receiver, $slot, 'slotdeleted_notify_student', null, null, true);
+            organizer_send_message($USER, $receiver, $slotx, 'slotdeleted_notify_student', null, null, true);
             $DB->delete_records('event', array('id' => $appointment->eventid));
             $notifiedusers++;
         }
@@ -793,7 +794,7 @@ function organizer_delete_appointment($id) {
     $slotx = new organizer_slot($appointment->slotid);
     $receiver = intval($appointment->userid);
     // App delete: Send notification to participant.
-    organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
+    organizer_send_message($USER, $receiver, $slotx, 'appointmentdeleted_notify_student');
     $DB->delete_records('event', array('id' => $appointment->eventid));
     $DB->delete_records('organizer_slot_appointments', array('id' => $id));
 
@@ -814,7 +815,7 @@ function organizer_delete_appointment_group($slotid, $groupid) {
         // Send a message to the participant.
         $receiver = intval($appointment->userid);
         // App delete group: Send notification to participant.
-        organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student', null, null, true);
+        organizer_send_message($USER, $receiver, $slotx, 'appointmentdeleted_notify_student', null, null, true);
         $DB->delete_records('event', array('id' => $appointment->eventid));
         $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
     }
@@ -936,7 +937,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
                 if ($sendmessage) {
                     $receiver = core_user::get_user($member->id);
                     // Register App groupmode: Send notification to group member.
-                    organizer_send_message($from, $receiver, $slot, 'register_promotion_student', null, null, true);
+                    organizer_send_message($from, $receiver, $slotx, 'register_promotion_student', null, null, true);
                 }
                 $generatetrainerevents = false;
             }
@@ -947,7 +948,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
             if ($sendmessage) {
                 $receiver = core_user::get_user($userid);
                 // Register App single mode: Send notification to participant.
-                organizer_send_message($from, $receiver, $slot, 'register_promotion_student');
+                organizer_send_message($from, $receiver, $slotx, 'register_promotion_student');
             }
         }
     }
