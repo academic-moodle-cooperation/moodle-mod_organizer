@@ -2660,9 +2660,9 @@ function organizer_appointmentsstatus_bar($organizer) {
         $msg = get_string('infobox_appointmentsstatus_pl', 'mod_organizer', $a);
     }
     if ($places >= $tooless) {
-        $output = organizer_get_icon_msg($msg, 'message_info', 'text-success');
+        $output = organizer_get_icon_msg('enoughplaces', $msg);
     } else {
-        $output = organizer_get_icon_msg($msg, 'message_warning', 'text-warning');
+        $output = organizer_get_icon_msg('notenoughplaces', $msg);
     }
 
     return $output;
