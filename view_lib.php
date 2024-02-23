@@ -2587,6 +2587,9 @@ function organizer_appointmentsstatus_bar($organizer) {
                 WHERE {groupings_groups}.groupingid = :groupingid';
         $groups = $DB->get_records_sql($query, $params);
         foreach ($groups as $group) {
+            if(!get_enrolled_users($context, 'mod/organizer:register', $group->id, 'u.id', $orderby, 0, 0, true)) {
+                continue;
+            }
             $apps = organizer_get_all_group_appointments($organizer, $group->id);
             $diff = $min - count($apps);
             $tooless += $diff > 0 ? $diff : 0;
