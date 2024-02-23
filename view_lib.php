@@ -2607,6 +2607,7 @@ function organizer_appointmentsstatus_bar($organizer) {
     global $DB;
 
     $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
+    $context = context_module::instance($cm->id, MUST_EXIST);
 
     $a = new stdClass();
     $min = $organizer->userslotsmin;
@@ -2618,16 +2619,26 @@ function organizer_appointmentsstatus_bar($organizer) {
                 WHERE {groupings_groups}.groupingid = :groupingid';
         $groups = $DB->get_records_sql($query, $params);
         foreach ($groups as $group) {
+            if(!get_enrolled_users($context, 'mod/organizer:register', $group->id, 'u.id', null, 0, 0, true)) {
+                continue;
+            }
             $apps = organizer_get_all_group_appointments($organizer, $group->id);
             $diff = $min - count($apps);
             $tooless += $diff > 0 ? $diff : 0;
         }
         $a->tooless = $tooless;
     } else {
-        $context = context_module::instance($cm->id, MUST_EXIST);
-        $participants = get_enrolled_users($context, 'mod/organizer:register', 0, 'u.id', null, 0, 0, true);
-        foreach ($participants as $participant) {
-            $apps = organizer_get_all_user_appointments($organizer, $participant->id);
+        $students = get_enrolled_users($context, 'mod/organizer:register', 0, 'u.id', null, 0, 0, true);
+        $info = new \core_availability\info_module(cm_info::create($cm));
+        $filtered = $info->filter_user_list($students);
+        $studentids = array_keys($filtered);
+        $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid 
+        FROM {organizer_slot_appointments} sa INNER JOIN {organizer_slots} s ON sa.slotid = s.id 
+        WHERE s.organizerid = :organizerid', ['organizerid' => $organizer->id]
+        );
+        $studentids = array_merge($studentids, $havebookings);
+        foreach ($studentids as $studentid) {
+            $apps = organizer_get_all_user_appointments($organizer, $studentid);
             $diff = $min - count($apps);
             $tooless += $diff > 0 ? $diff : 0;
         }
@@ -2644,9 +2655,9 @@ function organizer_appointmentsstatus_bar($organizer) {
         $msg = get_string('infobox_appointmentsstatus_pl', 'mod_organizer', $a);
     }
     if ($places >= $tooless) {
-        $output = organizer_get_icon_msg('enoughplaces', $msg);
+        $output = organizer_get_icon_msg($msg, 'message_info', 'text-success');
     } else {
-        $output = organizer_get_icon_msg('notenoughplaces', $msg);
+        $output = organizer_get_icon_msg($msg, 'message_warning', 'text-warning');
     }
 
     return $output;
