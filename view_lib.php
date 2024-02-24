@@ -2316,10 +2316,10 @@ function organizer_get_assign_button($slotid, $params) {
 
     $actionurl = new moodle_url(
         '/mod/organizer/slot_assign.php',
-        array('id' => $params['id'], 'mode' => $params['mode'], 'assignid' => $params['assignid'], 'slot' => $slotid)
+        array('cmid' => $params['id'], 'mode' => $params['mode'], 'assignid' => $params['assignid'], 'slot' => $slotid)
     );
 
-    $out = $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'), 'post');
+    $out = $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'));
     $out = str_replace("btn-secondary", "btn-primary", $out);
 
     return $out;
