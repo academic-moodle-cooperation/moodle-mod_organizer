@@ -1542,7 +1542,7 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
 
     if ($wasownslot) {
         if (!$slotdisabled) {
-               $showteacher |= !$canunregister || (isset($regslotx) && $regslotx->is_evaluated());
+               $showteacher |= !$canunregister;
         }
     }
 

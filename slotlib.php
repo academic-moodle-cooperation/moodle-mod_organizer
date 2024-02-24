@@ -208,7 +208,7 @@ class organizer_slot {
             }
         }
 
-        foreach ((array) $this->slot as $key => $value) {
+        foreach (get_object_vars($this->slot) as $key => $value) {
             $this->$key = $value;
         }
 
