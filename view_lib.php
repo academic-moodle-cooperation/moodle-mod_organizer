@@ -700,7 +700,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                     case 'singleslotcommands':
                         $cell = $row->cells[] = new html_table_cell(organizer_slot_commands($slot->id, $params,
                             $organizer->grade));
-                        break;
+                    break;
                     case 'datetime':
                         if ($params['limitedwidth']) {
                             $llink = organizer_location_link($slot);
@@ -1540,7 +1540,7 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
 
     if ($wasownslot) {
         if (!$slotdisabled) {
-               $showteacher |= !$canunregister || (isset($regslotx) && $regslotx->is_evaluated());
+               $showteacher |= !$canunregister;
         }
     }
 

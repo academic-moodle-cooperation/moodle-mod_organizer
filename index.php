@@ -105,7 +105,7 @@ foreach ($organizers as $organizer) {
     }
 
     $row = array();
-    if ($course->format == 'weeks' or $course->format == 'topics') {
+    if ($course->format == 'weeks' || $course->format == 'topics') {
         $row[] = $organizer->section;
     }
 
