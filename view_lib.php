@@ -1668,7 +1668,7 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     );
     $assignurl = new moodle_url(
         '/mod/organizer/view.php',
-        array('cmid' => $params['id'], 'sort' => 'datetime', 'mode' => '4', 'assignid' => $entry->id)
+        array('id' => $params['id'], 'sort' => 'datetime', 'mode' => '4', 'assignid' => $entry->id)
     );
     $deleteurl = new moodle_url(
         '/mod/organizer/appointment_delete.php',
@@ -2316,7 +2316,7 @@ function organizer_get_assign_button($slotid, $params) {
 
     $actionurl = new moodle_url(
         '/mod/organizer/slot_assign.php',
-        array('cmid' => $params['id'], 'mode' => $params['mode'], 'assignid' => $params['assignid'], 'slot' => $slotid)
+        array('id' => $params['id'], 'mode' => $params['mode'], 'assignid' => $params['assignid'], 'slot' => $slotid)
     );
 
     $out = $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'));

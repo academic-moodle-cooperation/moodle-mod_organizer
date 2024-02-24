@@ -30,12 +30,12 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
-$cmid = required_param('cmid', PARAM_INT);
+$id = required_param('id', PARAM_INT);
 $mode = required_param('mode', PARAM_INT);
 $slotid = required_param('slot', PARAM_INT);
 $assignid = required_param('assignid', PARAM_INT);
 
-$cm = get_coursemodule_from_id('organizer', $cmid, 0, false, MUST_EXIST);
+$cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
 
@@ -46,7 +46,7 @@ $context = context_module::instance($cm->id, MUST_EXIST);
 require_capability('mod/organizer:assignslots', $context);
 
 $url = new moodle_url('/mod/organizer/slot_assign.php');
-$url->param('cmid', $cm->id);
+$url->param('id', $cm->id);
 $url->param('mode', $mode);
 $url->param('slot', $slotid);
 $url->param('sesskey', sesskey());
