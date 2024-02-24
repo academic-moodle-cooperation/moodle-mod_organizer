@@ -1668,7 +1668,7 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     );
     $assignurl = new moodle_url(
         '/mod/organizer/view.php',
-        array('id' => $params['id'], 'sort' => 'datetime', 'mode' => '4', 'assignid' => $entry->id)
+        array('cmid' => $params['id'], 'sort' => 'datetime', 'mode' => '4', 'assignid' => $entry->id)
     );
     $deleteurl = new moodle_url(
         '/mod/organizer/appointment_delete.php',
