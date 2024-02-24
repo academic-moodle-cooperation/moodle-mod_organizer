@@ -2485,3 +2485,14 @@ function organizer_get_reminder_recipients($organizer) {
 
     return $recipients;
 }
+
+function organizer_get_limitedwidth() {
+    global $PAGE;
+    $organizerconfig = get_config('organizer');
+    if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
+        $PAGE->add_body_class('limitedwidth');
+        return true;
+    } else {
+        return false;
+    }
+}

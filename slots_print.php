@@ -40,6 +40,8 @@ $tsort = optional_param('tsort', null, PARAM_ALPHA);
 
 list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
+$params['limitedwidth'] = organizer_get_limitedwidth();
+
 require_login($course, false, $cm);
 
 $slots = organizer_sortout_hiddenslots($slots);

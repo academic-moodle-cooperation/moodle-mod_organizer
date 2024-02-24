@@ -2506,8 +2506,6 @@ function organizer_slotpages_header() {
 
     require_login($course, false, $cm);
 
-    $organizerconfig = get_config('organizer');
-
     $url = new moodle_url('/mod/organizer/view_action.php');
     $url->param('id', $cm->id);
     $url->param('mode', $mode);
@@ -2518,11 +2516,6 @@ function organizer_slotpages_header() {
     $PAGE->set_pagelayout('standard');
     $PAGE->set_title($organizer->name);
     $PAGE->set_heading($course->fullname);
-
-    if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
-        $PAGE->add_body_class('limitedwidth');
-        $params['limitedwidth'] = true;
-    }
 
     $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
 
