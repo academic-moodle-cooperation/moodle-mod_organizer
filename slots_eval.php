@@ -39,6 +39,8 @@ $slots = organizer_get_param_slots();
 
 list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
+$params['limitedwidth'] = organizer_get_limitedwidth();
+
 require_login($course, false, $cm);
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
@@ -85,7 +87,7 @@ if ($data = $mform->get_data()) {
     $event = \mod_organizer\event\appointment_evaluated::create(
         array(
             'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
+            'context' => $PAGE->context,
         )
     );
     $event->trigger();

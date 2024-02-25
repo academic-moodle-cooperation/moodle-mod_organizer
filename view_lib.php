@@ -312,11 +312,13 @@ function organizer_generate_tab_row($params, $context) {
         $thirdnavlink[ORGANIZER_TAB_APPOINTMENTS_VIEW] = $url->out();
         $thirdnav[$thirdnavlink[ORGANIZER_TAB_APPOINTMENTS_VIEW]] = get_string('taballapp', 'organizer');
     }
+
     if (has_capability('mod/organizer:viewregistrations', $context, null, true)) {
         $url->param('mode', ORGANIZER_TAB_REGISTRATION_STATUS_VIEW);
         $thirdnavlink[ORGANIZER_TAB_REGISTRATION_STATUS_VIEW] = $url->out();
         $thirdnav[$thirdnavlink[ORGANIZER_TAB_REGISTRATION_STATUS_VIEW]] = get_string('tabstatus', 'organizer');
     }
+
     if (has_capability('mod/organizer:viewstudentview', $context, null, true)) {
         $url->param('mode', ORGANIZER_TAB_STUDENT_VIEW);
         $thirdnavlink[ORGANIZER_TAB_STUDENT_VIEW] = $url->out();
@@ -1041,7 +1043,7 @@ function organizer_generate_registration_table_content($columns, $params, $organ
                         $entry->id, 'u.id', $orderby, 0, 0, true)) {
                         continue;
                     }
-                    if ($slotswitch != $entry->slotid or $groupswitch != $entry->id) {
+                    if ($slotswitch != $entry->slotid || $groupswitch != $entry->id) {
                         $slotswitch = $entry->slotid;
                         $groupswitch = $entry->id;
                         $row = new html_table_row();
@@ -1446,8 +1448,8 @@ function organizer_app_details($appointment) {
 function organizer_registration_allowed($organizer, $userid = null) {
     $app = organizer_get_last_user_appointment($organizer, $userid);
     if ($app) { // Appointment made, check the flag.
-        $slot = new organizer_slot($app->slotid);
-        if ($slot->is_past_deadline()) {
+        $slotx = new organizer_slot($app->slotid);
+        if ($slotx->is_past_deadline()) {
             return isset($app->allownewappointments) && $app->allownewappointments;
         } else {
             return !isset($app->allownewappointments) || $app->allownewappointments;
@@ -1989,58 +1991,17 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
     return '<img src="' . $src . '" alt="' . $alt . '" title="' . $title . '" id="' . $id . '" ' . $other . ' />';
 }
 
-function organizer_get_icon_msg($name, $infotxt) {
-    $out = "";
-    switch ($name) {
-        case 'group':
-            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
-                'fa-group fa-stack-1x text-primary', $infotxt);
-            break;
-        case 'nogroup':
-            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-danger',
-                'fa-group fa-stack-1x text-danger', $infotxt);
-            break;
-        case 'expires':
-            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
-                'fa-hourglass-3 fa-stack-1x text-primary', $infotxt);
-            break;
-        case 'expired':
-            $out = organizer_get_fa_icon_stacked('fa-hourglass fa-stack-1x text-danger',
-                'fa-ban fa-stack-2x text-danger', $infotxt);
-            break;
-        case 'neverexpires':
-            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-secondary',
-                'fa-hourglass fa-stack-1x text-secondary', $infotxt);
-            break;
-        case 'grade':
-            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
-                'fa-th-list fa-stack-1x text-primary', $infotxt);
-            break;
-        case 'nograde':
-            $out = organizer_get_fa_icon_stacked('fa-th-list fa-stack-1x text-primary',
-                'fa-ban fa-stack-2x text-primary', $infotxt);
-            break;
-        case 'queues':
-            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
-                'fa-coffee fa-stack-1x text-primary', $infotxt);
-            break;
-        case 'noqueues':
-            $out = organizer_get_fa_icon_stacked('fa-coffee fa-stack-1x text-primary',
-                'fa-ban fa-stack-2x text-primary', $infotxt);
-            break;
-        case 'minmax1':
-            $out = "";
-            break;
-        case 'minmax':
-            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
-                    'fa-files-o fa-stack-1x text-primary', $infotxt).$infotxt;
-            break;
-        case 'enoughplaces':
-            $out = organizer_get_fa_icon('fa fa-check-circle text-success mr-1', $infotxt).$infotxt;
-            break;
-        case 'notenoughplaces':
-            $out = organizer_get_fa_icon('fa fa-exclamation-circle text-warning mr-1', $infotxt).$infotxt;
-            break;
+function organizer_get_icon_msg($infotxt, $icon, $textclass='', $link=null) {
+    global $OUTPUT;
+    $attributes = array();
+    if ($textclass) {
+        $attributes['class'] = $textclass;
+    }
+    if ($link) {
+        $output = html_writer::div($OUTPUT->pix_icon($icon, $infotxt, 'mod_organizer', $attributes).$link);
+    } else {
+        $output = html_writer::div($OUTPUT->pix_icon($icon, $infotxt, 'mod_organizer', $attributes).
+            html_writer::span($infotxt, 'text-left '.$textclass));
     }
     return $out;
 }
@@ -2361,7 +2322,7 @@ function organizer_get_assign_button($slotid, $params) {
         array('id' => $params['id'], 'mode' => $params['mode'], 'assignid' => $params['assignid'], 'slot' => $slotid)
     );
 
-    $out = $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'), 'post');
+    $out = $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'));
     $out = str_replace("btn-secondary", "btn-primary", $out);
 
     return $out;
@@ -2548,8 +2509,6 @@ function organizer_slotpages_header() {
 
     require_login($course, false, $cm);
 
-    $organizerconfig = get_config('organizer');
-
     $url = new moodle_url('/mod/organizer/view_action.php');
     $url->param('id', $cm->id);
     $url->param('mode', $mode);
@@ -2560,11 +2519,6 @@ function organizer_slotpages_header() {
     $PAGE->set_pagelayout('standard');
     $PAGE->set_title($organizer->name);
     $PAGE->set_heading($course->fullname);
-
-    if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
-        $PAGE->add_body_class('limitedwidth');
-        $params['limitedwidth'] = true;
-    }
 
     $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
 

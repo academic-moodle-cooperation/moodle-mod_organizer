@@ -1100,7 +1100,7 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
     $intro = strip_pluginfile_content($eventdescription);
     $event->description = array(
             'text' => $intro,
-            'format' => $organizer->introformat
+            'format' => $organizer->introformat,
     );
     $event->modulename = 'organizer';
     $event->instance = $organizer->id;
@@ -1164,7 +1164,7 @@ function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eve
     $intro = strip_pluginfile_content($eventdescription);
     $data->description = array(
             'text' => $intro,
-            'format' => $organizer->introformat
+            'format' => $organizer->introformat,
     );
     if ($uuid) {
         $data->uuid = $uuid;

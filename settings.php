@@ -126,7 +126,7 @@ if ($ADMIN->fulltree) {
             get_string('locationmandatory', 'organizer'),
             null, 0));
 
-    $settings->add(new admin_setting_configtextarea('organizer/locations', get_string('configlocationslist', 'organizer'),
+    $settings->add(new admin_setting_configtextarea('mod_organizer/locations', get_string('configlocationslist', 'organizer'),
             get_string('configlocationslist_desc', 'organizer'), '', PARAM_TEXT, '60', '8'));
 
 

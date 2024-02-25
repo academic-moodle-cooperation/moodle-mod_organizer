@@ -102,7 +102,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'useridqueue' => $userid,
             'applicantidqueue' => $userid,
             'tuserid' => $userid,
-            'teacherapplicantid' => $userid
+            'teacherapplicantid' => $userid,
         ];
 
         $sql = "SELECT ctx.id
@@ -143,7 +143,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
         $params = [
             'modulename' => 'organizer',
             'contextid' => $context->id,
-            'contextlevel' => CONTEXT_MODULE
+            'contextlevel' => CONTEXT_MODULE,
         ];
 
         $sql = "SELECT oa.userid, oa.applicantid, oa.teacherapplicantid
@@ -243,7 +243,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'organizer3' => $organizer->organizerid,
             'teacherapplicantid' => $user->id,
             'organizer4' => $organizer->organizerid,
-            'trainerid' => $user->id
+            'trainerid' => $user->id,
         ];
 
         $sql = "
@@ -345,7 +345,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'attended' => transform::yesno($appointment->attended),
             'grade' => $appointment->grade,
             'comments' => $appointment->comments,
-            'allownewappointments' => transform::yesno($appointment->allownewappointments)
+            'allownewappointments' => transform::yesno($appointment->allownewappointments),
         ];
 
         writer::with_context($context)->export_data(['participant slot ' . $appointment->id], $appointmentdata);
@@ -384,7 +384,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'Appointment slot location' => $appointment->location,
             'Participant' => $appointment->userid,
             'Participant assigned by you' => "Yes",
-            'Assignment date' => transform::datetime($appointment->teacherapplicanttimemodified)
+            'Assignment date' => transform::datetime($appointment->teacherapplicanttimemodified),
         ];
 
         writer::with_context($context)->export_data(['teacherapplicant slot ' . $appointment->id], $appointmentdata);
@@ -401,7 +401,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'Appointment slot from' => transform::datetime($appointment->starttime),
             'Appointment slot to' => transform::datetime($appointment->starttime + $appointment->duration),
             'Appointment slot location' => $appointment->location,
-            'You are trainer of this slot' => "Yes"
+            'You are trainer of this slot' => "Yes",
         ];
 
         writer::with_context($context)->export_data(['teacher slot ' . $appointment->id], $appointmentdata);

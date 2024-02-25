@@ -55,7 +55,6 @@
     font-weight: bold;
     margin-left: 1.5em;
 }
-/* Fix here sn. */
 .path-mod-organizer #organizer_main_cointainer div.forced_scroll {
     border: solid 1px #ddd;
     margin-left: 10px;
@@ -118,7 +117,7 @@
     width: 100%;
 }
 .path-mod-organizer #organizer_main_cointainer fieldset#id_slotdetails input[readonly='readonly'] {
-    background: #ffffff;
+    background: #fff;
     color: #6d6d6d;
     border: 1px solid #afafaf;
     cursor: default;
@@ -154,7 +153,6 @@
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
-
 .path-mod-organizer #id_export_settings_header {
     border-bottom: none !important;
 }

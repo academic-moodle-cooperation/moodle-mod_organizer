@@ -61,13 +61,7 @@ $PAGE->set_title($instance->organizer->name);
 $PAGE->set_heading($instance->course->fullname);
 $PAGE->set_activity_record($instance->organizer);
 
-$organizerconfig = get_config('organizer');
-if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
-    $PAGE->add_body_class('limitedwidth');
-    $params['limitedwidth'] = true;
-} else {
-    $params['limitedwidth'] = false;
-}
+$params['limitedwidth'] = organizer_get_limitedwidth();
 
 if ($instance->organizer->hidecalendar != 1) {
     organizer_add_calendar();
@@ -86,7 +80,7 @@ switch ($params['mode']) {
             $event = \mod_organizer\event\slot_viewed::create(
                 array(
                     'objectid' => $PAGE->cm->id,
-                    'context' => $PAGE->context
+                    'context' => $PAGE->context,
                 )
             );
             $event->trigger();
@@ -115,7 +109,7 @@ switch ($params['mode']) {
             $event = \mod_organizer\event\registrations_viewed::create(
                 array(
                     'objectid' => $PAGE->cm->id,
-                    'context' => $PAGE->context
+                    'context' => $PAGE->context,
                 )
             );
             $event->trigger();
