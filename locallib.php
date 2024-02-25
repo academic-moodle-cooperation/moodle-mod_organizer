@@ -2257,7 +2257,7 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
  * @param object $organizer organizer instance
  * @param object $cm course module data of instance
  *
- * @return object $allparticipants, $participantsreachedminimum, $attendedparticipants
+ * @return object with strings: registered, attended, total
  */
 function organizer_get_counters($organizer, $cm = null) {
     global $DB;
@@ -2292,11 +2292,19 @@ function organizer_get_counters($organizer, $cm = null) {
         $a->total = $total;
     } else {
         $context = context_module::instance($cm->id, MUST_EXIST);
-        $participants = get_enrolled_users($context, 'mod/organizer:register');
+        $students = get_enrolled_users($context, 'mod/organizer:register', null, 'u.id', null, 0, 0, true);
+        $info = new \core_availability\info_module(cm_info::create($cm));
+        $filtered = $info->filter_user_list($students);
+        $studentids = array_keys($filtered);
+        $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid 
+        FROM {organizer_slot_appointments} sa INNER JOIN {organizer_slots} s ON sa.slotid = s.id 
+        WHERE s.organizerid = :organizerid', ['organizerid' => $organizer->id]
+        );
+        $participants = array_merge($studentids, $havebookings);
         $attended = 0;
         $registered = 0;
         foreach ($participants as $participant) {
-            $apps = organizer_get_all_user_appointments($organizer, $participant->id);
+            $apps = organizer_get_all_user_appointments($organizer, $participant);
             if (organizer_multiplebookings_status(count($apps), $organizer) != USERSLOTS_MIN_NOT_REACHED) {
                 $registered ++;
             }
