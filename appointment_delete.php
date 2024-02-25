@@ -50,11 +50,7 @@ $redirecturl->param('mode', '3');
 $url = new moodle_url('/mod/organizer/appointment_delete.php', array('id' => $id, 'appid' => $appid));
 $PAGE->set_url($url);
 
-$organizerconfig = get_config('organizer');
-if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
-    $PAGE->add_body_class('limitedwidth');
-    $params['limitedwidth'] = true;
-}
+$params['limitedwidth'] = organizer_get_limitedwidth();
 
 $mform = new organizer_delete_appointment_form(null, array('id' => $cm->id, 'appid' => $appid));
 

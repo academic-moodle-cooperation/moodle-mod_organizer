@@ -39,13 +39,13 @@ $slots = organizer_get_param_slots();
 
 list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
 
+$params['limitedwidth'] = organizer_get_limitedwidth();
+
 require_login($course, false, $cm);
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $action;
 
 require_capability('mod/organizer:evalslots', $context);
-
-$PAGE->add_body_class('limitedwidth');
 
 if (!is_null($slot)) {
     $slots = array($slot);

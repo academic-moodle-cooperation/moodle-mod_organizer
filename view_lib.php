@@ -1448,8 +1448,8 @@ function organizer_app_details($appointment) {
 function organizer_registration_allowed($organizer, $userid = null) {
     $app = organizer_get_last_user_appointment($organizer, $userid);
     if ($app) { // Appointment made, check the flag.
-        $slot = new organizer_slot($app->slotid);
-        if ($slot->is_past_deadline()) {
+        $slotx = new organizer_slot($app->slotid);
+        if ($slotx->is_past_deadline()) {
             return isset($app->allownewappointments) && $app->allownewappointments;
         } else {
             return !isset($app->allownewappointments) || $app->allownewappointments;
@@ -2323,7 +2323,7 @@ function organizer_get_assign_button($slotid, $params) {
         array('id' => $params['id'], 'mode' => $params['mode'], 'assignid' => $params['assignid'], 'slot' => $slotid)
     );
 
-    $out = $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'), 'post');
+    $out = $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'));
     $out = str_replace("btn-secondary", "btn-primary", $out);
 
     return $out;
@@ -2510,8 +2510,6 @@ function organizer_slotpages_header() {
 
     require_login($course, false, $cm);
 
-    $organizerconfig = get_config('organizer');
-
     $url = new moodle_url('/mod/organizer/view_action.php');
     $url->param('id', $cm->id);
     $url->param('mode', $mode);
@@ -2522,11 +2520,6 @@ function organizer_slotpages_header() {
     $PAGE->set_pagelayout('standard');
     $PAGE->set_title($organizer->name);
     $PAGE->set_heading($course->fullname);
-
-    if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
-        $PAGE->add_body_class('limitedwidth');
-        $params['limitedwidth'] = true;
-    }
 
     $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
 

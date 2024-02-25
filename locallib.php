@@ -132,8 +132,8 @@ function organizer_check_collision($from, $to, $eventsandslots) {
         $eventfrom = $event->timestart;
         $eventto = $eventfrom + $event->timeduration;
 
-        if (between($from, $eventfrom, $eventto) || between($to, $eventfrom, $eventto)
-            || between($eventfrom, $from, $to) || between($eventto, $from, $to)
+        if (organizer_between($from, $eventfrom, $eventto) || organizer_between($to, $eventfrom, $eventto)
+            || organizer_between($eventfrom, $from, $to) || organizer_between($eventto, $from, $to)
             || $from == $eventfrom || $eventfrom == $eventto
         ) {
             $collidingevents[] = $event;
@@ -148,7 +148,7 @@ function organizer_check_collision($from, $to, $eventsandslots) {
  * @param number $upper
  * @return boolean
  */
-function between($num, $lower, $upper) {
+function organizer_between($num, $lower, $upper) {
     return $num > $lower && $num < $upper;
 }
 /**
@@ -761,13 +761,11 @@ function organizer_delete_appointment_slot($id) {
     $appointments = $DB->get_records('organizer_slot_appointments', array('slotid' => $id));
     $notifiedusers = 0;
     if (count($appointments) > 0) {
-        // Someone was already registered to this slot.
-        $slot = new organizer_slot($id);
-
+        $slotx = new organizer_slot($id);
         foreach ($appointments as $appointment) {
             $receiver = intval($appointment->userid);
             // App delete when slot delete: Send notification to participant.
-            organizer_send_message($USER, $receiver, $slot, 'slotdeleted_notify_student', null, null, true);
+            organizer_send_message($USER, $receiver, $slotx, 'slotdeleted_notify_student', null, null, true);
             $DB->delete_records('event', array('id' => $appointment->eventid));
             $notifiedusers++;
         }
@@ -793,10 +791,10 @@ function organizer_delete_appointment($id) {
     }
 
     // Send a message to the participant.
-    $slot = new organizer_slot($appointment->slotid);
+    $slotx = new organizer_slot($appointment->slotid);
     $receiver = intval($appointment->userid);
     // App delete: Send notification to participant.
-    organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
+    organizer_send_message($USER, $receiver, $slotx, 'appointmentdeleted_notify_student');
     $DB->delete_records('event', array('id' => $appointment->eventid));
     $DB->delete_records('organizer_slot_appointments', array('id' => $id));
 
@@ -806,7 +804,7 @@ function organizer_delete_appointment($id) {
 function organizer_delete_appointment_group($slotid, $groupid) {
     global $DB, $USER;
 
-    $slot = new organizer_slot($slotid);
+    $slotx = new organizer_slot($slotid);
 
     if (!$appointments = $DB->get_records('organizer_slot_appointments',
         array('slotid' => $slotid, 'groupid' => $groupid))) {
@@ -817,7 +815,7 @@ function organizer_delete_appointment_group($slotid, $groupid) {
         // Send a message to the participant.
         $receiver = intval($appointment->userid);
         // App delete group: Send notification to participant.
-        organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student', null, null, true);
+        organizer_send_message($USER, $receiver, $slotx, 'appointmentdeleted_notify_student', null, null, true);
         $DB->delete_records('event', array('id' => $appointment->eventid));
         $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
     }
@@ -909,16 +907,16 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
     if (!$userid) {
         $userid = $USER->id;
     }
-    $slot = new organizer_slot($slotid);
+    $slotx = new organizer_slot($slotid);
     if (!$slotnotfull) {
-        if ($slot->is_full()) {
-            return organizer_add_to_queue($slot, $groupid, $userid);
+        if ($slotx->is_full()) {
+            return organizer_add_to_queue($slotx, $groupid, $userid);
         }
     }
 
     if ($sendmessage) {
-        $trainers = organizer_get_slot_trainers($slot->get_slot()->id);
-        if ($slot->get_slot()->teachervisible && !empty($trainers)) {
+        $trainers = organizer_get_slot_trainers($slotx->get_id());
+        if ($slotx->get_slot()->teachervisible && !empty($trainers)) {
             $trainerid = reset($trainers);
             $from = core_user::get_user($trainerid);
         } else {
@@ -926,7 +924,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
         }
     }
 
-    $organizer = $slot->get_organizer();
+    $organizer = $slotx->get_organizer();
     $ok = true;
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
@@ -939,7 +937,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
                 if ($sendmessage) {
                     $receiver = core_user::get_user($member->id);
                     // Register App groupmode: Send notification to group member.
-                    organizer_send_message($from, $receiver, $slot, 'register_promotion_student', null, null, true);
+                    organizer_send_message($from, $receiver, $slotx, 'register_promotion_student', null, null, true);
                 }
                 $generatetrainerevents = false;
             }
@@ -950,7 +948,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
             if ($sendmessage) {
                 $receiver = core_user::get_user($userid);
                 // Register App single mode: Send notification to participant.
-                organizer_send_message($from, $receiver, $slot, 'register_promotion_student');
+                organizer_send_message($from, $receiver, $slotx, 'register_promotion_student');
             }
         }
     }
@@ -2496,4 +2494,15 @@ function organizer_get_reminder_recipients($organizer) {
     $entries->close();
 
     return $recipients;
+}
+
+function organizer_get_limitedwidth() {
+    global $PAGE;
+    $organizerconfig = get_config('organizer');
+    if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
+        $PAGE->add_body_class('limitedwidth');
+        return true;
+    } else {
+        return false;
+    }
 }
