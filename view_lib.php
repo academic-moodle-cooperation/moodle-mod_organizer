@@ -312,11 +312,13 @@ function organizer_generate_tab_row($params, $context) {
         $thirdnavlink[ORGANIZER_TAB_APPOINTMENTS_VIEW] = $url->out();
         $thirdnav[$thirdnavlink[ORGANIZER_TAB_APPOINTMENTS_VIEW]] = get_string('taballapp', 'organizer');
     }
+
     if (has_capability('mod/organizer:viewregistrations', $context, null, true)) {
         $url->param('mode', ORGANIZER_TAB_REGISTRATION_STATUS_VIEW);
         $thirdnavlink[ORGANIZER_TAB_REGISTRATION_STATUS_VIEW] = $url->out();
         $thirdnav[$thirdnavlink[ORGANIZER_TAB_REGISTRATION_STATUS_VIEW]] = get_string('tabstatus', 'organizer');
     }
+
     if (has_capability('mod/organizer:viewstudentview', $context, null, true)) {
         $url->param('mode', ORGANIZER_TAB_STUDENT_VIEW);
         $thirdnavlink[ORGANIZER_TAB_STUDENT_VIEW] = $url->out();
@@ -732,6 +734,8 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                     case 'actions':
                         $cell = $row->cells[] = new html_table_cell(organizer_participants_action($params, $slot));
                     break;
+                    default:
+                        print_error("Unrecognized column type: $column");
                 }
                 $cell->style .= ' vertical-align: middle;';
             }

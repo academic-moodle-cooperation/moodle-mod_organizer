@@ -82,7 +82,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
         }
         $strings->slot_location = organizer_location_link($slot);
         $strings->slot_maxparticipants = $slot->maxparticipants;
-        $strings->slot_comments = s($slot->comments);
+        $strings->slot_comments = organizer_filter_text($slot->comments);
     }
 
     if ($namesplit[0] == "assign_notify_student" || $namesplit[0] == "assign_notify_teacher") {
@@ -409,7 +409,8 @@ function organizer_prepare_and_send_message($data, $type) {
             }
             break;
         case 'assign_notify_teacher':
-            $slotx = new organizer_slot($data->selectedslot);
+            $slot = $DB->get_record('organizer_slots', array('id' => $data->selectedslot));
+            $slotx = new organizer_slot($slot);
             if (!$slotx->is_past_due()) {
                 if ($data->participant) {
                     $apps = $DB->get_records(
@@ -421,7 +422,7 @@ function organizer_prepare_and_send_message($data, $type) {
                     );
                 }
                 if ($app = reset($apps)) {
-                    $trainers = organizer_get_slot_trainers($slotx->get_id());
+                    $trainers = organizer_get_slot_trainers($slot->id);
                     foreach ($trainers as $trainerid) {
                         if ($app->teacherapplicantid != $trainerid) {
                             $customdata = array();
@@ -441,6 +442,8 @@ function organizer_prepare_and_send_message($data, $type) {
                 }
             }
             break;
+        default:
+            print_error('Not debugged yet!');
     }
     return $sentok;
 }

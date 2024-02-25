@@ -66,7 +66,7 @@ class organizer_delete_slots_form extends moodleform {
             foreach ($slots as $slot) {
                 $slotx = new organizer_slot($slot);
                 $deletableslots = true;
-                $mform->addElement('hidden', 'slots[]', $slotx->get_id());
+                $mform->addElement('hidden', 'slots[]', $slot->id);
                 $mform->setType('slots[]', PARAM_INT);
                 if (!$slotx->has_participants()) {
                     $out = html_writer::start_div();

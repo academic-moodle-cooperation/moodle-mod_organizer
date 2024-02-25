@@ -132,8 +132,8 @@ function organizer_check_collision($from, $to, $eventsandslots) {
         $eventfrom = $event->timestart;
         $eventto = $eventfrom + $event->timeduration;
 
-        if (between($from, $eventfrom, $eventto) || between($to, $eventfrom, $eventto)
-            || between($eventfrom, $from, $to) || between($eventto, $from, $to)
+        if (organizer_between($from, $eventfrom, $eventto) || organizer_between($to, $eventfrom, $eventto)
+            || organizer_between($eventfrom, $from, $to) || organizer_between($eventto, $from, $to)
             || $from == $eventfrom || $eventfrom == $eventto
         ) {
             $collidingevents[] = $event;
@@ -148,7 +148,7 @@ function organizer_check_collision($from, $to, $eventsandslots) {
  * @param number $upper
  * @return boolean
  */
-function between($num, $lower, $upper) {
+function organizer_between($num, $lower, $upper) {
     return $num > $lower && $num < $upper;
 }
 /**
@@ -1263,6 +1263,8 @@ function organizer_get_course_module_data($id = null, $n = null) {
         $organizer = $DB->get_record('organizer', array('id' => $n), '*', MUST_EXIST);
         $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
+    } else {
+        print_error('organizer_get_course_module_data: You must specify a course_module ID or an instance ID');
     }
 
     $context = context_module::instance($cm->id, MUST_EXIST);

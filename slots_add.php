@@ -96,3 +96,6 @@ if ($data = $mform->get_data()) {  // When page is called the first time (=empty
 } else { // Display empty form initially or submitted form has errors.
     organizer_display_form($mform, get_string('title_add', 'organizer'));
 }
+print_error('If you see this, something went wrong with add action!');
+
+die;

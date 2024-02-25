@@ -30,20 +30,15 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
-$id = required_param('id', PARAM_INT);
-$mode = required_param('mode', PARAM_INT);
-$slotid = required_param('slot', PARAM_INT);
-$assignid = required_param('assignid', PARAM_INT);
-
-$cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
-$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-$organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
 
-$context = context_module::instance($cm->id, MUST_EXIST);
-
 require_capability('mod/organizer:assignslots', $context);
+
+$mode = required_param('mode', PARAM_INT);
+$slotid = required_param('slot', PARAM_INT);
+$assignid = required_param('assignid', PARAM_INT);
 
 $url = new moodle_url('/mod/organizer/slot_assign.php');
 $url->param('id', $cm->id);
@@ -103,3 +98,7 @@ $event = \mod_organizer\event\appointment_assigned::create(
 $event->trigger();
 
 redirect($newurl);
+
+print_error('If you see this, something went wrong!');
+
+die;

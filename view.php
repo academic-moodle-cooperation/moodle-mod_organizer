@@ -72,7 +72,6 @@ $completion = new completion_info($instance->course);
 $completion->set_module_viewed($instance->cm);
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(format_string($instance->organizer->name), 2, null);
 
 echo $OUTPUT->box_start('', 'organizer_main_cointainer');
 switch ($params['mode']) {
