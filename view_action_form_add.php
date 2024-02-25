@@ -99,7 +99,7 @@ class organizer_add_slots_form extends moodleform {
         $mform->setDefault('visibility', $this->_get_instance_visibility());
         $mform->addHelpButton('visibility', 'visibility', 'organizer');
 
-        $locations = get_config('mod_organizer', 'locations');
+        $locations = get_config('organizer', 'locations');
         if (!$locations) {
             $mform->addElement('text', 'location', get_string('location', 'organizer'), array('size' => '64'));
             $mform->setType('location', PARAM_TEXT);
@@ -264,7 +264,7 @@ class organizer_add_slots_form extends moodleform {
         }
         $params->relativedeadline = $organizer->relativedeadline;
         $params->relativedeadlinestring = get_string('infobox_deadline_passed_slot', 'organizer');
-        $params->allowcreationofpasttimeslots = $organizerconfig->allowcreationofpasttimeslots;
+        $params->allowcreationofpasttimeslots = $organizerconfig->allowcreationofpasttimeslots ?? null;
         $params->pasttimeslotsstring = get_string('pasttimeslotstring', 'organizer');
 
         $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', array($params));

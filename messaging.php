@@ -434,7 +434,7 @@ function organizer_prepare_and_send_message($data, $type) {
                             }
                             // Assign notify trainer: Send notification to trainer.
                             $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($trainerid),
-                                $slot, $type, null, $customdata);
+                                $slotx, $type, null, $customdata);
                         }
                     }
                 } else { // If no app was found there is no need to send messages.

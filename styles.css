@@ -27,226 +27,179 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 .path-mod-organizer #organizer_main_cointainer table tr.past_due td {
-    background-color: #E8F1F8  !important;
+    background-color: #e8f1f8 !important;
 }
-
 .path-mod-organizer #organizer_main_cointainer table tr.past_due_reg td {
-    background-color: #E8F1F8  !important;
+    background-color: #e8f1f8 !important;
 }
-
 .path-mod-organizer #organizer_main_cointainer table tr.affected_slot td {
-    background-color: Lightgreen  !important;
+    background-color: Lightgreen !important;
 }
-
 .path-mod-organizer #organizer_main_cointainer table tr.unavailable td {
     color: gray !important;
 }
-
 .path-mod-organizer #organizer_main_cointainer table tr.unavailable td.c2 {
     font-style: italic;
 }
-
 .path-mod-organizer #organizer_main_cointainer table.overview {
     width: 95% !important;
 }
-
 .path-mod-organizer #organizer_main_cointainer table.overview td {
-    border: 1px solid #FFF !important;
+    border: 1px solid #fff !important;
 }
-
 .path-mod-organizer #organizer_main_cointainer fieldset.preview {
     width: 100%;
 }
-
-.path-mod-organizer #organizer_main_cointainer div.datapreviewtitle{
+.path-mod-organizer #organizer_main_cointainer div.datapreviewtitle {
     margin-bottom: -2em;
     font-weight: bold;
     margin-left: 1.5em;
 }
-
-/* Fix here sn. */
 .path-mod-organizer #organizer_main_cointainer div.forced_scroll {
     border: solid 1px #ddd;
     margin-left: 10px;
     margin-right: 10px;
     padding-top: 2em;
 }
-
 .path-mod-organizer #organizer_main_cointainer div.forced_scroll table {
     min-width: 1024px;
     width: 97%;
     margin: 1em;
 }
-
 .path-mod-organizer #organizer_main_cointainer div.forced_scroll td {
     white-space: nowrap;
     border: solid 1px #ddd;
     border-collapse: collapse;
 }
-
 .path-mod-organizer #organizer_main_cointainer tr.registered_slot td {
     background-color: Lightgreen !important;
 }
-
 .path-mod-organizer #organizer_main_cointainer div.singlebutton button {
     margin: 20px 5px;
 }
-
 .path-mod-organizer #organizer_main_cointainer span.countdown_normal {
     background-color: LightGreen;
 }
-
 .path-mod-organizer #organizer_main_cointainer span.countdown_hurry {
     background-color: Yellow;
 }
-
 .path-mod-organizer #organizer_main_cointainer span.countdown_critical {
     background-color: rgb(255, 204, 153);
 }
-
 .path-mod-organizer #organizer_main_cointainer span.countdown_passed {
-    background-color: #F0F0F0;
+    background-color: #f0f0f0;
 }
-
 .path-mod-organizer #organizer_main_cointainer span.nobreak {
     white-space: nowrap;
 }
-
 .path-mod-organizer #organizer_main_cointainer div.organizerinfo {
     width: 50% !important;
 }
-
 .path-mod-organizer #organizer_main_cointainer table.print_preview td {
-    border: 1px solid #FFF !important;
+    border: 1px solid #fff !important;
     border-collapse: collapse;
 }
-
 .path-mod-organizer #organizer_main_cointainer table.print-preview {
     width: 100%;
 }
-
 .path-mod-organizer #organizer_main_cointainer table.coloredrows th {
     white-space: nowrap;
 }
-
 .path-mod-organizer #organizer_main_cointainer table.coloredrows .r0 {
     background-color: #f0f0f0;
     white-space: nowrap;
 }
-
 .path-mod-organizer #organizer_main_cointainer table.coloredrows .r1 {
     background-color: #fafafa;
     white-space: nowrap;
 }
-
 .path-mod-organizer #page-mod-organizer-view div#organizer_popup_header div.title h2 {
     width: 100%;
 }
-
 .path-mod-organizer #organizer_main_cointainer fieldset#id_slotdetails input[readonly='readonly'] {
-    background: #ffffff;
+    background: #fff;
     color: #6d6d6d;
     border: 1px solid #afafaf;
     cursor: default;
 }
-
 .path-mod-organizer #organizer_main_cointainer a.action {
     white-space: nowrap;
     display: block;
 }
-
 .path-mod-organizer #organizer_main_cointainer a.disabled {
     color: grey;
 }
-
 .path-mod-organizer #organizer_main_cointainer .finalgrade {
     margin-left: 0.1em;
     cursor: help;
     color: red;
 }
-
 .path-mod-organizer #slot_overview th {
     background-color: inherit;
 }
-
 .path-mod-organizer .organizer_filterblock {
     display: block;
-/*    margin-block-start: 1em; */
     margin-block-end: 0.5em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    margin-left: 0!important;
-    margin-right: 0!important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }
 .path-mod-organizer .organizer_filterblock_reg {
     display: block;
-/*    margin-block-start: 1em;   */
     margin-block-end: 0.5em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    margin-left: 0!important;
-    margin-right: 0!important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }
-
 .path-mod-organizer #id_export_settings_header {
     border-bottom: none !important;
 }
-
 .path-mod-organizer .slotoptions {
     margin-right: 0.3em;
     margin-left: 0.9em;
 }
-
 .path-mod-organizer .userstatusbar_tr {
     max-width: 90%;
     margin-bottom: 1em;
 }
-
 .path-mod-organizer .userstatusbar_td_empty {
     width: 1.5rem;
     height: 1.5rem;
     display: inline-block;
     margin: 0.1rem;
 }
-
 .path-mod-organizer .userstatusbar_td_full {
     width: 1.5rem;
     height: 1.5rem;
     display: inline-block;
     margin: 0.1rem;
 }
-
 .path-mod-organizer .registrationstatusbar {
     height: 1.5rem;
     display: block;
 }
-
 .path-mod-organizer .registrationstatusbarleg {
     display: inline-block;
     height: 1.5rem;
 }
-
 .path-mod-organizer .newweek {
     border-top: dashed;
 }
-
 .path-mod-organizer .font-big {
     font-size: 0.8rem;
     width: 2.7rem;
 }
-
 .path-mod-organizer .slotactivecolor {
     color: green;
 }
-
 .path-mod-organizer .slotovercolor {
     color: dimgrey;
 }
-
-.path-mod-organizer #organizer_main_cointainer .icon.fa.fa-question-circle.text-info.fa-fw  {
+.path-mod-organizer #organizer_main_cointainer .icon.fa.fa-question-circle.text-info.fa-fw {
     margin-left: 0.2rem !important;
 }
-
 .path-mod-organizer #id_slotscontainer .col-md-9.form-inline.align-items-start.felement label.form-check {
     border: solid 1px lightgrey;
     background-color: lightgrey;
@@ -254,7 +207,6 @@
     border-radius: 1rem;
     margin-top: 1rem;
 }
-
 .path-mod-organizer #id_slotscontainer .col-md-9.form-inline.align-items-start.felement .d-block::before {
     font: var(--fa-font-solid);
     content: "\f007";
@@ -263,7 +215,6 @@
 .path-mod-organizer #fitem_id_groupname {
     font-weight: bold;
 }
-
 .path-mod-organizer #slot_overview .userinitialstext {
     display: none;
 }

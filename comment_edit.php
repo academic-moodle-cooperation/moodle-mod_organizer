@@ -44,12 +44,8 @@ $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title($organizer->name);
 $PAGE->set_heading($course->fullname);
-$organizerconfig = get_config('organizer');
-if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1) {
-    $PAGE->add_body_class('limitedwidth');
-    $params['limitedwidth'] = true;
-    $params['limitedwidth'] = true;
-}
+
+$params['limitedwidth'] = organizer_get_limitedwidth();
 
 $redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id));
 
@@ -68,7 +64,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     $event = \mod_organizer\event\appointment_commented::create(
         array(
             'objectid' => $PAGE->cm->id,
-            'context' => $PAGE->context
+            'context' => $PAGE->context,
         )
     );
     $event->trigger();
