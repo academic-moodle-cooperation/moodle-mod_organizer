@@ -205,11 +205,11 @@ class organizer_slot {
 
             if (!isset($this->slot->maxparticipants)) {
                 $this->slot->maxparticipants = $DB->get_field('organizer_slots', 'maxparticipants', array('id' => $slot->slotid));
-	    }
+    	    }
 
-	    if (!isset($this->slot->id)) {
-		$this->slot->id = $slot->slotid;
-	    } 
+            if (!isset($this->slot->id)) {
+                $this->slot->id = $slot->slotid;
+            }
         }
 
         foreach (get_object_vars($this->slot) as $key => $value) {

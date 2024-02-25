@@ -132,8 +132,8 @@ function organizer_check_collision($from, $to, $eventsandslots) {
         $eventfrom = $event->timestart;
         $eventto = $eventfrom + $event->timeduration;
 
-        if (between($from, $eventfrom, $eventto) || between($to, $eventfrom, $eventto)
-            || between($eventfrom, $from, $to) || between($eventto, $from, $to)
+        if (organizer_between($from, $eventfrom, $eventto) || organizer_between($to, $eventfrom, $eventto)
+            || organizer_between($eventfrom, $from, $to) || organizer_between($eventto, $from, $to)
             || $from == $eventfrom || $eventfrom == $eventto
         ) {
             $collidingevents[] = $event;
@@ -148,7 +148,7 @@ function organizer_check_collision($from, $to, $eventsandslots) {
  * @param number $upper
  * @return boolean
  */
-function between($num, $lower, $upper) {
+function organizer_between($num, $lower, $upper) {
     return $num > $lower && $num < $upper;
 }
 /**

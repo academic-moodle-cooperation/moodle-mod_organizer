@@ -82,7 +82,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
         }
         $strings->slot_location = organizer_location_link($slot);
         $strings->slot_maxparticipants = $slot->maxparticipants;
-        $strings->slot_comments = s($slot->comments);
+        $strings->slot_comments = organizer_filter_text($slot->comments);
     }
 
     if ($namesplit[0] == "assign_notify_student" || $namesplit[0] == "assign_notify_teacher") {
