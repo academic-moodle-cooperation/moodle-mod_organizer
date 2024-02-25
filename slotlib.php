@@ -238,10 +238,6 @@ class organizer_slot {
         return $this->slot;
     }
 
-    public function get_id() {
-	return $this->slot->id;
-    }
-
     public function has_participants() {
         $this->load_appointments();
         return count($this->apps) != 0;
