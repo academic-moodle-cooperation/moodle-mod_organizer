@@ -99,7 +99,7 @@ class organizer_add_slots_form extends moodleform {
         $mform->setDefault('visibility', $this->_get_instance_visibility());
         $mform->addHelpButton('visibility', 'visibility', 'organizer');
 
-        $locations = get_config('organizer', 'locations');
+        $locations = get_config('mod_organizer', 'locations');
         if (!$locations) {
             $mform->addElement('text', 'location', get_string('location', 'organizer'), array('size' => '64'));
             $mform->setType('location', PARAM_TEXT);
