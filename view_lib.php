@@ -1991,17 +1991,58 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
     return '<img src="' . $src . '" alt="' . $alt . '" title="' . $title . '" id="' . $id . '" ' . $other . ' />';
 }
 
-function organizer_get_icon_msg($infotxt, $icon, $textclass='', $link=null) {
-    global $OUTPUT;
-    $attributes = array();
-    if ($textclass) {
-        $attributes['class'] = $textclass;
-    }
-    if ($link) {
-        $output = html_writer::div($OUTPUT->pix_icon($icon, $infotxt, 'mod_organizer', $attributes).$link);
-    } else {
-        $output = html_writer::div($OUTPUT->pix_icon($icon, $infotxt, 'mod_organizer', $attributes).
-            html_writer::span($infotxt, 'text-left '.$textclass));
+function organizer_get_icon_msg($name, $infotxt) {
+    $out = "";
+    switch ($name) {
+        case 'group':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
+                'fa-group fa-stack-1x text-primary', $infotxt);
+            break;
+        case 'nogroup':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-danger',
+                'fa-group fa-stack-1x text-danger', $infotxt);
+            break;
+        case 'expires':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
+                'fa-hourglass-3 fa-stack-1x text-primary', $infotxt);
+            break;
+        case 'expired':
+            $out = organizer_get_fa_icon_stacked('fa-hourglass fa-stack-1x text-danger',
+                'fa-ban fa-stack-2x text-danger', $infotxt);
+            break;
+        case 'neverexpires':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-secondary',
+                'fa-hourglass fa-stack-1x text-secondary', $infotxt);
+            break;
+        case 'grade':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
+                'fa-th-list fa-stack-1x text-primary', $infotxt);
+            break;
+        case 'nograde':
+            $out = organizer_get_fa_icon_stacked('fa-th-list fa-stack-1x text-primary',
+                'fa-ban fa-stack-2x text-primary', $infotxt);
+            break;
+        case 'queues':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
+                'fa-coffee fa-stack-1x text-primary', $infotxt);
+            break;
+        case 'noqueues':
+            $out = organizer_get_fa_icon_stacked('fa-coffee fa-stack-1x text-primary',
+                'fa-ban fa-stack-2x text-primary', $infotxt);
+            break;
+        case 'minmax1':
+            $out = "";
+            break;
+        case 'minmax':
+            $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',
+                    'fa-files-o fa-stack-1x text-primary', $infotxt).$infotxt;
+            break;
+        case 'enoughplaces':
+            $out = organizer_get_fa_icon('fa fa-check-circle text-success mr-1', $infotxt).$infotxt;
+            break;
+        case 'notenoughplaces':
+            $out = organizer_get_fa_icon('fa fa-exclamation-circle text-warning mr-1', $infotxt).$infotxt;
+            break;
     }
     return $out;
 }
