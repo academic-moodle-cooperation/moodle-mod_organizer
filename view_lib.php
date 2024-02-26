@@ -1345,7 +1345,7 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
     $assignid = $params['assignid'];
 
     $sqlparams = array('organizerid' => $organizer->id);
-    $query = "SELECT s.* FROM {organizer_slots} s WHERE s.organizerid = :organizerid AND s.visible = 1 ORDER BY $order";
+    $query = "SELECT s.* FROM {organizer_slots} s WHERE s.organizerid = :organizerid ORDER BY $order";
     $slots = $DB->get_records_sql($query, $sqlparams);
 
     $rows = array();
@@ -1394,8 +1394,8 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
 
                     $cell->style .= ' vertical-align: middle;';
                 } // End foreach column.
-                      $numshown++;
-                            $rows[] = $row;
+                $numshown++;
+                $rows[] = $row;
             } // End is_free_slot.
         } // End foreach slot.
     } // End if slots.
@@ -1768,7 +1768,7 @@ function organizer_get_participant_list($params, $slot, $app) {
         $when = userdate($slot->starttime - $slot->availablefrom, get_string('fulldatetimetemplate', 'organizer'));
         return "<em>" . get_string('unavailableslot', 'organizer') . "<br/>{$when}</em>";
     }
-    $studentview = $params['mode'] == ORGANIZER_TAB_STUDENT_VIEW;
+    $studentview = $params['mode'] ?? '' == ORGANIZER_TAB_STUDENT_VIEW;
     $groupmode = organizer_is_group_mode();
     if ($slot->visibility == ORGANIZER_VISIBILITY_ANONYMOUS) {
         $slotvisibilitystr = organizer_get_fa_icon('fa fa-user-secret', get_string('slot_anonymous', 'organizer'));
@@ -1782,7 +1782,7 @@ function organizer_get_participant_list($params, $slot, $app) {
 
     // Compose first summary line.
     $firstline = "";
-    $notcollapsed = $params['mode'] == 'notcollapsed';
+    $notcollapsed = $params['participantslist'] ?? '' == 'notcollapsed';
     if (!$groupmode) {
         $maxparticipants = $slot->maxparticipants;
         $a = new stdClass();
@@ -2364,7 +2364,7 @@ function organizer_get_assign_button($slotid, $params) {
     );
 
     $out = $OUTPUT->single_button($actionurl, get_string("btn_assign", 'organizer'));
-    $out = str_replace("btn-secondary", "btn-primary", $out);
+    $out = str_replace(" id=", " name=", str_replace("btn-secondary", "btn-primary", $out));
 
     return $out;
 }
