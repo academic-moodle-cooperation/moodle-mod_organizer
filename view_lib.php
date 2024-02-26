@@ -1345,7 +1345,7 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
     $assignid = $params['assignid'];
 
     $sqlparams = array('organizerid' => $organizer->id);
-    $query = "SELECT s.* FROM {organizer_slots} s WHERE s.organizerid = :organizerid AND s.visible = 1 ORDER BY $order";
+    $query = "SELECT s.* FROM {organizer_slots} s WHERE s.organizerid = :organizerid ORDER BY $order";
     $slots = $DB->get_records_sql($query, $sqlparams);
 
     $rows = array();
@@ -1394,8 +1394,8 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
 
                     $cell->style .= ' vertical-align: middle;';
                 } // End foreach column.
-                      $numshown++;
-                            $rows[] = $row;
+                $numshown++;
+                $rows[] = $row;
             } // End is_free_slot.
         } // End foreach slot.
     } // End if slots.
@@ -1782,7 +1782,7 @@ function organizer_get_participant_list($params, $slot, $app) {
 
     // Compose first summary line.
     $firstline = "";
-    $notcollapsed = $params['mode'] == 'notcollapsed';
+    $notcollapsed = $params['participantslist'] ?? '' == 'notcollapsed';
     if (!$groupmode) {
         $maxparticipants = $slot->maxparticipants;
         $a = new stdClass();
@@ -2311,6 +2311,7 @@ function organizer_get_reg_button($action, $slotid, $params, $disabled = false) 
             $actionurl, get_string("btn_$action", 'organizer'), 'post', array('disabled' => $disabled)
         );
         $out = str_replace("btn-secondary", "btn-primary mb-2", $out);
+        $out = str_replace(" id=", " name=", str_replace("btn-secondary", "btn-primary", $out));
     }
     return $out;
 }
