@@ -2310,7 +2310,6 @@ function organizer_get_reg_button($action, $slotid, $params, $disabled = false) 
         $out = $OUTPUT->single_button(
             $actionurl, get_string("btn_$action", 'organizer'), 'post', array('disabled' => $disabled)
         );
-        $out = str_replace("btn-secondary", "btn-primary mb-2", $out);
         $out = str_replace(" id=", " name=", str_replace("btn-secondary", "btn-primary", $out));
     }
     return $out;
