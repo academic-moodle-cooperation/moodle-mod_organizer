@@ -794,7 +794,7 @@ function organizer_delete_appointment($id) {
     $slot = $DB->get_record('organizer_slots', array('id' => $appointment->slotid));
     $receiver = intval($appointment->userid);
     // App delete: Send notification to participant.
-    organizer_send_message($USER, $receiver, $slotx, 'appointmentdeleted_notify_student');
+    organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
     $DB->delete_records('event', array('id' => $appointment->eventid));
     $DB->delete_records('organizer_slot_appointments', array('id' => $id));
 
