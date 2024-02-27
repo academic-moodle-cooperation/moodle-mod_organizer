@@ -273,6 +273,7 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
             $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
             $align = array('left', 'left', 'left', 'left', 'center', 'center');
         }
+        $params['participantslist'] = 'notcollapsed';
         $sortable = array();
         $table = new html_table();
         $table->id = 'my_slot_overview';

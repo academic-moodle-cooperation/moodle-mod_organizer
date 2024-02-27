@@ -578,21 +578,21 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                             $a = new stdClass();
                             list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown(
                                 $slot->starttime - $organizer->relativedeadline - time());
-                            $textclass = $a->days > 1 ? "" : ($a->hours > 1 ? "font-weight-bolder" : "danger");
+                            $textclass = $a->days > 1 ? "" : ($a->hours > 1 ? "text-info" : "text-danger");
                             $infotxt = get_string('infobox_deadline_countdown', 'organizer', $a);
-                            $onlyownslotsmsg .= organizer_get_icon_msg($infotxt, 'message_warning', $textclass);
+                            $onlyownslotsmsg .= organizer_get_fa_icon("fa fa-bell-o fa-xs $textclass", $infotxt);
                         } else { // Deadline passed.
-                            $textclass = "font-weight-bolder";
+                            $textclass = "text-danger";
                             $infotxt = get_string('infobox_deadline_passed', 'organizer');
-                            $onlyownslotsmsg .= organizer_get_icon_msg($infotxt, 'message_warning', $textclass);
+                            $onlyownslotsmsg .= organizer_get_fa_icon("fa fa-bell-slash-o fa-xs $textclass", $infotxt);
                         }
                         // App countdown on.
                         $a = new stdClass();
                         list($a->days, $a->hours, $a->minutes, $a->seconds) =
                             organizer_get_countdown($slot->starttime - time());
-                        $textclass = $a->days > 1 ? "" : ($a->hours > 1 ? "font-weight-bolder" : "danger");
+                        $textclass = $a->days > 1 ? "" : ($a->hours > 1 ? "text-info" : "text-danger");
                         $infotxt = get_string('infobox_app_countdown', 'organizer', $a);
-                        $onlyownslotsmsg .= organizer_get_icon_msg($infotxt, 'message_info', $textclass);
+                        $onlyownslotsmsg .= organizer_get_fa_icon("fa fa-bell fa-xs $textclass", $infotxt);
                     }
                 }
             } else {
@@ -1813,7 +1813,14 @@ function organizer_get_participant_list($params, $slot, $app) {
                 }
             }
         }
-        if ($countapps && !$notcollapsed && $slot->visibility != ORGANIZER_VISIBILITY_ANONYMOUS) {
+        if ($studentview) {
+            $participantsvisible = $countapps && !$notcollapsed &&
+                ($slot->visibility == ORGANIZER_VISIBILITY_ALL ||
+                    ($slot->visibility == ORGANIZER_VISIBILITY_SLOT && $ismyslot));
+        } else {
+            $participantsvisible = $countapps;
+        }
+        if ($participantsvisible) {
             $firstline = organizer_get_icon('plus-square', get_string('clicktohideshow'), null, null, 'collapseicon').$firstline.$slotvisibilitystr;
             $firstline = html_writer::div($firstline, 'collapseclick text-nowrap', array( 'data-target' => '.s'.$slot->id));
         } else {
@@ -2167,7 +2174,7 @@ function organizer_slot_reg_status($organizer, $slot, $onlyownslotsmsg = null) {
     $app = organizer_get_slot_user_appointment($slotx);
 
     $pagebodyclasses = $PAGE->bodyclasses;
-    if (strpos($pagebodyclasses, 'limitedwidth')) {
+    if (strpos($pagebodyclasses, 'limitedwidth') && !$onlyownslotsmsg) {
         $sizeclass = "1x";
     } else {
         $sizeclass = "2x";
@@ -2216,7 +2223,7 @@ function organizer_slot_reg_status($organizer, $slot, $onlyownslotsmsg = null) {
     }
 
     if ($onlyownslotsmsg) {
-        $output .= $onlyownslotsmsg;
+        $output .= "<br>".$onlyownslotsmsg;
     }
     return $output;
 }
