@@ -61,7 +61,7 @@ class organizer_delete_appointment_form extends \moodleform {
         $list .= '<span style="display: table-cell;">';
 
         if (organizer_is_group_mode()) {
-            $params['mode'] = 'notcollapsed';
+            $params['participantslist'] = 'notcollapsed';
             $list .= organizer_get_participant_list($params, $slot, null);
         } else {
             $identity = organizer_get_user_identity($appointment->userid);
