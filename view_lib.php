@@ -1768,7 +1768,7 @@ function organizer_get_participant_list($params, $slot, $app) {
         $when = userdate($slot->starttime - $slot->availablefrom, get_string('fulldatetimetemplate', 'organizer'));
         return "<em>" . get_string('unavailableslot', 'organizer') . "<br/>{$when}</em>";
     }
-    $studentview = $params['mode'] ?? '' == ORGANIZER_TAB_STUDENT_VIEW;
+    $studentview = (isset($params['mode']) ? $params['mode'] : '') == ORGANIZER_TAB_STUDENT_VIEW;
     $groupmode = organizer_is_group_mode();
     if ($slot->visibility == ORGANIZER_VISIBILITY_ANONYMOUS) {
         $slotvisibilitystr = organizer_get_fa_icon('fa fa-user-secret', get_string('slot_anonymous', 'organizer'));
@@ -1782,7 +1782,7 @@ function organizer_get_participant_list($params, $slot, $app) {
 
     // Compose first summary line.
     $firstline = "";
-    $notcollapsed = $params['participantslist'] ?? '' == 'notcollapsed';
+    $notcollapsed = (isset($params['participantslist']) ? $params['participantslist'] : '') == 'notcollapsed';
     if (!$groupmode) {
         $maxparticipants = $slot->maxparticipants;
         $a = new stdClass();

@@ -105,7 +105,7 @@ function organizer_make_messages_section($params) {
     global $OUTPUT;
 
     $output = '';
-    $infoboxmessage = $_SESSION["infoboxmessage"] ?? '';
+    $infoboxmessage = isset($_SESSION['infoboxmessage']) ? $_SESSION['infoboxmessage'] : "";
     if ($infoboxmessage) {
         $output .= $infoboxmessage;
         $_SESSION["infoboxmessage"] = "";
