@@ -2211,8 +2211,7 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
     } else {
         foreach ($entries as $entry) {
             // Count participants and not bookings.
-            if (!in_array($entry->id, $entryids))
-            {
+            if (!in_array($entry->id, $entryids)) {
                 $entryids[] = $entry->id;
                 $countentries++;
             }
@@ -2296,8 +2295,8 @@ function organizer_get_counters($organizer, $cm = null) {
         $info = new \core_availability\info_module(cm_info::create($cm));
         $filtered = $info->filter_user_list($students);
         $studentids = array_keys($filtered);
-        $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid 
-        FROM {organizer_slot_appointments} sa INNER JOIN {organizer_slots} s ON sa.slotid = s.id 
+        $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid
+        FROM {organizer_slot_appointments} sa INNER JOIN {organizer_slots} s ON sa.slotid = s.id
         WHERE s.organizerid = :organizerid', ['organizerid' => $organizer->id]
         );
         $participants = array_merge($studentids, $havebookings);
