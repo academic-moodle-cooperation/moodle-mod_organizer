@@ -110,6 +110,7 @@ foreach ($organizers as $organizer) {
     $row[] = format_module_intro('organizer', $organizer, $cm->id);
     if (has_capability('mod/organizer:viewregistrations', $context)) {
         $a = organizer_get_counters($organizer, $cm);
+        $a->slotsmin = $organizer->userslotsmin;
         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $reg = get_string('mymoodle_registered_group_short', 'organizer', $a);
             $att = get_string('mymoodle_attended_group_short', 'organizer', $a);
