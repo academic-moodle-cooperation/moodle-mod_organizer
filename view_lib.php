@@ -908,8 +908,8 @@ function organizer_get_reg_status_table_entries($params) {
     $info = new \core_availability\info_module(cm_info::create($cm));
     $filtered = $info->filter_user_list($students);
     $studentids = array_keys($filtered);
-    $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid 
-        FROM {organizer_slot_appointments} sa INNER JOIN {organizer_slots} s ON sa.slotid = s.id 
+    $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid
+        FROM {organizer_slot_appointments} sa INNER JOIN {organizer_slots} s ON sa.slotid = s.id
         WHERE s.organizerid = :organizerid', ['organizerid' => $organizer->id]
     );
     $studentids = array_merge($studentids, $havebookings);
@@ -2583,7 +2583,7 @@ function organizer_appointmentsstatus_bar($organizer) {
                 WHERE {groupings_groups}.groupingid = :groupingid';
         $groups = $DB->get_records_sql($query, $params);
         foreach ($groups as $group) {
-            if(!get_enrolled_users($context, 'mod/organizer:register', $group->id, 'u.id', null, 0, 0, true)) {
+            if (!get_enrolled_users($context, 'mod/organizer:register', $group->id, 'u.id', null, 0, 0, true)) {
                 continue;
             }
             $apps = organizer_get_all_group_appointments($organizer, $group->id);
@@ -2596,8 +2596,8 @@ function organizer_appointmentsstatus_bar($organizer) {
         $info = new \core_availability\info_module(cm_info::create($cm));
         $filtered = $info->filter_user_list($students);
         $studentids = array_keys($filtered);
-        $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid 
-        FROM {organizer_slot_appointments} sa INNER JOIN {organizer_slots} s ON sa.slotid = s.id 
+        $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid
+        FROM {organizer_slot_appointments} sa INNER JOIN {organizer_slots} s ON sa.slotid = s.id
         WHERE s.organizerid = :organizerid', ['organizerid' => $organizer->id]
         );
         $studentids = array_merge($studentids, $havebookings);
