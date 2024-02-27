@@ -85,7 +85,7 @@ $mform = new organizer_remind_all_form(
     null, array(
         'id' => $cm->id,
         'mode' => $mode,
-        'recipients' => $recipientsstr ?? '',
+        'recipients' => isset($recipientsstr) ? $recipientsstr : '',
         'recipient' => $recipient,
         )
 );
