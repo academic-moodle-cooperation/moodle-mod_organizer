@@ -105,7 +105,7 @@ function organizer_make_messages_section($params) {
     global $OUTPUT;
 
     $output = '';
-    $infoboxmessage = $_SESSION["infoboxmessage"] ?? '';
+    $infoboxmessage = isset($_SESSION['infoboxmessage']) ? $_SESSION['infoboxmessage'] : "";
     if ($infoboxmessage) {
         $output .= $infoboxmessage;
         $_SESSION["infoboxmessage"] = "";
@@ -246,6 +246,7 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
             $columns = array('datetime', 'location', 'participants', 'teacher', 'status', 'actions');
             $align = array('left', 'left', 'left', 'left', 'center', 'center');
         }
+        $params['participantslist'] = 'notcollapsed';
         $sortable = array();
         $table = new html_table();
         $table->id = 'my_slot_overview';
