@@ -15,14 +15,13 @@ variables:
   MYSQL_COLLATION_SERVER: "utf8mb4_unicode_ci"
 
 .job_template: &job_configuration
-  image: quay.io/amc/moodle-plugin-ci:${PHP_VERSION}-node.16
+  image: quay.io/amc/moodle-plugin-ci:${PHP_VERSION}-node.20
   before_script:
     - cd ../..
     - moodle-db-isready
     - moodle-plugin-ci install --moodle="moodle-upstream-core" --db-host=$DB_HOST --db-port=$DB_PORT
   script:
     - moodle-plugin-ci phplint
-    - moodle-plugin-ci phpcpd
     - moodle-plugin-ci phpmd
     - moodle-plugin-ci codechecker
     - moodle-plugin-ci validate
