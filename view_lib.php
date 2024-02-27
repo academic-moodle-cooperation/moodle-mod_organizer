@@ -1782,7 +1782,7 @@ function organizer_get_participant_list($params, $slot, $app) {
 
     // Compose first summary line.
     $firstline = "";
-    $notcollapsed = $params['participantslist'] == 'notcollapsed';
+    $notcollapsed = $params['participantslist'] ?? '' == 'notcollapsed';
     if (!$groupmode) {
         $maxparticipants = $slot->maxparticipants;
         $a = new stdClass();
