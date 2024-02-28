@@ -697,6 +697,7 @@ $string['organizer:addinstance'] = 'Add a new organizer';
 $string['organizer:addslots'] = 'Add new time slots';
 $string['organizer:assignslots'] = 'Assign time slot to a student';
 $string['organizer:comment'] = 'Add comments';
+$string['organizer:deleteappointments'] = 'Delete appointments';
 $string['organizer:deleteslots'] = 'Delete existing time slots';
 $string['organizer:editslots'] = 'Edit existing time slots';
 $string['organizer:evalslots'] = 'Grade completed time slots';

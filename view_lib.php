@@ -1510,7 +1510,7 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
         return '-';
     }
 
-    $limitedwidth = $params['limitedwidth'] ?? false;
+    $limitedwidth = isset($params['limitedwidth']) ? $params['limitedwidth'] : false;
 
     $query = "SELECT a.*
     FROM {organizer_slot_appointments} a
@@ -1716,13 +1716,13 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $buttons[] = $button;
 
     // Delete appointment button.
-    if ($entry->teacherapplicantid) {
+    if (isset($entry->appid) && intval($entry->appid)) {
         $button = new stdClass();
         $button->text = get_string("btn_deleteappointment", 'organizer');
         $button->url = $deleteurl;
         $button->icon = "fa fa-trash fw";
-        // If it is a trainer assigned slot show button for deleting the appointment.
-        $button->disabled = !has_capability('mod/organizer:deleteslots', $context, null, true);
+        // If it is an appointment show button for deleting the appointment.
+        $button->disabled = !has_capability('mod/organizer:deleteappointments', $context, null, true);
         $buttons[] = $button;
     }
 
