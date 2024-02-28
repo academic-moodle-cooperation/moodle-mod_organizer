@@ -7,6 +7,7 @@ CHANGELOG
 
 4.1.3 (2024-02-21)
 ------------------
+* [FEATURE] Allow deleting of appointments for holders of the new right deleteappointments
 * [FIXED]   Fix organizerconfig problems if config is empty
 * [FIXED]   Going back to simple icons in description section
 * [FIXED]   Show grade buttons only if grading is active
