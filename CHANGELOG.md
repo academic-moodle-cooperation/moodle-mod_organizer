@@ -3,6 +3,7 @@ CHANGELOG
 
 4.3.1 (2024-02-23)
 ------------------
+* [FEATURE] Allow deleting of appointments for holders of the new right deleteappointments
 * [FIXED]   Email message: fix typo with empty comments
 * [FIXED]   Appointments view: No action button for grading if grading is not active
 * [FIXED]   Show participants with bookings in reg view regardless of access restrictions
