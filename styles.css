@@ -218,3 +218,6 @@
 .path-mod-organizer #slot_overview .userinitialstext {
     display: none;
 }
+.path-mod-organizer #my_slot_overview .userinitialstext {
+    display: none;
+}
