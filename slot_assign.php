@@ -99,6 +99,6 @@ $event->trigger();
 
 redirect($newurl);
 
-print_error('If you see this, something went wrong!');
+throw new \coding_exception('If you see this, something went wrong!');
 
 die;

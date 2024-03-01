@@ -34,11 +34,9 @@ require_once(dirname(__FILE__) . '/locallib.php');
 
 $id = required_param('id', PARAM_INT);   // Course.
 
-if (! $course = $DB->get_record('course', array('id' => $id))) {
-    print_error('Course ID is incorrect');
-}
-
+$course = $DB->get_record('course', array('id' => $id));
 require_course_login($course);
+
 $PAGE->set_pagelayout('incourse');
 
 $event = \mod_organizer\event\course_module_instance_list_viewed::create(

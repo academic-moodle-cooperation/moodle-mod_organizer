@@ -213,11 +213,11 @@ function organizer_add_new_slots($data) {
             $newslot->visible = $slot['visible'];
 
             if (!isset($data->duration) || $data->duration < 1) {
-                print_error('Duration is invalid (not set or < 1). No slots will be added. Contact support!');
+                throw new \coding_exception('Duration is invalid (not set or < 1). No slots will be added.');
             }
 
             if (!isset($data->gap) || $data->gap < 0) {
-                print_error('Gap is invalid (not set or < 0). No slots will be added. Contact support!');
+                throw new \coding_exception('Gap is invalid (not set or < 0). No slots will be added. Contact support!');
             }
 
             $dateto = $enddate < $slot['dateto'] ? $enddate : $slot['dateto'];
@@ -1264,7 +1264,7 @@ function organizer_get_course_module_data($id = null, $n = null) {
         $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
     } else {
-        print_error('organizer_get_course_module_data: You must specify a course_module ID or an instance ID');
+        throw new \coding_exception('organizer_get_course_module_data: You must specify a course_module ID or an instance ID');
     }
 
     $context = context_module::instance($cm->id, MUST_EXIST);
@@ -1292,7 +1292,7 @@ function organizer_get_course_module_data_new() {
             false, MUST_EXIST
         );
     } else {
-        print_error('organizer_get_course_module_data_new: You must specify a course_module ID or an instance ID');
+        throw new \coding_exception('organizer_get_course_module_data_new: You must specify a course_module ID or an instance ID');
     }
 
     $instance->context = context_module::instance($instance->cm->id, MUST_EXIST);
@@ -1312,7 +1312,7 @@ function organizer_get_organizer() {
     } else if ($n) {
         $organizer = $DB->get_record('organizer', array('id' => $n), '*', MUST_EXIST);
     } else {
-        print_error('organizer_get_organizer: You must specify a course_module ID or an instance ID');
+        throw new \coding_exception('organizer_get_organizer: You must specify a course_module ID or an instance ID');
     }
 
     return $organizer;
@@ -1331,7 +1331,7 @@ function organizer_get_cm() {
         $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
     } else {
-        print_error('organizer_get_cm: You must specify a course_module ID or an instance ID');
+        throw new \coding_exception('organizer_get_cm: You must specify a course_module ID or an instance ID');
     }
 
     return $cm;
@@ -1350,7 +1350,7 @@ function organizer_get_context() {
         $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
     } else {
-        print_error('organizer_get_context: You must specify a course_module ID or an instance ID');
+        throw new \coding_exception('organizer_get_context: You must specify a course_module ID or an instance ID');
     }
 
     $context = context_module::instance($cm->id, MUST_EXIST);

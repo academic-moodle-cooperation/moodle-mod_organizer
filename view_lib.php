@@ -735,7 +735,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                         $cell = $row->cells[] = new html_table_cell(organizer_participants_action($params, $slot));
                     break;
                     default:
-                        print_error("Unrecognized column type: $column");
+                        throw new \coding_exception("Unrecognized column type: $column");
                 }
                 $cell->style .= ' vertical-align: middle;';
             }
@@ -761,7 +761,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                         $defaultrow->style = (!$showpastslots && $showmyslotsonly) ? '' : 'display: none;';
                     break;
                     default:
-                        print_error("This shouldn't happen @ generating no slot rows");
+                        throw new \coding_exception("This shouldn't happen @ generating no slot rows");
                 }
             } else {
                 $defaultrow->style = 'display: none;';
@@ -1389,7 +1389,7 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
                             $cell = $row->cells[] = new html_table_cell(organizer_get_assign_button($slot->id, $params));
                         break;
                         default:
-                            print_error("Unrecognized column type: $column");
+                            throw new \coding_exception("Unrecognized column type: $column");
                     }  // End switch.
 
                     $cell->style .= ' vertical-align: middle;';

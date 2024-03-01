@@ -98,6 +98,6 @@ if ($data = $mform->get_data()) {
 } else {
     organizer_display_form($mform, get_string('title_eval', 'organizer'));
 }
-print_error('If you see this, something went wrong with edit action!');
+throw new \coding_exception('If you see this, something went wrong with edit action!');
 
 die;

@@ -65,10 +65,6 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
             $output .= organizer_make_registrationstatistic_section($organizer, $entries);
             $jsparams->registrationview = 1;
         break;
-        case ORGANIZER_ASSIGNMENT_VIEW:
-        break;
-        default:
-            print_error("Wrong view mode: {$params['mode']}");
     }
     if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
         // Display section with predefined filter view options like "hidden slots only" etc..

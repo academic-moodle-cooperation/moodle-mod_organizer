@@ -446,7 +446,7 @@ function organizer_prepare_and_send_message($data, $type) {
             }
             break;
         default:
-            print_error('Not debugged yet!');
+            throw new \coding_exception('Not debugged yet!');
     }
     return $sentok;
 }

@@ -60,7 +60,7 @@ class organizer_print_slots_form extends moodleform {
                 $mform->setType("slots[$key]", PARAM_INT);
             }
         } else {
-            print_error('This should not happen!');
+            throw new \coding_exception('This should not happen!');
         }
     }
 
@@ -415,7 +415,7 @@ class organizer_print_slots_form extends moodleform {
                     case 'teachercomments':
                     break;
                     default:
-                        print_error("Unsupported column type: $column");
+                        throw new \coding_exception("Unsupported column type: $column");
                 }
             } // Each column.
             $rowspan = ($rowspan + 1) % $entry->rowspan;

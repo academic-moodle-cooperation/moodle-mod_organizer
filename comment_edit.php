@@ -75,6 +75,3 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 } else {
     organizer_display_form($mform, get_string('title_comment', 'organizer'));
 }
-print_error('If you see this, something went wrong with delete action!');
-
-die;

@@ -86,7 +86,7 @@ switch ($params['mode']) {
             $event->trigger();
             echo organizer_generate_appointments_view($params, $instance);
         } else {
-            print_error('You do not have the permission to view this page!');
+            throw new \coding_exception('You do not have the permission to view this page!');
         }
     break;
     case ORGANIZER_TAB_STUDENT_VIEW:
@@ -101,7 +101,7 @@ switch ($params['mode']) {
             $event->trigger();
             echo organizer_generate_student_view($params, $instance);
         } else {
-            print_error('You do not have the permission to view this page!');
+            throw new \coding_exception('You do not have the permission to view this page!');
         }
     break;
     case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
@@ -115,18 +115,18 @@ switch ($params['mode']) {
             $event->trigger();
             echo organizer_generate_registration_status_view($params, $instance);
         } else {
-            print_error('You do not have the permission to view this page!');
+            throw new \coding_exception('You do not have the permission to view this page!');
         }
     break;
     case ORGANIZER_ASSIGNMENT_VIEW:
         if (has_capability('mod/organizer:assignslots', $instance->context)) {
             echo organizer_generate_assignment_view($params, $instance);
         } else {
-            print_error('You do not have the permission to view this page!');
+            throw new \coding_exception('You do not have the permission to view this page!');
         }
     break;
     default:
-        print_error("Invalid view mode: {$params['mode']}");
+        throw new \coding_exception("Invalid view mode: {$params['mode']}");
     break;
 }
 echo $OUTPUT->box_end();

@@ -178,7 +178,7 @@ class MTablePDF extends \pdf {
      */
     public function setcolumnformat($columnformat) {
         if (count($columnformat) != count($this->columnwidths)) {
-            print_error(
+            throw new \coding_exception(
                 "Columnformat (" . count($columnformat) . ") count doesnt match " .
                 "column count (" . count($this->columnwidths) . ")"
             );
@@ -313,7 +313,7 @@ class MTablePDF extends \pdf {
      */
     public function settitles($titles) {
         if (count($titles) != count($this->columnwidths)) {
-            print_error("Error: Title count doesnt match column count");
+            throw new \coding_exception("Error: Title count doesnt match column count");
             exit();
         }
 
@@ -367,7 +367,7 @@ class MTablePDF extends \pdf {
      */
     public function addrow($row) {
         if (count($row) != count($this->columnwidths)) {
-            print_error(
+            throw new \coding_exception(
                 "number of columns from row (" . count($row) . ") does not match " .
                 "the number defined (" . count($this->columnwidths) . ")"
             );
@@ -387,7 +387,7 @@ class MTablePDF extends \pdf {
 
             foreach ($row as $idx => $value) {
                 if (is_array($value)) {
-                    print_error("Error: if you want to add a row using the fast mode, you cannot pass me an array");
+                    throw new \coding_exception("Error: if you want to add a row using the fast mode, you cannot pass me an array");
                 }
 
                 $tmp[] = array("rowspan" => 0, "data" => $value);
@@ -507,7 +507,7 @@ class MTablePDF extends \pdf {
                 $sumrelativ += $width['value'];
                 $allfixed = false;
             } else {
-                print_error("ERROR: unvalid columnwidth format");
+                throw new \coding_exception("ERROR: unvalid columnwidth format");
                 exit();
             }
         }
@@ -657,7 +657,7 @@ class MTablePDF extends \pdf {
                 $spaceonpage[1] = 28;
             }
         } else {
-            print_error("an unexpected error occured. Please report this to your administrator.");
+            throw new \coding_exception("an unexpected error occured. Please report this to your administrator.");
             exit();
         }
 
