@@ -29,160 +29,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-function organizer_get_slot_user_appointment($slotx, $userid = null, $mergegroupapps = true, $getevaluated = false) {
-    global $DB, $USER;
-
-    if ($userid == null) {
-        $userid = $USER->id;
-    }
-
-    $organizer = $slotx->get_organizer();
-
-    $paramssql = array('slotid' => $slotx->get_id(), 'userid' => $userid);
-    $query = "SELECT a.* FROM {organizer_slot_appointments} a
-            INNER JOIN {organizer_slots} s ON a.slotid = s.id
-            WHERE s.id = :slotid AND a.userid = :userid" .
-        ($getevaluated ? " AND a.attended IS NOT NULL " : " ") .
-        "ORDER BY a.id DESC";
-    $apps = $DB->get_records_sql($query, $paramssql);
-    $app = reset($apps);
-
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
-        $paramssql = array('slotid' => $slotx->get_id(), 'groupid' => $app->groupid);
-        $query = "SELECT a.* FROM {organizer_slot_appointments} a
-                INNER JOIN {organizer_slots} s ON a.slotid = s.id
-                WHERE s.id = :slotid AND a.groupid = :groupid
-                ORDER BY a.id DESC";
-        $groupapps = $DB->get_records_sql($query, $paramssql);
-
-        $appcount = 0;
-        $someoneattended = false;
-        foreach ($groupapps as $groupapp) {
-            if ($groupapp->userid == $userid) {
-                $app = $groupapp;
-            }
-            if (isset($groupapp->attended)) {
-                $appcount++;
-                if ($groupapp->attended == 1) {
-                    $someoneattended = true;
-                }
-            }
-        }
-
-        if ($app) {
-            $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
-        }
-    }
-
-    return $app;
-}
-
-function organizer_get_last_user_appointment($organizer, $userid = null, $mergegroupapps = true, $getevaluated = false) {
-    global $DB, $USER;
-
-    if ($userid == null) {
-        $userid = $USER->id;
-    }
-
-    if (is_number($organizer) && $organizer == intval($organizer)) {
-        $organizer = $DB->get_record('organizer', array('id' => $organizer));
-    }
-
-    $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
-    $query = "SELECT a.* FROM {organizer_slot_appointments} a
-            INNER JOIN {organizer_slots} s ON a.slotid = s.id
-            WHERE s.organizerid = :organizerid AND a.userid = :userid" .
-            ($getevaluated ? " AND a.attended IS NOT NULL " : " ") .
-            "ORDER BY a.id DESC";
-    $apps = $DB->get_records_sql($query, $paramssql);
-    $app = reset($apps);
-
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
-        $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
-        $query = "SELECT a.* FROM {organizer_slot_appointments} a
-                INNER JOIN {organizer_slots} s ON a.slotid = s.id
-                WHERE s.organizerid = :organizerid AND s.id = :slotid
-                ORDER BY a.id DESC";
-        $groupapps = $DB->get_records_sql($query, $paramssql);
-
-        $appcount = 0;
-        $someoneattended = false;
-        foreach ($groupapps as $groupapp) {
-            if ($groupapp->userid == $userid) {
-                $app = $groupapp;
-            }
-            if (isset($groupapp->attended)) {
-                $appcount++;
-                if ($groupapp->attended == 1) {
-                    $someoneattended = true;
-                }
-            }
-        }
-
-        if ($app) {
-            $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
-        }
-    }
-
-    return $app;
-}
-
-function organizer_get_all_user_appointments($organizer, $userid = null, $mergegroupapps = true) {
-    global $DB, $USER;
-
-    if ($userid == null) {
-        $userid = $USER->id;
-    }
-
-    if (is_number($organizer) && $organizer == intval($organizer)) {
-        $organizer = $DB->get_record('organizer', array('id' => $organizer));
-    }
-
-    $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
-    $query = "SELECT a.* FROM {organizer_slot_appointments} a
-    INNER JOIN {organizer_slots} s ON a.slotid = s.id
-    WHERE s.organizerid = :organizerid AND a.userid = :userid
-    ORDER BY a.id DESC";
-    $apps = $DB->get_records_sql($query, $paramssql);
-
-    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && count($apps) > 0) {
-        foreach ($apps as &$app) {
-            $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
-            $query = "SELECT a.* FROM {organizer_slot_appointments} a
-                        INNER JOIN {organizer_slots} s ON a.slotid = s.id
-                        WHERE s.organizerid = :organizerid AND s.id = :slotid
-                        ORDER BY a.id DESC";
-            $groupapps = $DB->get_records_sql($query, $paramssql);
-            $appcount = 0;
-            $someoneattended = false;
-            foreach ($groupapps as $groupapp) {
-                if (isset($groupapp->attended)) {
-                    $appcount++;
-                    if ($groupapp->attended == 1) {
-                        $someoneattended = true;
-                    }
-                }
-            }
-            $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
-        }
-    }
-
-    return $apps;
-}
-
-function organizer_get_all_group_appointments($organizer, $groupid) {
-    global $DB;
-    $params = array('groupid' => $groupid, 'organizerid' => $organizer->id);
-    $groupapps = $DB->get_records_sql(
-        'SELECT a.* FROM {organizer_slot_appointments} a
-            INNER JOIN {organizer_slots} s ON a.slotid = s.id
-            WHERE a.groupid = :groupid AND s.organizerid = :organizerid
-            ORDER BY a.id DESC', $params
-    );
-
-    return $groupapps;
-}
-
 class organizer_slot {
 
     private $slot;
@@ -341,8 +187,8 @@ class organizer_slot {
         $this->load_organizer();
         // The organizer should exists. Otherwise we are in a pathological state.
         if ($this->organizer->queue) {
-               $this->load_queue();
-               // The queue might be empty though.
+            $this->load_queue();
+            // The queue might be empty though.
             if ($this->queue) {
                 $position = 0;
                 foreach ($this->queue as $entry) {
@@ -377,8 +223,8 @@ class organizer_slot {
         $this->load_organizer();
         // The organizer should exists. Otherwise we are in a pathological state.
         if ($this->organizer->queue) {
-               $this->load_queue_group();
-               // The queue might be empty though.
+            $this->load_queue_group();
+            // The queue might be empty though.
             if ($this->queuegroup) {
                 foreach ($this->queuegroup as $entry) {
                     $position++;
@@ -465,6 +311,162 @@ class organizer_slot {
         return $this->slot->id;
     }
 }
+
+function organizer_get_slot_user_appointment($slotx, $userid = null, $mergegroupapps = true, $getevaluated = false) {
+    global $DB, $USER;
+
+    if ($userid == null) {
+        $userid = $USER->id;
+    }
+
+    $organizer = $slotx->get_organizer();
+
+    $paramssql = array('slotid' => $slotx->get_id(), 'userid' => $userid);
+    $query = "SELECT a.* FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.id = :slotid AND a.userid = :userid" .
+        ($getevaluated ? " AND a.attended IS NOT NULL " : " ") .
+        "ORDER BY a.id DESC";
+    $apps = $DB->get_records_sql($query, $paramssql);
+    $app = reset($apps);
+
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
+        $paramssql = array('slotid' => $slotx->get_id(), 'groupid' => $app->groupid);
+        $query = "SELECT a.* FROM {organizer_slot_appointments} a
+                INNER JOIN {organizer_slots} s ON a.slotid = s.id
+                WHERE s.id = :slotid AND a.groupid = :groupid
+                ORDER BY a.id DESC";
+        $groupapps = $DB->get_records_sql($query, $paramssql);
+
+        $appcount = 0;
+        $someoneattended = false;
+        foreach ($groupapps as $groupapp) {
+            if ($groupapp->userid == $userid) {
+                $app = $groupapp;
+            }
+            if (isset($groupapp->attended)) {
+                $appcount++;
+                if ($groupapp->attended == 1) {
+                    $someoneattended = true;
+                }
+            }
+        }
+
+        if ($app) {
+            $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
+        }
+    }
+
+    return $app;
+}
+
+function organizer_get_last_user_appointment($organizer, $userid = null, $mergegroupapps = true, $getevaluated = false) {
+    global $DB, $USER;
+
+    if ($userid == null) {
+        $userid = $USER->id;
+    }
+
+    if (is_number($organizer) && $organizer == intval($organizer)) {
+        $organizer = $DB->get_record('organizer', array('id' => $organizer));
+    }
+
+    $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
+    $query = "SELECT a.* FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.userid = :userid" .
+            ($getevaluated ? " AND a.attended IS NOT NULL " : " ") .
+            "ORDER BY a.id DESC";
+    $apps = $DB->get_records_sql($query, $paramssql);
+    $app = reset($apps);
+
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
+        $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
+        $query = "SELECT a.* FROM {organizer_slot_appointments} a
+                INNER JOIN {organizer_slots} s ON a.slotid = s.id
+                WHERE s.organizerid = :organizerid AND s.id = :slotid
+                ORDER BY a.id DESC";
+        $groupapps = $DB->get_records_sql($query, $paramssql);
+
+        $appcount = 0;
+        $someoneattended = false;
+        foreach ($groupapps as $groupapp) {
+            if ($groupapp->userid == $userid) {
+                $app = $groupapp;
+            }
+            if (isset($groupapp->attended)) {
+                $appcount++;
+                if ($groupapp->attended == 1) {
+                    $someoneattended = true;
+                }
+            }
+        }
+
+        if ($app) {
+            $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
+        }
+    }
+
+    return $app;
+}
+
+function organizer_get_all_user_appointments($organizer, $userid = null, $mergegroupapps = true) {
+    global $DB, $USER;
+
+    if ($userid == null) {
+        $userid = $USER->id;
+    }
+
+    if (is_number($organizer) && $organizer == intval($organizer)) {
+        $organizer = $DB->get_record('organizer', array('id' => $organizer));
+    }
+
+    $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
+    $query = "SELECT a.* FROM {organizer_slot_appointments} a
+    INNER JOIN {organizer_slots} s ON a.slotid = s.id
+    WHERE s.organizerid = :organizerid AND a.userid = :userid
+    ORDER BY a.id DESC";
+    $apps = $DB->get_records_sql($query, $paramssql);
+
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && count($apps) > 0) {
+        foreach ($apps as &$app) {
+            $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
+            $query = "SELECT a.* FROM {organizer_slot_appointments} a
+                        INNER JOIN {organizer_slots} s ON a.slotid = s.id
+                        WHERE s.organizerid = :organizerid AND s.id = :slotid
+                        ORDER BY a.id DESC";
+            $groupapps = $DB->get_records_sql($query, $paramssql);
+            $appcount = 0;
+            $someoneattended = false;
+            foreach ($groupapps as $groupapp) {
+                if (isset($groupapp->attended)) {
+                    $appcount++;
+                    if ($groupapp->attended == 1) {
+                        $someoneattended = true;
+                    }
+                }
+            }
+            $app->attended = ($appcount == count($groupapps)) ? $someoneattended : null;
+        }
+    }
+
+    return $apps;
+}
+
+function organizer_get_all_group_appointments($organizer, $groupid) {
+    global $DB;
+    $params = array('groupid' => $groupid, 'organizerid' => $organizer->id);
+    $groupapps = $DB->get_records_sql(
+        'SELECT a.* FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE a.groupid = :groupid AND s.organizerid = :organizerid
+            ORDER BY a.id DESC', $params
+    );
+
+    return $groupapps;
+}
+
+
 
 function organizer_get_slot_trainers($slotid, $withname = false) {
     global $DB;
