@@ -55,6 +55,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
         $organizerid = $slot->organizerid;
     } else {
         var_dump($slot);
+        die();
     }
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data(0, $organizerid);
