@@ -64,7 +64,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     }
     $strings->date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
     $strings->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-    $strings->location = $strings->location != '' ? $strings->location : get_string('nolocationplaceholder', 'organizer');
+    $strings->location = $slot->location != '' ? $slot->location : get_string('nolocationplaceholder', 'organizer');
 
     $namesplit = explode(':', $type);
 
