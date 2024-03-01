@@ -51,6 +51,9 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
         $trainercheck = false) {
     global $DB, $CFG;
 
+    if (!isset($slot->organizerid)) {
+        $slot = $slot->get_slot();
+    }
     $organizerid = $slot->organizerid;
 
     list($cm, $course, $organizer, $context) = organizer_get_course_module_data(0, $organizerid);
