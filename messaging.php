@@ -64,7 +64,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     }
     $strings->date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
     $strings->time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
-    $strings->location = $slot->location;
+    $strings->location = $slot->location != '' ? $slot->location : get_string('nolocationplaceholder', 'organizer');
 
     $namesplit = explode(':', $type);
 
@@ -83,9 +83,11 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
         } else {
             $strings->slot_teacher = get_string('teacherinvisible', 'organizer');
         }
-        $strings->slot_location = organizer_location_link($slot);
+        $location = organizer_location_link($slot);
+        $strings->slot_location = $location != '' ? $location : '-';
         $strings->slot_maxparticipants = $slot->maxparticipants;
-        $strings->slot_comments = organizer_filter_text($slot->comments);
+        $comments = organizer_filter_text($slot->comments);
+        $strings->slot_comments = $comments != '' ? $comments : '-';
     }
 
     if ($namesplit[0] == "assign_notify_student" || $namesplit[0] == "assign_notify_teacher") {
@@ -512,7 +514,7 @@ function organizer_build_message($namesplit, $cm, $course, $organizer, $sender, 
                                  $type, $strings, $customdata) {
 
     $messagename = count($namesplit) == 1 ? "$namesplit[0]" : "$namesplit[0]_$namesplit[1]";
-    $strings->location = $strings->location ?? get_string('nolocationplaceholder', 'organizer');
+    $strings->location = $strings->location != '' ? $strings->location : get_string('nolocationplaceholder', 'organizer');
     if (isset($digest)) {
         $strings->digest = $digest;
         $type .= ":digest";
