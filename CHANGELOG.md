@@ -3,17 +3,9 @@ CHANGELOG
 
 4.2.4 (2024-02-21)
 ------------------
-* backporting organizer version 4.3 and cherry picking version 4.1.3
-
-4.1.3 (2024-02-21)
-------------------
-* [FEATURE] Allow deleting of appointments for holders of the new right deleteappointments
 * [FIXED]   Fix organizerconfig problems if config is empty
 * [FIXED]   Going back to simple icons in description section
 * [FIXED]   Show grade buttons only if grading is active
-
-4.3.0 (2024-02-08)
-------------------
 * [FIXED]   Student view: Fix "Show all participants" option, remove the broken "Show only my slots"-filter option
 * [FIXED]   Registration view: Do not list groups which have no members
 * [FIXED]   Do not send group messages to group trainers
@@ -21,6 +13,7 @@ CHANGELOG
 * [FIXED]   Admin setting "hide identity" fixed
 * [FIXED]   Registration view: Do not check disabled checkboxes when "Checking all"
 * [FIXED]   After grading: return to calling page
+* [FEATURE] Allow deleting of appointments for holders of the new capability deleteappointments
 * [FEATURE] Make all icons font-awesome 4.7
 * [FEATURE] New Admin setting: Content width optionally in Moodle 4.x style (=smaller)
 * [FEATURE] Bulk-actions: Start-buttons not enabled unless there is at least one checked checkbox
@@ -29,7 +22,6 @@ CHANGELOG
 * [FEATURE] Registration view: Disable send reminders- and assign-buttons if there is no free place or the booking's maximum is reached
 * [FEATURE] Registration view: If organizer instance is in moodle group-mode a group selector can be used to filter the participants list
 * [FEATURE] Registration view: Only participants who's access is not restricted by trainer defined instance restrictions are listed. 
-* Moodle 4.3 compatible version
 
 4.2.3 (2023-11-17)
 ------------------
@@ -60,6 +52,14 @@ CHANGELOG
 * [FIXED] #7522: fix evaluation form group mode error message
 * [FIXED] #7637: fix calendar bug
 * Moodle 4.2 compatible version
+
+4.1.2 (2022-11-28)
+------------------
+* Moodle 4.1 compatible version
+
+4.0.0 (2022-10-28)
+------------------
+* Moodle 4.0 compatible version
 
 3.11.7 (2023-03-16)
 ------------------
