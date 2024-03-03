@@ -3,21 +3,31 @@ CHANGELOG
 
 4.1.3 (2024-02-21)
 ------------------
+* [FIXED] Fix organizerconfig problems if config is empty
+* [FIXED] Going back to simple icons in description section
+* [FIXED] Show grade buttons only if grading is active
+* [FIXED] Student view: Fix "Show all participants" option, remove the broken "Show only my slots"-filter option
+* [FIXED] Registration view: Do not list groups which have no members
+* [FIXED] Do not send group messages to group trainers
+* [FIXED] Fix dynamic property warnings in php 8.2
+* [FIXED] Admin setting "hide identity" fixed
+* [FIXED] Registration view: Do not check disabled checkboxes when "Checking all"
+* [FIXED] After grading: return to calling page
+* [FIXED] #7721: error message when deleting enrollments
+* [FIXED] #7746: don't allow not-students to be graded (in group mode)
+* [FIXED] #7745: don't show suspended users in registration view
+* [FIXED] #7778: include statement does not work using Bulk user actions - delete
+* [FIXED] #7670: course fullname instead of the shortname in PAGE heading
+* [FIXED] #7697: print single slot: error message when special userprofile fields are filled
+* [FIXED] #7705: incorrect success message when creating just one slot
+* [FIXED] #7660: fix typo in observer.php
+* [FIXED] #7444: remove double module description
+* [FIXED] #7518: fix grading error with postgres
+* [FIXED] #7519: fix mktime php 8.1 error
+* [FIXED] #7520: introduce new moodle 4.x compatible icons
+* [FIXED] #7522: fix evaluation form group mode error message
+* [FIXED] #7637: fix calendar bug
 * [FEATURE] Allow deleting of appointments for holders of the new right deleteappointments
-* [FIXED]   Fix organizerconfig problems if config is empty
-* [FIXED]   Going back to simple icons in description section
-* [FIXED]   Show grade buttons only if grading is active
-* backporting organizer version 4.3
-
-4.3.0 (2024-02-08)
-------------------
-* [FIXED]   Student view: Fix "Show all participants" option, remove the broken "Show only my slots"-filter option
-* [FIXED]   Registration view: Do not list groups which have no members
-* [FIXED]   Do not send group messages to group trainers
-* [FIXED]   Fix dynamic property warnings in php 8.2
-* [FIXED]   Admin setting "hide identity" fixed
-* [FIXED]   Registration view: Do not check disabled checkboxes when "Checking all"
-* [FIXED]   After grading: return to calling page
 * [FEATURE] Make all icons font-awesome 4.7
 * [FEATURE] New Admin setting: Content width optionally in Moodle 4.x style (=smaller)
 * [FEATURE] Bulk-actions: Start-buttons not enabled unless there is at least one checked checkbox
@@ -25,38 +35,18 @@ CHANGELOG
 * [FEATURE] Registration view: Add the possibility to send reminders to a manually selected list of users
 * [FEATURE] Registration view: Disable send reminders- and assign-buttons if there is no free place or the booking's maximum is reached
 * [FEATURE] Registration view: If organizer instance is in moodle group-mode a group selector can be used to filter the participants list
-* [FEATURE] Registration view: Only participants who's access is not restricted by trainer defined instance restrictions are listed. 
-* Moodle 4.3 compatible version
-
-4.2.3 (2023-11-17)
-------------------
-* [FIXED] #7721: error message when deleting enrollments
-* [FIXED] #7746: don't allow not-students to be graded (in group mode)
-* [FIXED] #7745: don't show suspended users in registration view
-* [FIXED] #7778: include statement does not work using Bulk user actions - delete
-* [FEATURE] #7744: new admin setting: don't show participant's ID in slot list
-
-4.2.2 (2023-09-22)
-------------------
-* [FIXED] #7670: course fullname instead of the shortname in PAGE heading
-* [FIXED] #7697: print single slot: error message when special userprofile fields are filled
-* [FIXED] #7705: incorrect success message when creating just one slot
+* [FEATURE] Registration view: Only participants who's access is not restricted by trainer defined instance restrictions are listed.
 * [FEATURE] #7701: No calendar events for empty slots-option only editable when creating an organizer instance
 * [FEATURE] #7706: managers should not have leadslots permission by default
+* [FEATURE] #7744: new admin setting: don't show participant's ID in slot list
 
-4.2.1 (2023-08-10)
+4.1.2 (2022-11-28)
 ------------------
-* [FIXED] #7660: fix typo in observer.php
+* Moodle 4.1 compatible version
 
-4.2.0 (2023-05-31)
+4.0.0 (2022-10-28)
 ------------------
-* [FIXED] #7444: remove double module description
-* [FIXED] #7518: fix grading error with postgres
-* [FIXED] #7519: fix mktime php 8.1 error
-* [FIXED] #7520: introduce new moodle 4.x compatible icons
-* [FIXED] #7522: fix evaluation form group mode error message
-* [FIXED] #7637: fix calendar bug
-* Moodle 4.2 compatible version
+* Moodle 4.0 compatible version
 
 3.11.7 (2023-03-16)
 ------------------
