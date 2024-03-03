@@ -27,7 +27,7 @@ CHANGELOG
 * [FIXED] #7520: introduce new moodle 4.x compatible icons
 * [FIXED] #7522: fix evaluation form group mode error message
 * [FIXED] #7637: fix calendar bug
-* [FEATURE] Allow deleting of appointments for holders of the new right deleteappointments
+* [FEATURE] Allow deleting of appointments for holders of the new capability deleteappointments
 * [FEATURE] Make all icons font-awesome 4.7
 * [FEATURE] New Admin setting: Content width optionally in Moodle 4.x style (=smaller)
 * [FEATURE] Bulk-actions: Start-buttons not enabled unless there is at least one checked checkbox
