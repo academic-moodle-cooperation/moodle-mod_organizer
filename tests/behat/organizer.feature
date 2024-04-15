@@ -16,9 +16,7 @@ Feature: Create organizer instance
       | teacher1 | C2     | editingteacher |
 
     When I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    And I turn editing mode on
-    And I add a "Organizer" to section "1" and I fill the form with:
+    And I add a organizer activity to course "Course 1" section "1" and I fill the form with:
       | Organizer name | Test organizer name |
       | Description    | Test description    |
     And I am on the "Test organizer name" "organizer activity" page
