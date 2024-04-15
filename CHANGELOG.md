@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.4.0 (2024-04-15)
+------------------
+* Moodle 4.4 compatible version
+
 4.3.1 (2024-02-23)
 ------------------
 * [FEATURE] Allow deleting of appointments in registration view for holders of the new right deleteappointments
