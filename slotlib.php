@@ -212,9 +212,16 @@ class organizer_slot {
             }
         }
 
-        foreach (get_object_vars($this->slot) as $key => $value) {
-            $this->$key = $value;
+        if (PHP_MAJOR_VERSION == 7) {
+            foreach ((array) $this->slot as $key => $value) {
+                $this->$key = $value;
+            }
+        } else {
+            foreach (get_object_vars($this->slot) as $key => $value) {
+                $this->$key = $value;
+            }
         }
+
 
         if (!$lazy) {
             $this->load_organizer();
