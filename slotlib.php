@@ -222,7 +222,6 @@ class organizer_slot {
             }
         }
 
-
         if (!$lazy) {
             $this->load_organizer();
             $this->load_appointments();
