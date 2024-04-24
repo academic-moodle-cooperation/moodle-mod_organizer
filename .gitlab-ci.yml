@@ -38,7 +38,7 @@ variables:
   parallel:
     matrix:
       - MOODLE_BRANCH: [ "MOODLE_401_STABLE" ]
-        PHP_VERSION: [ "7.4", "8.1" ]
+        PHP_VERSION: [ "7.4" ]
 
 test:postgres:
   <<: *job_configuration

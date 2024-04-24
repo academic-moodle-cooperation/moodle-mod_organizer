@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.1.4 (2024-04-24)
+------------------
+* [FIXED] Remove mixed type declaration for compatibility with php 7.4
+
 4.1.3 (2024-02-21)
 ------------------
 * [FIXED] Fix organizerconfig problems if config is empty
