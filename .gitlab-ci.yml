@@ -15,7 +15,7 @@ variables:
   MYSQL_COLLATION_SERVER: "utf8mb4_unicode_ci"
 
 .job_template: &job_configuration
-  image: quay.io/amc/moodle-plugin-ci:${PHP_VERSION}-node.20
+  image: quay.io/amc/moodle-plugin-ci:${PHP_VERSION}-node.16
   before_script:
     - cd ../..
     - moodle-db-isready
@@ -38,7 +38,7 @@ variables:
   parallel:
     matrix:
       - MOODLE_BRANCH: [ "MOODLE_401_STABLE" ]
-        PHP_VERSION: [ "8.1" ]
+        PHP_VERSION: [ "7.4" ]
 
 test:postgres:
   <<: *job_configuration
