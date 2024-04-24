@@ -463,7 +463,7 @@ class organizer_slot {
         }
     }
 
-    public function __set(string $name, mixed $value): void {
+    public function __set($name, $value): void {
 
     }
 
