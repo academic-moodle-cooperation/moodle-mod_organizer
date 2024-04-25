@@ -73,7 +73,7 @@ function organizer_add_calendar($courseid = false) {
     $content = $renderer->render_from_template($template, $data);
 
     $options = [
-        'showfullcalendarlink' => true
+        'showfullcalendarlink' => true,
     ];
     list($footerdata, $footertemplate) = calendar_get_footer_options($calendar, $options);
     $content .= $renderer->render_from_template($footertemplate, $footerdata);
