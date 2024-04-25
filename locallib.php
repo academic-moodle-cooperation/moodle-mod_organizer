@@ -1802,7 +1802,7 @@ function organizer_get_allowed_printslotuserfields() {
         $selectedprofilefields['email'] = get_string('email');
         $selectedprofilefields['idnumber'] = get_string('idnumber');
         $selectedprofilefields['attended'] = get_string('attended', 'organizer');
-        $selectedprofilefields['grade'] = get_string('grade', 'grades');
+        $selectedprofilefields['grade'] = get_string('gradenoun');
         $selectedprofilefields['feedback'] = get_string('feedback');
         $selectedprofilefields['signature'] = get_string('signature', 'organizer');
     }

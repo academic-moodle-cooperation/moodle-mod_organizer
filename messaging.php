@@ -514,7 +514,7 @@ function organizer_build_message($namesplit, $cm, $course, $organizer, $sender, 
                                  $type, $strings, $customdata) {
 
     $messagename = count($namesplit) == 1 ? "$namesplit[0]" : "$namesplit[0]_$namesplit[1]";
-    $strings->location = $strings->location != '' ? $strings->location : get_string('nolocationplaceholder', 'organizer');
+    $strings->location = $strings->location ?? false ? $strings->location : get_string('nolocationplaceholder', 'organizer');
     if (isset($digest)) {
         $strings->digest = $digest;
         $type .= ":digest";

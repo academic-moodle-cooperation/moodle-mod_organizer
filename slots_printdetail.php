@@ -164,7 +164,7 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;
             case 'grade':
-                $titles[] = organizer_filter_text(get_string('grade', 'grades'));
+                $titles[] = organizer_filter_text(get_string('gradenoun'));
                 $columnwitdh[] = array('value' => 12, 'mode' => 'Relativ');
                 $columnformats[] = array('fill' => 0, 'align' => 'C');
             break;

@@ -190,7 +190,7 @@ class organizer_print_slotdetail_form extends moodleform {
                     $cell = new html_table_cell(organizer_filter_text(get_string('attended', 'organizer')));
                     break;
                 case 'grade':
-                    $cell = new html_table_cell(organizer_filter_text(get_string('grade', 'grades')));
+                    $cell = new html_table_cell(organizer_filter_text(get_string('gradenoun')));
                     break;
                 case 'feedback':
                     $cell = new html_table_cell(organizer_filter_text(get_string('feedback')));
