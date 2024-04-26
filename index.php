@@ -82,7 +82,7 @@ $table->head[] = get_string('description');
 $table->align[] = 'left';
 $table->head[] = get_string('reg_status', 'organizer');
 $table->align[] = 'left';
-$table->head[] = get_string('grade', 'grades');
+$table->head[] = get_string('gradenoun');
 $table->align[] = 'center';
 
 

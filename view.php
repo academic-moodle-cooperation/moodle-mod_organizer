@@ -64,7 +64,14 @@ $PAGE->set_activity_record($instance->organizer);
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
 if ($instance->organizer->hidecalendar != 1) {
-    organizer_add_calendar();
+    if (!$DB->record_exists('block_instances', array('parentcontextid' => $instance->context->id, 'blockname' => 'calendar_month'))) {
+        $organizeroutput = $PAGE->get_renderer('mod_organizer');
+        if ($PAGE->blocks->is_known_block_type('calendar_month')) {
+            $PAGE->blocks->add_block('calendar_month', 'side-pre', 2, 0);
+        }
+    }
+} else {
+    $DB->delete_records('block_instances', array('parentcontextid' => $instance->context->id, 'blockname' => 'calendar_month'));
 }
 
 // Completion.
