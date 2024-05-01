@@ -27,25 +27,28 @@
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 .path-mod-organizer #organizer_main_cointainer table tr.past_due td {
-    background-color: #e8f1f8 !important;
+    background-color: #e8f1f8;
 }
 .path-mod-organizer #organizer_main_cointainer table tr.past_due_reg td {
-    background-color: #e8f1f8 !important;
+    background-color: #e8f1f8;
 }
 .path-mod-organizer #organizer_main_cointainer table tr.affected_slot td {
-    background-color: Lightgreen !important;
+    background-color: Lightgreen;
 }
 .path-mod-organizer #organizer_main_cointainer table tr.unavailable td {
-    color: gray !important;
+    color: gray;
+}
+.path-mod-organizer #organizer_main_cointainer tr.registered_slot td {
+    background-color: Lightgreen;
 }
 .path-mod-organizer #organizer_main_cointainer table tr.unavailable td.c2 {
     font-style: italic;
 }
 .path-mod-organizer #organizer_main_cointainer table.overview {
-    width: 95% !important;
+    width: 95%;
 }
 .path-mod-organizer #organizer_main_cointainer table.overview td {
-    border: 1px solid #fff !important;
+    border: 1px solid #fff;
 }
 .path-mod-organizer #organizer_main_cointainer fieldset.preview {
     width: 100%;
@@ -71,9 +74,6 @@
     border: solid 1px #ddd;
     border-collapse: collapse;
 }
-.path-mod-organizer #organizer_main_cointainer tr.registered_slot td {
-    background-color: Lightgreen !important;
-}
 .path-mod-organizer #organizer_main_cointainer div.singlebutton button {
     margin: 20px 5px;
 }
@@ -91,16 +91,6 @@
 }
 .path-mod-organizer #organizer_main_cointainer span.nobreak {
     white-space: nowrap;
-}
-.path-mod-organizer #organizer_main_cointainer div.organizerinfo {
-    width: 50% !important;
-}
-.path-mod-organizer #organizer_main_cointainer table.print_preview td {
-    border: 1px solid #fff !important;
-    border-collapse: collapse;
-}
-.path-mod-organizer #organizer_main_cointainer table.print-preview {
-    width: 100%;
 }
 .path-mod-organizer #organizer_main_cointainer table.coloredrows th {
     white-space: nowrap;
@@ -142,19 +132,19 @@
     margin-block-end: 0.5em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    margin-left: 0;
+    margin-right: 0;
 }
 .path-mod-organizer .organizer_filterblock_reg {
     display: block;
     margin-block-end: 0.5em;
     margin-inline-start: 0;
     margin-inline-end: 0;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    margin-left: 0;
+    margin-right: 0;
 }
 .path-mod-organizer #id_export_settings_header {
-    border-bottom: none !important;
+    border-bottom: none;
 }
 .path-mod-organizer .slotoptions {
     margin-right: 0.3em;
@@ -196,9 +186,6 @@
 }
 .path-mod-organizer .slotovercolor {
     color: dimgrey;
-}
-.path-mod-organizer #organizer_main_cointainer .icon.fa.fa-question-circle.text-info.fa-fw {
-    margin-left: 0.2rem !important;
 }
 .path-mod-organizer #id_slotscontainer .col-md-9.form-inline.align-items-start.felement label.form-check {
     border: solid 1px lightgrey;
