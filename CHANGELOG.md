@@ -3,6 +3,7 @@ CHANGELOG
 
 4.4.0 (2024-04-15)
 ------------------
+* [UPDATE]  New moodle 4.4 plugin icon
 * [FIXED]   Remove console debug messages
 * [FIXED]   Fix calendar block (three month view deprecated)
 * Moodle 4.4 compatible version
