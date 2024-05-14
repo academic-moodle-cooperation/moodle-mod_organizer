@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.3.2 (2024-05-14)
+------------------
+* [FIXED]   Fixed registration view bug when course has no students or grouping has no groups
+
 4.3.1 (2024-02-23)
 ------------------
 * [FEATURE] Allow deleting of appointments in registration view for holders of the new right deleteappointments
