@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.4.1 (2024-05-14)
+------------------
+* [FIXED]   Fix registration view bug when no students in course
+
 4.4.0 (2024-04-15)
 ------------------
 * [UPDATE]  New moodle 4.4 plugin icon
