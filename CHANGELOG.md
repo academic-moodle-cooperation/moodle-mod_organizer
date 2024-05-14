@@ -3,7 +3,7 @@ CHANGELOG
 
 4.4.1 (2024-05-14)
 ------------------
-* [FIXED]   Fix registration view bug when no students in course
+* [FIXED]   Fix registration view bug when no students in course or groups in groupings
 
 4.4.0 (2024-04-15)
 ------------------
