@@ -2459,7 +2459,7 @@ function organizer_get_reminder_recipients($organizer) {
     } else {
         $entries = organizer_get_reg_status_table_entries($params);
     }
-    if ($entries->valid()) {
+    if ($entries) {
         // Select all users which have not reached the minimum of bookings.
         foreach ($entries as $entry) {
             $in = false;
