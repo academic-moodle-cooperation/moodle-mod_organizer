@@ -2490,7 +2490,9 @@ function organizer_get_reminder_recipients($organizer) {
             }
         }
     }
-    $entries->close();
+    if (is_object($entries)) {
+        $entries->close();
+    }
 
     return $recipients;
 }
