@@ -735,18 +735,19 @@ SQL;
     $DB->execute("UPDATE {organizer_slot_appointments} SET notified = 1 WHERE id $insql", $inparams);
 
     $organizerconfig = get_config('organizer');
-    if ($organizerconfig->digest == 'never') {
+    if (isset($organizerconfig->digest) && $organizerconfig->digest == 'never') {
         return $success;
-    }
-    $time = $organizerconfig->digest + mktime(0, 0, 0, date("m"), date("d"), date("Y"));
-    if (abs(time() - $time) >= 300) {
-        return $success;
+    } else if (isset($organizerconfig->digest)) {
+        $time = $organizerconfig->digest + mktime(0, 0, 0, date("m"), date("d"), date("Y"));
+        if (abs(time() - $time) >= 300) {
+            return $success;
+        }
     }
 
     $params['tomorrowstart'] = mktime(0, 0, 0, date("m"), date("d") + 1, date("Y"));
     $params['tomorrowend'] = mktime(0, 0, 0, date("m"), date("d") + 2, date("Y"));
 
-    $slotsquery = "SELECT DISTINCT t.teacherid FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
+    $slotsquery = "SELECT DISTINCT t.trainerid FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
             WHERE s.starttime >= :tomorrowstart AND
             s.starttime < :tomorrowend AND
             s.notified = 0";
