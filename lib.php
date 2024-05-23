@@ -747,7 +747,7 @@ SQL;
     $params['tomorrowstart'] = mktime(0, 0, 0, date("m"), date("d") + 1, date("Y"));
     $params['tomorrowend'] = mktime(0, 0, 0, date("m"), date("d") + 2, date("Y"));
 
-    $slotsquery = "SELECT DISTINCT t.teacherid FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
+    $slotsquery = "SELECT DISTINCT t.trainerid FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
             WHERE s.starttime >= :tomorrowstart AND
             s.starttime < :tomorrowend AND
             s.notified = 0";
