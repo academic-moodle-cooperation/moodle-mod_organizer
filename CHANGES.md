@@ -1,8 +1,9 @@
 CHANGELOG
 =========
 
-4.3.2 (2024-05-14)
+4.3.2 (2024-05-23)
 ------------------
+* [FIXED]   Organizer Cron Job (digest, teacherid)
 * [FIXED]   Fixed registration view bug when course has no students or grouping has no groups
 
 4.3.1 (2024-02-23)
