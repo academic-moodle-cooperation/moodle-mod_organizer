@@ -1653,6 +1653,16 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
         $buttons[] = $button;
     }
 
+    // Reminder button.
+    $button = new stdClass();
+    $button->text = get_string("btn_remind", 'organizer');
+    $button->url = $remindurl;
+    // If max booking is not reached => show reminder button.
+    $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true) ||
+        organizer_bookingnotpossible($groupmode, $organizer, $entry->id);
+    $button->icon = "fa fa-paper-plane-o fw";
+    $buttons[] = $button;
+
     $organizerconfig = get_config('organizer');
     if (isset($organizerconfig->allowcreationofpasttimeslots) &&
         $organizerconfig->allowcreationofpasttimeslots == 1) {
@@ -1660,17 +1670,6 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     } else {
         $allowexpiredslotsassignment = false;
     }
-    $bookingnotpossible = organizer_bookingnotpossible($groupmode, $organizer, $entry->id, $allowexpiredslotsassignment);
-
-    // Reminder button.
-    $button = new stdClass();
-    $button->text = get_string("btn_remind", 'organizer');
-    $button->url = $remindurl;
-    // If max booking is not reached => show reminder button.
-    $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true) ||
-        $bookingnotpossible;
-    $button->icon = "fa fa-paper-plane-o fw";
-    $buttons[] = $button;
 
     // Assign button.
     $button = new stdClass();
@@ -1679,7 +1678,7 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $button->icon = "fa fa-calendar-plus-o fw";
     // If max booking is not reached => show assign button.
     $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true) ||
-        $bookingnotpossible;
+        organizer_bookingnotpossible($groupmode, $organizer, $entry->id, $allowexpiredslotsassignment);
     $buttons[] = $button;
 
     // Delete appointment button.
