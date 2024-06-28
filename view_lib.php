@@ -1653,17 +1653,23 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
         $buttons[] = $button;
     }
 
-    $bookingnotpossible = organizer_bookingnotpossible($groupmode, $organizer, $entry->id);
-
     // Reminder button.
     $button = new stdClass();
     $button->text = get_string("btn_remind", 'organizer');
     $button->url = $remindurl;
     // If max booking is not reached => show reminder button.
     $button->disabled = !has_capability('mod/organizer:sendreminders', $context, null, true) ||
-        $bookingnotpossible;
+        organizer_bookingnotpossible($groupmode, $organizer, $entry->id);
     $button->icon = "fa fa-paper-plane-o fw";
     $buttons[] = $button;
+
+    $organizerconfig = get_config('organizer');
+    if (isset($organizerconfig->allowcreationofpasttimeslots) &&
+        $organizerconfig->allowcreationofpasttimeslots == 1) {
+        $allowexpiredslotsassignment = true;
+    } else {
+        $allowexpiredslotsassignment = false;
+    }
 
     // Assign button.
     $button = new stdClass();
@@ -1672,7 +1678,7 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     $button->icon = "fa fa-calendar-plus-o fw";
     // If max booking is not reached => show assign button.
     $button->disabled = !has_capability('mod/organizer:assignslots', $context, null, true) ||
-        $bookingnotpossible;
+        organizer_bookingnotpossible($groupmode, $organizer, $entry->id, $allowexpiredslotsassignment);
     $buttons[] = $button;
 
     // Delete appointment button.
@@ -2635,7 +2641,7 @@ function organizer_appointmentsstatus_bar($organizer) {
 
 }
 
-function organizer_get_freeplaces($organizer) {
+function organizer_get_freeplaces($organizer, $allowexpiredslotsassignment = false) {
     global $DB;
 
     $slotscount = 0;
@@ -2645,7 +2651,7 @@ function organizer_get_freeplaces($organizer) {
         WHERE s.organizerid = :organizerid";
     $slots = $DB->get_records_sql($query, $paramssql);
     foreach ($slots as $slot) {
-        if ($slot->starttime <= time()) {
+        if ($slot->starttime <= time() && !$allowexpiredslotsassignment) {
             continue;
         } else {
             $slotscount++;
@@ -2657,7 +2663,7 @@ function organizer_get_freeplaces($organizer) {
     return [$slotscount, $places];
 }
 
-function organizer_bookingnotpossible($groupmode, $organizer, $entryid) {
+function organizer_bookingnotpossible($groupmode, $organizer, $entryid, $allowexpiredslotsassignment = false) {
 
     if ($groupmode) {
         $booked = organizer_count_bookedslots($organizer->id, null, $entryid);
@@ -2665,7 +2671,7 @@ function organizer_bookingnotpossible($groupmode, $organizer, $entryid) {
         $booked = organizer_count_bookedslots($organizer->id, $entryid, null);
     }
     $maxnotreached = organizer_multiplebookings_status($booked, $organizer) != USERSLOTS_MAX_REACHED;
-    list (, $places) = organizer_get_freeplaces($organizer);
+    list (, $places) = organizer_get_freeplaces($organizer, $allowexpiredslotsassignment);
 
     return !$maxnotreached || !$places;
 }

@@ -65,7 +65,7 @@ define(
             $('#slot_overview tfoot').find('input[type=checkbox]').on('click', organizer_check_all);
             $("input:not([disabled])[type=checkbox]").click(function() {
                 $("#bulkactionbutton").attr("disabled", true);
-                $('#slot_overview').find('input:not([disabled])[type=checkbox]').each(
+                $('#slot_overview').find('input:not([disabled]):not([name="select"])[type=checkbox]').each(
                     function() {
                         if ($(this).prop('checked') == true) {
                             $("#bulkactionbutton").attr("disabled", false);
