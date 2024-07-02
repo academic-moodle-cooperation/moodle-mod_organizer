@@ -1730,7 +1730,7 @@ function organizer_fetch_allappointments($organizerid) {
     global $DB;
 
     $params = array('organizerid' => $organizerid);
-    $query = "SELECT a.id, a.groupid, a.userid FROM {organizer_slots} s INNER JOIN {organizer_slot_appointments} a
+    $query = "SELECT a.id, a.groupid, a.userid, a.eventid FROM {organizer_slots} s INNER JOIN {organizer_slot_appointments} a
               ON s.id = a.slotid
               WHERE s.organizerid = :organizerid ";
     $apps = $DB->get_records_sql($query, $params);
@@ -2545,9 +2545,9 @@ function organizer_deleteappointments_aftergroupchange($organizerid) {
     }
 }
 
-function organizer_get_one_group_appointment($organizer, $groupid) {
+function organizer_get_one_group_appointment($organizerid, $groupid) {
     global $DB;
-    $params = array('groupid' => $groupid, 'organizerid' => $organizer->id);
+    $params = array('groupid' => $groupid, 'organizerid' => $organizerid);
     $groupapp = $DB->get_record_sql(
         'SELECT a.slotid, a.applicantid, a.teacherapplicantid FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
