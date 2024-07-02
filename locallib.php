@@ -1730,7 +1730,7 @@ function organizer_fetch_allappointments($organizerid) {
     global $DB;
 
     $params = array('organizerid' => $organizerid);
-    $query = "SELECT a.id, a.groupid, a.userid FROM {organizer_slots} s INNER JOIN {organizer_slot_appointments} a 
+    $query = "SELECT a.id, a.groupid, a.userid FROM {organizer_slots} s INNER JOIN {organizer_slot_appointments} a
               ON s.id = a.slotid
               WHERE s.organizerid = :organizerid ";
     $apps = $DB->get_records_sql($query, $params);
@@ -2523,9 +2523,36 @@ function organizer_get_limitedwidth() {
 function organizer_deleteappointments_aftergroupchange($organizerid) {
     if ($appointments = organizer_fetch_allappointments($organizerid)) {
         foreach ($appointments as $appointment) {
-            if (!groups_is_member($appointment->groupid, $appointment->userid)) {
-                organizer_delete_appointment($appointment->id);
+            if ($appointment->groupid ?? false) {
+                if (!groups_is_member($appointment->groupid, $appointment->userid)) {
+                    if (organizer_delete_appointment($appointment->id)) {
+                        if ($group = organizer_fetch_user_group($appointment->userid, $organizerid)) {
+                            if ($group->id != $appointment->groupid) {
+                                if ($groupapp = organizer_get_one_group_appointment($organizerid, $group->id)) {
+                                    organizer_register_single_appointment($groupapp->slotid, $appointment->userid,
+                                        $groupapp->applicantid, $group->id, $groupapp->teacherapplicantid, true, null,
+                                        $organizerid
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 }
+
+function organizer_get_one_group_appointment($organizer, $groupid) {
+    global $DB;
+    $params = array('groupid' => $groupid, 'organizerid' => $organizer->id);
+    $groupapp = $DB->get_record_sql(
+        'SELECT a.slotid, a.applicantid, a.teacherapplicantid FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE a.groupid = :groupid AND s.organizerid = :organizerid
+            limit 1', $params
+    );
+
+    return $groupapp;
+}
+
