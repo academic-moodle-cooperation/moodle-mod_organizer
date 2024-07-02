@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
-4.4.1 (2024-05-23)
+4.4.2 (2024-07-02)
+------------------
+* [FIXED]   Enable assignment of expired slots
+* [FIXED]   Ensure that after group change old slot bookings are deleted
+
+* 4.4.1 (2024-05-23)
 ------------------
 * [FIXED]   Fix organizer cron job (digest, teacherid)
 * [FIXED]   Fix registration view bug when no students in course or groups in groupings

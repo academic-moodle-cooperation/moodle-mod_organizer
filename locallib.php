@@ -1726,6 +1726,18 @@ function organizer_fetch_allslots($organizerid) {
     return $slots;
 }
 
+function organizer_fetch_allappointments($organizerid) {
+    global $DB;
+
+    $params = array('organizerid' => $organizerid);
+    $query = "SELECT a.id, a.groupid, a.userid, a.eventid FROM {organizer_slots} s INNER JOIN {organizer_slot_appointments} a
+              ON s.id = a.slotid
+              WHERE s.organizerid = :organizerid ";
+    $apps = $DB->get_records_sql($query, $params);
+
+    return $apps;
+}
+
 function organizer_fetch_slotparticipants($slotid) {
     global $DB;
 
@@ -2507,3 +2519,42 @@ function organizer_get_limitedwidth() {
         return false;
     }
 }
+
+function organizer_deleteappointments_aftergroupchange($organizerid) {
+    global $DB;
+
+    if ($appointments = organizer_fetch_allappointments($organizerid)) {
+        foreach ($appointments as $appointment) {
+            if ($appointment->groupid ?? false) {
+                if (!groups_is_member($appointment->groupid, $appointment->userid)) {
+                    $DB->delete_records('event', array('id' => $appointment->eventid));
+                    $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
+                    if ($group = organizer_fetch_user_group($appointment->userid, $organizerid)) {
+                        if ($group->id != $appointment->groupid) {
+                            if ($groupapp = organizer_get_one_group_appointment($organizerid, $group->id)) {
+                                organizer_register_single_appointment($groupapp->slotid, $appointment->userid,
+                                    $groupapp->applicantid, $group->id, $groupapp->teacherapplicantid, true, null,
+                                    $organizerid
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+function organizer_get_one_group_appointment($organizerid, $groupid) {
+    global $DB;
+    $params = array('groupid' => $groupid, 'organizerid' => $organizerid);
+    $groupapp = $DB->get_record_sql(
+        'SELECT a.slotid, a.applicantid, a.teacherapplicantid FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE a.groupid = :groupid AND s.organizerid = :organizerid
+            limit 1', $params
+    );
+
+    return $groupapp;
+}
+

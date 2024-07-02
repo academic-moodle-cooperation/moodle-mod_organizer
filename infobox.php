@@ -35,6 +35,10 @@ require_once(dirname(__FILE__) . '/slotlib.php');
 function organizer_make_infobox($params, $organizer, $context, $organizerexpired = null) {
     global $PAGE, $USER;
 
+    if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
+        organizer_deleteappointments_aftergroupchange($organizer->id);
+    }
+
     $output = '';
 
     // Display messages here.
