@@ -2521,19 +2521,21 @@ function organizer_get_limitedwidth() {
 }
 
 function organizer_deleteappointments_aftergroupchange($organizerid) {
+    global $DB;
+
     if ($appointments = organizer_fetch_allappointments($organizerid)) {
         foreach ($appointments as $appointment) {
             if ($appointment->groupid ?? false) {
                 if (!groups_is_member($appointment->groupid, $appointment->userid)) {
-                    if (organizer_delete_appointment($appointment->id)) {
-                        if ($group = organizer_fetch_user_group($appointment->userid, $organizerid)) {
-                            if ($group->id != $appointment->groupid) {
-                                if ($groupapp = organizer_get_one_group_appointment($organizerid, $group->id)) {
-                                    organizer_register_single_appointment($groupapp->slotid, $appointment->userid,
-                                        $groupapp->applicantid, $group->id, $groupapp->teacherapplicantid, true, null,
-                                        $organizerid
-                                    );
-                                }
+                    $DB->delete_records('event', array('id' => $appointment->eventid));
+                    $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
+                    if ($group = organizer_fetch_user_group($appointment->userid, $organizerid)) {
+                        if ($group->id != $appointment->groupid) {
+                            if ($groupapp = organizer_get_one_group_appointment($organizerid, $group->id)) {
+                                organizer_register_single_appointment($groupapp->slotid, $appointment->userid,
+                                    $groupapp->applicantid, $group->id, $groupapp->teacherapplicantid, true, null,
+                                    $organizerid
+                                );
                             }
                         }
                     }
