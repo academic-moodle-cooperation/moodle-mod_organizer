@@ -1726,6 +1726,18 @@ function organizer_fetch_allslots($organizerid) {
     return $slots;
 }
 
+function organizer_fetch_allappointments($organizerid) {
+    global $DB;
+
+    $params = array('organizerid' => $organizerid);
+    $query = "SELECT a.id, a.groupid, a.userid FROM {organizer_slots} s INNER JOIN {organizer_slot_appointments} a 
+              ON s.id = a.slotid
+              WHERE s.organizerid = :organizerid ";
+    $apps = $DB->get_records_sql($query, $params);
+
+    return $apps;
+}
+
 function organizer_fetch_slotparticipants($slotid) {
     global $DB;
 
@@ -2505,5 +2517,15 @@ function organizer_get_limitedwidth() {
         return true;
     } else {
         return false;
+    }
+}
+
+function organizer_deleteappointments_aftergroupchange($organizerid) {
+    if ($appointments = organizer_fetch_allappointments($organizerid)) {
+        foreach ($appointments as $appointment) {
+            if (!groups_is_member($appointment->groupid, $appointment->userid)) {
+                organizer_delete_appointment($appointment->id);
+            }
+        }
     }
 }
