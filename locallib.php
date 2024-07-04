@@ -2531,11 +2531,16 @@ function organizer_deleteappointments_aftergroupchange($organizerid) {
                     $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
                     if ($group = organizer_fetch_user_group($appointment->userid, $organizerid)) {
                         if ($group->id != $appointment->groupid) {
-                            if ($groupapp = organizer_get_one_group_appointment($organizerid, $group->id)) {
-                                organizer_register_single_appointment($groupapp->slotid, $appointment->userid,
-                                    $groupapp->applicantid, $group->id, $groupapp->teacherapplicantid, true, null,
-                                    $organizerid
-                                );
+                            $groupapps = organizer_get_group_appointments($organizerid, $group->id);
+                            $slotid = 0;
+                            foreach ($groupapps as $groupapp) {
+                                if ($groupapp->slotid != $slotid) {
+                                    organizer_register_single_appointment($groupapp->slotid, $appointment->userid,
+                                        $groupapp->applicantid, $group->id, $groupapp->teacherapplicantid, true, null,
+                                        $organizerid
+                                    );
+                                    $slotid = $groupapp->slotid;
+                                }
                             }
                         }
                     }
@@ -2545,16 +2550,16 @@ function organizer_deleteappointments_aftergroupchange($organizerid) {
     }
 }
 
-function organizer_get_one_group_appointment($organizerid, $groupid) {
+function organizer_get_group_appointments($organizerid, $groupid) {
     global $DB;
     $params = array('groupid' => $groupid, 'organizerid' => $organizerid);
-    $groupapp = $DB->get_record_sql(
-        'SELECT a.slotid, a.applicantid, a.teacherapplicantid FROM {organizer_slot_appointments} a
+    $groupapps = $DB->get_records_sql(
+        'SELECT DISTINCT a.slotid, a.applicantid, a.teacherapplicantid FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE a.groupid = :groupid AND s.organizerid = :organizerid
-            limit 1', $params
+            ORDER BY a.slotid ASC', $params
     );
 
-    return $groupapp;
+    return $groupapps;
 }
 
