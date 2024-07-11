@@ -265,9 +265,9 @@ function organizer_add_new_slots($data) {
                                     $name = "<strong>" . get_string('event', 'organizer') . " '" . $collision->name . "'</strong>";
                                 }
                                 $collisionmessage .= $name .
-                                    ' ' . get_string('from') . ': ' . userdate($collision->timestart,
+                                    ' ' . get_string('fromdate') . ': ' . userdate($collision->timestart,
                                         get_string('fulldatetimetemplate', 'organizer')) .
-                                    ' ' . get_string('to') . ': ' . userdate($collision->timestart + $collision->timeduration,
+                                    ' ' . get_string('todate') . ': ' . userdate($collision->timestart + $collision->timeduration,
                                         get_string('fulldatetimetemplate', 'organizer')) .
                                     '<br />';
                             }
@@ -2519,47 +2519,3 @@ function organizer_get_limitedwidth() {
         return false;
     }
 }
-
-function organizer_deleteappointments_aftergroupchange($organizerid) {
-    global $DB;
-
-    if ($appointments = organizer_fetch_allappointments($organizerid)) {
-        foreach ($appointments as $appointment) {
-            if ($appointment->groupid ?? false) {
-                if (!groups_is_member($appointment->groupid, $appointment->userid)) {
-                    $DB->delete_records('event', array('id' => $appointment->eventid));
-                    $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
-                    if ($group = organizer_fetch_user_group($appointment->userid, $organizerid)) {
-                        if ($group->id != $appointment->groupid) {
-                            $groupapps = organizer_get_group_appointments($organizerid, $group->id);
-                            $slotid = 0;
-                            foreach ($groupapps as $groupapp) {
-                                if ($groupapp->slotid != $slotid) {
-                                    organizer_register_single_appointment($groupapp->slotid, $appointment->userid,
-                                        $groupapp->applicantid, $group->id, $groupapp->teacherapplicantid, true, null,
-                                        $organizerid
-                                    );
-                                    $slotid = $groupapp->slotid;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-function organizer_get_group_appointments($organizerid, $groupid) {
-    global $DB;
-    $params = array('groupid' => $groupid, 'organizerid' => $organizerid);
-    $groupapps = $DB->get_records_sql(
-        'SELECT DISTINCT a.slotid, a.applicantid, a.teacherapplicantid FROM {organizer_slot_appointments} a
-            INNER JOIN {organizer_slots} s ON a.slotid = s.id
-            WHERE a.groupid = :groupid AND s.organizerid = :organizerid
-            ORDER BY a.slotid ASC', $params
-    );
-
-    return $groupapps;
-}
-

@@ -845,7 +845,7 @@ function organizer_get_reg_status_table_entries_group($params) {
             ORDER BY a.id DESC
         ) a2 ON g.id = a2.groupid
         WHERE g.id $insql
-        $orderby";
+        $orderby, a2.slotid ASC";
 
     $rs = $DB->get_recordset_sql($query, $par);
 

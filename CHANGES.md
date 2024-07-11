@@ -1,10 +1,10 @@
 CHANGELOG
 =========
 
-4.4.2 (2024-07-02)
+4.4.2 (2024-07-11)
 ------------------
 * [FIXED]   Enable assignment of expired slots
-* [FIXED]   Ensure that after group change old slot bookings are deleted
+* [FIXED]   Synchonize moodle group member changes in organizer slots
 
 * 4.4.1 (2024-05-23)
 ------------------

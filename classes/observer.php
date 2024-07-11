@@ -19,9 +19,13 @@
  *
  * @package    mod_organizer
  * @author Simeon Naydenov (moninaydenov@gmail.com)
+ * @author Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @copyright 2022 Academic Moodle Cooperation {@link https://www.academic-moodle-cooperation.org/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use mod_grouptool\event\registration_created;
+use mod_grouptool\event\registration_deleted;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -87,4 +91,83 @@ class mod_organizer_observer {
             }
         }
     }
+
+    /**
+     * group_member_added
+     *
+     * @param \core\event\group_member_added $event Event object containing useful data
+     * @return bool true if success
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function group_member_added(\core\event\group_member_added $event) {
+        global $DB;
+
+        $groupid = $event->objectid;
+        $userid = $event->relateduserid;
+
+        $params = array('groupid' => $groupid, 'groupmode' => ORGANIZER_GROUPMODE_EXISTINGGROUPS);
+        if ($groupapps = $DB->get_records_sql(
+            'SELECT DISTINCT a.id, a.slotid, a.applicantid, a.teacherapplicantid, s.organizerid
+            FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            INNER JOIN {organizer} o ON o.id = s.organizerid
+            WHERE a.groupid = :groupid AND o.isgrouporganizer = :groupmode
+            AND o.synchronizegroupmembers = 1
+            ORDER BY a.slotid ASC', $params
+        )) {
+            require_once(__DIR__ . '/../messaging.php');
+            $slotid = 0;
+            foreach ($groupapps as $groupapp) {
+                if ($groupapp->slotid != $slotid) {
+                    if (!$DB->get_field('organizer_slot_appointments', 'id', ['slotid' => $groupapp->slotid,
+                        'userid' => $userid])) {
+                        organizer_register_single_appointment($groupapp->slotid, $userid,
+                            $groupapp->applicantid, $groupid, $groupapp->teacherapplicantid,
+                            false, null, $groupapp->organizerid
+                        );
+                    }
+                    $slotid = $groupapp->slotid;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * group_remove_member_handler
+     * event:       groups_member_removed
+     * schedule:    instant
+     *
+     * @param \core\event\group_member_removed $event Event object containing useful data
+     * @return bool true if success
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function group_member_removed(\core\event\group_member_removed $event) {
+        global $DB;
+
+        $groupid = $event->objectid;
+        $userid = $event->relateduserid;
+
+        $params = array('groupid' => $groupid, 'userid' => $userid, 'groupmode' => ORGANIZER_GROUPMODE_EXISTINGGROUPS);
+        if ($apps = $DB->get_records_sql(
+            'SELECT DISTINCT a.id
+            FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            INNER JOIN {organizer} o ON o.id = s.organizerid
+            WHERE a.groupid = :groupid AND a.userid = :userid AND o.isgrouporganizer = :groupmode
+            AND o.synchronizegroupmembers = 1', $params
+        )) {
+            require_once(__DIR__ . '/../messaging.php');
+            foreach ($apps as $app) {
+                organizer_delete_appointment($app->id);
+            }
+        }
+
+        return true;
+    }
+
 }

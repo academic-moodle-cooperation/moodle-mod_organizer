@@ -158,16 +158,25 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addElement('select', 'isgrouporganizer', get_string('isgrouporganizer', 'organizer'), $this->_get_groupmodes());
         $mform->setDefault('isgrouporganizer', 0);
         $mform->addHelpButton('isgrouporganizer', 'isgrouporganizer', 'organizer');
+        // Include trainers.
         $mform->addElement(
                 'advcheckbox', 'includetraineringroups', get_string('includetraineringroups', 'organizer'), '',
                 null, array(0, 1)
         );
-        // Include trainers.
         $mform->addHelpButton('includetraineringroups', 'includetraineringroups', 'organizer');
         $mform->setType('includetraineringroups', PARAM_INT);
         $mform->setDefault('includetraineringroups', 0);
         $mform->disabledif ('includetraineringroups', 'isgrouporganizer', 'eq', 0);
         $mform->disabledif ('includetraineringroups', 'isgrouporganizer', 'eq', 1);
+        // Synchronize Moodle group members.
+        $mform->addElement(
+            'advcheckbox', 'synchronizegroupmembers', get_string('synchronizegroupmembers', 'organizer'), '',
+            null, array(0, 1)
+        );
+        $mform->addHelpButton('synchronizegroupmembers', 'synchronizegroupmembers', 'organizer');
+        $mform->setType('synchronizegroupmembers', PARAM_INT);
+        $mform->setDefault('synchronizegroupmembers', 0);
+        $mform->disabledif ('synchronizegroupmembers', 'isgrouporganizer', 'neq', 1);
 
         // Member visibility.
         $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->_get_visibilities());
@@ -396,7 +405,6 @@ class mod_organizer_mod_form extends moodleform_mod {
     private function _get_groupmodes() {
 
         $groupmodes = array();
-        $groupmodes[ORGANIZER_GROUPMODE_NOGROUPS] = get_string('groupmodenogroups', 'organizer');
         $groupmodes[ORGANIZER_GROUPMODE_NOGROUPS] = get_string('groupmodenogroups', 'organizer');
         $groupmodes[ORGANIZER_GROUPMODE_EXISTINGGROUPS] = get_string('groupmodeexistingcoursegroups', 'organizer');
         $groupmodes[ORGANIZER_GROUPMODE_NEWGROUPSLOT] = get_string('groupmodeslotgroups', 'organizer');
