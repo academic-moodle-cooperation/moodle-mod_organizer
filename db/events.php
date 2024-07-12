@@ -20,6 +20,7 @@
  * @package mod_organizer
  * @category event
  * @author Simeon Naydenov (moninaydenov@gmail.com)
+ * @author Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
  * @copyright 2022 Academic Moodle Cooperation {@link https://www.academic-moodle-cooperation.org/}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,11 +28,30 @@
 defined('MOODLE_INTERNAL') || die();
 
 // List of observers.
-$observers = array(
+$observers = [
 
-    array(
+    [
         'eventname'   => '\core\event\user_enrolment_deleted',
         'callback'    => 'mod_organizer_observer::user_enrolment_deleted',
-    ),
-);
+    ],
+
+    [
+        'eventname'    => '\core\event\group_member_added',
+        'callback'     => '\mod_organizer_observer::group_member_added',
+        'includefile'  => '/mod/organizer/locallib.php',
+        'priority'     => 0,
+        'internal'     => false,
+    ],
+    // We get groupid, userid with this handler.
+
+    [
+        'eventname'    => 'core\event\group_member_removed',
+        'callback'     => '\mod_organizer_observer::group_member_removed',
+        'includefile'  => '/mod/organizer/locallib.php',
+        'priority'     => 0,
+        'internal'     => false,
+    ],
+    // We get groupid, userid with this handler.
+
+];
 
