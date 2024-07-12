@@ -3,6 +3,7 @@ CHANGELOG
 
 4.4.2 (2024-07-11)
 ------------------
+* [UPDATE]  New organizer icon for Moodle 4.4 (once again)
 * [FIXED]   Enable assignment of expired slots
 * [FIXED]   Synchonize moodle group member changes in organizer slots
 
