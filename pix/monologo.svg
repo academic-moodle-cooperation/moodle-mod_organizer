@@ -8,15 +8,14 @@ viewBox="0 0 0.86 0.86"
  <defs>
   <style type="text/css">
    <![CDATA[
-    .str0 {stroke:#2B2A29;stroke-width:0.04;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:22.9256}
+    .str0 {stroke:#2B2A29;stroke-width:0.03;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:22.9256}
     .fil0 {fill:none}
    ]]>
   </style>
  </defs>
  <g id="Ebene_x0020_1">
   <metadata id="CorelCorpID_0Corel-Layer"/>
-  <g id="_1382683264000">
-   <rect class="fil0" width="0.86" height="0.86"/>
+  <g id="_1546921366288">
    <rect class="fil0" width="0.86" height="0.86"/>
    <g>
     <line class="fil0 str0" x1="0.25" y1="0.17" x2="0.25" y2= "0.24" />
