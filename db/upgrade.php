@@ -738,7 +738,7 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023053100, 'organizer');
     }
 
-    if ($oldversion < 2024041502.04) {
+    if ($oldversion < 2024041502) {
         $table = new xmldb_table('organizer');
 
         $field = new xmldb_field('synchronizegroupmembers', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
@@ -761,7 +761,7 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2024041502.04, 'organizer');
+        upgrade_mod_savepoint(true, 2024041502, 'organizer');
     }
     return true;
 }
