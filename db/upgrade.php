@@ -738,7 +738,7 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023053100, 'organizer');
     }
 
-    if ($oldversion < 2024041502.03) {
+    if ($oldversion < 2024041502.04) {
         $table = new xmldb_table('organizer');
 
         $field = new xmldb_field('synchronizegroupmembers', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
@@ -747,7 +747,21 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2024041502.03, 'organizer');
+        $field = new xmldb_field('userslotsdailymax', XMLDB_TYPE_INTEGER, '4', null, false, null, '0', 'synchronizegroupmembers');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $table = new xmldb_table('organizer_slot_appointments');
+
+        $field = new xmldb_field('registrationtime',
+            XMLDB_TYPE_INTEGER, '10', null, true, null, '0', 'teacherapplicanttimemodified');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2024041502.04, 'organizer');
     }
     return true;
 }

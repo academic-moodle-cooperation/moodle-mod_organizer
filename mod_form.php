@@ -137,7 +137,6 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addHelpButton('userslotsmin', 'userslotsmin', 'organizer');
         $mform->addHelpButton('userslotsmax', 'userslotsmax', 'organizer');
         $mform->setDefault('userslotsmin', 1);
-        $mform->addHelpButton('userslotsmin', 'userslotsmin', 'organizer');
         $mform->addRule('userslotsmin', null, 'numeric', null, 'client');
         $mform->addRule('userslotsmin', get_string('maximumchars', '', 2), 'maxlength', 2, 'client');
         $mform->addRule('userslotsmin', null, 'required', null, 'client');
@@ -145,6 +144,15 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addRule('userslotsmax', null, 'numeric', null, 'client');
         $mform->addRule('userslotsmax', get_string('maximumchars', '', 2), 'maxlength', 2, 'client');
         $mform->addRule('userslotsmax', null, 'required', null, 'client');
+
+        // Allowed bookings per user/group and day.
+        $mform->addElement('text', 'userslotsdailymax', get_string('userslotsdailymax', 'organizer'),
+            array('size' => '2', 'class' => 'text-center'));
+        $mform->setType('userslotsdailymax', PARAM_INT);
+        $mform->addHelpButton('userslotsdailymax', 'userslotsdailymax', 'organizer');
+        $mform->setDefault('userslotsdailymax', 0);
+        $mform->addRule('userslotsdailymax', null, 'numeric', null, 'client');
+        $mform->addRule('userslotsdailymax', get_string('maximumchars', '', 2), 'maxlength', 2, 'client');
 
         // Relative Deadline.
         $mform->addElement('duration', 'relativedeadline', get_string('relativedeadline', 'organizer'));
