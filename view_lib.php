@@ -61,8 +61,6 @@ function organizer_display_form(moodleform $mform, $title) {
 function organizer_add_calendar($courseid = false) {
     global $PAGE, $CFG;
 
-    require_once($CFG->dirroot.'/calendar/lib.php');
-
     if (!$courseid) {
         $courseid = $PAGE->course->id;
     }
@@ -2253,21 +2251,24 @@ function organizer_participants_action($params, $slot) {
         if ($group = organizer_fetch_user_group($USER->id, $organizer->id)) {
             $lefttobook = organizer_multiplebookings_slotslefttobook($organizer, null, $group->id);
             $hasbookedalready = organizer_get_all_group_appointments($organizer, $group->id);
+            $dailylimitreached = organizer_userslotsdailylimitreached($organizer, 0, $group->id);
         } else {
             $lefttobook = 0;
             $hasbookedalready = 0;
+            $dailylimitreached = true;
         }
     } else {
         $isalreadyinqueue = $slotx->is_user_in_queue($USER->id);
         $lefttobook = organizer_multiplebookings_slotslefttobook($organizer, $USER->id);
         $hasbookedalready = organizer_get_last_user_appointment($organizer);
+        $dailylimitreached = organizer_userslotsdailylimitreached($organizer, $USER->id, 0);
     }
     $isqueueable = $organizer->queue && !$isalreadyinqueue && !$disabled;
     if ($isuserslot) {
         $action = 'unregister';
         $disabled |= !$rightunregister || $slotexpired || $slotx->is_evaluated();
     } else if (!$slotfull) {
-        $disabled |= !$rightregister || $slotexpired;
+        $disabled |= !$rightregister || $slotexpired || $dailylimitreached;
         if ($lefttobook) {
             $action = 'register';
         } else {
