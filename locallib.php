@@ -974,9 +974,12 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     $appointment->grade = null;
     $appointment->feedback = '';
     $appointment->comments = '';
-    $appointment->teacherapplicantid = $teacherapplicantid;
-    $appointment->teacherapplicanttimemodified = strtotime("now");
-    $appointment->registrationtime = strtotime("now");
+    if ($teacherapplicantid ?? false) {
+        $appointment->teacherapplicantid = $teacherapplicantid;
+        $appointment->teacherapplicanttimemodified = strtotime("now");
+    } else {
+        $appointment->registrationtime = strtotime("now");
+    }
 
     // A NEW APPOINTMENT IS BORN.
     $appointment->id = $DB->insert_record('organizer_slot_appointments', $appointment);
