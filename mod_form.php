@@ -176,14 +176,15 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->setDefault('includetraineringroups', 0);
         $mform->disabledif ('includetraineringroups', 'isgrouporganizer', 'eq', 0);
         $mform->disabledif ('includetraineringroups', 'isgrouporganizer', 'eq', 1);
+
         // Synchronize Moodle group members.
         $mform->addElement(
-            'advcheckbox', 'synchronizegroupmembers', get_string('synchronizegroupmembers', 'organizer'), '',
+            'advcheckbox', 'synchronizegroupmembers', get_string('synchronizegroupmembers', 'organizer'), null,
             null, array(0, 1)
         );
         $mform->addHelpButton('synchronizegroupmembers', 'synchronizegroupmembers', 'organizer');
         $mform->setType('synchronizegroupmembers', PARAM_INT);
-        $mform->setDefault('synchronizegroupmembers', 0);
+        $mform->setDefault('synchronizegroupmembers', $organizerconfig->synchronizegroupmembers ?? 0);
         $mform->disabledif ('synchronizegroupmembers', 'isgrouporganizer', 'neq', 1);
 
         // Member visibility.
