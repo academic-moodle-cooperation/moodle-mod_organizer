@@ -117,6 +117,10 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox('organizer/limitedwidth', get_string('cfg_limitedwidth', 'organizer'),
         get_string('cfg_limitedwidth_desc', 'organizer'), 0));
 
+    // Synchronize organizer slots with Moodle group changes.
+    $settings->add(new admin_setting_configcheckbox('organizer/synchronizegroupmembers', get_string('synchronizegroupmembers', 'organizer'),
+        get_string('synchronizegroupmembers_help', 'organizer'), 0));
+
     // Predefine locations for slots, make location mandatory.
     $settings->add(new admin_setting_heading('organizerlocationsettings', '',
         get_string('locationsettings', 'organizer')));

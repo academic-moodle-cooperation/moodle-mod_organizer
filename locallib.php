@@ -265,9 +265,9 @@ function organizer_add_new_slots($data) {
                                     $name = "<strong>" . get_string('event', 'organizer') . " '" . $collision->name . "'</strong>";
                                 }
                                 $collisionmessage .= $name .
-                                    ' ' . get_string('from') . ': ' . userdate($collision->timestart,
+                                    ' ' . get_string('fromdate') . ': ' . userdate($collision->timestart,
                                         get_string('fulldatetimetemplate', 'organizer')) .
-                                    ' ' . get_string('to') . ': ' . userdate($collision->timestart + $collision->timeduration,
+                                    ' ' . get_string('todate') . ': ' . userdate($collision->timestart + $collision->timeduration,
                                         get_string('fulldatetimetemplate', 'organizer')) .
                                     '<br />';
                             }
@@ -974,8 +974,12 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     $appointment->grade = null;
     $appointment->feedback = '';
     $appointment->comments = '';
-    $appointment->teacherapplicantid = $teacherapplicantid;
-    $appointment->teacherapplicanttimemodified = strtotime("now");
+    if ($teacherapplicantid ?? false) {
+        $appointment->teacherapplicantid = $teacherapplicantid;
+        $appointment->teacherapplicanttimemodified = strtotime("now");
+    } else {
+        $appointment->registrationtime = strtotime("now");
+    }
 
     // A NEW APPOINTMENT IS BORN.
     $appointment->id = $DB->insert_record('organizer_slot_appointments', $appointment);
@@ -1724,6 +1728,18 @@ function organizer_fetch_allslots($organizerid) {
     $slots = $DB->get_records_select('organizer_slots', 'organizerid = :organizerid', array('organizerid' => $organizerid));
 
     return $slots;
+}
+
+function organizer_fetch_allappointments($organizerid) {
+    global $DB;
+
+    $params = array('organizerid' => $organizerid);
+    $query = "SELECT a.id, a.groupid, a.userid, a.eventid FROM {organizer_slots} s INNER JOIN {organizer_slot_appointments} a
+              ON s.id = a.slotid
+              WHERE s.organizerid = :organizerid ";
+    $apps = $DB->get_records_sql($query, $params);
+
+    return $apps;
 }
 
 function organizer_fetch_slotparticipants($slotid) {
@@ -2506,4 +2522,36 @@ function organizer_get_limitedwidth() {
     } else {
         return false;
     }
+}
+
+function organizer_userslotsdailylimitreached($organizer, $userid, $groupid) {
+    global $DB;
+
+    if ($organizer->userslotsdailymax) {
+        $today = strtotime("-1 day");
+        if ($groupid) {
+            $params = array('groupid' => $groupid, 'organizerid' => $organizer->id, 'today' => $today);
+            $query = 'SELECT COUNT(DISTINCT(s.id)) FROM {organizer_slot_appointments} a
+                INNER JOIN {organizer_slots} s ON s.id = a.slotid
+                WHERE a.groupid = :groupid AND s.organizerid = :organizerid
+                AND a.registrationtime >= :today
+                ';
+        } else {
+            $params = array('userid' => $userid, 'organizerid' => $organizer->id, 'today' => $today);
+            $query = 'SELECT COUNT(a.id) FROM {organizer_slot_appointments} a
+                INNER JOIN {organizer_slots} s ON s.id = a.slotid
+                WHERE a.userid = :userid AND s.organizerid = :organizerid
+                AND a.registrationtime >= :today
+                ';
+        }
+        $bookingstoday = $DB->count_records_sql($query, $params);
+
+        return $bookingstoday >= $organizer->userslotsdailymax;
+
+    } else {
+
+        return false;
+
+    }
+
 }

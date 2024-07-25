@@ -40,7 +40,9 @@
         <FIELD NAME="allowedprofilefieldsprint" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield9" NEXT="enableprintslotuserfields"/>
         <FIELD NAME="enableprintslotuserfields" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" PREVIOUS="allowedprofilefieldsprint" NEXT="userslotsmin"/>
         <FIELD NAME="userslotsmin" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="enableprintslotuserfields" NEXT="userslotsmax" COMMENT="How many slots must be booked by participant"/>
-        <FIELD NAME="userslotsmax" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="userslotsmin" COMMENT="How many slots can be booked by participant"/>
+        <FIELD NAME="userslotsmax" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="userslotsmin" NEXT="synchronizegroupmembers" COMMENT="How many slots can be booked by participant"/>
+        <FIELD NAME="synchronizegroupmembers" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="userslotsmax" NEXT="userslotsdailymax" COMMENT="Shall slots be synchronized wiht Moodle group member changes"/>
+        <FIELD NAME="userslotsdailymax" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="synchronizegroupmembers" COMMENT="How many slots can be booked by one participant per day"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -90,7 +92,8 @@
         <FIELD NAME="notified" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="eventid" NEXT="allownewappointments"/>
         <FIELD NAME="allownewappointments" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" PREVIOUS="notified" NEXT="teacherapplicantid"/>
         <FIELD NAME="teacherapplicantid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="allownewappointments" NEXT="teacherapplicanttimemodified"/>
-        <FIELD NAME="teacherapplicanttimemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="teacherapplicantid"/>
+        <FIELD NAME="teacherapplicanttimemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="teacherapplicantid" NEXT="registrationtime"/>
+        <FIELD NAME="registrationtime" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="teacherapplicanttimemodified"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="slot"/>

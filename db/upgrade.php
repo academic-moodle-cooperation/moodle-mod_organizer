@@ -476,12 +476,12 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Define field nocalendareventslotcreation to be added to organizer.
+        // Define field includetraineringroups to be added to organizer.
         $table = new xmldb_table('organizer');
         $field = new xmldb_field('includetraineringroups', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
             'nocalendareventslotcreation');
 
-        // Conditionally launch add field nocalendareventslotcreation.
+        // Conditionally launch add field includetraineringroups.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -738,5 +738,30 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023053100, 'organizer');
     }
 
+    if ($oldversion < 2024041502) {
+        $table = new xmldb_table('organizer');
+
+        $field = new xmldb_field('synchronizegroupmembers', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
+            'userslotsmax');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('userslotsdailymax', XMLDB_TYPE_INTEGER, '4', null, false, null, '0', 'synchronizegroupmembers');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $table = new xmldb_table('organizer_slot_appointments');
+
+        $field = new xmldb_field('registrationtime',
+            XMLDB_TYPE_INTEGER, '10', null, true, null, '0', 'teacherapplicanttimemodified');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2024041502, 'organizer');
+    }
     return true;
 }

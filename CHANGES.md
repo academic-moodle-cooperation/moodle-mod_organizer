@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+4.4.2 (2024-07-11)
+------------------
+* [FEATURE] New setting: Limit the daily possible bookings for participants
+* [UPDATE]  New organizer icon for Moodle 4.4 (once again)
+* [FIXED]   Enable assignment of expired slots
+* [FIXED]   Synchonize moodle group member changes in organizer slots
+
 4.4.1 (2024-05-23)
 ------------------
 * [FIXED]   Fix organizer cron job (digest, teacherid)

@@ -137,7 +137,6 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addHelpButton('userslotsmin', 'userslotsmin', 'organizer');
         $mform->addHelpButton('userslotsmax', 'userslotsmax', 'organizer');
         $mform->setDefault('userslotsmin', 1);
-        $mform->addHelpButton('userslotsmin', 'userslotsmin', 'organizer');
         $mform->addRule('userslotsmin', null, 'numeric', null, 'client');
         $mform->addRule('userslotsmin', get_string('maximumchars', '', 2), 'maxlength', 2, 'client');
         $mform->addRule('userslotsmin', null, 'required', null, 'client');
@@ -145,6 +144,15 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addRule('userslotsmax', null, 'numeric', null, 'client');
         $mform->addRule('userslotsmax', get_string('maximumchars', '', 2), 'maxlength', 2, 'client');
         $mform->addRule('userslotsmax', null, 'required', null, 'client');
+
+        // Allowed bookings per user/group and day.
+        $mform->addElement('text', 'userslotsdailymax', get_string('userslotsdailymax', 'organizer'),
+            array('size' => '2', 'class' => 'text-center'));
+        $mform->setType('userslotsdailymax', PARAM_INT);
+        $mform->addHelpButton('userslotsdailymax', 'userslotsdailymax', 'organizer');
+        $mform->setDefault('userslotsdailymax', 0);
+        $mform->addRule('userslotsdailymax', null, 'numeric', null, 'client');
+        $mform->addRule('userslotsdailymax', get_string('maximumchars', '', 2), 'maxlength', 2, 'client');
 
         // Relative Deadline.
         $mform->addElement('duration', 'relativedeadline', get_string('relativedeadline', 'organizer'));
@@ -158,16 +166,26 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addElement('select', 'isgrouporganizer', get_string('isgrouporganizer', 'organizer'), $this->_get_groupmodes());
         $mform->setDefault('isgrouporganizer', 0);
         $mform->addHelpButton('isgrouporganizer', 'isgrouporganizer', 'organizer');
+        // Include trainers.
         $mform->addElement(
                 'advcheckbox', 'includetraineringroups', get_string('includetraineringroups', 'organizer'), '',
                 null, array(0, 1)
         );
-        // Include trainers.
         $mform->addHelpButton('includetraineringroups', 'includetraineringroups', 'organizer');
         $mform->setType('includetraineringroups', PARAM_INT);
         $mform->setDefault('includetraineringroups', 0);
         $mform->disabledif ('includetraineringroups', 'isgrouporganizer', 'eq', 0);
         $mform->disabledif ('includetraineringroups', 'isgrouporganizer', 'eq', 1);
+
+        // Synchronize Moodle group members.
+        $mform->addElement(
+            'advcheckbox', 'synchronizegroupmembers', get_string('synchronizegroupmembers', 'organizer'), null,
+            null, array(0, 1)
+        );
+        $mform->addHelpButton('synchronizegroupmembers', 'synchronizegroupmembers', 'organizer');
+        $mform->setType('synchronizegroupmembers', PARAM_INT);
+        $mform->setDefault('synchronizegroupmembers', $organizerconfig->synchronizegroupmembers ?? 0);
+        $mform->disabledif ('synchronizegroupmembers', 'isgrouporganizer', 'neq', 1);
 
         // Member visibility.
         $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->_get_visibilities());
@@ -396,7 +414,6 @@ class mod_organizer_mod_form extends moodleform_mod {
     private function _get_groupmodes() {
 
         $groupmodes = array();
-        $groupmodes[ORGANIZER_GROUPMODE_NOGROUPS] = get_string('groupmodenogroups', 'organizer');
         $groupmodes[ORGANIZER_GROUPMODE_NOGROUPS] = get_string('groupmodenogroups', 'organizer');
         $groupmodes[ORGANIZER_GROUPMODE_EXISTINGGROUPS] = get_string('groupmodeexistingcoursegroups', 'organizer');
         $groupmodes[ORGANIZER_GROUPMODE_NEWGROUPSLOT] = get_string('groupmodeslotgroups', 'organizer');
