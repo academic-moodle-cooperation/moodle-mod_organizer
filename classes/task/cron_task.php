@@ -18,7 +18,7 @@
  * A scheduled task for organizer cron.
  *
  * @package   mod_organizer
- * @copyright 2016 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright 2016 Thomas Niedermaier <thomas.niedermaier@gmail.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

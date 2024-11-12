@@ -19,7 +19,7 @@
  *
  * @package   mod_organizer
  * @category  task
- * @copyright 2016 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright 2016 Thomas Niedermaier <thomas.niedermaier@gmail.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

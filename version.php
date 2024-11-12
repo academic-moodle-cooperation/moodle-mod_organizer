@@ -20,7 +20,7 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @author    Simeon Naydenov (moninaydenov@gmail.com)
@@ -30,8 +30,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2024041502;
-$plugin->release = "v4.4.2"; // User-friendly version number.
+$plugin->version = 2024111200;
+$plugin->release = "v4.5.0"; // User-friendly version number.
 $plugin->maturity = MATURITY_STABLE;
-$plugin->requires = 2024042200; // Requires this Moodle version.
+$plugin->requires = 2024100700; // Requires this Moodle version.
 $plugin->component = 'mod_organizer'; // Full name of the plugin (used for diagnostics).

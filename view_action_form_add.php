@@ -31,7 +31,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * view_action_form_add.php
  *
  * @package   mod_organizer
- * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @author    Andreas Windbichler
