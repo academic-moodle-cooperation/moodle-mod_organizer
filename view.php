@@ -27,6 +27,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_organizer\event\course_module_viewed;
+use mod_organizer\event\registrations_viewed;
+use mod_organizer\event\slot_viewed;
+
 define("ORGANIZER_TAB_APPOINTMENTS_VIEW", 1);
 define("ORGANIZER_TAB_STUDENT_VIEW", 2);
 define("ORGANIZER_TAB_REGISTRATION_STATUS_VIEW", 3);
@@ -84,7 +88,7 @@ echo $OUTPUT->box_start('', 'organizer_main_cointainer');
 switch ($params['mode']) {
     case ORGANIZER_TAB_APPOINTMENTS_VIEW:
         if (has_capability('mod/organizer:viewallslots', $instance->context)) {
-            $event = \mod_organizer\event\slot_viewed::create(
+            $event = slot_viewed::create(
                 array(
                     'objectid' => $PAGE->cm->id,
                     'context' => $PAGE->context,
@@ -93,12 +97,12 @@ switch ($params['mode']) {
             $event->trigger();
             echo organizer_generate_appointments_view($params, $instance);
         } else {
-            throw new \coding_exception('You do not have the permission to view this page!');
+            throw new coding_exception('You do not have the permission to view this page!');
         }
     break;
     case ORGANIZER_TAB_STUDENT_VIEW:
         if (has_capability('mod/organizer:viewstudentview', $instance->context)) {
-            $event = \mod_organizer\event\course_module_viewed::create(
+            $event = course_module_viewed::create(
                 array(
                     'objectid' => $PAGE->cm->instance,
                     'context' => $PAGE->context,
@@ -108,12 +112,12 @@ switch ($params['mode']) {
             $event->trigger();
             echo organizer_generate_student_view($params, $instance);
         } else {
-            throw new \coding_exception('You do not have the permission to view this page!');
+            throw new coding_exception('You do not have the permission to view this page!');
         }
     break;
     case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
         if (has_capability('mod/organizer:viewregistrations', $instance->context)) {
-            $event = \mod_organizer\event\registrations_viewed::create(
+            $event = registrations_viewed::create(
                 array(
                     'objectid' => $PAGE->cm->id,
                     'context' => $PAGE->context,
@@ -122,18 +126,18 @@ switch ($params['mode']) {
             $event->trigger();
             echo organizer_generate_registration_status_view($params, $instance);
         } else {
-            throw new \coding_exception('You do not have the permission to view this page!');
+            throw new coding_exception('You do not have the permission to view this page!');
         }
     break;
     case ORGANIZER_ASSIGNMENT_VIEW:
         if (has_capability('mod/organizer:assignslots', $instance->context)) {
             echo organizer_generate_assignment_view($params, $instance);
         } else {
-            throw new \coding_exception('You do not have the permission to view this page!');
+            throw new coding_exception('You do not have the permission to view this page!');
         }
     break;
     default:
-        throw new \coding_exception("Invalid view mode: {$params['mode']}");
+        throw new coding_exception("Invalid view mode: {$params['mode']}");
     break;
 }
 echo $OUTPUT->box_end();

@@ -25,6 +25,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\output\notification;
+use mod_organizer\event\slot_created;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/view_action_form_add.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
@@ -34,7 +37,7 @@ $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = organizer_get_param_slots();
 
-list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
+[$cm, $course, $organizer, $context, $redirecturl] = organizer_slotpages_header();
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
@@ -50,14 +53,14 @@ if ($data = $mform->get_data()) {  // When page is called the first time (=empty
     if (isset($data->addday)) {  // Additional slot fields are to be displayed.
         organizer_display_form($mform, get_string('title_add', 'organizer'));
     } else {  // Submit button was pressed and submitted form data has no errors.
-        list($slotids, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $messages) = organizer_add_new_slots($data);
+        [$slotids, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $messages] = organizer_add_new_slots($data);
         $finalslots = count($slotids);
         $infoboxmessage = "";
         $a = new stdClass();
         if ($finalslots == 0) {
             $infoboxmessage .= $OUTPUT->notification(get_string('message_warning_no_slots_added', 'organizer'), 'error');
         } else {
-            $event = \mod_organizer\event\slot_created::create(
+            $event = slot_created::create(
                 array(
                 'objectid' => $PAGE->cm->id,
                 'context' => $PAGE->context,
@@ -86,7 +89,7 @@ if ($data = $mform->get_data()) {  // When page is called the first time (=empty
         }
         $_SESSION["infoboxmessage"] = $infoboxmessage;
         if ($messages) {
-            redirect($redirecturl, $messages, 10, \core\output\notification::NOTIFY_WARNING);
+            redirect($redirecturl, $messages, 10, notification::NOTIFY_WARNING);
         } else {
             redirect($redirecturl);
         }
@@ -96,6 +99,6 @@ if ($data = $mform->get_data()) {  // When page is called the first time (=empty
 } else { // Display empty form initially or submitted form has errors.
     organizer_display_form($mform, get_string('title_add', 'organizer'));
 }
-throw new \coding_exception('If you see this, something went wrong with add action!');
+throw new coding_exception('If you see this, something went wrong with add action!');
 
 die;

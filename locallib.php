@@ -27,6 +27,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core_availability\info_module;
+use mod_organizer\event\appointment_list_printed;
+use mod_organizer\MTablePDF;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/lib.php');
@@ -213,11 +217,11 @@ function organizer_add_new_slots($data) {
             $newslot->visible = $slot['visible'];
 
             if (!isset($data->duration) || $data->duration < 1) {
-                throw new \coding_exception('Duration is invalid (not set or < 1). No slots will be added.');
+                throw new coding_exception('Duration is invalid (not set or < 1). No slots will be added.');
             }
 
             if (!isset($data->gap) || $data->gap < 0) {
-                throw new \coding_exception('Gap is invalid (not set or < 0). No slots will be added. Contact support!');
+                throw new coding_exception('Gap is invalid (not set or < 0). No slots will be added. Contact support!');
             }
 
             $dateto = $enddate < $slot['dateto'] ? $enddate : $slot['dateto'];
@@ -692,7 +696,7 @@ function organizer_update_slot($data) {
                     if (empty($deletions)) {
                         $deletions = array(0);
                     }
-                    list($insql, $inparams) = $DB->get_in_or_equal($deletions, SQL_PARAMS_NAMED);
+                    [$insql, $inparams] = $DB->get_in_or_equal($deletions, SQL_PARAMS_NAMED);
                     $eventids = $DB->get_fieldset_select(
                             'organizer_slot_trainer', 'eventid', 'slotid = ' . $slot->id . ' AND trainerid ' . $insql, $inparams
                     );
@@ -716,7 +720,7 @@ function organizer_update_slot($data) {
                         $record->trainerid = $trainerid;
                         $DB->insert_record('organizer_slot_trainer', $record);
                         if ($apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slotid))) {
-                            list($cm, , , , ) = organizer_get_course_module_data();
+                            [$cm, , , , ] = organizer_get_course_module_data();
                             foreach ($apps as $app) {
                                 organizer_add_event_appointment_trainer($cm->id, $app, $trainerid);
                             }
@@ -962,7 +966,7 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
                                                $teacherapplicantid = null, $trainerevents = false, $trainerid = null, $ogranizerid = null) {
     global $DB;
 
-    list($cm, , $organizer, ) = organizer_get_course_module_data(null, $ogranizerid);
+    [$cm, , $organizer, ] = organizer_get_course_module_data(null, $ogranizerid);
 
     $appointment = new stdClass();
     $appointment->slotid = $slotid;
@@ -1268,7 +1272,7 @@ function organizer_get_course_module_data($id = null, $n = null) {
         $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
     } else {
-        throw new \coding_exception('organizer_get_course_module_data: You must specify a course_module ID or an instance ID');
+        throw new coding_exception('organizer_get_course_module_data: You must specify a course_module ID or an instance ID');
     }
 
     $context = context_module::instance($cm->id, MUST_EXIST);
@@ -1296,7 +1300,7 @@ function organizer_get_course_module_data_new() {
             false, MUST_EXIST
         );
     } else {
-        throw new \coding_exception('organizer_get_course_module_data_new: You must specify a course_module ID or an instance ID');
+        throw new coding_exception('organizer_get_course_module_data_new: You must specify a course_module ID or an instance ID');
     }
 
     $instance->context = context_module::instance($instance->cm->id, MUST_EXIST);
@@ -1316,7 +1320,7 @@ function organizer_get_organizer() {
     } else if ($n) {
         $organizer = $DB->get_record('organizer', array('id' => $n), '*', MUST_EXIST);
     } else {
-        throw new \coding_exception('organizer_get_organizer: You must specify a course_module ID or an instance ID');
+        throw new coding_exception('organizer_get_organizer: You must specify a course_module ID or an instance ID');
     }
 
     return $organizer;
@@ -1335,7 +1339,7 @@ function organizer_get_cm() {
         $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
     } else {
-        throw new \coding_exception('organizer_get_cm: You must specify a course_module ID or an instance ID');
+        throw new coding_exception('organizer_get_cm: You must specify a course_module ID or an instance ID');
     }
 
     return $cm;
@@ -1354,7 +1358,7 @@ function organizer_get_context() {
         $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
     } else {
-        throw new \coding_exception('organizer_get_context: You must specify a course_module ID or an instance ID');
+        throw new coding_exception('organizer_get_context: You must specify a course_module ID or an instance ID');
     }
 
     $context = context_module::instance($cm->id, MUST_EXIST);
@@ -1430,7 +1434,7 @@ function organizer_fetch_table_entries($slots, $orderby="") {
     if (empty($slots)) {
         $slots = array(0);
     }
-    list($insql, $inparams) = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
+    [$insql, $inparams] = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
 
     $params = array();
     $query = "SELECT CONCAT(s.id, COALESCE(a.id, 0)) AS mainid,
@@ -2002,22 +2006,22 @@ function organizer_format_and_print($mpdftable, $filename) {
 
     switch($format) {
         case 'xlsx':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_XLSX);
+            $mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_XLSX);
             break;
         case 'xls':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_XLS);
+            $mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_XLS);
             break;
         case 'ods':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_ODS);
+            $mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_ODS);
             break;
         case 'csv_comma':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_CSV_COMMA);
+            $mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_CSV_COMMA);
             break;
         case 'csv_tab':
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_CSV_TAB);
+            $mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_CSV_TAB);
             break;
         default:
-            $mpdftable->setOutputFormat(\mod_organizer\MTablePDF::OUTPUT_FORMAT_PDF);
+            $mpdftable->setOutputFormat(MTablePDF::OUTPUT_FORMAT_PDF);
             break;
     }
 
@@ -2055,7 +2059,7 @@ function organizer_print_setuserprefs_and_triggerevent($data, $cm, $context) {
 
     require_capability('mod/organizer:printslots', $context);
 
-    $event = \mod_organizer\event\appointment_list_printed::create(
+    $event = appointment_list_printed::create(
         array(
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context,
@@ -2236,7 +2240,7 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
     if (empty($entryids)) {
         $entryids = array(0);
     }
-    list($insql, $paramssql) = $DB->get_in_or_equal($entryids, SQL_PARAMS_NAMED);
+    [$insql, $paramssql] = $DB->get_in_or_equal($entryids, SQL_PARAMS_NAMED);
 
     if ($groupmode) {
         $where = 's.organizerid = ' . $organizer->id . ' AND a.groupid ' . $insql;
@@ -2308,7 +2312,7 @@ function organizer_get_counters($organizer, $cm = null) {
     } else {
         $context = context_module::instance($cm->id, MUST_EXIST);
         $students = get_enrolled_users($context, 'mod/organizer:register', null, 'u.id', null, 0, 0, true);
-        $info = new \core_availability\info_module(cm_info::create($cm));
+        $info = new info_module(cm_info::create($cm));
         $filtered = $info->filter_user_list($students);
         $studentids = array_keys($filtered);
         $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid
@@ -2385,7 +2389,7 @@ function organizer_date_time_plain($slot) {
         return '-';
     }
 
-    list($unitname, $value) = organizer_figure_out_unit($slot->duration);
+    [$unitname, $value] = organizer_figure_out_unit($slot->duration);
     $duration = ($slot->duration / $value) . ' ' . $unitname;
 
     // If slot is within a day.
@@ -2407,7 +2411,7 @@ function organizer_date_time_plain($slot) {
 function organizer_remind_all($recipient = null, $recipients = array(), $custommessage = "") {
     global $DB;
 
-    list($cm, , $organizer, $context) = organizer_get_course_module_data();
+    [$cm, , $organizer, $context] = organizer_get_course_module_data();
 
     $checkenough = false;
     if ($recipient != null) {
@@ -2470,7 +2474,7 @@ function organizer_get_reminder_recipients($organizer) {
     $params = array('group' => 0, 'sort' => '', 'dir' => '', 'psort' => '', 'pdir' => '');
     $recipients = array();
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizer->id);
+        [$cm, $course, $organizer, $context] = organizer_get_course_module_data(null, $organizer->id);
         $entries = organizer_get_reg_status_table_entries_group($params);
     } else {
         $entries = organizer_get_reg_status_table_entries($params);

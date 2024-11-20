@@ -27,6 +27,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\message\message;
+
 defined('MOODLE_INTERNAL') || die();
 
 define('ORGANIZER_ENABLE_MESSAGING', 1);
@@ -56,7 +58,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     }
     $organizerid = $slot->organizerid;
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data(0, $organizerid);
+    [$cm, $course, $organizer, $context] = organizer_get_course_module_data(0, $organizerid);
 
     $strings = organizer_check_messagerights($sender, $receiver, $cm, $course, $organizer, $context, $trainercheck);
     if (!$strings) {
@@ -176,7 +178,7 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
 function organizer_send_message_reminder($sender, $receiver, $organizerid, $type, $groupname = null, $digest = null,
                                          $customdata = array()) {
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
+    [$cm, $course, $organizer, $context] = organizer_get_course_module_data(null, $organizerid);
 
     $strings = organizer_check_messagerights($sender, $receiver, $cm, $course, $organizer, $context, true);
     if (!$strings) {
@@ -448,7 +450,7 @@ function organizer_prepare_and_send_message($data, $type) {
             }
             break;
         default:
-            throw new \coding_exception('Not debugged yet!');
+            throw new coding_exception('Not debugged yet!');
     }
     return $sentok;
 }
@@ -520,7 +522,7 @@ function organizer_build_message($namesplit, $cm, $course, $organizer, $sender, 
         $type .= ":digest";
     }
 
-    $message = new \core\message\message();
+    $message = new message();
     $message->component = 'mod_organizer';
     $message->name = $messagename;
     $message->courseid = $cm->course;

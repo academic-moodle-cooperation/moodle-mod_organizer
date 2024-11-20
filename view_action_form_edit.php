@@ -50,7 +50,7 @@ class organizer_edit_slots_form extends moodleform {
             $this->spacing = ORGANIZER_SPACING;
         }
 
-        $params = new \stdClass();
+        $params = new stdClass();
         $params->imagepaths = array(
             'warning' => "{$CFG->wwwroot}/mod/organizer/pix/warning.png",
             'changed' => "{$CFG->wwwroot}/mod/organizer/pix/warning2.png");

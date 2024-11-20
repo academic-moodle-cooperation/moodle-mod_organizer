@@ -27,6 +27,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_organizer\event\slot_deleted;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_action_form_delete.php');
@@ -38,7 +40,7 @@ $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = organizer_get_param_slots();
 
-list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
+[$cm, $course, $organizer, $context, $redirecturl] = organizer_slotpages_header();
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
@@ -71,7 +73,7 @@ if ($data = $mform->get_data()) {
         $a->notified = $notified;
         $a->deleted = count($slots);
 
-        $event = \mod_organizer\event\slot_deleted::create(array('objectid' => $PAGE->cm->id,
+        $event = slot_deleted::create(array('objectid' => $PAGE->cm->id,
                 'context' => $PAGE->context));
         $event->trigger();
 
@@ -92,6 +94,6 @@ if ($data = $mform->get_data()) {
 } else {
     organizer_display_form($mform, get_string('title_delete', 'organizer'));
 }
-throw new \coding_exception('If you see this, something went wrong with delete action!');
+throw new coding_exception('If you see this, something went wrong with delete action!');
 
 die;

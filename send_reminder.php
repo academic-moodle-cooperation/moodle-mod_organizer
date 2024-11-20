@@ -27,6 +27,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_organizer\event\appointment_reminder_sent;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_action_form_remind_all.php');
@@ -39,7 +41,7 @@ $recipient = optional_param('recipient', null, PARAM_INT);
 $recipients = optional_param_array('recipients', array(), PARAM_INT);
 $bulkaction = optional_param('bulkaction', '', PARAM_TEXT);
 
-list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
+[$cm, $course, $organizer, $context, $redirecturl] = organizer_slotpages_header();
 
 if ($bulkaction && !$recipients) {
     $redirecturl = $redirecturl->out();
@@ -103,7 +105,7 @@ if ($data = $mform->get_data()) {
         $infoboxmessage .= $OUTPUT->notification(get_string('message_info_reminders_sent_pl', 'organizer', $a),
             'success');
     }
-    $event = \mod_organizer\event\appointment_reminder_sent::create(
+    $event = appointment_reminder_sent::create(
         array(
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context,

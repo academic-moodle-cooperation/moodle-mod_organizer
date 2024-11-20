@@ -26,6 +26,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_organizer\MTablePDF;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_action_form_print.php');
@@ -38,7 +40,7 @@ $slot = optional_param('slot', null, PARAM_INT);
 $slots = organizer_get_param_slots();
 $tsort = optional_param('tsort', null, PARAM_ALPHA);
 
-list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
+[$cm, $course, $organizer, $context, $redirecturl] = organizer_slotpages_header();
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
@@ -110,7 +112,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
     $headerfooter = true
 ) {
 
-    list(, $course, $organizer, ) = organizer_get_course_module_data();
+    [, $course, $organizer, ] = organizer_get_course_module_data();
 
     $coursename = $course->idnumber ? $course->idnumber . " " . $course->fullname : $course->fullname;
     $coursename .= $course->shortname ? " (" . $course->shortname . ")" : "";
@@ -262,7 +264,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
         'organizer');
     $timedue = $timedue ? userdate($timedue) : get_string('pdf_notactive', 'organizer');
 
-    $mpdftable = new \mod_organizer\MTablePDF($orientation, $columnwidth);
+    $mpdftable = new MTablePDF($orientation, $columnwidth);
     $mpdftable->SetTitle(
         get_string('modulename', 'organizer') . " " .
         $organizername . "-" . get_string('printout', 'organizer')

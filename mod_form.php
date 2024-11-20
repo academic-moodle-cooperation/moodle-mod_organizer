@@ -63,7 +63,7 @@ class mod_organizer_mod_form extends moodleform_mod {
             $organizerconfig = get_config('organizer');
             $activateduedatecheckbox = $organizerconfig->absolutedeadline ?? "" != 'never';
         }
-        $params = new \stdClass();
+        $params = new stdClass();
         $params->activatecheckbox = $activateduedatecheckbox;
         $PAGE->requires->js_call_amd('mod_organizer/modform', 'init', array($params));
 
@@ -302,7 +302,7 @@ class mod_organizer_mod_form extends moodleform_mod {
             );
         }
         if ($mform->elementExists('grade') && $hasgrade) {
-            $param = new \stdClass();
+            $param = new stdClass();
             $param->changegradewarning = get_string('changegradewarning', 'organizer');
             $PAGE->requires->js_call_amd('mod_organizer/modform', 'init_gradechange', array($param));
             // Add noscript tag in case.

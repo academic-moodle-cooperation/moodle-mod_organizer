@@ -26,6 +26,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_organizer\event\appointment_evaluated;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_action_form_eval.php');
@@ -37,7 +39,7 @@ $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = organizer_get_param_slots();
 
-list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
+[$cm, $course, $organizer, $context, $redirecturl] = organizer_slotpages_header();
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
@@ -84,7 +86,7 @@ if ($data = $mform->get_data()) {
     $redirecturl->param('slots', implode(',', array_values($slotids)));
     $newurl = $redirecturl->out();
 
-    $event = \mod_organizer\event\appointment_evaluated::create(
+    $event = appointment_evaluated::create(
         array(
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context,
@@ -98,6 +100,6 @@ if ($data = $mform->get_data()) {
 } else {
     organizer_display_form($mform, get_string('title_eval', 'organizer'));
 }
-throw new \coding_exception('If you see this, something went wrong with edit action!');
+throw new coding_exception('If you see this, something went wrong with edit action!');
 
 die;

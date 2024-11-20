@@ -26,11 +26,14 @@
  */
 
 namespace mod_organizer\event;
+use core\event\base;
+use moodle_url;
+
 defined('MOODLE_INTERNAL') || die();
 /**
  * The slots_updated event class.
  **/
-class slot_updated extends \core\event\base {
+class slot_updated extends base {
     protected function init() {
         $this->data['crud'] = 'c'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
@@ -47,6 +50,6 @@ class slot_updated extends \core\event\base {
     }
 
     public function get_url() {
-        return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
+        return new moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
     }
 }

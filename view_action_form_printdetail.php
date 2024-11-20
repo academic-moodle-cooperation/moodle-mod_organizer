@@ -65,7 +65,7 @@ class organizer_print_slotdetail_form extends moodleform {
             $mform->addElement('hidden', 'slot', $data['slot']);
             $mform->setType("slot", PARAM_INT);
         } else {
-            throw new \coding_exception('This should not happen!');
+            throw new coding_exception('This should not happen!');
         }
     }
     /**

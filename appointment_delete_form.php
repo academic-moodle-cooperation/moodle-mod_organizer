@@ -34,7 +34,8 @@ require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
-class organizer_delete_appointment_form extends \moodleform {
+class organizer_delete_appointment_form extends moodleform
+{
 
     protected function definition() {
         global $DB;

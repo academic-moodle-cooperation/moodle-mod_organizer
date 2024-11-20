@@ -252,7 +252,7 @@ class organizer_add_slots_form extends moodleform {
 
         $this->add_action_buttons();
 
-        $params = new \stdClass();
+        $params = new stdClass();
         $params->totalslots = $totalslots;
         $params->displayallslots = $displayallslots;
         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {

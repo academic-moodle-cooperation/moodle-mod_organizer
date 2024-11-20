@@ -60,7 +60,7 @@ class organizer_print_slots_form extends moodleform {
                 $mform->setType("slots[$key]", PARAM_INT);
             }
         } else {
-            throw new \coding_exception('This should not happen!');
+            throw new coding_exception('This should not happen!');
         }
     }
 
@@ -161,7 +161,7 @@ class organizer_print_slots_form extends moodleform {
 
         $USER->ajax_updatable_user_prefs['mod_organizer_noprintfields'] = PARAM_TEXT;
 
-        $param = new \stdClass();
+        $param = new stdClass();
         $param->iconminus = $OUTPUT->image_icon('t/switch_minus', get_string('hide'), 'moodle', array(
             'id' => 'xxx', 'col' => 'yyy', 'style' => 'cursor:pointer;margin-left:3px;'));
         $param->iconplus = $OUTPUT->image_icon('t/switch_plus', get_string('show'), 'moodle', array(
@@ -415,7 +415,7 @@ class organizer_print_slots_form extends moodleform {
                     case 'teachercomments':
                     break;
                     default:
-                        throw new \coding_exception("Unsupported column type: $column");
+                        throw new coding_exception("Unsupported column type: $column");
                 }
             } // Each column.
             $rowspan = ($rowspan + 1) % $entry->rowspan;

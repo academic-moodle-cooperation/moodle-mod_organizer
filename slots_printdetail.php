@@ -26,6 +26,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\output\notification;
+use mod_organizer\MTablePDF;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_action_form_printdetail.php');
@@ -33,7 +36,7 @@ require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 require_once(dirname(__FILE__) . '/slotlib.php');
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+[$cm, $course, $organizer, $context] = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
 
@@ -89,7 +92,7 @@ if ($data = $mform->get_data()) {
 
     if (!isset($data->cols)) {
         redirect($redirecturl, get_string('nosingleslotprintfields', 'organizer'), null,
-            \core\output\notification::NOTIFY_ERROR);
+            notification::NOTIFY_ERROR);
     } else {
         organizer_display_printable_slotdetail_table($data->cols, $data->slot, $ppp, $data->textsize,
             $data->pageorientation, $data->headerfooter
@@ -121,7 +124,7 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
         $orientation = 'L', $headerfooter = true) {
     global $DB;
 
-    list(, $course, $organizer, ) = organizer_get_course_module_data();
+    [, $course, $organizer, ] = organizer_get_course_module_data();
 
     $coursename = $course->idnumber ? $course->idnumber . " " . $course->fullname : $course->fullname;
     $coursename = organizer_filter_text($coursename);
@@ -282,7 +285,7 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
         $conn = ", ";
     }
 
-    $mpdftable = new \mod_organizer\MTablePDF($orientation, $columnwitdh);
+    $mpdftable = new MTablePDF($orientation, $columnwitdh);
     $mpdftable->SetTitle(
         get_string('modulename', 'organizer') . " " . $organizername . " - " . get_string('printout', 'organizer')
     );

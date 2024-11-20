@@ -27,6 +27,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core_calendar\action_factory;
+use core_calendar\local\event\entities\action_interface;
+
 defined('MOODLE_INTERNAL') || die();
 
 define('ORGANIZER_MESSAGES_NONE', 0);
@@ -502,7 +505,7 @@ function organizer_display_grade($organizer, $grade, $userid) {
 function organizer_update_all_grades($organizerid) {
     global $DB;
 
-    list($cm, , $organizer, $context) = organizer_get_course_module_data(null, $organizerid);
+    [$cm, , $organizer, $context] = organizer_get_course_module_data(null, $organizerid);
 
     $studentids = array();
 
@@ -731,7 +734,7 @@ SQL;
     } else {
         $ids = array_keys($apps);
     }
-    list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+    [$insql, $inparams] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
     $DB->execute("UPDATE {organizer_slot_appointments} SET notified = 1 WHERE id $insql", $inparams);
 
     $organizerconfig = get_config('organizer');
@@ -758,7 +761,7 @@ SQL;
         $trainerids = array(0);
     }
 
-    list($insql, $inparams) = $DB->get_in_or_equal($trainerids, SQL_PARAMS_NAMED);
+    [$insql, $inparams] = $DB->get_in_or_equal($trainerids, SQL_PARAMS_NAMED);
 
     $slotsquery = "SELECT s.*, t.trainerid
         FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t ON s.id = t.slotid
@@ -797,7 +800,7 @@ SQL;
             );
 
             if ($thissuccess) {
-                list($insql, ) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+                [$insql, ] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
                 $DB->execute("UPDATE {organizer_slots} SET notified = 1 WHERE id $insql");
             }
         }
@@ -973,11 +976,11 @@ function organizer_remove_waitingqueueentries($organizer) {
  * is not displayed on the block.
  *
  * @param  calendar_event                $event
- * @param  \core_calendar\action_factory $factory
- * @return \core_calendar\local\event\entities\action_interface|null
+ * @param  action_factory $factory
+ * @return action_interface|null
  */
 function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
-    \core_calendar\action_factory $factory
+    action_factory $factory
 ) {
     // Due to significant performance issues, it always returns null!
     return null;

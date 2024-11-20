@@ -25,13 +25,15 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_organizer\event\appointment_commented;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_action_form_comment.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+[$cm, $course, $organizer, $context] = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
 
@@ -61,7 +63,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     organizer_update_comments($app->id, $data->comments);
 
-    $event = \mod_organizer\event\appointment_commented::create(
+    $event = appointment_commented::create(
         array(
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context,

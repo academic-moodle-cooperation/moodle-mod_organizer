@@ -27,6 +27,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core_availability\info_module;
+
 defined('MOODLE_INTERNAL') || die();
 
 define('ORGANIZER_APP_STATUS_INVALID', -1);
@@ -64,8 +66,8 @@ function organizer_add_calendar($courseid = false) {
     if (!$courseid) {
         $courseid = $PAGE->course->id;
     }
-    $calendar = \calendar_information::create(time(), $courseid);
-    list($data, $template) = calendar_get_view($calendar, 'monthblock', isloggedin());
+    $calendar = calendar_information::create(time(), $courseid);
+    [$data, $template] = calendar_get_view($calendar, 'monthblock', isloggedin());
 
     $renderer = $PAGE->get_renderer('core_calendar');
     $content = $renderer->render_from_template($template, $data);
@@ -73,7 +75,7 @@ function organizer_add_calendar($courseid = false) {
     $options = [
         'showfullcalendarlink' => true,
     ];
-    list($footerdata, $footertemplate) = calendar_get_footer_options($calendar, $options);
+    [$footerdata, $footertemplate] = calendar_get_footer_options($calendar, $options);
     $content .= $renderer->render_from_template($footertemplate, $footerdata);
     $content .= $renderer->complete_layout();
 
@@ -284,7 +286,7 @@ function organizer_generate_tab_row($params, $context) {
     }
 
     if (count($thirdnavlink) > 1) {
-        $urlselector = new \url_select($thirdnav, $thirdnavlink[$params['mode']]);
+        $urlselector = new url_select($thirdnav, $thirdnavlink[$params['mode']]);
         return $OUTPUT->render($urlselector);
     } else {
         return ''; // If only one select option is enabled, hide the selector altogether.
@@ -325,7 +327,7 @@ function organizer_generate_actionlink_bar($context, $organizerexpired, $organiz
 
 function organizer_generate_reg_actionlink_bar($params) {
 
-    list(, , , $context) = organizer_get_course_module_data($params['id']);
+    [, , , $context] = organizer_get_course_module_data($params['id']);
     if (!has_capability("mod/organizer:sendreminders", $context)) {
         return "";
     }
@@ -534,7 +536,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                         // Deadline countdown on.
                         if ($slot->starttime - $organizer->relativedeadline - time() > 0) {
                             $a = new stdClass();
-                            list($a->days, $a->hours, $a->minutes, $a->seconds) = organizer_get_countdown(
+                            [$a->days, $a->hours, $a->minutes, $a->seconds] = organizer_get_countdown(
                                 $slot->starttime - $organizer->relativedeadline - time());
                             $textclass = $a->days > 1 ? "" : ($a->hours > 1 ? "text-info" : "text-danger");
                             $infotxt = get_string('infobox_deadline_countdown', 'organizer', $a);
@@ -546,7 +548,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                         }
                         // App countdown on.
                         $a = new stdClass();
-                        list($a->days, $a->hours, $a->minutes, $a->seconds) =
+                        [$a->days, $a->hours, $a->minutes, $a->seconds] =
                             organizer_get_countdown($slot->starttime - time());
                         $textclass = $a->days > 1 ? "" : ($a->hours > 1 ? "text-info" : "text-danger");
                         $infotxt = get_string('infobox_app_countdown', 'organizer', $a);
@@ -693,7 +695,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                         $cell = $row->cells[] = new html_table_cell(organizer_participants_action($params, $slot));
                     break;
                     default:
-                        throw new \coding_exception("Unrecognized column type: $column");
+                        throw new coding_exception("Unrecognized column type: $column");
                 }
                 $cell->style .= ' vertical-align: middle;';
             }
@@ -719,7 +721,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                         $defaultrow->style = (!$showpastslots && $showmyslotsonly) ? '' : 'display: none;';
                     break;
                     default:
-                        throw new \coding_exception("This shouldn't happen @ generating no slot rows");
+                        throw new coding_exception("This shouldn't happen @ generating no slot rows");
                 }
             } else {
                 $defaultrow->style = 'display: none;';
@@ -752,7 +754,7 @@ function organizer_get_span_cell($text, $colspan) {
 
 function organizer_get_reg_status_table_entries_group($params) {
     global $DB;
-    list($cm, , $organizer, ) = organizer_get_course_module_data();
+    [$cm, , $organizer, ] = organizer_get_course_module_data();
 
     if ($params['group'] == 0) {
         $groups = groups_get_all_groups($cm->course, 0, $cm->groupingid, 'g.id');
@@ -763,7 +765,7 @@ function organizer_get_reg_status_table_entries_group($params) {
     if (!$groupids || count($groupids) == 0) {
         return array();
     }
-    list($insql, $inparams) = $DB->get_in_or_equal($groupids, SQL_PARAMS_NAMED);
+    [$insql, $inparams] = $DB->get_in_or_equal($groupids, SQL_PARAMS_NAMED);
 
     $dir = isset($params['dir']) ? $params['dir'] : 'ASC';
 
@@ -860,10 +862,10 @@ function organizer_get_reg_status_table_entries_group($params) {
  */
 function organizer_get_reg_status_table_entries($params) {
     global $DB;
-    list($cm, , $organizer, $context) = organizer_get_course_module_data();
+    [$cm, , $organizer, $context] = organizer_get_course_module_data();
 
     $students = get_enrolled_users($context, 'mod/organizer:register', $params['group'], 'u.id', null, 0, 0, true);
-    $info = new \core_availability\info_module(cm_info::create($cm));
+    $info = new info_module(cm_info::create($cm));
     $filtered = $info->filter_user_list($students);
     $studentids = array_keys($filtered);
     $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid
@@ -875,7 +877,7 @@ function organizer_get_reg_status_table_entries($params) {
         return array();
     }
 
-    list($insql, $inparams) = $DB->get_in_or_equal($studentids, SQL_PARAMS_NAMED);
+    [$insql, $inparams] = $DB->get_in_or_equal($studentids, SQL_PARAMS_NAMED);
 
     $dir = isset($params['dir']) ? $params['dir'] : 'ASC';
 
@@ -1347,7 +1349,7 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
                             $cell = $row->cells[] = new html_table_cell(organizer_get_assign_button($slot->id, $params));
                         break;
                         default:
-                            throw new \coding_exception("Unrecognized column type: $column");
+                            throw new coding_exception("Unrecognized column type: $column");
                     }  // End switch.
 
                     $cell->style .= ' vertical-align: middle;';
@@ -1424,7 +1426,7 @@ function organizer_date_time($slot, $nobreak = false) {
         return '-';
     }
 
-    list($unitname, $value) = organizer_figure_out_unit($slot->duration);
+    [$unitname, $value] = organizer_figure_out_unit($slot->duration);
     $duration = ($slot->duration / $value) . ' ' . $unitname;
 
     // If slot is within a day.
@@ -2129,7 +2131,7 @@ function organizer_slot_commands($slotid, $params, $grades) {
                 '/mod/organizer/slots_edit.php',
                 array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
         );
-        $outstr .= \html_writer::link($actionurl, organizer_get_fa_icon(
+        $outstr .= html_writer::link($actionurl, organizer_get_fa_icon(
             "fa fa-pencil fa-fw", get_string('btn_editsingle', 'organizer'))
         );
     }
@@ -2140,7 +2142,7 @@ function organizer_slot_commands($slotid, $params, $grades) {
                 '/mod/organizer/slots_delete.php',
                 array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
         );
-        $outstr .= \html_writer::link($actionurl, organizer_get_fa_icon(
+        $outstr .= html_writer::link($actionurl, organizer_get_fa_icon(
                 "fa fa-trash fa-fw", get_string('btn_deletesingle', 'organizer'))
         );
     }
@@ -2151,7 +2153,7 @@ function organizer_slot_commands($slotid, $params, $grades) {
                 '/mod/organizer/slots_printdetail.php',
                 array('id' => $params['id'], 'slot' => $slotid, 'mode' => $params['mode'])
         );
-        $outstr .= \html_writer::link($actionurl, organizer_get_fa_icon(
+        $outstr .= html_writer::link($actionurl, organizer_get_fa_icon(
                 "fa fa-print fa-fw", get_string('btn_printsingle', 'organizer'))
         );
     }
@@ -2162,7 +2164,7 @@ function organizer_slot_commands($slotid, $params, $grades) {
                 '/mod/organizer/slots_eval.php',
                 array('id' => $params['id'], 'slots[]' => $slotid, 'mode' => $params['mode'])
         );
-        $outstr .= \html_writer::link($actionurl, organizer_get_fa_icon(
+        $outstr .= html_writer::link($actionurl, organizer_get_fa_icon(
                 "fa fa-th-list fa-fw", get_string('btn_evalsingle', 'organizer'))
         );
     }
@@ -2236,7 +2238,7 @@ function organizer_participants_action($params, $slot) {
     global $USER;
 
     $slotx = new organizer_slot($slot);
-    list(, , $organizer, $context) = organizer_get_course_module_data();
+    [, , $organizer, $context] = organizer_get_course_module_data();
     $action = "";
 
     $rightregister = has_capability('mod/organizer:register', $context, null, false);
@@ -2520,7 +2522,7 @@ function organizer_slotpages_header() {
     $mode = optional_param('mode', null, PARAM_INT);
     $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 
-    list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+    [$cm, $course, $organizer, $context] = organizer_get_course_module_data();
 
     require_login($course, false, $cm);
 
@@ -2607,7 +2609,7 @@ function organizer_appointmentsstatus_bar($organizer) {
         $a->tooless = $tooless;
     } else {
         $students = get_enrolled_users($context, 'mod/organizer:register', 0, 'u.id', null, 0, 0, true);
-        $info = new \core_availability\info_module(cm_info::create($cm));
+        $info = new info_module(cm_info::create($cm));
         $filtered = $info->filter_user_list($students);
         $studentids = array_keys($filtered);
         $havebookings = $DB->get_fieldset_sql('SELECT DISTINCT sa.userid
@@ -2623,7 +2625,7 @@ function organizer_appointmentsstatus_bar($organizer) {
         $a->tooless = $tooless;
     }
 
-    list ($slotscount, $places) = organizer_get_freeplaces($organizer);
+    [$slotscount, $places] = organizer_get_freeplaces($organizer);
 
     $a->slots = $slotscount;
     $a->places = $places;
@@ -2672,7 +2674,7 @@ function organizer_bookingnotpossible($groupmode, $organizer, $entryid, $allowex
         $booked = organizer_count_bookedslots($organizer->id, $entryid, null);
     }
     $maxnotreached = organizer_multiplebookings_status($booked, $organizer) != USERSLOTS_MAX_REACHED;
-    list (, $places) = organizer_get_freeplaces($organizer, $allowexpiredslotsassignment);
+    [, $places] = organizer_get_freeplaces($organizer, $allowexpiredslotsassignment);
 
     return !$maxnotreached || !$places;
 }

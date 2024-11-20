@@ -27,6 +27,11 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_organizer\event\appointment_added;
+use mod_organizer\event\appointment_removed;
+use mod_organizer\event\queue_added;
+use mod_organizer\event\queue_removed;
+
 define('ORGANIZER_ACTION_REGISTER', 'register');
 define('ORGANIZER_ACTION_UNREGISTER', 'unregister');
 define('ORGANIZER_ACTION_REREGISTER', 'reregister');
@@ -42,7 +47,7 @@ require_once(dirname(__FILE__) . '/messaging.php');
 require_once($CFG->dirroot . '/mod/organizer/classes/event/queue_added.php');
 require_once($CFG->dirroot . '/mod/organizer/classes/event/queue_removed.php');
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+[$cm, $course, $organizer, $context] = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
 require_sesskey();
@@ -136,7 +141,7 @@ switch($action) {
                 $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_registered',
                     'organizer'), 'success');
             }
-            $event = \mod_organizer\event\appointment_added::create(
+            $event = appointment_added::create(
                 array('objectid' => $PAGE->cm->id, 'context' => $PAGE->context)
             );
             $event->trigger();
@@ -164,7 +169,7 @@ switch($action) {
                 $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_queued',
                     'organizer'), 'success');
             }
-            $event = \mod_organizer\event\queue_added::create(
+            $event = queue_added::create(
                 array('objectid' => $PAGE->cm->id, 'context' => $PAGE->context)
             );
             $event->trigger();
@@ -192,7 +197,7 @@ switch($action) {
                 $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_unregistered',
                     'organizer'), 'success');
             }
-            $event = \mod_organizer\event\appointment_removed::create(
+            $event = appointment_removed::create(
                 array('objectid' => $PAGE->cm->id, 'context' => $PAGE->context)
             );
             $event->trigger();
@@ -222,7 +227,7 @@ switch($action) {
                 $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_unqueued',
                     'organizer'), 'success');
             }
-            $event = \mod_organizer\event\queue_removed::create(
+            $event = queue_removed::create(
                 array('objectid' => $PAGE->cm->id, 'context' => $PAGE->context)
             );
             $event->trigger();
@@ -246,11 +251,11 @@ switch($action) {
                 $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_reregistered',
                     'organizer'), 'success');
             }
-            $event = \mod_organizer\event\appointment_removed::create(
+            $event = appointment_removed::create(
                 array('objectid' => $PAGE->cm->id, 'context' => $PAGE->context)
             );
             $event->trigger();
-            $event = \mod_organizer\event\appointment_added::create(
+            $event = appointment_added::create(
                 array('objectid' => $PAGE->cm->id, 'context' => $PAGE->context)
             );
             $event->trigger();

@@ -28,6 +28,11 @@
 
 namespace mod_organizer;
 
+use coding_exception;
+use MoodleExcelWorkbook;
+use MoodleODSWorkbook;
+use pdf;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/pdflib.php');
@@ -43,7 +48,7 @@ require_once($CFG->libdir . '/pdflib.php');
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class MTablePDF extends \pdf {
+class MTablePDF extends pdf {
     /**
  * Portrait orientation in PDF
 */
@@ -178,7 +183,7 @@ class MTablePDF extends \pdf {
      */
     public function setcolumnformat($columnformat) {
         if (count($columnformat) != count($this->columnwidths)) {
-            throw new \coding_exception(
+            throw new coding_exception(
                 "Columnformat (" . count($columnformat) . ") count doesnt match " .
                 "column count (" . count($this->columnwidths) . ")"
             );
@@ -313,7 +318,7 @@ class MTablePDF extends \pdf {
      */
     public function settitles($titles) {
         if (count($titles) != count($this->columnwidths)) {
-            throw new \coding_exception("Error: Title count doesnt match column count");
+            throw new coding_exception("Error: Title count doesnt match column count");
             exit();
         }
 
@@ -367,7 +372,7 @@ class MTablePDF extends \pdf {
      */
     public function addrow($row) {
         if (count($row) != count($this->columnwidths)) {
-            throw new \coding_exception(
+            throw new coding_exception(
                 "number of columns from row (" . count($row) . ") does not match " .
                 "the number defined (" . count($this->columnwidths) . ")"
             );
@@ -387,7 +392,7 @@ class MTablePDF extends \pdf {
 
             foreach ($row as $idx => $value) {
                 if (is_array($value)) {
-                    throw new \coding_exception("Error: if you want to add a row using the fast mode, you cannot pass me an array");
+                    throw new coding_exception("Error: if you want to add a row using the fast mode, you cannot pass me an array");
                 }
 
                 $tmp[] = array("rowspan" => 0, "data" => $value);
@@ -507,7 +512,7 @@ class MTablePDF extends \pdf {
                 $sumrelativ += $width['value'];
                 $allfixed = false;
             } else {
-                throw new \coding_exception("ERROR: unvalid columnwidth format");
+                throw new coding_exception("ERROR: unvalid columnwidth format");
                 exit();
             }
         }
@@ -657,7 +662,7 @@ class MTablePDF extends \pdf {
                 $spaceonpage[1] = 28;
             }
         } else {
-            throw new \coding_exception("an unexpected error occured. Please report this to your administrator.");
+            throw new coding_exception("an unexpected error occured. Please report this to your administrator.");
             exit();
         }
 
@@ -904,7 +909,7 @@ class MTablePDF extends \pdf {
 
         include_once($CFG->libdir . "/excellib.class.php");
 
-        $workbook = new \MoodleExcelWorkbook("-", 'excel5');
+        $workbook = new MoodleExcelWorkbook("-", 'excel5');
 
         $this->fill_workbook($workbook);
 
@@ -922,7 +927,7 @@ class MTablePDF extends \pdf {
 
         include_once($CFG->libdir . "/excellib.class.php");
 
-        $workbook = new \MoodleExcelWorkbook("-", 'Excel2007');
+        $workbook = new MoodleExcelWorkbook("-", 'Excel2007');
 
         $this->fill_workbook($workbook);
 
@@ -940,7 +945,7 @@ class MTablePDF extends \pdf {
 
         include_once($CFG->libdir . "/odslib.class.php");
 
-        $workbook = new \MoodleODSWorkbook("-");
+        $workbook = new MoodleODSWorkbook("-");
 
         $this->fill_workbook($workbook);
 

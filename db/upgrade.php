@@ -389,7 +389,7 @@ function xmldb_organizer_upgrade($oldversion) {
                 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE)
             )) {
                 organizer_change_event_instance($record->organizerid);
-            };
+            }
         }
 
         upgrade_mod_savepoint(true, 2017062300, 'organizer');

@@ -28,6 +28,8 @@
 
 // Replace organizer with the name of your module and remove this line.
 
+use mod_organizer\event\course_module_instance_list_viewed;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/lib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
@@ -39,7 +41,7 @@ require_course_login($course);
 
 $PAGE->set_pagelayout('incourse');
 
-$event = \mod_organizer\event\course_module_instance_list_viewed::create(
+$event = course_module_instance_list_viewed::create(
     array('context' => context_course::instance($course->id)));
 $event->trigger();
 
