@@ -119,7 +119,7 @@ function organizer_update_instance($organizer) {
     }
 
     $newname = $organizer->name;
-    $organizerold = $DB->get_record('organizer', array('id' => $organizer->id), 'name, gradeaggregationmethod');
+    $organizerold = $DB->get_record('organizer', ['id' => $organizer->id], 'name, gradeaggregationmethod');
 
     organizer_grade_item_update($organizer);
 
@@ -135,8 +135,8 @@ function organizer_update_instance($organizer) {
     }
 
     // Update event entries.
-    $params = array('modulename' => 'organizer', 'instance' => $organizer->id,
-        'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE);
+    $params = ['modulename' => 'organizer', 'instance' => $organizer->id,
+        'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE];
 
     $query = 'SELECT id
               FROM {event}
@@ -166,37 +166,37 @@ function organizer_update_instance($organizer) {
 function organizer_delete_instance($id) {
     global $DB;
 
-    if (!$organizer = $DB->get_record('organizer', array('id' => $id))) {
+    if (!$organizer = $DB->get_record('organizer', ['id' => $id])) {
         return false;
     }
 
-    $slots = $DB->get_records('organizer_slots', array('organizerid' => $id));
+    $slots = $DB->get_records('organizer_slots', ['organizerid' => $id]);
     foreach ($slots as $slot) {
-        $DB->delete_records('organizer_slot_trainer', array('slotid' => $slot->id));
-        $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
+        $DB->delete_records('organizer_slot_trainer', ['slotid' => $slot->id]);
+        $apps = $DB->get_records('organizer_slot_appointments', ['slotid' => $slot->id]);
         foreach ($apps as $app) {
             if (ORGANIZER_DELETE_EVENTS) {
-                $DB->delete_records('event', array('id' => $app->eventid));
-                $DB->delete_records('event', array('uuid' => $app->id,
+                $DB->delete_records('event', ['id' => $app->eventid]);
+                $DB->delete_records('event', ['uuid' => $app->id,
                     'modulename' => 'organizer', 'instance' => $organizer->id,
-                    'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT));
+                    'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT]);
             }
-            $DB->delete_records('organizer_slot_appointments', array('id' => $app->id));
+            $DB->delete_records('organizer_slot_appointments', ['id' => $app->id]);
         } // Foreach app.
 
         if (ORGANIZER_DELETE_EVENTS) {
-            $DB->delete_records('event', array('uuid' => $slot->id,
-                'modulename' => 'organizer', 'instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_SLOT));
+            $DB->delete_records('event', ['uuid' => $slot->id,
+                'modulename' => 'organizer', 'instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_SLOT]);
         }
-        $DB->delete_records('organizer_slots', array('id' => $slot->id));
+        $DB->delete_records('organizer_slots', ['id' => $slot->id]);
     } // Foreach slot.
 
     if (ORGANIZER_DELETE_EVENTS) {
-        $DB->delete_records('event', array(
-                'modulename' => 'organizer', 'instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE));
+        $DB->delete_records('event', [
+                'modulename' => 'organizer', 'instance' => $organizer->id, 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE]);
     }
 
-    $DB->delete_records('organizer', array('id' => $organizer->id));
+    $DB->delete_records('organizer', ['id' => $organizer->id]);
 
     organizer_grade_item_update($organizer);
 
@@ -254,15 +254,15 @@ function organizer_reset_course_form_definition(&$mform) {
 function organizer_reset_userdata($data) {
     global $DB;
 
-    if (!$DB->count_records('organizer', array('course' => $data->courseid))) {
-        return array();
+    if (!$DB->count_records('organizer', ['course' => $data->courseid])) {
+        return [];
     }
 
     $componentstr = get_string('modulenameplural', 'organizer');
-    $status = array();
+    $status = [];
 
     if (isset($data->reset_organizer_all)) {
-        $params = array('courseid' => $data->courseid);
+        $params = ['courseid' => $data->courseid];
 
         $slotquery = 'SELECT s.*
                     FROM {organizer_slots} s
@@ -281,34 +281,34 @@ function organizer_reset_userdata($data) {
         $ok = true;
 
         foreach ($slots as $slot) {
-            $DB->delete_records('event', array('id' => $slot->eventid));
+            $DB->delete_records('event', ['id' => $slot->eventid]);
             // Tscpr: Petr Skoda told us that $DB->delete_records will throw an exeption if it fails, otherwise it always succeeds.
-            $ok &= $DB->delete_records('organizer_slots', array('id' => $slot->id));
+            $ok &= $DB->delete_records('organizer_slots', ['id' => $slot->id]);
         }
 
         foreach ($appointments as $appointment) {
-            $DB->delete_records('event', array('id' => $appointment->eventid));
+            $DB->delete_records('event', ['id' => $appointment->eventid]);
             // Tscpr: Petr Skoda told us that $DB->delete_records will throw an exeption if it fails, otherwise it always succeeds.
-            $ok &= $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
+            $ok &= $DB->delete_records('organizer_slot_appointments', ['id' => $appointment->id]);
         }
 
-        $status[] = array('component' => $componentstr, 'item' => get_string('reset_organizer_all', 'organizer'),
-                'error' => !$ok);
+        $status[] = ['component' => $componentstr, 'item' => get_string('reset_organizer_all', 'organizer'),
+                'error' => !$ok];
     }
 
     if (isset($data->delete_organizer_grades)) {
         $ok = organizer_reset_gradebook($data->courseid);
-        $status[] = array('component' => $componentstr, 'item' => get_string('delete_organizer_grades', 'organizer'),
-                'error' => !$ok);
+        $status[] = ['component' => $componentstr, 'item' => get_string('delete_organizer_grades', 'organizer'),
+                'error' => !$ok];
     }
 
     if ($data->timeshift) {
         $ok = shift_course_mod_dates(
             'organizer',
-            array('allowregistrationsfromdate', 'duedate'), $data->timeshift, $data->courseid
+            ['allowregistrationsfromdate', 'duedate'], $data->timeshift, $data->courseid
         );
-        $status[] = array('component' => $componentstr, 'item' => get_string('timeshift', 'organizer'),
-                'error' => !$ok);
+        $status[] = ['component' => $componentstr, 'item' => get_string('timeshift', 'organizer'),
+                'error' => !$ok];
     }
 
     return $status;
@@ -317,7 +317,7 @@ function organizer_reset_userdata($data) {
 function organizer_reset_gradebook($courseid) {
     global $DB;
 
-    $params = array('courseid' => $courseid);
+    $params = ['courseid' => $courseid];
 
     $sql = 'SELECT a.*, cm.idnumber as cmidnumber, a.course as courseid
               FROM {organizer} a, {course_modules} cm, {modules} m
@@ -337,7 +337,7 @@ function organizer_reset_gradebook($courseid) {
 function organizer_get_user_grade($organizer, $userid = 0) {
     global $DB;
 
-    $params = array('organizerid' => $organizer->id, 'userid' => $userid);
+    $params = ['organizerid' => $organizer->id, 'userid' => $userid];
     if ($userid) {
         $query = 'SELECT
                     a.id AS id,
@@ -352,7 +352,7 @@ function organizer_get_user_grade($organizer, $userid = 0) {
                 ORDER BY id DESC';
         return $DB->get_records_sql($query, $params);
     } else {
-        return array();
+        return [];
     }
 }
 
@@ -450,9 +450,9 @@ function organizer_grade_item_update($organizer, $grades = null) {
     }
 
     if (isset($organizer->cmidnumber)) {
-        $params = array('itemname' => $organizer->name, 'idnumber' => $organizer->cmidnumber);
+        $params = ['itemname' => $organizer->name, 'idnumber' => $organizer->cmidnumber];
     } else {
-        $params = array('itemname' => $organizer->name);
+        $params = ['itemname' => $organizer->name];
     }
 
     if (isset($organizer->grade) && $organizer->grade > 0) {
@@ -477,7 +477,7 @@ function organizer_grade_item_update($organizer, $grades = null) {
 function organizer_display_grade($organizer, $grade, $userid) {
     global $DB;
     $nograde = get_string('nograde');
-    static $scalegrades = array();   // Cache scales for each organizer - they might have different scales!!
+    static $scalegrades = [];   // Cache scales for each organizer - they might have different scales!!
 
     if ($organizer->grade > 0) {    // Normal number.
         if ($grade == -1 || $grade == null) {
@@ -488,7 +488,7 @@ function organizer_display_grade($organizer, $grade, $userid) {
         }
     } else {    // Scale.
         if (empty($scalegrades[$organizer->id])) {
-            if ($scale = $DB->get_record('scale', array('id' => -($organizer->scale)))) {
+            if ($scale = $DB->get_record('scale', ['id' => -($organizer->scale)])) {
                 $scalegrades[$organizer->id] = make_menu_from_list($scale->scale);
             } else {
                 return $nograde;
@@ -507,7 +507,7 @@ function organizer_update_all_grades($organizerid) {
 
     [$cm, , $organizer, $context] = organizer_get_course_module_data(null, $organizerid);
 
-    $studentids = array();
+    $studentids = [];
 
     if ($organizer->isgrouporganizer != ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $students = get_enrolled_users($context, 'mod/organizer:register');
@@ -520,7 +520,7 @@ function organizer_update_all_grades($organizerid) {
         INNER JOIN {groups} g ON gm.groupid = g.id
         INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
         WHERE gg.groupingid = :grouping";
-        $par = array('grouping' => $cm->groupingid);
+        $par = ['grouping' => $cm->groupingid];
         $studentids = $DB->get_fieldset_sql($query, $par);
     }
 
@@ -535,9 +535,9 @@ function organizer_update_all_grades($organizerid) {
 function organizer_make_grades_menu_organizer($gradingtype) {
     global $DB;
 
-    $grades = array();
+    $grades = [];
     if ($gradingtype < 0) {
-        if ($scale = $DB->get_record('scale', array('id' => (-$gradingtype)))) {
+        if ($scale = $DB->get_record('scale', ['id' => (-$gradingtype)])) {
             $menu = make_menu_from_list($scale->scale);
             $menu['0'] = get_string('nograde');
             return $menu;
@@ -623,7 +623,7 @@ function organizer_fetch_group($organizer, $userid = null) {
     }
 
     if (is_number($organizer) && $organizer == intval($organizer)) {
-        $organizer = $DB->get_record('organizer', array('id' => $organizer));
+        $organizer = $DB->get_record('organizer', ['id' => $organizer]);
     }
 
     $usergrouparrays = groups_get_user_groups($organizer->course, $userid);
@@ -716,7 +716,7 @@ SQL;
 
     $success = true;
 
-    $params = array('now' => $now, 'now2' => $now);
+    $params = ['now' => $now, 'now2' => $now];
     $appsquery = "SELECT a.*, s.location, s.starttime, s.organizerid, s.teachervisible FROM {organizer_slot_appointments} a
         INNER JOIN {organizer_slots} s ON a.slotid = s.id WHERE
         s.starttime - s.notificationtime < :now AND s.starttime > :now2 AND
@@ -730,7 +730,7 @@ SQL;
     }
 
     if (empty($apps)) {
-        $ids = array(0);
+        $ids = [0];
     } else {
         $ids = array_keys($apps);
     }
@@ -758,7 +758,7 @@ SQL;
     $trainerids = $DB->get_fieldset_sql($slotsquery, $params);
 
     if (empty($trainerids)) {
-        $trainerids = array(0);
+        $trainerids = [0];
     }
 
     [$insql, $inparams] = $DB->get_in_or_equal($trainerids, SQL_PARAMS_NAMED);
@@ -787,7 +787,7 @@ SQL;
         }
 
         if (empty($slots)) {
-            $ids = array(0);
+            $ids = [0];
         } else {
             $ids = array_keys($slots);
         }
@@ -814,7 +814,7 @@ function organizer_create_digest($trainerid) {
     global $DB;
     $now = time();
 
-    $params = array('now' => $now, 'trainerid' => $trainerid);
+    $params = ['now' => $now, 'trainerid' => $trainerid];
 
     $slotsquery = 'SELECT s.*, t.trainerid, t.slotid FROM {organizer_slots} s INNER JOIN {organizer_slot_trainer} t
             ON s.id = t.slotid
@@ -865,7 +865,7 @@ function organizer_get_participants($organizerid) {
 function organizer_scale_used($organizerid, $scaleid) {
     global $DB;
 
-    if ($organizerid && $scaleid && $DB->record_exists('organizer', array('id' => $organizerid, 'grade' => -$scaleid))) {
+    if ($organizerid && $scaleid && $DB->record_exists('organizer', ['id' => $organizerid, 'grade' => -$scaleid])) {
         return true;
     } else {
         return false;
@@ -884,7 +884,7 @@ function organizer_scale_used($organizerid, $scaleid) {
 function organizer_scale_used_anywhere($scaleid) {
     global $DB;
 
-    if ($scaleid && $DB->record_exists('organizer', array('grade' => -$scaleid))) {
+    if ($scaleid && $DB->record_exists('organizer', ['grade' => -$scaleid])) {
         return true;
     } else {
         return false;
@@ -933,7 +933,7 @@ function organizer_supports($feature) {
 function organizer_get_coursemodule_info($coursemodule) {
     global $DB;
 
-    $dbparams = array('id' => $coursemodule->instance);
+    $dbparams = ['id' => $coursemodule->instance];
     $fields = 'id, name, alwaysshowdescription, allowregistrationsfromdate, intro, introformat, duedate';
     if (! $organizer = $DB->get_record('organizer', $dbparams, $fields)) {
         return false;
@@ -998,14 +998,14 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $us
     global $USER, $DB, $CFG;
     $props = $event->properties();
 
-    $organizer = $DB->get_record('organizer', array('id' => $props->instance), '*');
+    $organizer = $DB->get_record('organizer', ['id' => $props->instance], '*');
 
     if ($organizer == false) {
         return false;
     }
 
     if ($props->eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
-        $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid));
+        $courseisvisible = $DB->get_field('course', 'visible', ['id' => $props->courseid]);
         if (instance_is_visible('organizer', $organizer) && $courseisvisible) {
             if (empty($userid)) {
                 $userid = $USER->id;
@@ -1013,7 +1013,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $us
             if (!$userid) {
                 $isvisible = false;
             } else {
-                $useridevent = $DB->get_field('event', 'userid', array('id' => $props->id));
+                $useridevent = $DB->get_field('event', 'userid', ['id' => $props->id]);
                 if ($userid != $useridevent) {
                     $isvisible = false;
                 } else {
@@ -1050,7 +1050,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $us
                     $isvisible = false;
                 }
             } else if (has_capability('mod/organizer:viewstudentview', $context)) {
-                $courseisvisible = $DB->get_field('course', 'visible', array('id' => $props->courseid));
+                $courseisvisible = $DB->get_field('course', 'visible', ['id' => $props->courseid]);
                 if (!(instance_is_visible('organizer', $organizer) && $courseisvisible)) {
                     $isvisible = false;
                 } else {
@@ -1069,7 +1069,7 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $us
     return $isvisible;
 }
 
-function organizer_change_event_instance($organizer, $eventids = array()) {
+function organizer_change_event_instance($organizer, $eventids = []) {
     global $USER;
 
     $eventtitle = organizer_filter_text($organizer->name);
@@ -1102,10 +1102,10 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
     $event = new stdClass();
     $event->eventtype = $eventtype;
     $intro = strip_pluginfile_content($eventdescription);
-    $event->description = array(
+    $event->description = [
             'text' => $intro,
             'format' => $organizer->introformat,
-    );
+    ];
     $event->modulename = 'organizer';
     $event->instance = $organizer->id;
     $event->visible = 1;
@@ -1150,7 +1150,7 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
 
     // If new appointment: Delete already existent slot event, if there is one.
     if ($uuid && $eventtype == ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT) {
-        $DB->delete_records('event', array ('modulename' => 'organizer', 'eventtype' => 'Slot', 'uuid' => $uuid));
+        $DB->delete_records('event', ['modulename' => 'organizer', 'eventtype' => 'Slot', 'uuid' => $uuid]);
     }
 
     return $event->id;
@@ -1166,10 +1166,10 @@ function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eve
     $data = new stdClass();
     $data->eventtype = $eventtype;
     $intro = strip_pluginfile_content($eventdescription);
-    $data->description = array(
+    $data->description = [
             'text' => $intro,
             'format' => $organizer->introformat,
-    );
+    ];
     if ($uuid) {
         $data->uuid = $uuid;
     }
@@ -1218,8 +1218,8 @@ function organizer_change_eventnames($organizerid, $oldname, $newname) {
     global $DB;
 
     $record = new stdClass();
-    $params = array('organizerid' => $organizerid, 'modulename' => 'organizer',
-        'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE);
+    $params = ['organizerid' => $organizerid, 'modulename' => 'organizer',
+        'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE];
     $query = 'SELECT e.id, e.name, e.description
 			  FROM {event} e
 			  WHERE e.instance = :organizerid AND e.modulename = :modulename

@@ -49,25 +49,25 @@ $PAGE->set_heading($course->fullname);
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id));
+$redirecturl = new moodle_url('/mod/organizer/view.php', ['id' => $cm->id]);
 
-$logurl = new moodle_url('/mod/organizer/comment_edit.php', array('id' => $cm->id));
+$logurl = new moodle_url('/mod/organizer/comment_edit.php', ['id' => $cm->id]);
 
 require_capability('mod/organizer:comment', $context);
 
-$mform = new organizer_comment_slot_form(null, array('id' => $cm->id, 'slot' => $slot));
+$mform = new organizer_comment_slot_form(null, ['id' => $cm->id, 'slot' => $slot]);
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
 
-    $app = $DB->get_record('organizer_slot_appointments', array('slotid' => $slot, 'userid' => $USER->id));
+    $app = $DB->get_record('organizer_slot_appointments', ['slotid' => $slot, 'userid' => $USER->id]);
 
     organizer_update_comments($app->id, $data->comments);
 
     $event = appointment_commented::create(
-        array(
+        [
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context,
-        )
+        ]
     );
     $event->trigger();
 

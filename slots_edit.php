@@ -57,7 +57,7 @@ $PAGE->set_heading($course->fullname);
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode));
+$redirecturl = new moodle_url('/mod/organizer/view.php', ['id' => $cm->id, 'mode' => $mode]);
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode;
 
@@ -70,7 +70,7 @@ if (!$slots) {
 }
 
 $mform = new organizer_edit_slots_form(
-    null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
+    null, ['id' => $cm->id, 'mode' => $mode, 'slots' => $slots]);
 
 if ($mform->is_cancelled()) {
     redirect($redirecturl);
@@ -97,10 +97,10 @@ if ($mform->is_cancelled()) {
     $newurl = $redirecturl->out();
 
     $event = slot_updated::create(
-        array(
+        [
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context,
-        )
+        ]
     );
     $event->trigger();
 

@@ -25,8 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = array(
-    array(
+$tasks = [
+    [
         'classname' => 'mod_organizer\task\cron_task',
         'blocking' => 0,
         'minute' => '*',
@@ -34,5 +34,5 @@ $tasks = array(
         'day' => '*',
         'dayofweek' => '*',
         'month' => '*',
-    ),
-);
+    ],
+];

@@ -51,7 +51,7 @@ class mod_organizer_observer {
         // Get user enrolment info from event.
         $cp = (object)$event->other['userenrolment'];
         if ($cp->lastenrol) {
-            if (!$organizers = $DB->get_records('organizer', array('course' => $cp->courseid))) {
+            if (!$organizers = $DB->get_records('organizer', ['course' => $cp->courseid])) {
                 return;
             }
             [$organizerselect, $params] = $DB->get_in_or_equal(array_keys($organizers), SQL_PARAMS_NAMED);
@@ -109,7 +109,7 @@ class mod_organizer_observer {
         $groupid = $event->objectid;
         $userid = $event->relateduserid;
 
-        $params = array('groupid' => $groupid, 'groupmode' => ORGANIZER_GROUPMODE_EXISTINGGROUPS);
+        $params = ['groupid' => $groupid, 'groupmode' => ORGANIZER_GROUPMODE_EXISTINGGROUPS];
         if ($groupapps = $DB->get_records_sql(
             'SELECT DISTINCT a.id, a.slotid, a.applicantid, a.teacherapplicantid, s.organizerid
             FROM {organizer_slot_appointments} a
@@ -155,7 +155,7 @@ class mod_organizer_observer {
         $groupid = $event->objectid;
         $userid = $event->relateduserid;
 
-        $params = array('groupid' => $groupid, 'userid' => $userid, 'groupmode' => ORGANIZER_GROUPMODE_EXISTINGGROUPS);
+        $params = ['groupid' => $groupid, 'userid' => $userid, 'groupmode' => ORGANIZER_GROUPMODE_EXISTINGGROUPS];
         if ($apps = $DB->get_records_sql(
             'SELECT DISTINCT a.id
             FROM {organizer_slot_appointments} a

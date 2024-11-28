@@ -56,7 +56,7 @@ $PAGE->set_heading($course->fullname);
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => 3));
+$redirecturl = new moodle_url('/mod/organizer/view.php', ['id' => $cm->id, 'mode' => 3]);
 
 $groupid = null;
 $participantid = null;
@@ -92,10 +92,10 @@ organizer_prepare_and_send_message($data, 'assign_notify_teacher'); // Message.
 $newurl = $redirecturl->out();
 
 $event = appointment_assigned::create(
-    array(
+    [
         'objectid' => $PAGE->cm->id,
         'context' => $PAGE->context,
-    )
+    ]
 );
 $event->trigger();
 

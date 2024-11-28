@@ -29,7 +29,7 @@ $location = $CFG->dirroot . '/mod/organizer/lang/en/organizer.php';
 $firstseparator = "defined('MOODLE_INTERNAL') || die();";
 $lineseparator = "';";
 $fieldseparator = " = '";
-$inarr = array();
+$inarr = [];
 $outstr = "";
 $linebreak = "\n";
 

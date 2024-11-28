@@ -36,7 +36,7 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
      * @see restore_structure_step::define_structure()
      */
     protected function define_structure() {
-        $paths = array();
+        $paths = [];
         $paths[] = new restore_path_element('organizer', '/activity/organizer');
         $paths[] = new restore_path_element('slot', '/activity/organizer/slots/slot');
 

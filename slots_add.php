@@ -47,7 +47,7 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 
 require_capability('mod/organizer:addslots', $context);
 
-$mform = new organizer_add_slots_form(null, array('id' => $cm->id, 'mode' => $mode));
+$mform = new organizer_add_slots_form(null, ['id' => $cm->id, 'mode' => $mode]);
 
 if ($data = $mform->get_data()) {  // When page is called the first time (=empty form) or form data has errors: no data.
     if (isset($data->addday)) {  // Additional slot fields are to be displayed.
@@ -61,10 +61,10 @@ if ($data = $mform->get_data()) {  // When page is called the first time (=empty
             $infoboxmessage .= $OUTPUT->notification(get_string('message_warning_no_slots_added', 'organizer'), 'error');
         } else {
             $event = slot_created::create(
-                array(
+                [
                 'objectid' => $PAGE->cm->id,
                 'context' => $PAGE->context,
-                )
+                ]
             );
             $event->trigger();
 

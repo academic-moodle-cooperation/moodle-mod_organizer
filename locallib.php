@@ -47,10 +47,10 @@ function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $endd
     global $DB;
 
     // Get all slots of this trainer and all non-organizer events in the given timeframe.
-    $params = array('trainerid' => $trainerid, 'modulename' => 'organizer', 'startdate1' => $startdate,
+    $params = ['trainerid' => $trainerid, 'modulename' => 'organizer', 'startdate1' => $startdate,
         'enddate1' => $enddate, 'startdate2' => $startdate, 'enddate2' => $enddate, 'trainerid2' => $trainerid,
         'newslotid' => $newslotid, 'startdate3' => $startdate, 'enddate3' => $enddate, 'startdate4' => $startdate,
-        'enddate4' => $enddate);
+        'enddate4' => $enddate];
     $query = "SELECT {event}.id as id, {event}.name, {event}.timestart, {event}.timeduration, 'event' as typ
               FROM {event}
               INNER JOIN {user} ON {user}.id = {event}.userid
@@ -92,12 +92,12 @@ function organizer_get_name_link($user = 0) {
     if (!$user) {
         $user = $USER;
     } else if (is_number($user)) {
-        $user = $DB->get_record('user', array('id' => $user));
+        $user = $DB->get_record('user', ['id' => $user]);
     } else if (!($user instanceof stdClass)) {
         return false;
     }
 
-    $profileurl = new moodle_url('/user/view.php', array('id' => $user->id, 'course' => $COURSE->id));
+    $profileurl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $COURSE->id]);
     $name = get_string('fullname_template', 'organizer', $user);
     return html_writer::link($profileurl, $name);
 }
@@ -107,7 +107,7 @@ function organizer_get_userpicture_link($user = 0) {
     if (!$user) {
         $user = $USER;
     } else if (is_number($user)) {
-        $user = $DB->get_record('user', array('id' => $user));
+        $user = $DB->get_record('user', ['id' => $user]);
     } else if (!($user instanceof stdClass)) {
         return false;
     }
@@ -116,11 +116,11 @@ function organizer_get_userpicture_link($user = 0) {
         mb_substr($user->firstname, 0, 1, 'UTF-8') .
         mb_substr($user->lastname, 0, 1, 'UTF-8'),
         'UTF-8');
-    $profileurl = new moodle_url('/user/view.php', array('id' => $user->id, 'course' => $COURSE->id));
+    $profileurl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $COURSE->id]);
     $name = get_string('fullname_template', 'organizer', $user);
     $spaninit = html_writer::span($initials, 'userinitials size-35');
     $spantext = html_writer::span($name, 'userinitialstext');
-    return html_writer::link($profileurl, $spaninit.$spantext, array('title' => $name, 'class' => 'd-inline-block aabtn'));
+    return html_writer::link($profileurl, $spaninit.$spantext, ['title' => $name, 'class' => 'd-inline-block aabtn']);
 }
 
 /**
@@ -131,7 +131,7 @@ function organizer_get_userpicture_link($user = 0) {
  * @return array an array of events
  */
 function organizer_check_collision($from, $to, $eventsandslots) {
-    $collidingevents = array();
+    $collidingevents = [];
     foreach ($eventsandslots as $event) {
         $eventfrom = $event->timestart;
         $eventto = $eventfrom + $event->timeduration;
@@ -163,10 +163,10 @@ function organizer_between($num, $lower, $upper) {
 function organizer_add_new_slots($data) {
     global $DB;
 
-    $count = array();
+    $count = [];
 
     $cm = get_coursemodule_from_id('organizer', $data->id);
-    $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
+    $organizer = $DB->get_record('organizer', ['id' => $cm->instance]);
     $organizerconfig = get_config('organizer');
     $relativedeadline = $organizer->relativedeadline;
 
@@ -237,7 +237,7 @@ function organizer_add_new_slots($data) {
                     $newslot->id = $DB->insert_record('organizer_slots', $newslot);
 
                     $newtrainerslot = new stdClass();
-                    $eventids = array();
+                    $eventids = [];
                     foreach ($trainerids as $trainerid) {
                         $newtrainerslot->slotid = $newslot->id;
                         $newtrainerslot->trainerid = $trainerid;
@@ -288,7 +288,7 @@ function organizer_add_new_slots($data) {
         } // End foreach slot
     } // End for week
 
-    return array($count, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $collisionmessages);
+    return [$count, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $collisionmessages];
 }
 /**
  *
@@ -379,12 +379,12 @@ function organizer_add_event_slot($cmid, $slot, $userid = null, $eventid = null)
     global $DB;
 
     if (is_number($slot)) {
-        $slot = $DB->get_record('organizer_slots', array('id' => $slot));
+        $slot = $DB->get_record('organizer_slots', ['id' => $slot]);
     }
 
     $cm = get_coursemodule_from_id('organizer', $cmid);
-    $course = $DB->get_record('course', array('id' => $cm->course));
-    $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
+    $course = $DB->get_record('course', ['id' => $cm->course]);
+    $organizer = $DB->get_record('organizer', ['id' => $cm->instance]);
 
     $a = new stdClass();
 
@@ -399,7 +399,7 @@ function organizer_add_event_slot($cmid, $slot, $userid = null, $eventid = null)
     $a->organizerlink = html_writer::link($organizerurl, $organizername);
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
+        $apps = $DB->get_records('organizer_slot_appointments', ['slotid' => $slot->id]);
         $app = reset($apps);
         if (isset($slot->eventid) && $app) {
             $a->appwith = get_string('eventappwith:group', 'organizer');
@@ -419,7 +419,7 @@ function organizer_add_event_slot($cmid, $slot, $userid = null, $eventid = null)
             $a->participants = get_string('eventnoparticipants', 'organizer');
         }
     } else {
-        $apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id));
+        $apps = $DB->get_records('organizer_slot_appointments', ['slotid' => $slot->id]);
         if (isset($slot->eventid) && count($apps)) {
             $a->appwith = get_string('eventappwith:single', 'organizer');
             $a->with = get_string('eventwith', 'organizer');
@@ -449,7 +449,7 @@ function organizer_add_event_slot($cmid, $slot, $userid = null, $eventid = null)
 
     if ($eventid) {
         return organizer_change_calendarevent(
-            array($eventid), $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_SLOT,
+            [$eventid], $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_SLOT,
             $userid, $slot->starttime, $slot->duration, 0, $slot->id
         );
     } else {
@@ -465,13 +465,13 @@ function organizer_add_event_appointment($cmid, $appointment) {
     global $DB;
 
     if (is_number($appointment)) {
-        $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $appointment));
+        $appointment = $DB->get_record('organizer_slot_appointments', ['id' => $appointment]);
     }
 
     $cm = get_coursemodule_from_id('organizer', $cmid);
-    $course = $DB->get_record('course', array('id' => $cm->course));
-    $slot = $DB->get_record('organizer_slots', array('id' => $appointment->slotid));
-    $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
+    $course = $DB->get_record('course', ['id' => $cm->course]);
+    $slot = $DB->get_record('organizer_slots', ['id' => $appointment->slotid]);
+    $organizer = $DB->get_record('organizer', ['id' => $cm->instance]);
 
     $a = organizer_add_event_appointment_strings($course, $organizer, $cm, $slot);
 
@@ -535,7 +535,7 @@ function organizer_add_event_appointment($cmid, $appointment) {
         );
     } else {
         $eventid = organizer_change_calendarevent(
-            array($appointment->eventid), $organizer, $eventtitle, $eventdescription,
+            [$appointment->eventid], $organizer, $eventtitle, $eventdescription,
             ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT, $appointment->userid, $slot->starttime,
                 $slot->duration, $groupid, $appointment->id
         );
@@ -549,13 +549,13 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
     global $DB;
 
     if (is_number($appointment)) {
-        $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $appointment));
+        $appointment = $DB->get_record('organizer_slot_appointments', ['id' => $appointment]);
     }
 
     $cm = get_coursemodule_from_id('organizer', $cmid);
-    $course = $DB->get_record('course', array('id' => $cm->course));
-    $slot = $DB->get_record('organizer_slots', array('id' => $appointment->slotid));
-    $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
+    $course = $DB->get_record('course', ['id' => $cm->course]);
+    $slot = $DB->get_record('organizer_slots', ['id' => $appointment->slotid]);
+    $organizer = $DB->get_record('organizer', ['id' => $cm->instance]);
 
     if (!$trainerid) {
         // Create or transform to appointment events for the slot for each trainer.
@@ -574,7 +574,7 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
 function organizer_update_comments($appid, $comments) {
     global $DB;
 
-    $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $appid));
+    $appointment = $DB->get_record('organizer_slot_appointments', ['id' => $appid]);
 
     if (isset($comments)) {
         $appointment->comments = $comments;
@@ -639,8 +639,8 @@ function organizer_update_slot($data) {
         $organizer = organizer_get_organizer();
         foreach ($data->slots as $slotid) {
             $slot->id = $slotid;
-            $appcount = organizer_count_slotappointments(array($slotid));
-            $maxparticipants = $DB->get_field('organizer_slots', 'maxparticipants', array('id' => $slotid));
+            $appcount = organizer_count_slotappointments([$slotid]);
+            $maxparticipants = $DB->get_field('organizer_slots', 'maxparticipants', ['id' => $slotid]);
             $slotmodified = (int)$maxparticipants != (int)$data->maxparticipants;
             // Make shure that a new maxparticipant value is not higher than the amount of the slot's bookings.
             if ($data->mod_maxparticipants == 1 && $appcount > $data->maxparticipants) {
@@ -694,14 +694,14 @@ function organizer_update_slot($data) {
                 $trainers = organizer_get_slot_trainers($slot->id);
                 if ($deletions = array_diff($trainers, $data->trainerid)) {
                     if (empty($deletions)) {
-                        $deletions = array(0);
+                        $deletions = [0];
                     }
                     [$insql, $inparams] = $DB->get_in_or_equal($deletions, SQL_PARAMS_NAMED);
                     $eventids = $DB->get_fieldset_select(
                             'organizer_slot_trainer', 'eventid', 'slotid = ' . $slot->id . ' AND trainerid ' . $insql, $inparams
                     );
                     foreach ($eventids as $eventid) {
-                        $DB->delete_records('event', array('id' => $eventid));
+                        $DB->delete_records('event', ['id' => $eventid]);
                     }
                     $DB->delete_records_select(
                             'organizer_slot_trainer', 'slotid = ' . $slot->id . ' AND trainerid ' . $insql, $inparams
@@ -719,7 +719,7 @@ function organizer_update_slot($data) {
                         $record->slotid = $slotid;
                         $record->trainerid = $trainerid;
                         $DB->insert_record('organizer_slot_trainer', $record);
-                        if ($apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slotid))) {
+                        if ($apps = $DB->get_records('organizer_slot_appointments', ['slotid' => $slotid])) {
                             [$cm, , , , ] = organizer_get_course_module_data();
                             foreach ($apps as $app) {
                                 organizer_add_event_appointment_trainer($cm->id, $app, $trainerid);
@@ -732,17 +732,17 @@ function organizer_update_slot($data) {
                     }
                 }
             }
-            if ($apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slotid))) {
+            if ($apps = $DB->get_records('organizer_slot_appointments', ['slotid' => $slotid])) {
                 // Add or update appointment events for participants.
                 foreach ($apps as $app) {
                     organizer_add_event_appointment($data->id, $app);
                 }
             } else {
                 // If empty slots events are activated create them now for this slot.
-                $updatedslot = $DB->get_record('organizer_slots', array('id' => $slotid));
+                $updatedslot = $DB->get_record('organizer_slots', ['id' => $slotid]);
                 if (!$nocalendareventslotcreation = $DB->get_field('organizer', 'nocalendareventslotcreation',
-                    array('id' => $updatedslot->organizerid))) {
-                    $trainers = $DB->get_records('organizer_slot_trainer', array('slotid' => $slotid));
+                    ['id' => $updatedslot->organizerid])) {
+                    $trainers = $DB->get_records('organizer_slot_trainer', ['slotid' => $slotid]);
                     foreach ($trainers as $trainer) {
                         organizer_add_event_slot($data->id, $updatedslot, $trainer->trainerid, $trainer->eventid);
                     }
@@ -757,12 +757,12 @@ function organizer_update_slot($data) {
 function organizer_delete_appointment_slot($id) {
     global $DB, $USER;
 
-    if (!$DB->get_record('organizer_slots', array('id' => $id))) {
+    if (!$DB->get_record('organizer_slots', ['id' => $id])) {
         return false;
     }
 
     // If student is registered to this slot, send a message.
-    $appointments = $DB->get_records('organizer_slot_appointments', array('slotid' => $id));
+    $appointments = $DB->get_records('organizer_slot_appointments', ['slotid' => $id]);
     $notifiedusers = 0;
     if (count($appointments) > 0) {
         $slotx = new organizer_slot($id);
@@ -770,19 +770,19 @@ function organizer_delete_appointment_slot($id) {
             $receiver = intval($appointment->userid);
             // App delete when slot delete: Send notification to participant.
             organizer_send_message($USER, $receiver, $slotx, 'slotdeleted_notify_student', null, null, true);
-            $DB->delete_records('event', array('id' => $appointment->eventid));
+            $DB->delete_records('event', ['id' => $appointment->eventid]);
             $notifiedusers++;
         }
     }
 
     $trainers = organizer_get_slot_trainers($id);
     foreach ($trainers as $trainerid) {
-        $slottrainer = $DB->get_record('organizer_slot_trainer', array('slotid' => $id, 'trainerid' => $trainerid));
-        $DB->delete_records('event', array('id' => $slottrainer->eventid));
-        $DB->delete_records('organizer_slot_trainer', array('id' => $slottrainer->id));
+        $slottrainer = $DB->get_record('organizer_slot_trainer', ['slotid' => $id, 'trainerid' => $trainerid]);
+        $DB->delete_records('event', ['id' => $slottrainer->eventid]);
+        $DB->delete_records('organizer_slot_trainer', ['id' => $slottrainer->id]);
     }
-    $DB->delete_records('organizer_slot_appointments', array('slotid' => $id));
-    $DB->delete_records('organizer_slots', array('id' => $id));
+    $DB->delete_records('organizer_slot_appointments', ['slotid' => $id]);
+    $DB->delete_records('organizer_slots', ['id' => $id]);
 
     return $notifiedusers;
 }
@@ -790,17 +790,17 @@ function organizer_delete_appointment_slot($id) {
 function organizer_delete_appointment($id) {
     global $DB, $USER;
 
-    if (!$appointment = $DB->get_record('organizer_slot_appointments', array('id' => $id))) {
+    if (!$appointment = $DB->get_record('organizer_slot_appointments', ['id' => $id])) {
         return false;
     }
 
     // Send a message to the participant.
-    $slot = $DB->get_record('organizer_slots', array('id' => $appointment->slotid));
+    $slot = $DB->get_record('organizer_slots', ['id' => $appointment->slotid]);
     $receiver = intval($appointment->userid);
     // App delete: Send notification to participant.
     organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
-    $DB->delete_records('event', array('id' => $appointment->eventid));
-    $DB->delete_records('organizer_slot_appointments', array('id' => $id));
+    $DB->delete_records('event', ['id' => $appointment->eventid]);
+    $DB->delete_records('organizer_slot_appointments', ['id' => $id]);
 
     return true;
 }
@@ -808,10 +808,10 @@ function organizer_delete_appointment($id) {
 function organizer_delete_appointment_group($slotid, $groupid) {
     global $DB, $USER;
 
-    $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
+    $slot = $DB->get_record('organizer_slots', ['id' => $slotid]);
 
     if (!$appointments = $DB->get_records('organizer_slot_appointments',
-        array('slotid' => $slotid, 'groupid' => $groupid))) {
+        ['slotid' => $slotid, 'groupid' => $groupid])) {
         return false;
     }
 
@@ -820,8 +820,8 @@ function organizer_delete_appointment_group($slotid, $groupid) {
         $receiver = intval($appointment->userid);
         // App delete group: Send notification to participant.
         organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student', null, null, true);
-        $DB->delete_records('event', array('id' => $appointment->eventid));
-        $DB->delete_records('organizer_slot_appointments', array('id' => $appointment->id));
+        $DB->delete_records('event', ['id' => $appointment->eventid]);
+        $DB->delete_records('organizer_slot_appointments', ['id' => $appointment->id]);
     }
 
     return true;
@@ -831,17 +831,17 @@ function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
     global $DB;
 
     if ($groupid) {
-        $queueentries = $DB->get_records('organizer_slot_queues', array('slotid' => $slotid, 'groupid' => $groupid));
+        $queueentries = $DB->get_records('organizer_slot_queues', ['slotid' => $slotid, 'groupid' => $groupid]);
         foreach ($queueentries as $entry) {
-            $DB->delete_records('event', array('id' => $entry->eventid));
-            $DB->delete_records('organizer_slot_queues', array('id' => $entry->id));
+            $DB->delete_records('event', ['id' => $entry->eventid]);
+            $DB->delete_records('organizer_slot_queues', ['id' => $entry->id]);
         }
     } else {
-        if (!$queueentry = $DB->get_record('organizer_slot_queues', array('slotid' => $slotid, 'userid' => $userid))) {
+        if (!$queueentry = $DB->get_record('organizer_slot_queues', ['slotid' => $slotid, 'userid' => $userid])) {
             return false;
         } else {
-            $DB->delete_records('event', array('id' => $queueentry->eventid));
-            $DB->delete_records('organizer_slot_queues', array('slotid' => $slotid, 'userid' => $userid));
+            $DB->delete_records('event', ['id' => $queueentry->eventid]);
+            $DB->delete_records('organizer_slot_queues', ['slotid' => $slotid, 'userid' => $userid]);
         }
     }
 
@@ -852,13 +852,13 @@ function organizer_delete_user_from_any_queue($organizerid, $userid, $groupid = 
     global $DB;
 
     if ($groupid) {
-        $params = array('organizerid' => $organizerid, 'groupid' => $groupid);
+        $params = ['organizerid' => $organizerid, 'groupid' => $groupid];
         $slotquery = 'SELECT q.id, q.eventid
 					  FROM {organizer_slots} s
 					  INNER JOIN {organizer_slot_queues} q ON s.id = q.slotid
 					  WHERE s.organizerid = :organizerid AND q.groupid = :groupid';
     } else {
-        $params = array('organizerid' => $organizerid, 'userid' => $userid);
+        $params = ['organizerid' => $organizerid, 'userid' => $userid];
         $slotquery = 'SELECT q.id, q.eventid
 					  FROM {organizer_slots} s
 					  INNER JOIN {organizer_slot_queues} q ON s.id = q.slotid
@@ -868,8 +868,8 @@ function organizer_delete_user_from_any_queue($organizerid, $userid, $groupid = 
     $slotqueues = $DB->get_records_sql($slotquery, $params);
 
     foreach ($slotqueues as $slotqueue) {
-        $DB->delete_records('event', array('id' => $slotqueue->eventid));
-        $DB->delete_records('organizer_slot_queues', array('id' => $slotqueue->id));
+        $DB->delete_records('event', ['id' => $slotqueue->eventid]);
+        $DB->delete_records('organizer_slot_queues', ['id' => $slotqueue->id]);
     }
 
     return true;
@@ -957,7 +957,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
         }
     }
 
-    $DB->delete_records('event', array('modulename' => 'organizer', 'eventtype' => 'Slot', 'uuid' => $slotid));
+    $DB->delete_records('event', ['modulename' => 'organizer', 'eventtype' => 'Slot', 'uuid' => $slotid]);
 
     return $ok;
 }
@@ -1039,11 +1039,11 @@ function organizer_queue_single_appointment($slotid, $userid, $applicantid = 0, 
 function organizer_reregister_appointment($slotid, $groupid = 0) {
     global $DB, $USER;
 
-    $params = array('slotid' => $slotid);
+    $params = ['slotid' => $slotid];
     $query = "SELECT s.organizerid FROM {organizer_slots} s
                   WHERE s.id = :slotid ";
     $organizerid = $DB->get_field_sql($query, $params);
-    $organizer = $DB->get_record('organizer', array('id' => $organizerid));
+    $organizer = $DB->get_record('organizer', ['id' => $organizerid]);
 
     $slotx = new organizer_slot($slotid);
     if ($slotx->is_full()) {
@@ -1089,21 +1089,21 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
     }
 
     if (isset($app->slotid) && (!isset($organizer->nocalendareventslotcreation) || !$organizer->nocalendareventslotcreation)) {
-        $course = $DB->get_record('course', array('id' => $organizer->course), 'id', MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $organizer->course], 'id', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
         if (!organizer_fetch_slotparticipants($app->slotid)) {
             $trainers = organizer_get_slot_trainers($app->slotid);
             foreach ($trainers as $trainer) {
                 if ($eventid = $DB->get_field('organizer_slot_trainer', 'eventid',
-                    array('slotid' => $app->slotid, 'trainerid' => $trainer))) {
-                    $DB->delete_records('organizer_slot_trainer', array('slotid' => $app->slotid, 'trainerid' => $trainer));
+                    ['slotid' => $app->slotid, 'trainerid' => $trainer])) {
+                    $DB->delete_records('organizer_slot_trainer', ['slotid' => $app->slotid, 'trainerid' => $trainer]);
                 }
-                $DB->delete_records('event', array('id' => $eventid));
+                $DB->delete_records('event', ['id' => $eventid]);
                 // Create slot event per trainer if instance config "empty slot events" is on.
                 if (!isset($organizer->nocalendareventslotcreation) || !$organizer->nocalendareventslotcreation) {
                     $neweventid = organizer_add_event_slot($cm->id, $app->slotid, $trainer);
-                    if ($record = $DB->get_record('organizer_slot_trainer', array("slotid" => $app->slotid,
-                        "trainerid" => $trainer))) {
+                    if ($record = $DB->get_record('organizer_slot_trainer', ["slotid" => $app->slotid,
+                        "trainerid" => $trainer])) {
                         $record->eventid = $neweventid;
                         $DB->update_record('organizer_slot_trainer', $record);
                     } else {
@@ -1125,7 +1125,7 @@ function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
     global $DB, $USER;
 
     $ok = true;
-    $organizer = $DB->get_record('organizer', array('id' => $organizerid));
+    $organizer = $DB->get_record('organizer', ['id' => $organizerid]);
 
     if ($groupid) {
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
@@ -1164,13 +1164,13 @@ function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
 
     // If no remaining participants: Delete all trainer events of this slot.
     if (!$participants = organizer_fetch_slotparticipants($slotid)) {
-        $organizer = $DB->get_record('organizer', array('id' => $organizerid));
-        $course = $DB->get_record('course', array('id' => $organizer->course), 'id', MUST_EXIST);
+        $organizer = $DB->get_record('organizer', ['id' => $organizerid]);
+        $course = $DB->get_record('course', ['id' => $organizer->course], 'id', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
         $trainers = organizer_get_slot_trainers($slotid);
         foreach ($trainers as $trainer) {
-            if ($record = $DB->get_record('organizer_slot_trainer', array('slotid' => $slotid, 'trainerid' => $trainer))) {
-                $DB->delete_records('event', array('id' => $record->eventid));
+            if ($record = $DB->get_record('organizer_slot_trainer', ['slotid' => $slotid, 'trainerid' => $trainer])) {
+                $DB->delete_records('event', ['id' => $record->eventid]);
                 if (!isset($organizer->nocalendareventslotcreation) || !$organizer->nocalendareventslotcreation) {
                     $neweventid = organizer_add_event_slot($cm->id, $slotid, $trainer);
                     $record->eventid = $neweventid;
@@ -1200,16 +1200,16 @@ function organizer_unregister_single_appointment($slotid, $userid, $organizer = 
     }
 
     $ok = false;
-    if ($appointment = $DB->get_record('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid))) {
-        $DB->delete_records('event', array('id' => $appointment->eventid));
-        $ok = $DB->delete_records('organizer_slot_appointments', array('userid' => $userid, 'slotid' => $slotid));
-        if (!$apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slotid))) {
-            $DB->delete_records('event', array('modulename' => 'organizer', 'eventtype' => 'Appointment',
-                'uuid' => $appointment->id));
+    if ($appointment = $DB->get_record('organizer_slot_appointments', ['userid' => $userid, 'slotid' => $slotid])) {
+        $DB->delete_records('event', ['id' => $appointment->eventid]);
+        $ok = $DB->delete_records('organizer_slot_appointments', ['userid' => $userid, 'slotid' => $slotid]);
+        if (!$apps = $DB->get_records('organizer_slot_appointments', ['slotid' => $slotid])) {
+            $DB->delete_records('event', ['modulename' => 'organizer', 'eventtype' => 'Appointment',
+                'uuid' => $appointment->id]);
         } else {
             // To refresh description text of trainer's appointment events.
             foreach ($apps as $app) {
-                $course = $DB->get_record('course', array('id' => $organizer->course), 'id', MUST_EXIST);
+                $course = $DB->get_record('course', ['id' => $organizer->course], 'id', MUST_EXIST);
                 $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
                 organizer_add_event_appointment_trainer($cm->id, $app);
             }
@@ -1228,11 +1228,11 @@ function organizer_evaluate_slots($data) {
 
     $organizer = organizer_get_organizer();
 
-    $slotids = array();
+    $slotids = [];
 
     if (isset($data->apps) && count($data->apps) > 0 && isset($data->slotenable)) {
         foreach ($data->apps as $appid => $app) {
-            $newapp = $DB->get_record('organizer_slot_appointments', array('id' => $appid));
+            $newapp = $DB->get_record('organizer_slot_appointments', ['id' => $appid]);
             if (array_search($newapp->slotid, array_keys($data->slotenable)) === false) {
                 continue;
             }
@@ -1265,11 +1265,11 @@ function organizer_get_course_module_data($id = null, $n = null) {
 
     if ($id) {
         $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
-        $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-        $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+        $organizer = $DB->get_record('organizer', ['id' => $cm->instance], '*', MUST_EXIST);
     } else if ($n) {
-        $organizer = $DB->get_record('organizer', array('id' => $n), '*', MUST_EXIST);
-        $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
+        $organizer = $DB->get_record('organizer', ['id' => $n], '*', MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $organizer->course], '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
     } else {
         throw new coding_exception('organizer_get_course_module_data: You must specify a course_module ID or an instance ID');
@@ -1277,7 +1277,7 @@ function organizer_get_course_module_data($id = null, $n = null) {
 
     $context = context_module::instance($cm->id, MUST_EXIST);
 
-    return array($cm, $course, $organizer, $context);
+    return [$cm, $course, $organizer, $context];
 }
 
 function organizer_get_course_module_data_new() {
@@ -1290,11 +1290,11 @@ function organizer_get_course_module_data_new() {
 
     if ($id) {
         $instance->cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
-        $instance->course = $DB->get_record('course', array('id' => $instance->cm->course), '*', MUST_EXIST);
-        $instance->organizer = $DB->get_record('organizer', array('id' => $instance->cm->instance), '*', MUST_EXIST);
+        $instance->course = $DB->get_record('course', ['id' => $instance->cm->course], '*', MUST_EXIST);
+        $instance->organizer = $DB->get_record('organizer', ['id' => $instance->cm->instance], '*', MUST_EXIST);
     } else if ($n) {
-        $instance->organizer = $DB->get_record('organizer', array('id' => $n), '*', MUST_EXIST);
-        $instance->course = $DB->get_record('course', array('id' => $instance->organizer->course), '*', MUST_EXIST);
+        $instance->organizer = $DB->get_record('organizer', ['id' => $n], '*', MUST_EXIST);
+        $instance->course = $DB->get_record('course', ['id' => $instance->organizer->course], '*', MUST_EXIST);
         $instance->cm = get_coursemodule_from_instance(
             'organizer', $instance->organizer->id, $instance->course->id,
             false, MUST_EXIST
@@ -1316,9 +1316,9 @@ function organizer_get_organizer() {
 
     if ($id) {
         $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
-        $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+        $organizer = $DB->get_record('organizer', ['id' => $cm->instance], '*', MUST_EXIST);
     } else if ($n) {
-        $organizer = $DB->get_record('organizer', array('id' => $n), '*', MUST_EXIST);
+        $organizer = $DB->get_record('organizer', ['id' => $n], '*', MUST_EXIST);
     } else {
         throw new coding_exception('organizer_get_organizer: You must specify a course_module ID or an instance ID');
     }
@@ -1335,8 +1335,8 @@ function organizer_get_cm() {
     if ($id) {
         $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
     } else if ($n) {
-        $organizer = $DB->get_record('organizer', array('id' => $n), '*', MUST_EXIST);
-        $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
+        $organizer = $DB->get_record('organizer', ['id' => $n], '*', MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $organizer->course], '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
     } else {
         throw new coding_exception('organizer_get_cm: You must specify a course_module ID or an instance ID');
@@ -1354,8 +1354,8 @@ function organizer_get_context() {
     if ($id) {
         $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
     } else if ($n) {
-        $organizer = $DB->get_record('organizer', array('id' => $n), '*', MUST_EXIST);
-        $course = $DB->get_record('course', array('id' => $organizer->course), '*', MUST_EXIST);
+        $organizer = $DB->get_record('organizer', ['id' => $n], '*', MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $organizer->course], '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $course->id, false, MUST_EXIST);
     } else {
         throw new coding_exception('organizer_get_context: You must specify a course_module ID or an instance ID');
@@ -1371,7 +1371,7 @@ function organizer_is_group_mode() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
     $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
-    $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+    $organizer = $DB->get_record('organizer', ['id' => $cm->instance], '*', MUST_EXIST);
     return $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS;
 }
 
@@ -1379,7 +1379,7 @@ function organizer_is_queueable() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
     $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
-    $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+    $organizer = $DB->get_record('organizer', ['id' => $cm->instance], '*', MUST_EXIST);
     return $organizer->queue;
 }
 
@@ -1390,7 +1390,7 @@ function organizer_fetch_my_group() {
         $id = optional_param('id', 0, PARAM_INT);
         $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
 
-        $params = array('groupingid' => $cm->groupingid, 'userid' => $USER->id);
+        $params = ['groupingid' => $cm->groupingid, 'userid' => $USER->id];
         $query = "SELECT {groups}.* FROM {groups}
                     INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
                     INNER JOIN {groups_members} ON {groups}.id = {groups_members}.groupid
@@ -1409,7 +1409,7 @@ function organizer_fetch_user_group($userid, $id = null) {
 
     $cm = get_coursemodule_from_instance('organizer', $id, 0, false, MUST_EXIST);
 
-    $params = array('groupingid' => $cm->groupingid, 'userid' => $userid);
+    $params = ['groupingid' => $cm->groupingid, 'userid' => $userid];
     $query = "SELECT {groups}.id FROM {groups}
                 INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
                 INNER JOIN {groups_members} ON {groups}.id = {groups_members}.groupid
@@ -1423,7 +1423,7 @@ function organizer_fetch_hidecalendar() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
     $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
-    $hidecalendar = $DB->get_field('organizer', 'hidecalendar', array('id' => $cm->instance), MUST_EXIST);
+    $hidecalendar = $DB->get_field('organizer', 'hidecalendar', ['id' => $cm->instance], MUST_EXIST);
     return $hidecalendar;
 }
 
@@ -1432,11 +1432,11 @@ function organizer_fetch_table_entries($slots, $orderby="") {
     global $DB;
 
     if (empty($slots)) {
-        $slots = array(0);
+        $slots = [0];
     }
     [$insql, $inparams] = $DB->get_in_or_equal($slots, SQL_PARAMS_NAMED);
 
-    $params = array();
+    $params = [];
     $query = "SELECT CONCAT(s.id, COALESCE(a.id, 0)) AS mainid,
     s.id AS slotid,
     a.id,
@@ -1491,7 +1491,7 @@ function organizer_hasqueue($organizerid) {
     global $DB;
 
     $result = false;
-    if ($DB->get_field('organizer', 'queue', array('id' => $organizerid))) {
+    if ($DB->get_field('organizer', 'queue', ['id' => $organizerid])) {
         $result = true;
     }
     return $result;
@@ -1501,7 +1501,7 @@ function organizer_with_grading() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
     $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
-    $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+    $organizer = $DB->get_record('organizer', ['id' => $cm->instance], '*', MUST_EXIST);
     if ($organizer->grade != 0) {
         return 1;
     } else {
@@ -1518,13 +1518,13 @@ function organizer_get_teacherapplicant_output($teacherapplicantid, $teacherappl
         if (!$printable) {
             $timestampstring = $teacherapplicanttimemodified != null ? "\n" .
                     userdate($teacherapplicanttimemodified, get_string('fulldatetimetemplate', 'organizer')) : "";
-            if ($trainer = $DB->get_record('user', array('id' => $teacherapplicantid), 'lastname,firstname')) {
+            if ($trainer = $DB->get_record('user', ['id' => $teacherapplicantid], 'lastname,firstname')) {
                 $output = " <span style= 'cursor:help;' title='" . get_string('slotassignedby', 'organizer') . " " .
                 $trainer->firstname . " " . $trainer->lastname . $timestampstring ."'>[" . $trainer->firstname[0] .
                         $trainer->lastname[0] . "]</span>";
             }
         } else {
-            if ($trainer = $DB->get_record('user', array('id' => $teacherapplicantid), 'lastname,firstname')) {
+            if ($trainer = $DB->get_record('user', ['id' => $teacherapplicantid], 'lastname,firstname')) {
                 $output = "[" . $trainer->firstname[0] . $trainer->lastname[0] . "]";
             }
         }
@@ -1537,7 +1537,7 @@ function organizer_get_teacherapplicant_output($teacherapplicantid, $teacherappl
 function organizer_fetch_groupname($groupid) {
     global $DB;
 
-    $groupname = $DB->get_field('groups', 'name', array('id' => $groupid));
+    $groupname = $DB->get_field('groups', 'name', ['id' => $groupid]);
 
     return $groupname;
 }
@@ -1548,11 +1548,11 @@ function organizer_fetch_groupusers($groupid) {
     $query = "SELECT u.id, u.lastname,u.firstname FROM {groups_members} g
             INNER JOIN {user} u ON u.id = g.userid
             WHERE g.groupid = :groupid";
-    $par = array('groupid' => $groupid);
+    $par = ['groupid' => $groupid];
     $users = $DB->get_records_sql($query, $par);
 
     if (!$users || count($users) == 0) {
-        return array();
+        return [];
     }
 
     return $users;
@@ -1566,7 +1566,7 @@ function organizer_count_slotappointments($slots) {
 
     $apps = 0;
     foreach ($slots as $slot) {
-        $apps += $DB->count_records('organizer_slot_appointments', array('slotid' => $slot));
+        $apps += $DB->count_records('organizer_slot_appointments', ['slotid' => $slot]);
     }
 
     return $apps;
@@ -1576,7 +1576,7 @@ function organizer_sortout_hiddenslots($slots) {
     global $DB;
 
     foreach ($slots as $slot) {
-        if (!$visible = $DB->get_field('organizer_slots', 'visible', array('id' => $slot))) {
+        if (!$visible = $DB->get_field('organizer_slots', 'visible', ['id' => $slot])) {
             if (($key = array_search($slot, $slots)) !== false) {
                 unset($slots[$key]);
             }
@@ -1633,9 +1633,9 @@ function organizer_groupsynchronization($slotid, $userid, $action) {
 
     require_once($CFG->dirroot.'/group/lib.php');
 
-    $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
+    $slot = $DB->get_record('organizer_slots', ['id' => $slotid]);
     if ($slot->coursegroup) {
-        $coursegroup = $DB->get_field('groups', 'id', array('id' => $slot->coursegroup));
+        $coursegroup = $DB->get_field('groups', 'id', ['id' => $slot->coursegroup]);
     } else {
         $coursegroup = false;
     }
@@ -1659,7 +1659,7 @@ function organizer_create_coursegroup($slot) {
 
     require_once($CFG->dirroot.'/group/lib.php');
 
-    $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid), 'name,course,includetraineringroups');
+    $organizer = $DB->get_record('organizer', ['id' => $slot->organizerid], 'name,course,includetraineringroups');
     $group = new stdClass();
     $group->courseid = $organizer->course;
     $group->name = organizer_create_coursegroupname($organizer->name, $slot->starttime, $organizer->course);
@@ -1667,7 +1667,7 @@ function organizer_create_coursegroup($slot) {
     $group->timecreated = $time;
     $group->timemodified = $time;
     if ($groupid = groups_create_group($group)) {
-        $DB->set_field('organizer_slots', 'coursegroup', $groupid, array('id' => $slot->id));
+        $DB->set_field('organizer_slots', 'coursegroup', $groupid, ['id' => $slot->id]);
         if ($organizer->includetraineringroups) {
             $trainers = organizer_get_slot_trainers($slot->id);
             foreach ($trainers as $trainerid) {
@@ -1684,7 +1684,7 @@ function organizer_create_coursegroupname($name, $time, $courseid) {
 
     $coursename = str_replace("_", "-", $name) . " ";
     $coursename .= date('Y-m-d H:i', $time);
-    $params = array('coursename' => '%' . $coursename . '%', 'courseid' => $courseid);
+    $params = ['coursename' => '%' . $coursename . '%', 'courseid' => $courseid];
     $query = "SELECT name FROM {groups}
               WHERE courseid = :courseid AND " . $DB->sql_like('name', ':coursename') . "
               ORDER BY name ASC";
@@ -1715,7 +1715,7 @@ function organizer_delete_coursegroup($groupid, $slotid=null) {
 
     $ok = false;
     if (is_number($slotid)) {
-        $params = array('slotid' => $slotid);
+        $params = ['slotid' => $slotid];
         $query = "SELECT s.coursegroup FROM {organizer_slots} s
                   WHERE s.id = :slotid ";
         $groupid = $DB->get_field_sql($query, $params);
@@ -1729,7 +1729,7 @@ function organizer_delete_coursegroup($groupid, $slotid=null) {
 function organizer_fetch_allslots($organizerid) {
     global $DB;
 
-    $slots = $DB->get_records_select('organizer_slots', 'organizerid = :organizerid', array('organizerid' => $organizerid));
+    $slots = $DB->get_records_select('organizer_slots', 'organizerid = :organizerid', ['organizerid' => $organizerid]);
 
     return $slots;
 }
@@ -1737,7 +1737,7 @@ function organizer_fetch_allslots($organizerid) {
 function organizer_fetch_allappointments($organizerid) {
     global $DB;
 
-    $params = array('organizerid' => $organizerid);
+    $params = ['organizerid' => $organizerid];
     $query = "SELECT a.id, a.groupid, a.userid, a.eventid FROM {organizer_slots} s INNER JOIN {organizer_slot_appointments} a
               ON s.id = a.slotid
               WHERE s.organizerid = :organizerid ";
@@ -1750,7 +1750,7 @@ function organizer_fetch_slotparticipants($slotid) {
     global $DB;
 
     $participants = $DB->get_fieldset_select('organizer_slot_appointments', 'userid',
-        'slotid = :slotid', array('slotid' => $slotid));
+        'slotid = :slotid', ['slotid' => $slotid]);
 
     return $participants;
 }
@@ -1803,11 +1803,11 @@ function organizer_printslotuserfields($nochoiceoption=false) {
 
 function organizer_get_allowed_printslotuserfields() {
     $selectableprofilefields = organizer_printslotuserfields();
-    $selectedprofilefields = array();
+    $selectedprofilefields = [];
 
     $organizerconfig = get_config('organizer');
     if (isset($organizerconfig->allowedprofilefieldsprint)) {
-        $selectedprofilefields = array('' => '--');
+        $selectedprofilefields = ['' => '--'];
         if ($allowedprofilefieldsprint = explode(",", $organizerconfig->allowedprofilefieldsprint)) {
             foreach ($selectableprofilefields as $key => $value) {
                 if (in_array($key, $allowedprofilefieldsprint)) {
@@ -1895,7 +1895,7 @@ function organizer_get_users_of_slot($slotid) {
     $usersofslot = "";
     $con = "";
     $users = $DB->get_fieldset_select('organizer_slot_appointments', 'userid', "slotid = :slotid",
-        array('slotid' => $slotid));
+        ['slotid' => $slotid]);
     foreach ($users as $userid) {
         $usersofslot .= $con . organizer_get_name_link($userid);
         $con = ", ";
@@ -1950,7 +1950,7 @@ function organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organ
 
     $a = organizer_add_event_appointment_strings($course, $organizer, $cm, $slot);
     // Use the trainer's language.
-    $trainerlang = $DB->get_field('user', 'lang', array('id' => $trainerid));
+    $trainerlang = $DB->get_field('user', 'lang', ['id' => $trainerid]);
     // Calendar events for trainers info fields.
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $a->appwith = $stringman->get_string('eventappwith:group', 'organizer', null, $trainerlang);
@@ -1974,7 +1974,7 @@ function organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organ
     $eventdescription = $stringman->get_string('eventtemplatewithoutlinks', 'organizer', $a, $trainerlang);
 
     // Create or transform to appointment events for the slot for this trainer.
-    $params = array ('slotid' => $slot->id, 'trainerid' => $trainerid);
+    $params = ['slotid' => $slot->id, 'trainerid' => $trainerid];
     $query = "SELECT e.id FROM {event} e
                   INNER JOIN {organizer_slot_trainer} t ON e.id = t.eventid
                   WHERE t.slotid = :slotid AND t.trainerid = :trainerid";
@@ -1984,10 +1984,10 @@ function organizer_change_calendarevent_trainer($trainerid, $course, $cm, $organ
             $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT,
             $trainerid, $slot->starttime, $slot->duration, 0, $appointment->id
         );
-        $DB->set_field('organizer_slot_trainer', 'eventid', $teventid, array ('slotid' => $slot->id, 'trainerid' => $trainerid));
+        $DB->set_field('organizer_slot_trainer', 'eventid', $teventid, ['slotid' => $slot->id, 'trainerid' => $trainerid]);
     } else {
         organizer_change_calendarevent(
-            array($teventid), $organizer, $eventtitle, $eventdescription,
+            [$teventid], $organizer, $eventtitle, $eventdescription,
             ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT, $trainerid, $slot->starttime, $slot->duration, 0, $appointment->id
         );
     }
@@ -2055,15 +2055,15 @@ function organizer_print_setuserprefs_and_triggerevent($data, $cm, $context) {
         $ppp = $data->entriesperpage;
     }
 
-    $organizer = $DB->get_record('organizer', array('id' => $cm->instance));
+    $organizer = $DB->get_record('organizer', ['id' => $cm->instance]);
 
     require_capability('mod/organizer:printslots', $context);
 
     $event = appointment_list_printed::create(
-        array(
+        [
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context,
-        )
+        ]
     );
     $event->trigger();
 
@@ -2122,12 +2122,12 @@ function organizer_count_bookedslots($organizerid, $userid = null, $groupid = nu
         $userid = $USER->id;
     }
     if ($userid) {
-        $paramssql = array('userid' => $userid, 'organizerid' => $organizerid);
+        $paramssql = ['userid' => $userid, 'organizerid' => $organizerid];
         $query = "SELECT count(*) FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.organizerid = :organizerid AND a.userid = :userid";
     } else {
-        $paramssql = array('groupid' => $groupid, 'organizerid' => $organizerid);
+        $paramssql = ['groupid' => $groupid, 'organizerid' => $organizerid];
         $query = "SELECT count(DISTINCT s.id) FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.organizerid = :organizerid AND a.groupid = :groupid";
@@ -2149,7 +2149,7 @@ function organizer_multiplebookings_status($slotsbooked, $organizer) {
     global $DB;
 
     if (is_number($organizer)) {
-        $organizer = $DB->get_record('organizer', array('id' => $organizer), 'userslotsmin, userslotsmax', MUST_EXIST);
+        $organizer = $DB->get_record('organizer', ['id' => $organizer], 'userslotsmin, userslotsmax', MUST_EXIST);
     }
 
     if ($slotsbooked >= $organizer->userslotsmax) {
@@ -2179,12 +2179,12 @@ function organizer_multiplebookings_slotslefttobook($organizer, $userid = null, 
     }
 
     if ($userid) {
-        $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
+        $paramssql = ['userid' => $userid, 'organizerid' => $organizer->id];
         $query = "SELECT count(*) FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.organizerid = :organizerid AND a.userid = :userid";
     } else {
-        $paramssql = array('groupid' => $groupid, 'organizerid' => $organizer->id);
+        $paramssql = ['groupid' => $groupid, 'organizerid' => $organizer->id];
         $query = "SELECT count(DISTINCT s.id) FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.organizerid = :organizerid AND a.groupid = :groupid";
@@ -2216,7 +2216,7 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
     $maxreached = 0;
 
     $context = context_course::instance($organizer->course);
-    $entryids = array();
+    $entryids = [];
     if ($groupmode) {
         $currentgroup = 0;
         foreach ($entries as $entry) {
@@ -2238,7 +2238,7 @@ function organizer_registration_statistics($organizer, $groupmode, $entries, $mi
         }
     }
     if (empty($entryids)) {
-        $entryids = array(0);
+        $entryids = [0];
     }
     [$insql, $paramssql] = $DB->get_in_or_equal($entryids, SQL_PARAMS_NAMED);
 
@@ -2285,7 +2285,7 @@ function organizer_get_counters($organizer, $cm = null) {
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
     }
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $params = array('groupingid' => $cm->groupingid);
+        $params = ['groupingid' => $cm->groupingid];
         $query = 'SELECT {groups}.id FROM {groups}
                 INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
                 WHERE {groupings_groups}.groupingid = :groupingid';
@@ -2357,7 +2357,7 @@ function organizer_get_counters($organizer, $cm = null) {
  */
 function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg) {
 
-    $out = html_writer::start_div('userstatusbar_tr', array('title' => $msg));
+    $out = html_writer::start_div('userstatusbar_tr', ['title' => $msg]);
     if ($minreached) {
         $classstrfull = 'fa fa-check-circle fa-2x mr-2 text-success';
         $classstrempty = 'fa fa-circle-thin fa-2x mr-2 text-success';
@@ -2408,7 +2408,7 @@ function organizer_date_time_plain($slot) {
     return $datestr;
 
 }
-function organizer_remind_all($recipient = null, $recipients = array(), $custommessage = "") {
+function organizer_remind_all($recipient = null, $recipients = [], $custommessage = "") {
     global $DB;
 
     [$cm, , $organizer, $context] = organizer_get_course_module_data();
@@ -2416,7 +2416,7 @@ function organizer_remind_all($recipient = null, $recipients = array(), $customm
     $checkenough = false;
     if ($recipient != null) {
         if (!organizer_is_group_mode()) {
-            $entries = $DB->get_records_list('user', 'id', array($recipient));
+            $entries = $DB->get_records_list('user', 'id', [$recipient]);
         } else {
             $entries = get_enrolled_users($context, 'mod/organizer:register',
                 $recipient, 'u.id', null, null, null, true);
@@ -2432,12 +2432,12 @@ function organizer_remind_all($recipient = null, $recipients = array(), $customm
             INNER JOIN {groups} g ON gm.groupid = g.id
             INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
             WHERE gg.groupingid = :grouping";
-        $par = array('grouping' => $cm->groupingid);
+        $par = ['grouping' => $cm->groupingid];
         $entries = $DB->get_records_sql($query, $par);
         $checkenough = true;
     }
 
-    $nonrecepients = array();
+    $nonrecepients = [];
     if ($checkenough) {
         foreach ($entries as $entry) {
             if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
@@ -2460,8 +2460,8 @@ function organizer_remind_all($recipient = null, $recipients = array(), $customm
     foreach ($entries as $entry) {
         if (!in_array($entry->id, $nonrecepients)) {
             organizer_prepare_and_send_message(
-                array('user' => $entry->id, 'organizer' => $organizer,
-                    'custommessage' => $custommessage), 'register_reminder_student'
+                ['user' => $entry->id, 'organizer' => $organizer,
+                    'custommessage' => $custommessage], 'register_reminder_student'
             );
             $count++;
         }
@@ -2471,8 +2471,8 @@ function organizer_remind_all($recipient = null, $recipients = array(), $customm
 
 function organizer_get_reminder_recipients($organizer) {
 
-    $params = array('group' => 0, 'sort' => '', 'dir' => '', 'psort' => '', 'pdir' => '');
-    $recipients = array();
+    $params = ['group' => 0, 'sort' => '', 'dir' => '', 'psort' => '', 'pdir' => ''];
+    $recipients = [];
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         [$cm, $course, $organizer, $context] = organizer_get_course_module_data(null, $organizer->id);
         $entries = organizer_get_reg_status_table_entries_group($params);
@@ -2534,14 +2534,14 @@ function organizer_userslotsdailylimitreached($organizer, $userid, $groupid) {
     if ($organizer->userslotsdailymax) {
         $today = strtotime("-1 day");
         if ($groupid) {
-            $params = array('groupid' => $groupid, 'organizerid' => $organizer->id, 'today' => $today);
+            $params = ['groupid' => $groupid, 'organizerid' => $organizer->id, 'today' => $today];
             $query = 'SELECT COUNT(DISTINCT(s.id)) FROM {organizer_slot_appointments} a
                 INNER JOIN {organizer_slots} s ON s.id = a.slotid
                 WHERE a.groupid = :groupid AND s.organizerid = :organizerid
                 AND a.registrationtime >= :today
                 ';
         } else {
-            $params = array('userid' => $userid, 'organizerid' => $organizer->id, 'today' => $today);
+            $params = ['userid' => $userid, 'organizerid' => $organizer->id, 'today' => $today];
             $query = 'SELECT COUNT(a.id) FROM {organizer_slot_appointments} a
                 INNER JOIN {organizer_slots} s ON s.id = a.slotid
                 WHERE a.userid = :userid AND s.organizerid = :organizerid

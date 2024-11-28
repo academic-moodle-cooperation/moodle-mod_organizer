@@ -78,7 +78,7 @@ class organizer_print_slotdetail_form extends moodleform {
         $data = &$this->_customdata;
         $organizerconfig = get_config('organizer');
 
-        $params = array('slotid' => $data['slot']);
+        $params = ['slotid' => $data['slot']];
         $organizer = $DB->get_records_sql(
                 'SELECT o.*
                  FROM {organizer} o
@@ -88,7 +88,7 @@ class organizer_print_slotdetail_form extends moodleform {
         $organizer = reset($organizer);
 
         if (isset($organizerconfig->enableprintslotuserfields) && $organizerconfig->enableprintslotuserfields) {
-            $selcols = array();
+            $selcols = [];
             for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
                 if ($organizer->{'singleslotprintfield'.$i}) {
                     $selcols[] = $organizer->{'singleslotprintfield'.$i};
@@ -106,20 +106,20 @@ class organizer_print_slotdetail_form extends moodleform {
 
         $mform->addElement('header', 'export_settings_header', get_string('exportsettings', 'organizer'));
 
-        $exportformats = array(
+        $exportformats = [
                 'pdf' => get_string('format_pdf', 'organizer'),
-                'xlsx' => get_string('format_xlsx', 'organizer'));
+                'xlsx' => get_string('format_xlsx', 'organizer')];
 
         $mform = organizer_build_printsettingsform($mform, $exportformats);
 
-        $buttonarray = array();
+        $buttonarray = [];
         $buttonarray[] = &$mform->createElement('submit', 'downloadfile', get_string('downloadfile', 'organizer'));
         $buttonarray[] = &$mform->createElement('cancel', 'cancel', get_string('print_return', 'organizer'));
 
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
 
         foreach ($selcols as $key => $selcol) {
-            $mform->addElement('hidden', "cols[$key]", $selcol, array('id' => "col_{$selcol}"));
+            $mform->addElement('hidden', "cols[$key]", $selcol, ['id' => "col_{$selcol}"]);
             $mform->setType("cols[$key]", PARAM_ALPHANUMEXT);
         }
     }
@@ -167,10 +167,10 @@ class organizer_print_slotdetail_form extends moodleform {
             return "<strong> ==> " . get_string('nosingleslotprintfields', 'organizer') . "</strong>";
         }
 
-        $header = array();
+        $header = [];
         $data = &$this->_customdata;
 
-        $userinfofields = array();
+        $userinfofields = [];
         foreach ($columns as $column) {
 
             switch($column) {
@@ -200,7 +200,7 @@ class organizer_print_slotdetail_form extends moodleform {
                     break;
                 default:
                     if (is_numeric($column)) { // Custom user field.
-                        if ($userinfofield = $DB->get_record_select('user_info_field', 'id = :id', array('id' => $column))) {
+                        if ($userinfofield = $DB->get_record_select('user_info_field', 'id = :id', ['id' => $column])) {
                             $userinfofields[$userinfofield->id] = $userinfofield->datatype;
                             $name = $userinfofield->name ? organizer_filter_text($userinfofield->name) :
                                 organizer_filter_text($userinfofield->shortname);
@@ -285,7 +285,7 @@ class organizer_print_slotdetail_form extends moodleform {
 
         $entries = organizer_fetch_printdetail_entries($data['slot']);
 
-        $rows = array();
+        $rows = [];
         $numcols = 0;
         $evenodd = 0;
         foreach ($entries as $entry) {
@@ -351,7 +351,7 @@ class organizer_print_slotdetail_form extends moodleform {
                     default:
                         if (is_numeric($column)) {
                             if ($userinfodata = $DB->get_field(
-                                    'user_info_data', 'data', array('fieldid' => $column, 'userid' => $entry->id))) {
+                                    'user_info_data', 'data', ['fieldid' => $column, 'userid' => $entry->id])) {
                                 if (isset($userinfofields[$column]) && ($userinfofields[$column] == 'text' ||
                                         $userinfofields[$column] == 'textarea')) {
                                     $cell = new html_table_cell($userinfodata);

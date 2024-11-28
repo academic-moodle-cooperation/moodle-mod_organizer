@@ -53,7 +53,7 @@ if (isset($_SESSION["organizer_new_instance"])) {
     if ($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW &&
             ("".$_SESSION["organizer_new_instance"] == "".$instance->organizer->id)) {
         $_SESSION["organizer_new_instance"] = null;
-        $redirecturl = new moodle_url('/mod/organizer/slots_add.php', array('id' => $params['id']));
+        $redirecturl = new moodle_url('/mod/organizer/slots_add.php', ['id' => $params['id']]);
         redirect($redirecturl);
     }
 }
@@ -68,14 +68,14 @@ $PAGE->set_activity_record($instance->organizer);
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
 if ($instance->organizer->hidecalendar != 1) {
-    if (!$DB->record_exists('block_instances', array('parentcontextid' => $instance->context->id, 'blockname' => 'calendar_month'))) {
+    if (!$DB->record_exists('block_instances', ['parentcontextid' => $instance->context->id, 'blockname' => 'calendar_month'])) {
         $organizeroutput = $PAGE->get_renderer('mod_organizer');
         if ($PAGE->blocks->is_known_block_type('calendar_month')) {
             $PAGE->blocks->add_block('calendar_month', 'side-pre', 2, 0);
         }
     }
 } else {
-    $DB->delete_records('block_instances', array('parentcontextid' => $instance->context->id, 'blockname' => 'calendar_month'));
+    $DB->delete_records('block_instances', ['parentcontextid' => $instance->context->id, 'blockname' => 'calendar_month']);
 }
 
 // Completion.
@@ -89,10 +89,10 @@ switch ($params['mode']) {
     case ORGANIZER_TAB_APPOINTMENTS_VIEW:
         if (has_capability('mod/organizer:viewallslots', $instance->context)) {
             $event = slot_viewed::create(
-                array(
+                [
                     'objectid' => $PAGE->cm->id,
                     'context' => $PAGE->context,
-                )
+                ]
             );
             $event->trigger();
             echo organizer_generate_appointments_view($params, $instance);
@@ -103,10 +103,10 @@ switch ($params['mode']) {
     case ORGANIZER_TAB_STUDENT_VIEW:
         if (has_capability('mod/organizer:viewstudentview', $instance->context)) {
             $event = course_module_viewed::create(
-                array(
+                [
                     'objectid' => $PAGE->cm->instance,
                     'context' => $PAGE->context,
-                )
+                ]
             );
             $event->add_record_snapshot('course', $PAGE->course);
             $event->trigger();
@@ -118,10 +118,10 @@ switch ($params['mode']) {
     case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
         if (has_capability('mod/organizer:viewregistrations', $instance->context)) {
             $event = registrations_viewed::create(
-                array(
+                [
                     'objectid' => $PAGE->cm->id,
                     'context' => $PAGE->context,
-                )
+                ]
             );
             $event->trigger();
             echo organizer_generate_registration_status_view($params, $instance);
@@ -164,7 +164,7 @@ function organizer_create_url($params, $short = false) {
 
 function organizer_load_params($instance) {
 
-    $params = array();
+    $params = [];
     $params['id'] = required_param('id', PARAM_INT);
     $params['mode'] = optional_param('mode', 0, PARAM_INT);
     $params['group'] = optional_param('group', 0, PARAM_INT);
@@ -195,9 +195,9 @@ function organizer_load_params($instance) {
     $params['pdir'] = optional_param('pdir', 'ASC', PARAM_ALPHA);
     $params['psort'] = optional_param('psort', 'name', PARAM_ALPHA);
     $params['dir'] = optional_param('dir', 'ASC', PARAM_ALPHA);
-    $params['data'] = optional_param_array('data', array(), PARAM_INT);
-    $params['messages'] = optional_param_array('messages', array(), PARAM_ALPHAEXT);
-    $params['xmessages'] = optional_param_array('xmessages', array(), PARAM_ALPHAEXT);
+    $params['data'] = optional_param_array('data', [], PARAM_INT);
+    $params['messages'] = optional_param_array('messages', [], PARAM_ALPHAEXT);
+    $params['xmessages'] = optional_param_array('xmessages', [], PARAM_ALPHAEXT);
     $params['usersort'] = optional_param('usersort', 'name', PARAM_ALPHA);
 
     return $params;

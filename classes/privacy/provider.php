@@ -535,7 +535,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
                 // Get slots of this organizer instance.
                 $slotids = $DB->get_fieldset_select('organizer_slots', 'id', 'organizerid = ?', [$organizer->id]);
                 if (empty($slotids)) {
-                    $slotids = array(0);
+                    $slotids = [0];
                 }
                 [$slotidssql, $slotidsparams] = $DB->get_in_or_equal($slotids, SQL_PARAMS_NAMED);
 

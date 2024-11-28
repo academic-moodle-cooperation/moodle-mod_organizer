@@ -50,7 +50,7 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 require_capability('mod/organizer:evalslots', $context);
 
 if (!is_null($slot)) {
-    $slots = array($slot);
+    $slots = [$slot];
 }
 
 if (!$slots) {
@@ -66,7 +66,7 @@ if (count($slots) == 0) {
         'organizer'), 'error');
     redirect($redirecturl);
 }
-$mform = new organizer_evaluate_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
+$mform = new organizer_evaluate_slots_form(null, ['id' => $cm->id, 'mode' => $mode, 'slots' => $slots]);
 
 if ($data = $mform->get_data()) {
     $slotids = organizer_evaluate_slots($data);
@@ -87,10 +87,10 @@ if ($data = $mform->get_data()) {
     $newurl = $redirecturl->out();
 
     $event = appointment_evaluated::create(
-        array(
+        [
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context,
-        )
+        ]
     );
     $event->trigger();
 

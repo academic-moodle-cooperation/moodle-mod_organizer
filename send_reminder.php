@@ -38,7 +38,7 @@ require_once(dirname(__FILE__) . '/messaging.php');
 $mode = optional_param('mode', null, PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $recipient = optional_param('recipient', null, PARAM_INT);
-$recipients = optional_param_array('recipients', array(), PARAM_INT);
+$recipients = optional_param_array('recipients', [], PARAM_INT);
 $bulkaction = optional_param('bulkaction', '', PARAM_TEXT);
 
 [$cm, $course, $organizer, $context, $redirecturl] = organizer_slotpages_header();
@@ -55,16 +55,16 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 
 // Get recipients.
 if ($recipient != null) {
-    $recipients = array();
+    $recipients = [];
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         $recipients = get_enrolled_users($context, 'mod/organizer:register', $recipient, 'u.id',
             'lastname,firstname', null, null, true);
     } else {
-        $recipients = $DB->get_records_list('user', 'id', array($recipient));
+        $recipients = $DB->get_records_list('user', 'id', [$recipient]);
     }
 } else if ($recipients) {
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $recipientsarr = array();
+        $recipientsarr = [];
         foreach ($recipients as $key => $recipientgroup) {
             $members = organizer_fetch_groupusers($recipientgroup);
             foreach ($members as $member) {
@@ -84,18 +84,18 @@ if ($recipient != null) {
 }
 
 $mform = new organizer_remind_all_form(
-    null, array(
+    null, [
         'id' => $cm->id,
         'mode' => $mode,
         'recipients' => isset($recipientsstr) ? $recipientsstr : '',
         'recipient' => $recipient,
-        )
+    ]
 );
 
 if ($data = $mform->get_data()) {
     $infoboxmessage = "";
     $a = new stdClass();
-    $recipients = $data->recipientsstr ? explode(",", $data->recipientsstr) : array();
+    $recipients = $data->recipientsstr ? explode(",", $data->recipientsstr) : [];
     $count = organizer_remind_all($data->recipient, $recipients, $data->message_custommessage['text']);
     $a->count = $count;
     if ($count == 1) {
@@ -106,10 +106,10 @@ if ($data = $mform->get_data()) {
             'success');
     }
     $event = appointment_reminder_sent::create(
-        array(
+        [
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context,
-        )
+        ]
     );
     $event->trigger();
     $_SESSION["infoboxmessage"] = $infoboxmessage;

@@ -50,6 +50,6 @@ class slot_created extends base {
     }
 
     public function get_url() {
-        return new moodle_url('/mod/organizer/slots_add.php', array('id' => $this->objectid, 'mode' => 1));
+        return new moodle_url('/mod/organizer/slots_add.php', ['id' => $this->objectid, 'mode' => 1]);
     }
 }

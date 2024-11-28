@@ -50,6 +50,6 @@ class appointment_list_printed extends base {
     }
 
     public function get_url() {
-        return new moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
+        return new moodle_url('/mod/organizer/view.php', ['id' => $this->objectid]);
     }
 }

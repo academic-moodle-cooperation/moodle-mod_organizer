@@ -71,7 +71,7 @@ class organizer_add_slots_form extends moodleform {
         $data = &$this->_customdata;
 
         $cm = get_coursemodule_from_id('organizer', $data['id'], 0, false, MUST_EXIST);
-        $organizer = $DB->get_record('organizer', array('id' => $cm->instance), '*', MUST_EXIST);
+        $organizer = $DB->get_record('organizer', ['id' => $cm->instance], '*', MUST_EXIST);
         $organizerconfig = get_config('organizer');
 
         $mform->addElement('hidden', 'id', $data['id']);
@@ -101,18 +101,18 @@ class organizer_add_slots_form extends moodleform {
 
         $locations = get_config('mod_organizer', 'locations');
         if (!$locations) {
-            $mform->addElement('text', 'location', get_string('location', 'organizer'), array('size' => '64'));
+            $mform->addElement('text', 'location', get_string('location', 'organizer'), ['size' => '64']);
             $mform->setType('location', PARAM_TEXT);
         } else {
             $locations = explode("\n", $locations);
             $locations = array_combine($locations, $locations);
-            $firstitem = array(null => get_string("choose"));
+            $firstitem = [null => get_string("choose")];
             $locations = $firstitem + $locations;
-            $options = array(
+            $options = [
                 'multiple' => false,
                 'tags' => true,
                 'noselectionstring' => get_string('choose'),
-            );
+            ];
             $mform->addElement('autocomplete', 'location', get_string('location', 'organizer'),
                 $locations, $options);
             $mform->setType('location', PARAM_RAW);
@@ -123,13 +123,13 @@ class organizer_add_slots_form extends moodleform {
             $mform->addRule('location', null, 'required');
         }
 
-        $mform->addElement('text', 'locationlink', get_string('locationlink', 'organizer'), array('size' => '64'));
+        $mform->addElement('text', 'locationlink', get_string('locationlink', 'organizer'), ['size' => '64']);
         $mform->setType('locationlink', PARAM_URL);
         $mform->addHelpButton('locationlink', 'locationlink', 'organizer');
 
         $mform->addElement(
             'duration', 'duration', get_string('duration', 'organizer'),
-            array('optional' => false, 'defaultunit' => 60)
+            ['optional' => false, 'defaultunit' => 60]
         );
         $mform->setType('duration', PARAM_INT);
         $mform->setDefault('duration', 900);
@@ -140,7 +140,7 @@ class organizer_add_slots_form extends moodleform {
 
         $mform->addElement(
             'duration', 'gap', get_string('gap', 'organizer'),
-            array('optional' => false, 'defaultunit' => 60)
+            ['optional' => false, 'defaultunit' => 60]
         );
         $mform->setType('gap', PARAM_INT);
         $mform->setDefault('gap', 0);
@@ -149,7 +149,7 @@ class organizer_add_slots_form extends moodleform {
         $duration[1]->removeOption(604800);
         $mform->addHelpButton('gap', 'gap', 'organizer');
 
-        $mform->addElement('text', 'maxparticipants', get_string('maxparticipants', 'organizer'), array('size' => '3'));
+        $mform->addElement('text', 'maxparticipants', get_string('maxparticipants', 'organizer'), ['size' => '3']);
         $mform->setType('maxparticipants', PARAM_INT);
         $mform->setDefault('maxparticipants', 1);
         $mform->addHelpButton('maxparticipants', 'maxparticipants', 'organizer');
@@ -164,7 +164,7 @@ class organizer_add_slots_form extends moodleform {
 
         $mform->addElement(
             'duration', 'notificationtime', get_string('notificationtime', 'organizer'),
-            array('optional' => false, 'defaultunit' => 86400)
+            ['optional' => false, 'defaultunit' => 86400]
         );
         $mform->setType('notificationtime', PARAM_INT);
         $mform->setDefault('notificationtime', 86400);
@@ -172,9 +172,9 @@ class organizer_add_slots_form extends moodleform {
         $notificationtime[1]->removeOption(1);
         $mform->addHelpButton('notificationtime', 'notificationtime', 'organizer');
 
-        $group = array();
+        $group = [];
         $group[] = $mform->createElement(
-            'duration', 'availablefrom', null, array('optional' => false, 'defaultunit' => 86400)
+            'duration', 'availablefrom', null, ['optional' => false, 'defaultunit' => 86400]
         );
         $group[] = $mform->createElement(
             'static', '', '', get_string('relative_deadline_before', 'organizer') . '&nbsp;&nbsp;&nbsp;'
@@ -243,7 +243,7 @@ class organizer_add_slots_form extends moodleform {
 
         $mform->addElement(
             'textarea', 'comments', get_string('appointmentcomments', 'organizer'),
-            array('wrap' => 'virtual', 'rows' => '10', 'cols' => '60')
+            ['wrap' => 'virtual', 'rows' => '10', 'cols' => '60']
         );
         $mform->setType('comments', PARAM_RAW);
         $mform->addHelpButton('comments', 'appointmentcomments', 'organizer');
@@ -267,7 +267,7 @@ class organizer_add_slots_form extends moodleform {
         $params->allowcreationofpasttimeslots = $organizerconfig->allowcreationofpasttimeslots ?? null;
         $params->pasttimeslotsstring = get_string('pasttimeslotstring', 'organizer');
 
-        $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', array($params));
+        $PAGE->requires->js_call_amd('mod_organizer/adddayslot', 'init', [$params]);
     }
     /**
      *
@@ -508,7 +508,7 @@ class organizer_add_slots_form extends moodleform {
     private function _create_day_slot_group($newslotindex) {
         $mform = &$this->_form;
         $name = "newslots[$newslotindex]";
-        $slotgroup = array();
+        $slotgroup = [];
 
         $slotgroup[] = $mform->createElement('select', "{$name}[day]", '', $this->weekdays);
         $mform->setType("{$name}[day]", PARAM_INT);
@@ -535,7 +535,7 @@ class organizer_add_slots_form extends moodleform {
         $mform->setDefault("{$name}[tom]", 0);
 
         $slotgroup[] = $mform->createElement('advcheckbox', "{$name}[visible]", '', get_string('visible', 'organizer'),
-                null, array(0, 1));
+                null, [0, 1]);
         $mform->setType("{$name}[visible]", PARAM_INT);
         $mform->setDefault("{$name}[visible]", 1);
         $slotgroup[] = $mform->createElement("html", "<span name='forecastday_{$newslotindex}'></span>");
@@ -552,7 +552,7 @@ class organizer_add_slots_form extends moodleform {
      */
     private function _get_visibilities() {
 
-        $visibilities = array();
+        $visibilities = [];
         $visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('visibility_all', 'organizer');
         $visibilities[ORGANIZER_VISIBILITY_ANONYMOUS] = get_string('visibility_anonymous', 'organizer');
         $visibilities[ORGANIZER_VISIBILITY_SLOT] = get_string('visibility_slot', 'organizer');
@@ -568,7 +568,7 @@ class organizer_add_slots_form extends moodleform {
 
         $trainerraw = get_users_by_capability($context, 'mod/organizer:leadslots');
 
-        $trainers = array();
+        $trainers = [];
         foreach ($trainerraw as $trainer) {
             $a = new stdClass();
             $a->firstname = $trainer->firstname;
@@ -593,16 +593,16 @@ class organizer_add_slots_form extends moodleform {
      * initialize arrays
      */
     private function _init_arrays() {
-        $this->pickeroptionshours = array();
+        $this->pickeroptionshours = [];
         for ($i = 0; $i < 24; $i++) {
             $this->pickeroptionshours[($i * 3600)] = gmdate('H', ($i * 3600));
         }
-        $this->pickeroptionsminutes = array();
+        $this->pickeroptionsminutes = [];
         for ($j = 0; $j < 60; $j += 5) {
             $this->pickeroptionsminutes[($j * 60)] = gmdate('i', ($j * 60));
         }
 
-        $this->weekdays = array();
+        $this->weekdays = [];
         $this->weekdays[-1] = get_string("choose");
         $this->weekdays[0] = get_string('day_0', 'organizer');
         $this->weekdays[1] = get_string('day_1', 'organizer');

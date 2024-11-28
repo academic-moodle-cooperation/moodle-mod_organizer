@@ -81,26 +81,26 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
     // Explicitly assigned properties override those defined via $table->attributes.
     $table->attributes['class'] = trim($table->attributes['class']);
     $attributes = array_merge(
-        $table->attributes, array(
+        $table->attributes, [
             'id'            => $table->id,
             'width'         => $table->width,
             'summary'       => $table->summary,
             'cellpadding'   => $table->cellpadding,
             'cellspacing'   => $table->cellspacing,
-        )
+        ]
     );
     $output = html_writer::start_tag('table', $attributes) . "\n";
 
     $countcols = 0;
 
-    $headfoot = $printfooter ? array('thead', 'tfoot') : array('thead');
+    $headfoot = $printfooter ? ['thead', 'tfoot'] : ['thead'];
 
     if (!empty($table->head)) {
         foreach ($headfoot as $tag) {
             $countcols = count($table->head);
 
-            $output .= html_writer::start_tag($tag, array()) . "\n";
-            $output .= html_writer::start_tag('tr', array()) . "\n";
+            $output .= html_writer::start_tag($tag, []) . "\n";
+            $output .= html_writer::start_tag('tr', []) . "\n";
             $keys = array_keys($table->head);
             $lastkey = end($keys);
 
@@ -135,11 +135,11 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                 }
                 $heading->attributes['class'] = trim($heading->attributes['class']);
                 $attributes = array_merge(
-                    $heading->attributes, array(
+                    $heading->attributes, [
                         'style'     => $table->align[$key] . $table->size[$key] . $heading->style,
                         'scope'     => $heading->scope,
                         'colspan'   => $heading->colspan,
-                    )
+                    ]
                 );
 
                 $tagtype = 'td';
@@ -155,8 +155,8 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
         if (empty($table->data)) {
             // For valid XHTML strict every table must contain either a valid tr
             // or a valid tbody... both of which must contain a valid td.
-            $output .= html_writer::start_tag('tbody', array('class' => 'empty'));
-            $output .= html_writer::tag('tr', html_writer::tag('td', '', array('colspan' => count($table->head))));
+            $output .= html_writer::start_tag('tbody', ['class' => 'empty']);
+            $output .= html_writer::tag('tr', html_writer::tag('td', '', ['colspan' => count($table->head)]));
             $output .= html_writer::end_tag('tbody');
         }
     }
@@ -165,13 +165,13 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
         $oddeven    = 1;
         $keys       = array_keys($table->data);
         $lastrowkey = end($keys);
-        $output .= html_writer::start_tag('tbody', array());
+        $output .= html_writer::start_tag('tbody', []);
 
         foreach ($table->data as $key => $row) {
             if (($row === 'hr') && ($countcols)) {
                 $output .= html_writer::tag(
-                    'td', html_writer::tag('div', '', array('class' => 'tabledivider')),
-                    array('colspan' => $countcols)
+                    'td', html_writer::tag('div', '', ['class' => 'tabledivider']),
+                    ['colspan' => $countcols]
                 );
             } else {
                 // Convert array rows to html_table_rows and cell strings to html_table_cell objects.
@@ -205,8 +205,8 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
 
                 $output .= html_writer::start_tag(
                     'tr',
-                    array('class' => trim($row->attributes['class']),
-                    'style' => $row->style, 'id' => $row->id, 'name' => trim($row->attributes['name']))
+                    ['class' => trim($row->attributes['class']),
+                    'style' => $row->style, 'id' => $row->id, 'name' => trim($row->attributes['name'])]
                 )
                         . "\n";
                 $keys2 = array_keys($row->cells);
@@ -244,14 +244,14 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                     $tdstyle .= isset($table->wrap[$key]) ? $table->wrap[$key] : '';
                     $cell->attributes['class'] = trim($cell->attributes['class']);
                     $tdattributes = array_merge(
-                        $cell->attributes, array(
+                        $cell->attributes, [
                             'style' => $tdstyle . $cell->style,
                             'colspan' => $cell->colspan,
                             'rowspan' => $cell->rowspan,
                             'id' => $cell->id,
                             'abbr' => $cell->abbr,
                             'scope' => $cell->scope,
-                        )
+                        ]
                     );
                     $tagtype = 'td';
                     if ($cell->header === true) {
@@ -291,14 +291,14 @@ function organizer_build_printsettingsform($mform, $exportformats) {
     $headerfooter = get_user_preferences('organizer_headerfooter', 1);
 
     // Submissions per page.
-    $pppgroup = array();
-    $pppgroup[] = &$mform->createElement('text', 'entriesperpage', get_string('numentries', 'organizer'), array('size' => '2'));
+    $pppgroup = [];
+    $pppgroup[] = &$mform->createElement('text', 'entriesperpage', get_string('numentries', 'organizer'), ['size' => '2']);
     $pppgroup[] = &$mform->createElement(
         'advcheckbox', 'printperpage_optimal',
-        '', get_string('stroptimal', 'organizer'), array("group" => 1)
+        '', get_string('stroptimal', 'organizer'), ["group" => 1]
     );
 
-    $mform->addGroup($pppgroup, 'printperpagegrp', get_string('numentries', 'organizer'), array(' '), false);
+    $mform->addGroup($pppgroup, 'printperpagegrp', get_string('numentries', 'organizer'), [' '], false);
     $mform->setType('entriesperpage', PARAM_INT);
 
     $mform->setDefault('entriesperpage', $entriesperpage);
@@ -311,8 +311,8 @@ function organizer_build_printsettingsform($mform, $exportformats) {
 
     $mform->addElement(
         'select', 'textsize', get_string('textsize', 'organizer'),
-        array('8' => get_string('font_small', 'organizer'), '10' => get_string('font_medium', 'organizer'),
-            '12' => get_string('font_large', 'organizer'))
+        ['8' => get_string('font_small', 'organizer'), '10' => get_string('font_medium', 'organizer'),
+            '12' => get_string('font_large', 'organizer')]
     );
 
     $mform->setDefault('textsize', $textsize);
@@ -320,8 +320,8 @@ function organizer_build_printsettingsform($mform, $exportformats) {
 
     $mform->addElement(
         'select', 'pageorientation', get_string('pageorientation', 'organizer'),
-        array('P' => get_string('orientationportrait', 'organizer'),
-            'L' => get_string('orientationlandscape', 'organizer'))
+        ['P' => get_string('orientationportrait', 'organizer'),
+            'L' => get_string('orientationlandscape', 'organizer')]
     );
 
     $mform->setDefault('pageorientation', $pageorientation);
@@ -329,7 +329,7 @@ function organizer_build_printsettingsform($mform, $exportformats) {
 
     $mform->addElement(
         'advcheckbox', 'headerfooter', get_string('headerfooter', 'organizer'), null, null,
-        array(0, 1)
+        [0, 1]
     );
     $mform->setType('headerfooter', PARAM_BOOL);
     $mform->setDefault('headerfooter', $headerfooter);
@@ -352,7 +352,7 @@ function organizer_printtablepreview_icons($output) {
     $output .= html_writer::tag(
         'div',
         get_string('datapreviewtitle', 'organizer') . $OUTPUT->render($helpicon),
-        array('class' => 'datapreviewtitle')
+        ['class' => 'datapreviewtitle']
     );
 
     return $output;

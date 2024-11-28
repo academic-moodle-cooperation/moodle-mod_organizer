@@ -81,7 +81,7 @@ function xmldb_organizer_upgrade($oldversion) {
 
         // Define index slots_eventid (not unique) to be dropped form organizer_slots.
         $table = new xmldb_table('organizer_slots');
-        $index = new xmldb_index('slots_organizerid', XMLDB_INDEX_NOTUNIQUE, array('organizerid'));
+        $index = new xmldb_index('slots_organizerid', XMLDB_INDEX_NOTUNIQUE, ['organizerid']);
 
         // Conditionally launch drop index slots_eventid.
         if ($dbman->index_exists($table, $index)) {
@@ -89,7 +89,7 @@ function xmldb_organizer_upgrade($oldversion) {
         }
 
         // Define index slots_eventid (not unique) to be added to organizer_slots.
-        $index = new xmldb_index('slots_eventid', XMLDB_INDEX_NOTUNIQUE, array('eventid'));
+        $index = new xmldb_index('slots_eventid', XMLDB_INDEX_NOTUNIQUE, ['eventid']);
 
         // Conditionally launch add index slots_eventid.
         if (!$dbman->index_exists($table, $index)) {
@@ -97,14 +97,14 @@ function xmldb_organizer_upgrade($oldversion) {
         }
 
         // Define key organizer (foreign) to be added to organizer_slots.
-        $key = new xmldb_key('organizer', XMLDB_KEY_FOREIGN, array('organizerid'), 'organizer', array('id'));
+        $key = new xmldb_key('organizer', XMLDB_KEY_FOREIGN, ['organizerid'], 'organizer', ['id']);
 
         // Launch add key organizer.
         $dbman->add_key($table, $key);
 
         // Define index slot_appointments_slotid (not unique) to be dropped form organizer_slot_appointments.
         $table = new xmldb_table('organizer_slot_appointments');
-        $index = new xmldb_index('slot_appointments_slotid', XMLDB_INDEX_NOTUNIQUE, array('slotid'));
+        $index = new xmldb_index('slot_appointments_slotid', XMLDB_INDEX_NOTUNIQUE, ['slotid']);
 
         // Conditionally launch drop index slot_appointments_slotid.
         if ($dbman->index_exists($table, $index)) {
@@ -112,7 +112,7 @@ function xmldb_organizer_upgrade($oldversion) {
         }
 
         // Define index slot_appointments_eventid (not unique) to be added to organizer_slot_appointments.
-        $index = new xmldb_index('slot_appointments_eventid', XMLDB_INDEX_NOTUNIQUE, array('eventid'));
+        $index = new xmldb_index('slot_appointments_eventid', XMLDB_INDEX_NOTUNIQUE, ['eventid']);
 
         // Conditionally launch add index slot_appointments_eventid.
         if (!$dbman->index_exists($table, $index)) {
@@ -120,7 +120,7 @@ function xmldb_organizer_upgrade($oldversion) {
         }
 
         // Define key slot (foreign) to be added to organizer_slot_appointments.
-        $key = new xmldb_key('slot', XMLDB_KEY_FOREIGN, array('slotid'), 'organizer_slots', array('id'));
+        $key = new xmldb_key('slot', XMLDB_KEY_FOREIGN, ['slotid'], 'organizer_slots', ['id']);
 
         // Launch add key slot.
         $dbman->add_key($table, $key);
@@ -256,13 +256,13 @@ function xmldb_organizer_upgrade($oldversion) {
         $table->add_field('notified', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0');
 
         // Adding keys to table organizer_slot_queues.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_key('slot', XMLDB_KEY_FOREIGN, array('slotid'), 'organizer_slots', array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('slot', XMLDB_KEY_FOREIGN, ['slotid'], 'organizer_slots', ['id']);
 
         // Adding indexes to table organizer_slot_queues.
-        $table->add_index('slot_queue_userid', XMLDB_INDEX_NOTUNIQUE, array('userid'));
-        $table->add_index('slot_queue_groupid', XMLDB_INDEX_NOTUNIQUE, array('groupid'));
-        $table->add_index('slot_queue_eventid', XMLDB_INDEX_NOTUNIQUE, array('eventid'));
+        $table->add_index('slot_queue_userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
+        $table->add_index('slot_queue_groupid', XMLDB_INDEX_NOTUNIQUE, ['groupid']);
+        $table->add_index('slot_queue_eventid', XMLDB_INDEX_NOTUNIQUE, ['eventid']);
 
         // Conditionally launch create table for organizer_slot_queues.
         if (!$dbman->table_exists($table)) {
@@ -360,14 +360,14 @@ function xmldb_organizer_upgrade($oldversion) {
                   {organizer_slots}.id = {organizer_slot_appointments}.slotid INNER JOIN {event} ON
                   {organizer_slots}.eventid = {event}.id
                   WHERE {event}.modulename <> :modulename';
-        $records = $DB->get_records_sql($query, array('modulename' => 'organizer'));
+        $records = $DB->get_records_sql($query, ['modulename' => 'organizer']);
 
         $query = "SELECT e.* FROM {event} e WHERE e.id = :eventid";
 
         foreach ($records as $record) {
 
-            $event = $DB->get_record_sql($query, array("eventid" => $record->eventid));
-            $courseid = $DB->get_field('organizer', 'course', array ('id' => $record->organizerid));
+            $event = $DB->get_record_sql($query, ["eventid" => $record->eventid]);
+            $courseid = $DB->get_field('organizer', 'course', ['id' => $record->organizerid]);
 
             $event->type = CALENDAR_EVENT_TYPE_ACTION;
             $event->courseid = $courseid;
@@ -385,8 +385,8 @@ function xmldb_organizer_upgrade($oldversion) {
             $update = $DB->update_record('event', $event);
             // Insert event-ds for the organizer instance, if there is none yet.
             if (!$DB->get_field(
-                'event', 'id', array ('modulename' => 'organizer', 'instance' => $record->organizerid,
-                'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE)
+                'event', 'id', ['modulename' => 'organizer', 'instance' => $record->organizerid,
+                'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE]
             )) {
                 organizer_change_event_instance($record->organizerid);
             }
@@ -421,9 +421,9 @@ function xmldb_organizer_upgrade($oldversion) {
         $table->add_field('eventid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
 
         // Adding keys to table organizer_slot_trainer.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_key('slot', XMLDB_KEY_FOREIGN, array('slotid'), 'organizer_slots', array('id'));
-        $table->add_key('trainer', XMLDB_KEY_FOREIGN, array('trainerid'), 'user', array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('slot', XMLDB_KEY_FOREIGN, ['slotid'], 'organizer_slots', ['id']);
+        $table->add_key('trainer', XMLDB_KEY_FOREIGN, ['trainerid'], 'user', ['id']);
 
         // Conditionally launch create table for organizer_slot_trainer.
         if (!$dbman->table_exists($table)) {
@@ -447,7 +447,7 @@ function xmldb_organizer_upgrade($oldversion) {
 
         // Define index slots_userid (not unique) to be dropped form organizer_slots.
         $table = new xmldb_table('organizer_slots');
-        $index = new xmldb_index('slots_userid', XMLDB_INDEX_NOTUNIQUE, array('teacherid'));
+        $index = new xmldb_index('slots_userid', XMLDB_INDEX_NOTUNIQUE, ['teacherid']);
         $field = new xmldb_field('teacherid');
 
         // Conditionally launch drop index slots_userid.
@@ -538,7 +538,7 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        $sqlparams = array('modulename' => 'organizer', 'eventtype' => 'Instance');
+        $sqlparams = ['modulename' => 'organizer', 'eventtype' => 'Instance'];
         $query = 'SELECT {event}.*
                   FROM {event}
                   WHERE {event}.modulename = :modulename AND {event}.eventtype = :eventtype AND {event}.timeduration > 0';
@@ -547,7 +547,7 @@ function xmldb_organizer_upgrade($oldversion) {
         // Change old calendar instance events to new scheme: One event fromdate, one event todate, duration 0.
         foreach ($records as $record) {
             // Change the old events only if there is a duedate.
-            if ($newtimestart = $DB->get_field('organizer', 'duedate', array('id' => $record->instance))) {
+            if ($newtimestart = $DB->get_field('organizer', 'duedate', ['id' => $record->instance])) {
                 $newname = get_string('allowsubmissionstodate', 'organizer') . ": " . $record->name;
                 $record->timeduration = 0;
                 $record->name = get_string('allowsubmissionsfromdate', 'organizer') . ": " . $record->name;
@@ -580,7 +580,7 @@ function xmldb_organizer_upgrade($oldversion) {
         // Delete instance events where the underlaying module instances had been deleted.
         $select = "select distinct(e.id) as id from {event} e left join {organizer} o ON e.instance = o.id
                     where e.modulename = :modulename and e.eventtype = :eventtype and o.id is null;";
-        $parms = array('modulename' => 'organizer', 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE);
+        $parms = ['modulename' => 'organizer', 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE];
         if ($ids = $DB->get_fieldset_sql($select, $parms)) {
             list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
             $select = "id $insql";
@@ -589,15 +589,15 @@ function xmldb_organizer_upgrade($oldversion) {
 
         // Delete instance events where the timestart is 0.
         $select = 'modulename = :modulename AND eventtype = :eventtype AND timestart = 0';
-        $parms = array('modulename' => 'organizer', 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE);
+        $parms = ['modulename' => 'organizer', 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE];
         $DB->delete_records_select('event', $select, $parms);
 
         // Replace existing slot events and appointment events of future slots by new programmed events.
 
         // Delete old slot and appointment events.
         $select = 'modulename = :modulename AND (eventtype = :eventtype1 OR eventtype = :eventtype2)';
-        $parms = array('modulename' => 'organizer', 'eventtype1' => ORGANIZER_CALENDAR_EVENTTYPE_SLOT,
-            'eventtype2' => ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT);
+        $parms = ['modulename' => 'organizer', 'eventtype1' => ORGANIZER_CALENDAR_EVENTTYPE_SLOT,
+            'eventtype2' => ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT];
         $DB->delete_records_select('event', $select, $parms);
         $DB->set_field('organizer_slot_appointments', 'eventid', null);
         $DB->set_field('organizer_slot_trainer', 'eventid', null);
@@ -606,7 +606,7 @@ function xmldb_organizer_upgrade($oldversion) {
 
         $now = time();
 
-        $params = array('now' => $now);
+        $params = ['now' => $now];
         $query = "SELECT s.id, cm.id as cmid, o.nocalendareventslotcreation
                   FROM {organizer_slots} s
                   INNER JOIN {organizer} o ON s.organizerid = o.id
@@ -618,7 +618,7 @@ function xmldb_organizer_upgrade($oldversion) {
         $slots = $DB->get_records_sql($query, $params);
 
         foreach ($slots as $slot) {
-            if ($apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $slot->id))) {
+            if ($apps = $DB->get_records('organizer_slot_appointments', ['slotid' => $slot->id])) {
                 $appointment = new stdClass();
                 foreach ($apps as $app) {
                     $eventid = organizer_add_event_appointment($slot->cmid, $app->id);
@@ -632,7 +632,7 @@ function xmldb_organizer_upgrade($oldversion) {
                 if (!$slot->nocalendareventslotcreation) {
                     $trainerslot = new stdClass();
                     $slottrainers = $DB->get_records_select(
-                        'organizer_slot_trainer', 'slotid = :slotid', array('slotid' => $slot->id));
+                        'organizer_slot_trainer', 'slotid = :slotid', ['slotid' => $slot->id]);
                     foreach ($slottrainers as $trainer) {
                         $trainerslot->id = $trainer->id;
                         $trainerslot->eventid = organizer_add_event_slot($slot->cmid, $slot->id, $trainer->trainerid);

@@ -41,16 +41,16 @@ class organizer_slot {
         global $DB;
 
         if (is_number($slot) && $slot == intval($slot)) {
-            $this->slot = $DB->get_record('organizer_slots', array('id' => $slot));
+            $this->slot = $DB->get_record('organizer_slots', ['id' => $slot]);
         } else {
             $this->slot = $slot;
 
             if (!isset($this->slot->organizerid)) {
-                $this->slot->organizerid = $DB->get_field('organizer_slots', 'organizerid', array('id' => $slot->slotid));
+                $this->slot->organizerid = $DB->get_field('organizer_slots', 'organizerid', ['id' => $slot->slotid]);
             }
 
             if (!isset($this->slot->maxparticipants)) {
-                $this->slot->maxparticipants = $DB->get_field('organizer_slots', 'maxparticipants', array('id' => $slot->slotid));
+                $this->slot->maxparticipants = $DB->get_field('organizer_slots', 'maxparticipants', ['id' => $slot->slotid]);
             }
 
             if (!isset($this->slot->id)) {
@@ -151,15 +151,15 @@ class organizer_slot {
         $this->load_organizer();
         global $DB;
         if ($this->organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-            $moduleid = $DB->get_field('modules', 'id', array('name' => 'organizer'));
+            $moduleid = $DB->get_field('modules', 'id', ['name' => 'organizer']);
             $courseid = $DB->get_field(
                 'course_modules', 'course',
-                array('module' => $moduleid, 'instance' => $this->organizer->id)
+                ['module' => $moduleid, 'instance' => $this->organizer->id]
             );
             $groups = groups_get_user_groups($courseid);
             $groupingid = $DB->get_field(
                 'course_modules', 'groupingid',
-                array('module' => $moduleid, 'instance' => $this->organizer->id)
+                ['module' => $moduleid, 'instance' => $this->organizer->id]
             );
             if (!isset($groups[$groupingid]) || !count($groups[$groupingid])) {
                 return false;
@@ -274,21 +274,21 @@ class organizer_slot {
     private function load_organizer() {
         global $DB;
         if (!$this->organizer) {
-            $this->organizer = $DB->get_record('organizer', array('id' => $this->slot->organizerid));
+            $this->organizer = $DB->get_record('organizer', ['id' => $this->slot->organizerid]);
         }
     }
 
     private function load_appointments() {
         global $DB;
         if (!$this->apps) {
-            $this->apps = $DB->get_records('organizer_slot_appointments', array('slotid' => $this->slot->id));
+            $this->apps = $DB->get_records('organizer_slot_appointments', ['slotid' => $this->slot->id]);
         }
     }
 
     private function load_queue() {
         global $DB;
         if (!$this->queue) {
-            $this->queue = $DB->get_records('organizer_slot_queues', array('slotid' => $this->slot->id), 'id ASC');
+            $this->queue = $DB->get_records('organizer_slot_queues', ['slotid' => $this->slot->id], 'id ASC');
         }
     }
 
@@ -298,7 +298,7 @@ class organizer_slot {
             $sql = "SELECT q.groupid FROM (SELECT groupid, slotid FROM {organizer_slot_queues} ORDER BY id asc) q
                     WHERE q.slotid = :slotid
                     GROUP BY q.groupid";
-            $paramssql = array('slotid' => $this->slot->id);
+            $paramssql = ['slotid' => $this->slot->id];
             $this->queuegroup = $DB->get_records_sql($sql, $paramssql);
         }
     }
@@ -321,7 +321,7 @@ function organizer_get_slot_user_appointment($slotx, $userid = null, $mergegroup
 
     $organizer = $slotx->get_organizer();
 
-    $paramssql = array('slotid' => $slotx->get_id(), 'userid' => $userid);
+    $paramssql = ['slotid' => $slotx->get_id(), 'userid' => $userid];
     $query = "SELECT a.* FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.id = :slotid AND a.userid = :userid" .
@@ -331,7 +331,7 @@ function organizer_get_slot_user_appointment($slotx, $userid = null, $mergegroup
     $app = reset($apps);
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
-        $paramssql = array('slotid' => $slotx->get_id(), 'groupid' => $app->groupid);
+        $paramssql = ['slotid' => $slotx->get_id(), 'groupid' => $app->groupid];
         $query = "SELECT a.* FROM {organizer_slot_appointments} a
                 INNER JOIN {organizer_slots} s ON a.slotid = s.id
                 WHERE s.id = :slotid AND a.groupid = :groupid
@@ -368,10 +368,10 @@ function organizer_get_last_user_appointment($organizer, $userid = null, $mergeg
     }
 
     if (is_number($organizer) && $organizer == intval($organizer)) {
-        $organizer = $DB->get_record('organizer', array('id' => $organizer));
+        $organizer = $DB->get_record('organizer', ['id' => $organizer]);
     }
 
-    $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
+    $paramssql = ['userid' => $userid, 'organizerid' => $organizer->id];
     $query = "SELECT a.* FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE s.organizerid = :organizerid AND a.userid = :userid" .
@@ -381,7 +381,7 @@ function organizer_get_last_user_appointment($organizer, $userid = null, $mergeg
     $app = reset($apps);
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && $app !== false) {
-        $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
+        $paramssql = ['slotid' => $app->slotid, 'organizerid' => $organizer->id];
         $query = "SELECT a.* FROM {organizer_slot_appointments} a
                 INNER JOIN {organizer_slots} s ON a.slotid = s.id
                 WHERE s.organizerid = :organizerid AND s.id = :slotid
@@ -418,10 +418,10 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
     }
 
     if (is_number($organizer) && $organizer == intval($organizer)) {
-        $organizer = $DB->get_record('organizer', array('id' => $organizer));
+        $organizer = $DB->get_record('organizer', ['id' => $organizer]);
     }
 
-    $paramssql = array('userid' => $userid, 'organizerid' => $organizer->id);
+    $paramssql = ['userid' => $userid, 'organizerid' => $organizer->id];
     $query = "SELECT a.* FROM {organizer_slot_appointments} a
     INNER JOIN {organizer_slots} s ON a.slotid = s.id
     WHERE s.organizerid = :organizerid AND a.userid = :userid
@@ -430,7 +430,7 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
 
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && $mergegroupapps && count($apps) > 0) {
         foreach ($apps as &$app) {
-            $paramssql = array('slotid' => $app->slotid, 'organizerid' => $organizer->id);
+            $paramssql = ['slotid' => $app->slotid, 'organizerid' => $organizer->id];
             $query = "SELECT a.* FROM {organizer_slot_appointments} a
                         INNER JOIN {organizer_slots} s ON a.slotid = s.id
                         WHERE s.organizerid = :organizerid AND s.id = :slotid
@@ -455,7 +455,7 @@ function organizer_get_all_user_appointments($organizer, $userid = null, $mergeg
 
 function organizer_get_all_group_appointments($organizer, $groupid) {
     global $DB;
-    $params = array('groupid' => $groupid, 'organizerid' => $organizer->id);
+    $params = ['groupid' => $groupid, 'organizerid' => $organizer->id];
     $groupapps = $DB->get_records_sql(
         'SELECT a.* FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
@@ -472,7 +472,7 @@ function organizer_get_slot_trainers($slotid, $withname = false) {
     global $DB;
 
     if ($withname) {
-        $paramssql = array('slotid' => $slotid);
+        $paramssql = ['slotid' => $slotid];
         $slotquery = 'SELECT u.id, u.firstname, u.lastname, u.email
 				FROM {organizer_slot_trainer} t
 				INNER JOIN {user} u ON t.trainerid = u.id
@@ -480,7 +480,7 @@ function organizer_get_slot_trainers($slotid, $withname = false) {
         $trainers = $DB->get_records_sql($slotquery, $paramssql);
     } else {
         if ($trainers = $DB->get_fieldset_select(
-                'organizer_slot_trainer', 'trainerid', 'slotid = :slotid', array('slotid' => $slotid))) {
+                'organizer_slot_trainer', 'trainerid', 'slotid = :slotid', ['slotid' => $slotid])) {
             sort($trainers);
         }
 

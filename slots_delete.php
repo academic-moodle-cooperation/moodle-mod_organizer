@@ -57,7 +57,7 @@ if (!$slots) {
     redirect($redirecturl);
 }
 
-$mform = new organizer_delete_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
+$mform = new organizer_delete_slots_form(null, ['id' => $cm->id, 'mode' => $mode, 'slots' => $slots]);
 
 if ($data = $mform->get_data()) {
     $a = new stdClass();
@@ -73,8 +73,8 @@ if ($data = $mform->get_data()) {
         $a->notified = $notified;
         $a->deleted = count($slots);
 
-        $event = slot_deleted::create(array('objectid' => $PAGE->cm->id,
-                'context' => $PAGE->context));
+        $event = slot_deleted::create(['objectid' => $PAGE->cm->id,
+                'context' => $PAGE->context]);
         $event->trigger();
 
         if ($a->deleted == 1) {

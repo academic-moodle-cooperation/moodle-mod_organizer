@@ -55,7 +55,7 @@ class organizer_remind_all_form extends moodleform {
 
         $recipientscount = 0;
         if ($data['recipients']) {
-            $recipientsarr = $data['recipients'] ? explode(",", $data['recipients']) : array();
+            $recipientsarr = $data['recipients'] ? explode(",", $data['recipients']) : [];
             $recipientscount = count($recipientsarr);
         } else if ($data['recipient']) {
             if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
@@ -64,12 +64,12 @@ class organizer_remind_all_form extends moodleform {
                 $recipientscount = count($recipientsarr);
                 $groupname = organizer_fetch_groupname($data['recipient']);
             } else {
-                $recipientsarr = array($data['recipient']);
+                $recipientsarr = [$data['recipient']];
                 $recipientscount = 1;
             }
         }
 
-        $buttonarray = array();
+        $buttonarray = [];
         if ($recipientscount > 0) {
             $a = new stdClass();
             $a->count = $recipientscount;
@@ -79,14 +79,14 @@ class organizer_remind_all_form extends moodleform {
                 $mform->addElement('static', '', '', get_string('organizer_remind_all_recepients_pl', 'organizer', $a));
             }
             $groupnameswitch = true;
-            $recipientslist = array();
+            $recipientslist = [];
             foreach ($recipientsarr as $recepient) {
                 $identity = organizer_get_user_identity($recepient);
                 $identity = $identity != "" ? "({$identity})" : "";
                 $recipientslist[] = organizer_get_name_link($recepient) . $identity;
             }
             $mform->addElement('static', '', '', html_writer::alist($recipientslist,
-                array('class' => 'generalbox'), 'ul'));
+                ['class' => 'generalbox'], 'ul'));
             $buttonarray[] = &$mform->createElement('submit', 'confirm',
                 get_string('confirm_organizer_remind_all', 'organizer'));
             $strautomessage = "register_reminder_student";
@@ -110,11 +110,11 @@ class organizer_remind_all_form extends moodleform {
             $mform->addElement('static', '', '', get_string('organizer_remind_all_no_recepients', 'organizer'));
             $buttonarray[] = &$mform->createElement(
                 'submit', 'confirm', get_string('confirm_organizer_remind_all', 'organizer'),
-                array('disabled')
+                ['disabled']
             );
         }
         $buttonarray[] = &$mform->createElement('cancel');
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
         $mform->closeHeaderBefore('buttonar');
     }
 }
