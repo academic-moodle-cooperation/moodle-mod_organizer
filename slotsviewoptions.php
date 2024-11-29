@@ -20,7 +20,7 @@
  * Saves user changes of the filter options in slots view. Called by ajax.
  *
  * @package   mod_organizer
- * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @copyright 2022 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,6 +29,7 @@ define('AJAX_SCRIPT', true);
 
 require_once(__DIR__ . '/../../config.php');
 
+require_login();
 // Check access.
 if (!confirm_sesskey()) {
     throw new moodle_exception('invalidsesskey', 'error');

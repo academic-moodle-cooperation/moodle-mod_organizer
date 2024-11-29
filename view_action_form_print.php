@@ -37,11 +37,11 @@ class organizer_print_slots_form extends moodleform {
     private $_selcols;
 
     protected function definition() {
-        $this->_add_slot_info();
-        $this->_add_column_select();
+        $this->add_slot_info();
+        $this->add_column_select();
     }
 
-    private function _add_slot_info() {
+    private function add_slot_info() {
         $mform = &$this->_form;
         $data = &$this->_customdata;
 
@@ -60,17 +60,17 @@ class organizer_print_slots_form extends moodleform {
                 $mform->setType("slots[$key]", PARAM_INT);
             }
         } else {
-            throw new \coding_exception('This should not happen!');
+            throw new coding_exception('This should not happen!');
         }
     }
 
-    private function _add_column_select() {
+    private function add_column_select() {
         global $DB, $CFG;
 
         $mform = $this->_form;
         $data = &$this->_customdata;
 
-        $params = array('slotid' => reset($data['slots']));
+        $params = ['slotid' => reset($data['slots'])];
         $isgrouporganizer = $DB->get_field_sql(
             "SELECT o.isgrouporganizer
                 FROM {organizer} o
@@ -79,7 +79,7 @@ class organizer_print_slots_form extends moodleform {
         );
 
         $identityfields = explode(',', $CFG->showuseridentity);
-        $selcols = array('datetime', 'location', 'teacher', 'teachercomments', 'participant');
+        $selcols = ['datetime', 'location', 'teacher', 'teachercomments', 'participant'];
         if (in_array('idnumber', $identityfields)) {
             $selcols[] = 'idnumber';
         }
@@ -99,25 +99,25 @@ class organizer_print_slots_form extends moodleform {
 
         $mform->addElement('header', 'export_settings_header', get_string('exportsettings', 'organizer'));
 
-        $exportformats = array(
+        $exportformats = [
                 'pdf' => get_string('format_pdf', 'organizer'),
                 'xlsx' => get_string('format_xlsx', 'organizer'),
                 'xls' => get_string('format_xls', 'organizer'),
                 'ods' => get_string('format_ods', 'organizer'),
                 'csv_tab' => get_string('format_csv_tab', 'organizer'),
-                'csv_comma' => get_string('format_csv_comma', 'organizer'));
+                'csv_comma' => get_string('format_csv_comma', 'organizer')];
 
         $mform = organizer_build_printsettingsform($mform, $exportformats);
         $mform->disabledif ('headerfooter', 'format', 'neq', 'pdf');
 
-        $buttonarray = array();
+        $buttonarray = [];
         $buttonarray[] = &$mform->createElement('submit', 'downloadfile', get_string('downloadfile', 'organizer'));
         $buttonarray[] = &$mform->createElement('cancel', 'cancel', get_string('print_return', 'organizer'));
 
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
 
         foreach ($selcols as $key => $selcol) {
-            $mform->addElement('hidden', "cols[$key]", $selcol, array('id' => "col_{$selcol}"));
+            $mform->addElement('hidden', "cols[$key]", $selcol, ['id' => "col_{$selcol}"]);
             $mform->setType("cols[$key]", PARAM_ALPHANUMEXT);
         }
     }
@@ -150,23 +150,23 @@ class organizer_print_slots_form extends moodleform {
 
         $output .= '<div class="forced_scroll">';
         $output .= '<div style="float: left">';
-        $output .= $this->_create_preview_table($printcols);
+        $output .= $this->create_preview_table($printcols);
         $output .= '</div><div style="width: 1em; float: left;"> </div></div>';
 
         echo $output;
     }
 
-    private function _create_preview_table($columns) {
+    private function create_preview_table($columns) {
         global $PAGE, $OUTPUT, $cm, $CFG, $USER;
 
         $USER->ajax_updatable_user_prefs['mod_organizer_noprintfields'] = PARAM_TEXT;
 
-        $param = new \stdClass();
-        $param->iconminus = $OUTPUT->image_icon('t/switch_minus', get_string('hide'), 'moodle', array(
-            'id' => 'xxx', 'col' => 'yyy', 'style' => 'cursor:pointer;margin-left:3px;'));
-        $param->iconplus = $OUTPUT->image_icon('t/switch_plus', get_string('show'), 'moodle', array(
-            'id' => 'xxx', 'col' => 'yyy', 'style' => 'cursor:pointer;margin-left:3px;'));
-        $PAGE->requires->js_call_amd('mod_organizer/printform', 'init', array($param));
+        $param = new stdClass();
+        $param->iconminus = $OUTPUT->image_icon('t/switch_minus', get_string('hide'), 'moodle', [
+            'id' => 'xxx', 'col' => 'yyy', 'style' => 'cursor:pointer;margin-left:3px;']);
+        $param->iconplus = $OUTPUT->image_icon('t/switch_plus', get_string('show'), 'moodle', [
+            'id' => 'xxx', 'col' => 'yyy', 'style' => 'cursor:pointer;margin-left:3px;']);
+        $PAGE->requires->js_call_amd('mod_organizer/printform', 'init', [$param]);
 
         $isgrouporganizer = organizer_is_group_mode();
 
@@ -184,12 +184,12 @@ class organizer_print_slots_form extends moodleform {
         }
 
         $iconup = $OUTPUT->image_icon('t/up', get_string('up'), 'moodle',
-            array('style' => 'cursor:pointer;margin-left:3px;'));
+            ['style' => 'cursor:pointer;margin-left:3px;']);
         $icondown = $OUTPUT->image_icon('t/down', get_string('down'), 'moodle',
-            array('style' => 'cursor:pointer;margin-left:3px;'));
+            ['style' => 'cursor:pointer;margin-left:3px;']);
 
-        $header = array();
-        $noprintfieldsarray = array();
+        $header = [];
+        $noprintfieldsarray = [];
         if ($noprintfields = get_user_preferences("mod_organizer_noprintfields")) {
             $noprintfieldsarray = explode(",", $noprintfields);
         }
@@ -221,7 +221,7 @@ class organizer_print_slots_form extends moodleform {
             $slotids = implode(',', array_values($data['slots']));
             $url .= '&slots=' . $slotids;
 
-            $linkarray = array('name' => $column . '_cell');
+            $linkarray = ['name' => $column . '_cell'];
 
             if ($noprintfieldsarray) {
                 if (in_array($column, $noprintfieldsarray)) {
@@ -281,7 +281,7 @@ class organizer_print_slots_form extends moodleform {
 
         $entries = organizer_fetch_table_entries($data['slots'], $sort . ' ' . $order);
 
-        $rows = array();
+        $rows = [];
         $rowspan = 0;
         foreach ($entries as $entry) {
             $row = $rows[] = new html_table_row();
@@ -357,7 +357,7 @@ class organizer_print_slots_form extends moodleform {
                         $a->firstname = $entry->firstname;
                         $a->lastname = $entry->lastname;
                         $name = get_string('fullname_template', 'organizer', $a);
-                        $content = html_writer::start_span('', array('name' => $column.'_cell'));
+                        $content = html_writer::start_span('', ['name' => $column.'_cell']);
                         $content .= $name;
                         if (!$isgrouporganizer) {
                             $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
@@ -415,7 +415,7 @@ class organizer_print_slots_form extends moodleform {
                     case 'teachercomments':
                     break;
                     default:
-                        throw new \coding_exception("Unsupported column type: $column");
+                        throw new coding_exception("Unsupported column type: $column");
                 }
             } // Each column.
             $rowspan = ($rowspan + 1) % $entry->rowspan;

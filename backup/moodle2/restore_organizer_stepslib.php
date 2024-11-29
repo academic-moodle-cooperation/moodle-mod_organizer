@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
 /**
  * backup/moodle2/restore_organizer_stepslib.php
  * Structure step to restore one organizer activity
@@ -22,7 +21,7 @@ defined('MOODLE_INTERNAL') || die();
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -36,7 +35,7 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
      * @see restore_structure_step::define_structure()
      */
     protected function define_structure() {
-        $paths = array();
+        $paths = [];
         $paths[] = new restore_path_element('organizer', '/activity/organizer');
         $paths[] = new restore_path_element('slot', '/activity/organizer/slots/slot');
 

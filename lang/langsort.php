@@ -18,18 +18,20 @@
  * langsort.php
  *
  * @package       mod_organizer
- * @author        Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author        Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @copyright     2022 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(__FILE__, 4) .'/config.php');
 
+require_login();
+
 $location = $CFG->dirroot . '/mod/organizer/lang/en/organizer.php';
 $firstseparator = "defined('MOODLE_INTERNAL') || die();";
 $lineseparator = "';";
 $fieldseparator = " = '";
-$inarr = array();
+$inarr = [];
 $outstr = "";
 $linebreak = "\n";
 

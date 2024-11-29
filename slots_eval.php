@@ -20,11 +20,13 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use mod_organizer\event\appointment_evaluated;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
@@ -37,7 +39,7 @@ $action = optional_param('action', null, PARAM_ALPHANUMEXT);
 $slot = optional_param('slot', null, PARAM_INT);
 $slots = organizer_get_param_slots();
 
-list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
+[$cm, $course, $organizer, $context, $redirecturl] = organizer_slotpages_header();
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
@@ -48,7 +50,7 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 require_capability('mod/organizer:evalslots', $context);
 
 if (!is_null($slot)) {
-    $slots = array($slot);
+    $slots = [$slot];
 }
 
 if (!$slots) {
@@ -64,7 +66,7 @@ if (count($slots) == 0) {
         'organizer'), 'error');
     redirect($redirecturl);
 }
-$mform = new organizer_evaluate_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
+$mform = new organizer_evaluate_slots_form(null, ['id' => $cm->id, 'mode' => $mode, 'slots' => $slots]);
 
 if ($data = $mform->get_data()) {
     $slotids = organizer_evaluate_slots($data);
@@ -84,11 +86,11 @@ if ($data = $mform->get_data()) {
     $redirecturl->param('slots', implode(',', array_values($slotids)));
     $newurl = $redirecturl->out();
 
-    $event = \mod_organizer\event\appointment_evaluated::create(
-        array(
+    $event = appointment_evaluated::create(
+        [
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context,
-        )
+        ]
     );
     $event->trigger();
 
@@ -98,6 +100,6 @@ if ($data = $mform->get_data()) {
 } else {
     organizer_display_form($mform, get_string('title_eval', 'organizer'));
 }
-throw new \coding_exception('If you see this, something went wrong with edit action!');
+throw new coding_exception('If you see this, something went wrong with edit action!');
 
 die;

@@ -20,11 +20,13 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use mod_organizer\MTablePDF;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
@@ -38,7 +40,7 @@ $slot = optional_param('slot', null, PARAM_INT);
 $slots = organizer_get_param_slots();
 $tsort = optional_param('tsort', null, PARAM_ALPHA);
 
-list($cm, $course, $organizer, $context, $redirecturl) = organizer_slotpages_header();
+[$cm, $course, $organizer, $context, $redirecturl] = organizer_slotpages_header();
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
@@ -63,9 +65,9 @@ if ($tsort != null) {
     $_SESSION['organizer_slots'] = $slots;
 }
 
-$s = $slots == null ? array() : $slots;
+$s = $slots == null ? [] : $slots;
 
-$mform = new organizer_print_slots_form(null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $s), 'post', '_blank');
+$mform = new organizer_print_slots_form(null, ['id' => $cm->id, 'mode' => $mode, 'slots' => $s], 'post', '_blank');
 
 if ($data = $mform->get_data()) {
     // Create pdf.
@@ -110,12 +112,12 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
     $headerfooter = true
 ) {
 
-    list(, $course, $organizer, ) = organizer_get_course_module_data();
+    [, $course, $organizer, ] = organizer_get_course_module_data();
 
     $coursename = $course->idnumber ? $course->idnumber . " " . $course->fullname : $course->fullname;
     $coursename .= $course->shortname ? " (" . $course->shortname . ")" : "";
-    $coursename = format_text($coursename, FORMAT_MOODLE, array("filter" => true, "trusted" => true));
-    $organizername = format_text($organizer->name, FORMAT_MOODLE, array("filter" => true, "trusted" => true));
+    $coursename = format_text($coursename, FORMAT_MOODLE, ["filter" => true, "trusted" => true]);
+    $organizername = format_text($organizer->name, FORMAT_MOODLE, ["filter" => true, "trusted" => true]);
     $coursename = html_to_text($coursename);
     $organizername = html_to_text($organizername);
     $filename = $coursename . '-' . $organizername;
@@ -129,9 +131,9 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
         }
     }
 
-    $columnwidth = array();
-    $titles = array();
-    $columnformats = array();
+    $columnwidth = [];
+    $titles = [];
+    $columnformats = [];
 
     $tsort = isset($_SESSION['organizer_tsort']) ? $_SESSION['organizer_tsort'] : "";
     if ($tsort != "") {
@@ -142,7 +144,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
             $order = "DESC";
         }
     }
-    $colorder = array();
+    $colorder = [];
     $dosort = false;
     $i = 0;
     foreach ($columns as $column) {
@@ -157,52 +159,52 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
 
             switch ($column) {
                 case 'datetime':
-                    $columnwidth[] = array('value' => 64, 'mode' => 'Relativ');
-                    $columnformats[] = array('fill' => 0, 'align' => 'C');
+                    $columnwidth[] = ['value' => 64, 'mode' => 'Relativ'];
+                    $columnformats[] = ['fill' => 0, 'align' => 'C'];
                 break;
                 case 'location':
-                    $columnwidth[] = array('value' => 48, 'mode' => 'Relativ');
-                    $columnformats[] = array('fill' => 0, 'align' => 'C');
+                    $columnwidth[] = ['value' => 48, 'mode' => 'Relativ'];
+                    $columnformats[] = ['fill' => 0, 'align' => 'C'];
                 break;
                 case 'teacher':
-                    $columnwidth[] = array('value' => 32, 'mode' => 'Relativ');
-                    $columnformats[] = array('fill' => 0, 'align' => 'C');
+                    $columnwidth[] = ['value' => 32, 'mode' => 'Relativ'];
+                    $columnformats[] = ['fill' => 0, 'align' => 'C'];
                 break;
                 case 'groupname':
-                    $columnwidth[] = array('value' => 32, 'mode' => 'Relativ');
-                    $columnformats[] = array('fill' => 0, 'align' => 'C');
+                    $columnwidth[] = ['value' => 32, 'mode' => 'Relativ'];
+                    $columnformats[] = ['fill' => 0, 'align' => 'C'];
                 break;
                 case 'participant':
-                    $columnwidth[] = array('value' => 32, 'mode' => 'Relativ');
-                    $columnformats[] = array('fill' => 0, 'align' => 'C');
+                    $columnwidth[] = ['value' => 32, 'mode' => 'Relativ'];
+                    $columnformats[] = ['fill' => 0, 'align' => 'C'];
                 break;
                 case 'email':
-                    $columnwidth[] = array('value' => 32, 'mode' => 'Relativ');
-                    $columnformats[] = array('fill' => 0, 'align' => 'C');
+                    $columnwidth[] = ['value' => 32, 'mode' => 'Relativ'];
+                    $columnformats[] = ['fill' => 0, 'align' => 'C'];
                 break;
                 case 'idnumber':
-                    $columnwidth[] = array('value' => 24, 'mode' => 'Relativ');
-                    $columnformats[] = array('fill' => 0, 'align' => 'C');
+                    $columnwidth[] = ['value' => 24, 'mode' => 'Relativ'];
+                    $columnformats[] = ['fill' => 0, 'align' => 'C'];
                 break;
                 case 'attended':
-                    $columnwidth[] = array('value' => 12, 'mode' => 'Relativ');
-                    $columnformats[] = array('fill' => 0, 'align' => 'C');
+                    $columnwidth[] = ['value' => 12, 'mode' => 'Relativ'];
+                    $columnformats[] = ['fill' => 0, 'align' => 'C'];
                 break;
                 case 'grade':
-                    $columnwidth[] = array('value' => 18, 'mode' => 'Relativ');
-                    $columnformats[] = array('fill' => 0, 'align' => 'C');
+                    $columnwidth[] = ['value' => 18, 'mode' => 'Relativ'];
+                    $columnformats[] = ['fill' => 0, 'align' => 'C'];
                 break;
                 case 'feedback':
-                    $columnwidth[] = array('value' => 64, 'mode' => 'Relativ');
-                    $columnformats[] = array('fill' => 1, 'align' => 'L');
+                    $columnwidth[] = ['value' => 64, 'mode' => 'Relativ'];
+                    $columnformats[] = ['fill' => 1, 'align' => 'L'];
                 break;
                 case 'comments':
-                    $columnwidth[] = array('value' => 64, 'mode' => 'Relativ');
-                    $columnformats[] = array('fill' => 1, 'align' => 'L');
+                    $columnwidth[] = ['value' => 64, 'mode' => 'Relativ'];
+                    $columnformats[] = ['fill' => 1, 'align' => 'L'];
                     break;
                 case 'teachercomments':
-                    $columnwidth[] = array('value' => 64, 'mode' => 'Relativ');
-                    $columnformats[] = array('fill' => 1, 'align' => 'L');
+                    $columnwidth[] = ['value' => 64, 'mode' => 'Relativ'];
+                    $columnformats[] = ['fill' => 1, 'align' => 'L'];
                     break;
             }
         }
@@ -262,7 +264,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
         'organizer');
     $timedue = $timedue ? userdate($timedue) : get_string('pdf_notactive', 'organizer');
 
-    $mpdftable = new \mod_organizer\MTablePDF($orientation, $columnwidth);
+    $mpdftable = new MTablePDF($orientation, $columnwidth);
     $mpdftable->SetTitle(
         get_string('modulename', 'organizer') . " " .
         $organizername . "-" . get_string('printout', 'organizer')
@@ -288,7 +290,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
     $entries = organizer_fetch_table_entries($slots, $dosort);
     $rowspan = 0;
     foreach ($entries as $entry) {
-        $row = array();
+        $row = [];
         if ($rowspan == 0) {
             $rowspan = $entry->rowspan;
         }
@@ -301,14 +303,14 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     } else {
                         $datetime = userdate($entry->starttime, get_string('fulldatetimetemplate', 'organizer')) . ' - '
                         . userdate($entry->starttime + $entry->duration, get_string('timetemplate', 'organizer'));
-                        $row[] = array('data' => $datetime, 'rowspan' => $rowspan - 1);
+                        $row[] = ['data' => $datetime, 'rowspan' => $rowspan - 1];
                     }
                 break;
                 case 'location':
                     if ($rowspan != $entry->rowspan) {
                         $row[] = null;
                     } else {
-                        $row[] = array('data' => $entry->location, 'rowspan' => $rowspan - 1);
+                        $row[] = ['data' => $entry->location, 'rowspan' => $rowspan - 1];
                     }
                 break;
                 case 'teacher':
@@ -325,7 +327,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                             $name .= $conn . get_string('fullname_template', 'organizer', $a);
                             $conn = ", ";
                         }
-                        $row[] = array('data' => $name, 'rowspan' => $rowspan - 1, 'name' => 'teacher');
+                        $row[] = ['data' => $name, 'rowspan' => $rowspan - 1, 'name' => 'teacher'];
                     }
                 break;
                 case 'teachercomments':
@@ -333,7 +335,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     if ($rowspan != $entry->rowspan) {
                         $row[] = null;
                     } else {
-                        $row[] = array('data' => $teachercomments, 'rowspan' => $rowspan - 1);
+                        $row[] = ['data' => $teachercomments, 'rowspan' => $rowspan - 1];
                     }
                 break;
                 case 'groupname':
@@ -344,7 +346,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                             $groupname .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                         }
-                        $row[] = array('data' => $groupname, 'rowspan' => $rowspan - 1);
+                        $row[] = ['data' => $groupname, 'rowspan' => $rowspan - 1];
                     }
                 break;
                     // These columns cannot have rowspan.
@@ -356,14 +358,14 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     if (!$organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
                         $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                     }
-                    $row[] = array('data' => $name, 'rowspan' => 0, 'name' => 'participant');
+                    $row[] = ['data' => $name, 'rowspan' => 0, 'name' => 'participant'];
                 break;
                 case 'email':
-                    $row[] = array('data' => $entry->email, 'rowspan' => 0, 'name' => 'email');
+                    $row[] = ['data' => $entry->email, 'rowspan' => 0, 'name' => 'email'];
                 break;
                 case 'idnumber':
                     $idnumber = (isset($entry->idnumber) && $entry->idnumber !== '') ? $entry->idnumber : '';
-                    $row[] = array('data' => $idnumber, 'rowspan' => 0);
+                    $row[] = ['data' => $idnumber, 'rowspan' => 0];
                 break;
                 case 'attended':
                     $attended = $entry->attended ?? -1;
@@ -377,19 +379,19 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                         case 1:
                             $content = get_string('yes');
                     }
-                    $row[] = array('data' => $content, 'rowspan' => 0);
+                    $row[] = ['data' => $content, 'rowspan' => 0];
                 break;
                 case 'grade':
                     $grade = isset($entry->grade) && $entry->grade >= 0 ? sprintf("%01.2f", $entry->grade) : '';
-                    $row[] = array('data' => $grade, 'rowspan' => 0);
+                    $row[] = ['data' => $grade, 'rowspan' => 0];
                 break;
                 case 'feedback':
                     $feedback = isset($entry->feedback) && $entry->feedback !== '' ? $entry->feedback : '';
-                    $row[] = array('data' => $feedback, 'rowspan' => 0);
+                    $row[] = ['data' => $feedback, 'rowspan' => 0];
                 break;
                 case 'comments':
                     $comments = isset($entry->comments) && $entry->comments !== '' ? $entry->comments : '';
-                    $row[] = array('data' => $comments, 'rowspan' => 0);
+                    $row[] = ['data' => $comments, 'rowspan' => 0];
                     break;
             }
         }

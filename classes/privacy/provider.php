@@ -25,8 +25,10 @@
 
 namespace mod_organizer\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
+use coding_exception;
+use context;
+use context_module;
+use context_system;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\metadata\provider as metadataprovider;
 use core_privacy\local\request\contextlist;
@@ -39,6 +41,8 @@ use core_privacy\local\request\helper;
 use core_privacy\local\request\core_userlist_provider;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\approved_userlist;
+use dml_exception;
+use stdClass;
 
 /**
  * Privacy class for requesting user data.
@@ -167,8 +171,8 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
      *
      *
      * @param approved_contextlist $contextlist contexts that we are writing data out from.
-     * @throws \dml_exception
-     * @throws \coding_exception
+     * @throws dml_exception
+     * @throws coding_exception
      */
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
@@ -179,7 +183,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             return;
         }
 
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+        [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
         $sql = "SELECT c.id AS contextid, o.id AS organizerid, cm.id AS cmid
                   FROM {context} c
@@ -192,7 +196,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
         $user = $contextlist->get_user();
 
         foreach ($organizers as $organizer) {
-            $context = \context_module::instance($organizer->cmid);
+            $context = context_module::instance($organizer->cmid);
 
             // Check that the context is a module context.
             if ($context->contextlevel != CONTEXT_MODULE) {
@@ -213,23 +217,23 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
      * Stores the user preferences related to mod_organizer.
      *
      * @param  int $userid The user ID that we want the preferences for.
-     * @throws \dml_exception
-     * @throws \coding_exception
+     * @throws dml_exception
+     * @throws coding_exception
      */
     public static function export_user_preferences(int $userid) {
-        $context = \context_system::instance();
+        $context = context_system::instance();
     }
 
     /**
      * Fetches all of the user's appointments and adds them to the export
      *
-     * @param  \context $context
+     * @param  context $context
      * @param  $organizer
-     * @param  \stdClass $user
+     * @param  stdClass $user
      * @param  array $path Current directory path that we are exporting to.
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    protected static function export_appointments(\context $context, $organizer, \stdClass $user) {
+    protected static function export_appointments(context $context, $organizer, stdClass $user) {
         global $DB;
 
         // Fetch all appointments of participants or trainers.
@@ -327,10 +331,10 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
     /**
      * Formats and then exports the appointment data for participants.
      *
-     * @param  \context $context
-     * @param  \stdClass $appointment
+     * @param  context $context
+     * @param  stdClass $appointment
      */
-    protected static function export_appointment_participant(\context $context, \stdClass $appointment) {
+    protected static function export_appointment_participant(context $context, stdClass $appointment) {
         $appointment->groupid = is_null($appointment->groupid) ? 0 : $appointment->groupid;
         $appointment->teacherapplicantid = is_null($appointment->teacherapplicantid) ? 0 : $appointment->teacherapplicantid;
         $appointmentdata = (object)[
@@ -354,10 +358,10 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
     /**
      * Formats and then exports the appointment data for participants in waiting queue.
      *
-     * @param  \context $context
-     * @param  \stdClass $inqueue
+     * @param  context $context
+     * @param  stdClass $inqueue
      */
-    protected static function export_appointment_inqueue(\context $context, \stdClass $inqueue) {
+    protected static function export_appointment_inqueue(context $context, stdClass $inqueue) {
         $inqueue->groupid = is_null($inqueue->groupid) ? 0 : $inqueue->groupid;
         $inqueue->teacherapplicantid = is_null($inqueue->teacherapplicantid) ? 0 : $inqueue->teacherapplicantid;
         $inqueuedata = (object)[
@@ -374,10 +378,10 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
     /**
      * Formats and then exports the appointment data for teachers which assigned a participant to a slot.
      *
-     * @param  \context $context
-     * @param  \stdClass $appointment
+     * @param  context $context
+     * @param  stdClass $appointment
      */
-    protected static function export_appointment_teacherapplicant(\context $context, \stdClass $appointment) {
+    protected static function export_appointment_teacherapplicant(context $context, stdClass $appointment) {
         $appointmentdata = (object)[
             'Appointment slot from' => transform::datetime($appointment->starttime),
             'Appointment slot to' => transform::datetime($appointment->starttime + $appointment->duration),
@@ -393,10 +397,10 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
     /**
      * Formats and then exports the appointment data for teachers assigned to a slot.
      *
-     * @param  \context $context
-     * @param  \stdClass $appointment
+     * @param  context $context
+     * @param  stdClass $appointment
      */
-    protected static function export_appointment_teacher(\context $context, \stdClass $appointment) {
+    protected static function export_appointment_teacher(context $context, stdClass $appointment) {
         $appointmentdata = (object)[
             'Appointment slot from' => transform::datetime($appointment->starttime),
             'Appointment slot to' => transform::datetime($appointment->starttime + $appointment->duration),
@@ -410,10 +414,10 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
     /**
      * Delete all use data which matches the specified context.
      *
-     * @param \context $context The module context.
-     * @throws \dml_exception
+     * @param context $context The module context.
+     * @throws dml_exception
      */
-    public static function delete_data_for_all_users_in_context(\context $context) {
+    public static function delete_data_for_all_users_in_context(context $context) {
         global $DB;
 
         if ($context->contextlevel == CONTEXT_MODULE) {
@@ -442,8 +446,8 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
      * Delete all user data for the specified user, in the specified contexts.
      *
      * @param approved_contextlist $contextlist The approved contexts and user information to delete information for.
-     * @throws \dml_exception
-     * @throws \coding_exception
+     * @throws dml_exception
+     * @throws coding_exception
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
@@ -456,7 +460,7 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             return;
         }
 
-        list($ctxsql, $ctxparams) = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED, 'ctx');
+        [$ctxsql, $ctxparams] = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED, 'ctx');
 
         // Apparently we can't trust anything that comes via the context.
         // Go go mega query to find out it we have an grouptool context that matches an existing grouptool.
@@ -484,14 +488,14 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             return;
         }
 
-        list($select, $params) = $DB->get_in_or_equal($organizerids);
+        [$select, $params] = $DB->get_in_or_equal($organizerids);
         $slotids = $DB->get_fieldset_select('organizer_slots', 'id', 'organizerid ' . $select, $params);
         if (empty($slotids)) {
             return;
         }
 
         // Delete all appointments of this user.
-        list($slotidssql, $slotidsparams) = $DB->get_in_or_equal($slotids, SQL_PARAMS_NAMED);
+        [$slotidssql, $slotidsparams] = $DB->get_in_or_equal($slotids, SQL_PARAMS_NAMED);
         $DB->delete_records_select('organizer_slot_appointments',
             "(userid = :userid) AND slotid " . $slotidssql,
             $slotidsparams + ['userid' => $user->id]);
@@ -529,11 +533,11 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
                 // Get slots of this organizer instance.
                 $slotids = $DB->get_fieldset_select('organizer_slots', 'id', 'organizerid = ?', [$organizer->id]);
                 if (empty($slotids)) {
-                    $slotids = array(0);
+                    $slotids = [0];
                 }
-                list($slotidssql, $slotidsparams) = $DB->get_in_or_equal($slotids, SQL_PARAMS_NAMED);
+                [$slotidssql, $slotidsparams] = $DB->get_in_or_equal($slotids, SQL_PARAMS_NAMED);
 
-                list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+                [$usersql, $userparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
                 // Delete all appointments of these users in these slots.
                 $DB->delete_records_select('organizer_slot_appointments', "slotid " . $slotidssql . " AND userid " . $usersql,
                     $slotidsparams + $userparams);

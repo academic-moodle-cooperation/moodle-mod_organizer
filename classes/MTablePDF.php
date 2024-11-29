@@ -28,6 +28,11 @@
 
 namespace mod_organizer;
 
+use coding_exception;
+use MoodleExcelWorkbook;
+use MoodleODSWorkbook;
+use pdf;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/pdflib.php');
@@ -43,7 +48,7 @@ require_once($CFG->libdir . '/pdflib.php');
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class MTablePDF extends \pdf {
+class MTablePDF extends pdf {
     /**
  * Portrait orientation in PDF
 */
@@ -118,7 +123,7 @@ class MTablePDF extends \pdf {
     /**
      * @var $columnwidths columns widths
      */
-    private $columnwidths = array();
+    private $columnwidths = [];
     /**
      * @var $titles columns titles
      */
@@ -130,21 +135,21 @@ class MTablePDF extends \pdf {
     /**
      * @var $headerformat
      */
-    private $headerformat = array('title' => array(), 'desc' => array());
+    private $headerformat = ['title' => [], 'desc' => []];
 
     /**
      * @var $data tables data
      */
-    private $data = array();
+    private $data = [];
 
     /**
      * @var $header
      */
-    private $header = array();
+    private $header = [];
     /**
      * @var $header
      */
-    private $align = array();
+    private $align = [];
 
     /**
      * Constructor
@@ -163,11 +168,11 @@ class MTablePDF extends \pdf {
         $this->columnwidths = $columnwidths;
 
         $this->orientation = $orientation;
-        $this->columnformat = array();
+        $this->columnformat = [];
         for ($i = 0; $i < count($columnwidths); $i++) {
-            $this->columnformat[] = array();
-            $this->columnformat[$i][] = array("fill" => 0, "align" => "L");
-            $this->columnformat[$i][] = array("fill" => 1, "align" => "L");
+            $this->columnformat[] = [];
+            $this->columnformat[$i][] = ["fill" => 0, "align" => "L"];
+            $this->columnformat[$i][] = ["fill" => 1, "align" => "L"];
         }
     }
 
@@ -178,7 +183,7 @@ class MTablePDF extends \pdf {
      */
     public function setcolumnformat($columnformat) {
         if (count($columnformat) != count($this->columnwidths)) {
-            throw new \coding_exception(
+            throw new coding_exception(
                 "Columnformat (" . count($columnformat) . ") count doesnt match " .
                 "column count (" . count($this->columnwidths) . ")"
             );
@@ -206,8 +211,8 @@ class MTablePDF extends \pdf {
     public function setheadertext($title1, $desc1, $title2, $desc2, $title3, $desc3,
         $title4, $desc4, $title5, $desc5, $title6, $desc6
     ) {
-        $this->header = array($title1, $desc1, $title2, $desc2, $title3, $desc3,
-                $title4, $desc4, $title5, $desc5, $title6, $desc6);
+        $this->header = [$title1, $desc1, $title2, $desc2, $title3, $desc3,
+                $title4, $desc4, $title5, $desc5, $title6, $desc6];
     }
 
     /**
@@ -313,7 +318,7 @@ class MTablePDF extends \pdf {
      */
     public function settitles($titles) {
         if (count($titles) != count($this->columnwidths)) {
-            throw new \coding_exception("Error: Title count doesnt match column count");
+            throw new coding_exception("Error: Title count doesnt match column count");
             exit();
         }
 
@@ -367,7 +372,7 @@ class MTablePDF extends \pdf {
      */
     public function addrow($row) {
         if (count($row) != count($this->columnwidths)) {
-            throw new \coding_exception(
+            throw new coding_exception(
                 "number of columns from row (" . count($row) . ") does not match " .
                 "the number defined (" . count($this->columnwidths) . ")"
             );
@@ -383,23 +388,23 @@ class MTablePDF extends \pdf {
 
         if ($fastmode) {
             // Fast mode.
-            $tmp = array();
+            $tmp = [];
 
             foreach ($row as $idx => $value) {
                 if (is_array($value)) {
-                    throw new \coding_exception("Error: if you want to add a row using the fast mode, you cannot pass me an array");
+                    throw new coding_exception("Error: if you want to add a row using the fast mode, you cannot pass me an array");
                 }
 
-                $tmp[] = array("rowspan" => 0, "data" => $value);
+                $tmp[] = ["rowspan" => 0, "data" => $value];
             }
 
             $row = $tmp;
         } else {
             foreach ($row as $idx => $value) {
                 if (!is_array($value)) {
-                    $row[$idx] = array("rowspan" => 0, "data" => $value);
+                    $row[$idx] = ["rowspan" => 0, "data" => $value];
                 } else if (!isset($value["data"])) {
-                    $row[$idx] = array("rowspan" => 0, "data" => " ");
+                    $row[$idx] = ["rowspan" => 0, "data" => " "];
                 } else {
                     if (!isset($value["rowspan"])) {
                         $row[$idx]["rowspan"] = 0;
@@ -492,7 +497,7 @@ class MTablePDF extends \pdf {
         $sumfix = 0;
         $sumrelativ = 0;
 
-        $rowspans = array();
+        $rowspans = [];
         $allfixed = true;
         $sum = 0;
 
@@ -507,12 +512,12 @@ class MTablePDF extends \pdf {
                 $sumrelativ += $width['value'];
                 $allfixed = false;
             } else {
-                throw new \coding_exception("ERROR: unvalid columnwidth format");
+                throw new coding_exception("ERROR: unvalid columnwidth format");
                 exit();
             }
         }
 
-        $w = array();
+        $w = [];
         foreach ($this->columnwidths as $idx => $width) {
             if ($allfixed) {
                 $w[$idx] = round(
@@ -581,7 +586,7 @@ class MTablePDF extends \pdf {
         // Data.
         $fill = 0;
 
-        $rowheights = array();
+        $rowheights = [];
 
         // Calculate line heights for not rowspanned fields.
         foreach ($this->data as $rownum => $row) {
@@ -628,7 +633,7 @@ class MTablePDF extends \pdf {
             $fsize = self::FONTSIZE_LARGE;
         }
 
-        $spaceonpage = array();
+        $spaceonpage = [];
 
         if ($this->fontsize == self::FONTSIZE_SMALL) {
             if ($this->orientation == self::PORTRAIT) {
@@ -657,7 +662,7 @@ class MTablePDF extends \pdf {
                 $spaceonpage[1] = 28;
             }
         } else {
-            throw new \coding_exception("an unexpected error occured. Please report this to your administrator.");
+            throw new coding_exception("an unexpected error occured. Please report this to your administrator.");
             exit();
         }
 
@@ -798,11 +803,11 @@ class MTablePDF extends \pdf {
         $time = userdate($time);
         $worksheet = $workbook->add_worksheet($time);
 
-        $headlineprop = array('size' => 12,
+        $headlineprop = ['size' => 12,
             'bold' => 1,
             'bottom' => 1,
             'align' => 'center',
-            'v_align' => 'vcenter');
+            'v_align' => 'vcenter'];
         $headlineformat = $workbook->add_format($headlineprop);
         $headlineformat->set_left(1);
         $headlinefirst = $workbook->add_format($headlineprop);
@@ -821,9 +826,9 @@ class MTablePDF extends \pdf {
             $hdrright->set_align('left');
         }
 
-        $textprop = array('size' => 10,
+        $textprop = ['size' => 10,
             'align' => 'left',
-            'v_align' => 'vcenter');
+            'v_align' => 'vcenter'];
         $text = $workbook->add_format($textprop);
         $text->set_left(1);
         $textfirst = $workbook->add_format($textprop);
@@ -904,7 +909,7 @@ class MTablePDF extends \pdf {
 
         include_once($CFG->libdir . "/excellib.class.php");
 
-        $workbook = new \MoodleExcelWorkbook("-", 'excel5');
+        $workbook = new MoodleExcelWorkbook("-", 'excel5');
 
         $this->fill_workbook($workbook);
 
@@ -922,7 +927,7 @@ class MTablePDF extends \pdf {
 
         include_once($CFG->libdir . "/excellib.class.php");
 
-        $workbook = new \MoodleExcelWorkbook("-", 'Excel2007');
+        $workbook = new MoodleExcelWorkbook("-", 'Excel2007');
 
         $this->fill_workbook($workbook);
 
@@ -940,7 +945,7 @@ class MTablePDF extends \pdf {
 
         include_once($CFG->libdir . "/odslib.class.php");
 
-        $workbook = new \MoodleODSWorkbook("-");
+        $workbook = new MoodleODSWorkbook("-");
 
         $this->fill_workbook($workbook);
 
@@ -955,7 +960,7 @@ class MTablePDF extends \pdf {
      * @param char   $sep      Character used to separate the data (usually tab or semicolon)
      */
     public function get_csv($filename, $sep = "\t") {
-        $lines = array();
+        $lines = [];
 
         // Course information.
         if (is_countable($this->header)) {
@@ -971,7 +976,7 @@ class MTablePDF extends \pdf {
 
         // Data.
         foreach ($this->data as $row) {
-            $r = array();
+            $r = [];
             foreach ($row as $idx => $cell) {
                 if (is_null($cell['data'])) {
                     $cell['data'] = $prev[$idx]['data'];

@@ -25,13 +25,15 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_organizer\event\appointment_commented;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_action_form_comment.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+[$cm, $course, $organizer, $context] = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
 
@@ -47,25 +49,25 @@ $PAGE->set_heading($course->fullname);
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id));
+$redirecturl = new moodle_url('/mod/organizer/view.php', ['id' => $cm->id]);
 
-$logurl = new moodle_url('/mod/organizer/comment_edit.php', array('id' => $cm->id));
+$logurl = new moodle_url('/mod/organizer/comment_edit.php', ['id' => $cm->id]);
 
 require_capability('mod/organizer:comment', $context);
 
-$mform = new organizer_comment_slot_form(null, array('id' => $cm->id, 'slot' => $slot));
+$mform = new organizer_comment_slot_form(null, ['id' => $cm->id, 'slot' => $slot]);
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
 
-    $app = $DB->get_record('organizer_slot_appointments', array('slotid' => $slot, 'userid' => $USER->id));
+    $app = $DB->get_record('organizer_slot_appointments', ['slotid' => $slot, 'userid' => $USER->id]);
 
     organizer_update_comments($app->id, $data->comments);
 
-    $event = \mod_organizer\event\appointment_commented::create(
-        array(
+    $event = appointment_commented::create(
+        [
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context,
-        )
+        ]
     );
     $event->trigger();
 

@@ -42,7 +42,7 @@ if ($ADMIN->fulltree) {
     // E-mail teachers.
 
     // Appointment digest mode.
-    $pickeroptions = array();
+    $pickeroptions = [];
     $pickeroptions[ORGANIZER_MESSAGES_NONE] = get_string('messages_none', 'organizer');
     $pickeroptions[ORGANIZER_MESSAGES_RE_UNREG] = get_string('messages_re_unreg', 'organizer');
     $pickeroptions[ORGANIZER_MESSAGES_ALL] = get_string('messages_all', 'organizer');
@@ -53,7 +53,7 @@ if ($ADMIN->fulltree) {
                     get_string('configemailteachers', 'organizer'), 1, $pickeroptions));
 
     // Appointment digest time.
-    $pickeroptions = array();
+    $pickeroptions = [];
     $pickeroptions['never'] = get_string('configdontsend', 'organizer');
     for ($i = 0; $i < 24; $i++) {
         $pickeroptions[$i * 3600] = userdate($i * 3600, get_string('timetemplate', 'organizer'), 0);
@@ -65,7 +65,7 @@ if ($ADMIN->fulltree) {
                     get_string('configdigest', 'organizer'), 'never', $pickeroptions));
 
     // Registration end after regsistration start.
-    $abschoices = array();
+    $abschoices = [];
     $abschoices['never'] = get_string('confignever', 'organizer');
     $abschoices['+1 week'] = '1 ' . get_string('configweek', 'organizer');
     $abschoices['+2 weeks'] = '2 ' . get_string('configweeks', 'organizer');
@@ -84,7 +84,7 @@ if ($ADMIN->fulltree) {
                     get_string('configabsolutedeadline', 'organizer'), 'never', $abschoices));
 
     // Relative deadline before the slot date for sending remembrance email to students.
-    $relchoices = array();
+    $relchoices = [];
     $relchoices[60 * 1] = '1 ' . get_string('configminute', 'organizer') . ' ' . get_string('configahead', 'organizer');
     $relchoices[60 * 5] = '5 ' . get_string('configminutes', 'organizer') . ' ' . get_string('configahead', 'organizer');
     $relchoices[60 * 15] = '15 ' . get_string('configminutes', 'organizer') . ' ' . get_string('configahead', 'organizer');
@@ -103,13 +103,13 @@ if ($ADMIN->fulltree) {
                     get_string('relativedeadline', 'organizer'),
                     get_string('configrelativedeadline', 'organizer'), 86400, $relchoices));
 
-    $yesno = array ('0' => get_string('no'), '1' => get_string('yes'));
+    $yesno = ['0' => get_string('no'), '1' => get_string('yes')];
     $settings->add(
             new admin_setting_configselect('organizer/allowcreationofpasttimeslots',
                     get_string('allowcreationofpasttimeslots', 'organizer'),
                     get_string('configallowcreationofpasttimeslots', 'organizer'), 0, $yesno));
 
-    // Show participant's identity in registration view
+    // Show participant's identity in registration view.
     $settings->add(new admin_setting_configcheckbox('organizer/dontshowidentity', get_string('cfg_dontshowidentity', 'organizer'),
         get_string('cfg_dontshowidentity_desc', 'organizer'), 0));
 
@@ -118,7 +118,8 @@ if ($ADMIN->fulltree) {
         get_string('cfg_limitedwidth_desc', 'organizer'), 0));
 
     // Synchronize organizer slots with Moodle group changes.
-    $settings->add(new admin_setting_configcheckbox('organizer/synchronizegroupmembers', get_string('synchronizegroupmembers', 'organizer'),
+    $settings->add(new admin_setting_configcheckbox('organizer/synchronizegroupmembers',
+        get_string('synchronizegroupmembers', 'organizer'),
         get_string('synchronizegroupmembers_help', 'organizer'), 0));
 
     // Predefine locations for slots, make location mandatory.

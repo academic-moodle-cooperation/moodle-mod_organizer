@@ -25,13 +25,15 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_organizer\event\slot_updated;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_action_form_edit.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+[$cm, $course, $organizer, $context] = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
 
@@ -55,7 +57,7 @@ $PAGE->set_heading($course->fullname);
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode));
+$redirecturl = new moodle_url('/mod/organizer/view.php', ['id' => $cm->id, 'mode' => $mode]);
 
 $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode;
 
@@ -68,7 +70,7 @@ if (!$slots) {
 }
 
 $mform = new organizer_edit_slots_form(
-    null, array('id' => $cm->id, 'mode' => $mode, 'slots' => $slots));
+    null, ['id' => $cm->id, 'mode' => $mode, 'slots' => $slots]);
 
 if ($mform->is_cancelled()) {
     redirect($redirecturl);
@@ -94,11 +96,11 @@ if ($mform->is_cancelled()) {
     $redirecturl->param('slots', implode(',', array_values($slotids)));
     $newurl = $redirecturl->out();
 
-    $event = \mod_organizer\event\slot_updated::create(
-        array(
+    $event = slot_updated::create(
+        [
             'objectid' => $PAGE->cm->id,
             'context' => $PAGE->context,
-        )
+        ]
     );
     $event->trigger();
 
@@ -106,6 +108,6 @@ if ($mform->is_cancelled()) {
 } else {
     organizer_display_form($mform, get_string('title_edit', 'organizer'));
 }
-throw new \coding_exception('If you see this, something went wrong with edit action!');
+throw new coding_exception('If you see this, something went wrong with edit action!');
 
 die;

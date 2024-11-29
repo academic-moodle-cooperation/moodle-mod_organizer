@@ -53,7 +53,7 @@ class organizer_delete_slots_form extends moodleform {
 
         if (isset($data['slots'])) {
             if (empty($data['slots'])) {
-                $slots = array(0);
+                $slots = [0];
             } else {
                 $slots = $data['slots'];
             }
@@ -103,11 +103,11 @@ class organizer_delete_slots_form extends moodleform {
             }
         }
 
-        $buttonarray = array();
+        $buttonarray = [];
         $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_delete', 'organizer'));
         $buttonarray[] = &$mform->createElement('cancel');
 
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
         $mform->closeHeaderBefore('buttonar');
     }
 }

@@ -20,14 +20,12 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Define all the backup steps that will be used by the backup_organizer_activity_task
@@ -41,8 +39,8 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
     protected function define_structure() {
         // Define each element separated.
         $organizer = new backup_nested_element(
-            'organizer', array('id'),
-            array(
+            'organizer', ['id'],
+            [
                 'course',
                 'name',
                 'intro',
@@ -73,35 +71,35 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
                 'singleslotprintfield8',
                 'singleslotprintfield9',
                 'userslotsmin',
-                'userslotsmax')
+                'userslotsmax']
         );
 
         $slots = new backup_nested_element('slots');
         $slot = new backup_nested_element(
-            'slot', array('id'),
-            array('organizerid', 'starttime', 'duration', 'gap', 'location', 'locationlink', 'maxparticipants',
+            'slot', ['id'],
+            ['organizerid', 'starttime', 'duration', 'gap', 'location', 'locationlink', 'maxparticipants',
                         'visibility', 'availablefrom', 'timemodified', 'notificationtime', 'comments',
-            'teachervisible', 'eventid', 'notified', 'visible', 'coursegroup')
+            'teachervisible', 'eventid', 'notified', 'visible', 'coursegroup']
         );
 
         $appointments = new backup_nested_element('appointments');
         $appointment = new backup_nested_element(
-            'appointment', array('id'),
-            array('slotid', 'userid', 'groupid', 'applicantid', 'attended', 'grade',
+            'appointment', ['id'],
+            ['slotid', 'userid', 'groupid', 'applicantid', 'attended', 'grade',
             'feedback', 'comments', 'eventid', 'notified', 'allownewappointments', 'teacherapplicantid',
-                    'teacherapplicanttimemodified')
+                    'teacherapplicanttimemodified']
         );
 
         $queues = new backup_nested_element('queues');
         $queue = new backup_nested_element(
-            'queue', array('id'),
-            array('slotid', 'userid', 'groupid', 'applicantid', 'eventid', 'notified')
+            'queue', ['id'],
+            ['slotid', 'userid', 'groupid', 'applicantid', 'eventid', 'notified']
         );
 
         $trainers = new backup_nested_element('trainers');
         $trainer = new backup_nested_element(
-                'trainer', array('id'),
-                array('slotid', 'trainerid', 'eventid')
+                'trainer', ['id'],
+                ['slotid', 'trainerid', 'eventid']
         );
 
         // Build the tree.
@@ -118,15 +116,15 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
         $trainers->add_child($trainer);
 
         // Define sources.
-        $organizer->set_source_table('organizer', array('id' => backup::VAR_ACTIVITYID));
-        $slot->set_source_table('organizer_slots', array('organizerid' => backup::VAR_PARENTID));
+        $organizer->set_source_table('organizer', ['id' => backup::VAR_ACTIVITYID]);
+        $slot->set_source_table('organizer_slots', ['organizerid' => backup::VAR_PARENTID]);
 
         // To know if we are including userinfo.
         $userinfo = $this->get_setting_value('userinfo');
         if ($userinfo) {
-            $appointment->set_source_table('organizer_slot_appointments', array('slotid' => backup::VAR_PARENTID));
-            $queue->set_source_table('organizer_slot_queues', array('slotid' => backup::VAR_PARENTID));
-            $trainer->set_source_table('organizer_slot_trainer', array('slotid' => backup::VAR_PARENTID));
+            $appointment->set_source_table('organizer_slot_appointments', ['slotid' => backup::VAR_PARENTID]);
+            $queue->set_source_table('organizer_slot_queues', ['slotid' => backup::VAR_PARENTID]);
+            $trainer->set_source_table('organizer_slot_trainer', ['slotid' => backup::VAR_PARENTID]);
         }
 
         // Annotate the user id's where required.
