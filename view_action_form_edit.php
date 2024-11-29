@@ -163,7 +163,7 @@ class organizer_edit_slots_form extends moodleform {
             }
             if (!isset($defaults['notificationtime']) && !$defset['notificationtime']) {
                 $defset['notificationtime'] = true;
-                $timeunit = $this->_organizer_figure_out_unit($slot->notificationtime);
+                $timeunit = $this->organizer_figure_out_unit($slot->notificationtime);
                 $defaults['notificationtime']['number'] = $slot->notificationtime / $timeunit;
                 $defaults['notificationtime']['timeunit'] = $timeunit;
             } else {
@@ -278,7 +278,7 @@ class organizer_edit_slots_form extends moodleform {
         $mform->addElement('hidden', 'mod_teachervisible', 0);
         $mform->setType('mod_teachervisible', PARAM_BOOL);
 
-        $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->_get_visibilities());
+        $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->get_visibilities());
         $mform->setType('visibility', PARAM_INT);
         $mform->addElement('hidden', 'mod_visibility', 0);
         $mform->setType('mod_visibility', PARAM_BOOL);
@@ -493,7 +493,7 @@ class organizer_edit_slots_form extends moodleform {
      * @param int $time
      * @return number
      */
-    private function _organizer_figure_out_unit($time) {
+    private function organizer_figure_out_unit($time) {
         if ($time % 86400 == 0) {
             return 86400;
         } else if ($time % 3600 == 0) {
@@ -507,7 +507,7 @@ class organizer_edit_slots_form extends moodleform {
     /**
      * @return string[]
      */
-    private function _get_visibilities() {
+    private function get_visibilities() {
 
         $visibilities = [];
         $visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('slot_visible', 'organizer');
@@ -519,7 +519,7 @@ class organizer_edit_slots_form extends moodleform {
     /**
      * @return mixed
      */
-    private function _get_instance_visibility() {
+    private function get_instance_visibility() {
 
         $organizer = organizer_get_organizer();
 

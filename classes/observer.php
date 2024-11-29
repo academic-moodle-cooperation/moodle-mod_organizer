@@ -40,7 +40,7 @@ class mod_organizer_observer {
      *
      * @param user_enrolment_deleted $event
      */
-    public static function user_enrolment_deleted(/*\core\event\user_enrolment_deleted*/ $event) {
+    public static function user_enrolment_deleted($event) {
         global $DB;
         require_once(__DIR__ . '/../locallib.php');
         require_once(__DIR__ . '/../messaging.php');
