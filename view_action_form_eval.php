@@ -26,7 +26,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
@@ -40,7 +40,7 @@ class organizer_evaluate_slots_form extends moodleform {
     protected function definition() {
         global $PAGE, $DB;
 
-        $PAGE->requires->js_call_amd('mod_organizer/evalform', 'init', array(false));
+        $PAGE->requires->js_call_amd('mod_organizer/evalform', 'init', [false]);
 
         $mform = $this->_form;
         $data = $this->_customdata;
@@ -57,8 +57,8 @@ class organizer_evaluate_slots_form extends moodleform {
         $now = time();
 
         if ($slotid = reset($data['slots'])) {
-            $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
-            $organizer = $DB->get_record('organizer', array('id' => $slot->organizerid));
+            $slot = $DB->get_record('organizer_slots', ['id' => $slotid]);
+            $organizer = $DB->get_record('organizer', ['id' => $slot->organizerid]);
         }
 
         $i = 0;
@@ -68,14 +68,14 @@ class organizer_evaluate_slots_form extends moodleform {
             $mform->setType("slots[$i]", PARAM_INT);
             $i++;
 
-            $slot = $DB->get_record('organizer_slots', array('id' => $slotid));
+            $slot = $DB->get_record('organizer_slots', ['id' => $slotid]);
 
             // Build Slot datetime string.
             $slotdatetime = html_writer::span(organizer_date_time($slot, true), '');
             if ($slot->starttime > $now) {
                 $slotdatetime .= html_writer::span(get_string('eval_not_occured', 'organizer'), 'ml-2 text-danger');
             }
-            $appgroup = array();
+            $appgroup = [];
             // Slot checkbox.
             $checkboxname = "slotenable[{$slotid}]";
             $box = $appgroup[] = $mform->createElement('checkbox', $checkboxname, '', $slotdatetime);
@@ -101,19 +101,19 @@ class organizer_evaluate_slots_form extends moodleform {
                         WHERE a.slotid = :slotid
                         ORDER BY u.lastname ASC, u.firstname ASC";
             }
-            $param = array('slotid' => $slot->id);
+            $param = ['slotid' => $slot->id];
             $apps = $DB->get_records_sql($query, $param);
 
             // If groupmode write groupname.
             if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS && count($apps) != 0) {
                 $app = reset($apps);
-                $groupname = $DB->get_field('groups', 'name', array('id' => $app->groupid));
+                $groupname = $DB->get_field('groups', 'name', ['id' => $app->groupid]);
                 $mform->addElement($mform->createElement('static', 'groupname', '', $groupname));
             }
 
             // If no apps write it and deactivate slot.
             if (count($apps) == 0) {
-                $appgroup = array();
+                $appgroup = [];
                 $appgroup[] = $mform->createElement('static', '', '', get_string('eval_no_participants', 'organizer'));
                 $mform->addElement($mform->createElement('group', '', '', $appgroup, '', false));
                 $mform->setDefault($checkboxname, false);
@@ -123,12 +123,12 @@ class organizer_evaluate_slots_form extends moodleform {
             // For each appointment of this slot.
             foreach ($apps as $app) {
                 $name = "apps[{$app->id}]";
-                $namelink = html_writer::div($this->_organizer_get_name_link($app->userid), 'd-block');
+                $namelink = html_writer::div($this->organizer_get_name_link($app->userid), 'd-block');
                 $mform->addElement($mform->createElement('static', '', '', $namelink));
                 // Formgroup evaluation.
-                $appgroup = array();
+                $appgroup = [];
                 $appgroup[] = $mform->createElement('advcheckbox', 'attended',
-                    get_string('eval_attended', 'organizer'), '', null, array(0, 1));
+                    get_string('eval_attended', 'organizer'), '', null, [0, 1]);
                 $maxgrade = $organizer->grade;
                 if ($maxgrade != 0) {
                     $grademenu = organizer_make_grades_menu_organizer($maxgrade);
@@ -136,7 +136,7 @@ class organizer_evaluate_slots_form extends moodleform {
                 }
                 $appgroup[] = $mform->createElement('static', '', '', '&nbsp;' .
                     get_string('eval_feedback', 'organizer') . ':&nbsp;');
-                $appgroup[] = $mform->createElement('text', 'feedback', null, array('class' => 'w-25'));
+                $appgroup[] = $mform->createElement('text', 'feedback', null, ['class' => 'w-25']);
                 $mform->disabledif ("{$name}[attended]", $checkboxname);
                 $mform->disabledif ("{$name}[grade]", $checkboxname);
                 $mform->disabledif ("{$name}[feedback]", $checkboxname);
@@ -157,10 +157,10 @@ class organizer_evaluate_slots_form extends moodleform {
      * @param int $id
      * @return string
      */
-    private function _organizer_get_name_link($id) {
+    private function organizer_get_name_link($id) {
         global $DB;
-        $profileurl = new moodle_url('/user/profile.php', array('id' => $id));
-        $user = $DB->get_record('user', array('id' => $id));
+        $profileurl = new moodle_url('/user/profile.php', ['id' => $id]);
+        $user = $DB->get_record('user', ['id' => $id]);
         $a = new stdClass();
         $a->firstname = $user->firstname;
         $a->lastname = $user->lastname;

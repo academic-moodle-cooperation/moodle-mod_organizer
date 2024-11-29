@@ -80,7 +80,7 @@ foreach ($courses as $course) {
 
         echo "Processing COURSE id = {$course->id}, name = \"{$course->fullname}\"...\n";
 
-        $schedulers = $DB->get_records("scheduler", array('course' => $course->id));
+        $schedulers = $DB->get_records("scheduler", ['course' => $course->id]);
 
         foreach ($schedulers as $scheduler) {
             echo "Processing scheduler id = {$scheduler->id}, name = \"{$scheduler->name}\"...\n";
@@ -111,20 +111,20 @@ foreach ($courses as $course) {
                 "SELECT *
             FROM {course_sections} cs
             WHERE cs.sequence LIKE CONCAT('%', :cmid, '%') AND cs.course = :courseid",
-                array('cmid' => $cmold->id, 'courseid' => $cm->course)
+                ['cmid' => $cmold->id, 'courseid' => $cm->course]
             );
 
             if (!$section) {
                 echo "WARNING! This organizer has already been migrated! Reverting and skipping...\n";
-                $DB->delete_records("organizer", array('id' => $organizer->id));
-                $DB->delete_records("course_modules", array('id' => $cm->id));
+                $DB->delete_records("organizer", ['id' => $organizer->id]);
+                $DB->delete_records("course_modules", ['id' => $cm->id]);
                 continue;
             }
 
             $section->sequence = str_replace($cmold->id, $cm->id, $section->sequence);
 
             $DB->update_record('course_sections', $section);
-            $DB->set_field('course_modules', 'section', $section->id, array('id' => $cm->id));
+            $DB->set_field('course_modules', 'section', $section->id, ['id' => $cm->id]);
 
             migrate_slots($cm, $scheduler, $organizer);
         }
@@ -157,7 +157,7 @@ function migrate_slots($cm, $scheduler, $organizer) {
         GROUP BY scheduler, starttime, duration, teacher, appointmentlocation";
 
     echo "\tReading associated slots from scheduler... ";
-    $oldslots = $DB->get_records_sql($query, array('scheduler' => $scheduler->id));
+    $oldslots = $DB->get_records_sql($query, ['scheduler' => $scheduler->id]);
     echo "done.\n";
 
     $slotcount = 0;
@@ -165,7 +165,7 @@ function migrate_slots($cm, $scheduler, $organizer) {
         echo "\tProcessing slot tempid = {$oldslot->tempid}...\n";
         echo "\t\tReading slot data... ";
         if (ORGANIZER_CHECK_USERS) {
-            if (!$DB->get_record('user', array('id' => $oldslot->teacher))) {
+            if (!$DB->get_record('user', ['id' => $oldslot->teacher])) {
                 echo "\t\tTeacher with user id = {$oldslot->teacher} does not exist in the database! Skipping slot entry.";
                 continue;
             }
@@ -204,14 +204,14 @@ function migrate_slots($cm, $scheduler, $organizer) {
 
         $oldapps = $DB->get_records_sql(
             $query,
-            array('schedulerid' => $oldslot->scheduler, 'starttime' => $oldslot->starttime,
-            'teacherid' => $oldslot->teacher)
+            ['schedulerid' => $oldslot->scheduler, 'starttime' => $oldslot->starttime,
+            'teacherid' => $oldslot->teacher]
         );
 
         $appcount = 0;
         foreach ($oldapps as $oldapp) {
             if (ORGANIZER_CHECK_USERS) {
-                if (!$DB->get_record('user', array('id' => $oldapp->student))) {
+                if (!$DB->get_record('user', ['id' => $oldapp->student])) {
                     echo "\t\tStudent with user id = {$oldapp->student} does not exist in the database!
                         Skipping appointment entry.";
                     continue;
@@ -252,7 +252,7 @@ function add_course_module_x($cmold, $organizer) {
 
     $cm = new stdClass();
     $cm->course = $organizer->course;
-    $cm->module = $DB->get_field('modules', 'id', array('name' => 'organizer'));
+    $cm->module = $DB->get_field('modules', 'id', ['name' => 'organizer']);
     $cm->instance = $organizer->id;
     $cm->section = 0; // Will be changed later.
     $cm->idnumber = '';

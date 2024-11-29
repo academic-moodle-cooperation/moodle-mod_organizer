@@ -34,7 +34,7 @@ require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
-class organizer_delete_appointment_form extends \moodleform {
+class organizer_delete_appointment_form extends moodleform {
 
     protected function definition() {
         global $DB;
@@ -47,8 +47,8 @@ class organizer_delete_appointment_form extends \moodleform {
         $mform->addElement('hidden', 'appid', $data['appid']);
         $mform->setType('appid', PARAM_INT);
 
-        $appointment = $DB->get_record('organizer_slot_appointments', array('id' => $data['appid']));
-        $slot = $DB->get_record('organizer_slots', array('id' => $appointment->slotid));
+        $appointment = $DB->get_record('organizer_slot_appointments', ['id' => $data['appid']]);
+        $slot = $DB->get_record('organizer_slots', ['id' => $appointment->slotid]);
 
         $text = organizer_date_time($slot, true);
 
@@ -84,11 +84,11 @@ class organizer_delete_appointment_form extends \moodleform {
 
         $mform->addElement('static', '', '', $list);
 
-        $buttonarray = array();
+        $buttonarray = [];
         $buttonarray[] = &$mform->createElement('submit', 'confirm', get_string('confirm_delete', 'organizer'));
         $buttonarray[] = &$mform->createElement('cancel');
 
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
         $mform->closeHeaderBefore('buttonar');
     }
 }

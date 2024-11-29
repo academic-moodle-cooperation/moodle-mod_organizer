@@ -20,12 +20,15 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use mod_organizer\event\appointment_deleted;
+
 define("ORGANIZER_TAB_STUDENT_VIEW", 2);
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
@@ -37,7 +40,7 @@ require_once(dirname(__FILE__) . '/messaging.php');
 $appid = optional_param('appid', null, PARAM_INT);
 $id = optional_param('id', null, PARAM_INT);
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+[$cm, $course, $organizer, $context] = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
 
@@ -47,23 +50,23 @@ $redirecturl = new moodle_url('/mod/organizer/view.php');
 $redirecturl->param('id', $cm->id);
 $redirecturl->param('mode', '3');
 
-$url = new moodle_url('/mod/organizer/appointment_delete.php', array('id' => $id, 'appid' => $appid));
+$url = new moodle_url('/mod/organizer/appointment_delete.php', ['id' => $id, 'appid' => $appid]);
 $PAGE->set_url($url);
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
-$mform = new organizer_delete_appointment_form(null, array('id' => $cm->id, 'appid' => $appid));
+$mform = new organizer_delete_appointment_form(null, ['id' => $cm->id, 'appid' => $appid]);
 
 if ($data = $mform->get_data()) {
     $infoboxmessage = "";
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $app = $DB->get_record('organizer_slot_appointments', array('id' => $data->appid), 'slotid, groupid');
+        $app = $DB->get_record('organizer_slot_appointments', ['id' => $data->appid], 'slotid, groupid');
         if (organizer_delete_appointment_group($app->slotid, $app->groupid)) {
-            $event = \mod_organizer\event\appointment_deleted::create(
-                array(
+            $event = appointment_deleted::create(
+                [
                     'objectid' => $cm->id,
                     'context' => $context,
-                )
+                ]
             );
             $groupname = organizer_fetch_groupname($app->groupid);
             $infoboxmessage .= $OUTPUT->notification(get_string('message_info_appointment_deleted_group', 'organizer'),
@@ -74,11 +77,11 @@ if ($data = $mform->get_data()) {
         }
     } else {
         if (organizer_delete_appointment($data->appid)) {
-            $event = \mod_organizer\event\appointment_deleted::create(
-                array(
+            $event = appointment_deleted::create(
+                [
                     'objectid' => $cm->id,
                     'context' => $context,
-                )
+                ]
             );
             $infoboxmessage .= $OUTPUT->notification(get_string('message_info_appointment_deleted', 'organizer'),
                 'success');

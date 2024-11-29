@@ -18,16 +18,16 @@
  * A scheduled task for organizer cron.
  *
  * @package   mod_organizer
- * @copyright 2016 Thomas Niedermaier <thomas.niedermaier@meduniwien.ac.at>
+ * @copyright 2016 Thomas Niedermaier <thomas.niedermaier@gmail.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
 namespace mod_organizer\task;
 
-defined('MOODLE_INTERNAL') || die();
+use core\task\scheduled_task;
 
-class cron_task extends \core\task\scheduled_task {
+class cron_task extends scheduled_task {
 
     public function get_name() {
         // Shown in admin screens.

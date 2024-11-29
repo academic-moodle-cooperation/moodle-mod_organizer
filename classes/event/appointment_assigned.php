@@ -20,17 +20,19 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace mod_organizer\event;
-defined('MOODLE_INTERNAL') || die();
+use core\event\base;
+use moodle_url;
+
 /**
  * The appointment_assigned event class.
  **/
-class appointment_assigned extends \core\event\base {
+class appointment_assigned extends base {
     protected function init() {
         $this->data['crud'] = 'u'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
@@ -47,6 +49,6 @@ class appointment_assigned extends \core\event\base {
     }
 
     public function get_url() {
-        return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
+        return new moodle_url('/mod/organizer/view.php', ['id' => $this->objectid]);
     }
 }

@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.5.0 (2024-11-19)
+------------------
+* Moodle 4.5 compatible version
+
 4.4.2 (2024-07-11)
 ------------------
 * [FEATURE] New setting: Limit the daily possible bookings for participants

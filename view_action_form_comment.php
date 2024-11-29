@@ -53,23 +53,23 @@ class organizer_comment_slot_form extends moodleform {
 
         $mform->addElement(
             'textarea', 'comments', get_string('appointmentcomments', 'organizer'),
-            array('wrap' => 'virtual', 'rows' => '10', 'cols' => '80')
+            ['wrap' => 'virtual', 'rows' => '10', 'cols' => '80']
         );
         $mform->setType('comments', PARAM_RAW);
 
         $comments = $DB->get_field(
             'organizer_slot_appointments', 'comments',
-            array('slotid' => $data['slot'], 'userid' => $USER->id)
+            ['slotid' => $data['slot'], 'userid' => $USER->id]
         );
 
         $mform->setDefault('comments', $comments);
 
-        $buttonarray = array();
+        $buttonarray = [];
 
         $buttonarray[] = &$mform->createElement('submit', 'reviewslots', get_string('btn_save', 'organizer'));
         $buttonarray[] = &$mform->createElement('cancel');
 
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
         $mform->closeHeaderBefore('buttonar');
     }
 }

@@ -18,19 +18,21 @@
  * slot_assign.php
  *
  * @package   mod_organizer
- * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_organizer\event\appointment_assigned;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/messaging.php');
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+[$cm, $course, $organizer, $context] = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
 
@@ -54,7 +56,7 @@ $PAGE->set_heading($course->fullname);
 
 $params['limitedwidth'] = organizer_get_limitedwidth();
 
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => 3));
+$redirecturl = new moodle_url('/mod/organizer/view.php', ['id' => $cm->id, 'mode' => 3]);
 
 $groupid = null;
 $participantid = null;
@@ -89,16 +91,16 @@ organizer_prepare_and_send_message($data, 'assign_notify_teacher'); // Message.
 
 $newurl = $redirecturl->out();
 
-$event = \mod_organizer\event\appointment_assigned::create(
-    array(
+$event = appointment_assigned::create(
+    [
         'objectid' => $PAGE->cm->id,
         'context' => $PAGE->context,
-    )
+    ]
 );
 $event->trigger();
 
 redirect($newurl);
 
-throw new \coding_exception('If you see this, something went wrong!');
+throw new coding_exception('If you see this, something went wrong!');
 
 die;

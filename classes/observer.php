@@ -19,15 +19,16 @@
  *
  * @package    mod_organizer
  * @author Simeon Naydenov (moninaydenov@gmail.com)
- * @author Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @copyright 2022 Academic Moodle Cooperation {@link https://www.academic-moodle-cooperation.org/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\event\group_member_added;
+use core\event\group_member_removed;
+use core\event\user_enrolment_deleted;
 use mod_grouptool\event\registration_created;
 use mod_grouptool\event\registration_deleted;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Event observer for mod_organizer.
@@ -37,9 +38,9 @@ class mod_organizer_observer {
     /**
      * Triggered via user_enrolment_deleted event.
      *
-     * @param \core\event\user_enrolment_deleted $event
+     * @param user_enrolment_deleted $event
      */
-    public static function user_enrolment_deleted(/*\core\event\user_enrolment_deleted*/ $event) {
+    public static function user_enrolment_deleted($event) {
         global $DB;
         require_once(__DIR__ . '/../locallib.php');
         require_once(__DIR__ . '/../messaging.php');
@@ -48,10 +49,10 @@ class mod_organizer_observer {
         // Get user enrolment info from event.
         $cp = (object)$event->other['userenrolment'];
         if ($cp->lastenrol) {
-            if (!$organizers = $DB->get_records('organizer', array('course' => $cp->courseid))) {
+            if (!$organizers = $DB->get_records('organizer', ['course' => $cp->courseid])) {
                 return;
             }
-            list($organizerselect, $params) = $DB->get_in_or_equal(array_keys($organizers), SQL_PARAMS_NAMED);
+            [$organizerselect, $params] = $DB->get_in_or_equal(array_keys($organizers), SQL_PARAMS_NAMED);
 
             // Handle queues.
             foreach ($organizers as $organizer) {
@@ -60,7 +61,7 @@ class mod_organizer_observer {
 
             // Handle slots.
             if ($slots = $DB->get_records_select('organizer_slots', 'organizerid ' . $organizerselect, $params)) {
-                list($slotselect, $slotparams) = $DB->get_in_or_equal(array_keys($slots), SQL_PARAMS_NAMED);
+                [$slotselect, $slotparams] = $DB->get_in_or_equal(array_keys($slots), SQL_PARAMS_NAMED);
                 $slotparams['userid'] = $cp->userid;
 
                 $slotappointments = $DB->get_records_select('organizer_slot_appointments',
@@ -95,18 +96,18 @@ class mod_organizer_observer {
     /**
      * group_member_added
      *
-     * @param \core\event\group_member_added $event Event object containing useful data
+     * @param group_member_added $event Event object containing useful data
      * @return bool true if success
-     * @throws \coding_exception
-     * @throws \dml_exception
+     * @throws coding_exception
+     * @throws dml_exception
      */
-    public static function group_member_added(\core\event\group_member_added $event) {
+    public static function group_member_added(group_member_added $event) {
         global $DB;
 
         $groupid = $event->objectid;
         $userid = $event->relateduserid;
 
-        $params = array('groupid' => $groupid, 'groupmode' => ORGANIZER_GROUPMODE_EXISTINGGROUPS);
+        $params = ['groupid' => $groupid, 'groupmode' => ORGANIZER_GROUPMODE_EXISTINGGROUPS];
         if ($groupapps = $DB->get_records_sql(
             'SELECT DISTINCT a.id, a.slotid, a.applicantid, a.teacherapplicantid, s.organizerid
             FROM {organizer_slot_appointments} a
@@ -140,19 +141,19 @@ class mod_organizer_observer {
      * event:       groups_member_removed
      * schedule:    instant
      *
-     * @param \core\event\group_member_removed $event Event object containing useful data
+     * @param group_member_removed $event Event object containing useful data
      * @return bool true if success
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \moodle_exception
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
      */
-    public static function group_member_removed(\core\event\group_member_removed $event) {
+    public static function group_member_removed(group_member_removed $event) {
         global $DB;
 
         $groupid = $event->objectid;
         $userid = $event->relateduserid;
 
-        $params = array('groupid' => $groupid, 'userid' => $userid, 'groupmode' => ORGANIZER_GROUPMODE_EXISTINGGROUPS);
+        $params = ['groupid' => $groupid, 'userid' => $userid, 'groupmode' => ORGANIZER_GROUPMODE_EXISTINGGROUPS];
         if ($apps = $DB->get_records_sql(
             'SELECT DISTINCT a.id
             FROM {organizer_slot_appointments} a

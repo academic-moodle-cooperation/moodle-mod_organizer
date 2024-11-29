@@ -26,11 +26,14 @@
  */
 
 namespace mod_organizer\event;
-defined('MOODLE_INTERNAL') || die();
+use core\event\base;
+use moodle_url;
+
+
 /**
  * The appointment_added event class.
  **/
-class queue_removed extends \core\event\base {
+class queue_removed extends base {
     protected function init() {
         $this->data['crud'] = 'd'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
@@ -47,6 +50,6 @@ class queue_removed extends \core\event\base {
     }
 
     public function get_url() {
-        return new \moodle_url('/mod/organizer/view.php', array('id' => $this->objectid));
+        return new moodle_url('/mod/organizer/view.php', ['id' => $this->objectid]);
     }
 }

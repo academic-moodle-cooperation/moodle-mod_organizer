@@ -20,12 +20,17 @@
  * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
- * @author    Thomas Niedermaier (thomas.niedermaier@meduniwien.ac.at)
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
  * @author    Andreas Windbichler
  * @author    Ivan Šakić
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use mod_organizer\event\appointment_added;
+use mod_organizer\event\appointment_removed;
+use mod_organizer\event\queue_added;
+use mod_organizer\event\queue_removed;
 
 define('ORGANIZER_ACTION_REGISTER', 'register');
 define('ORGANIZER_ACTION_UNREGISTER', 'unregister');
@@ -42,7 +47,7 @@ require_once(dirname(__FILE__) . '/messaging.php');
 require_once($CFG->dirroot . '/mod/organizer/classes/event/queue_added.php');
 require_once($CFG->dirroot . '/mod/organizer/classes/event/queue_removed.php');
 
-list($cm, $course, $organizer, $context) = organizer_get_course_module_data();
+[$cm, $course, $organizer, $context] = organizer_get_course_module_data();
 
 require_login($course, false, $cm);
 require_sesskey();
@@ -75,7 +80,7 @@ if (isset($organizerconfig->limitedwidth) && $organizerconfig->limitedwidth == 1
     $params['limitedwidth'] = false;
 }
 
-$redirecturl = new moodle_url('/mod/organizer/view.php', array('id' => $cm->id, 'mode' => $mode, 'action' => $action));
+$redirecturl = new moodle_url('/mod/organizer/view.php', ['id' => $cm->id, 'mode' => $mode, 'action' => $action]);
 
 // Bulk actions slot list.
 if ($bulkaction) {
@@ -91,22 +96,22 @@ if ($bulkaction) {
             case 'edit':
                 require_capability('mod/organizer:editslots', $context);
                 $redirecturl = new moodle_url('/mod/organizer/slots_edit.php',
-                    array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids));
+                    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slotids]);
             break;
             case 'delete':
                 require_capability('mod/organizer:deleteslots', $context);
                 $redirecturl = new moodle_url('/mod/organizer/slots_delete.php',
-                    array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids));
+                    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slotids]);
             break;
             case 'print':
                 require_capability('mod/organizer:printslots', $context);
                 $redirecturl = new moodle_url('/mod/organizer/slots_print.php',
-                    array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids));
+                    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slotids]);
             break;
             case 'eval':
                 require_capability('mod/organizer:evalslots', $context);
                 $redirecturl = new moodle_url('/mod/organizer/slots_eval.php',
-                    array('id' => $cm->id, 'mode' => $mode, 'slots' => $slotids));
+                    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slotids]);
         }
     }
     redirect($redirecturl);
@@ -136,8 +141,8 @@ switch($action) {
                 $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_registered',
                     'organizer'), 'success');
             }
-            $event = \mod_organizer\event\appointment_added::create(
-                array('objectid' => $PAGE->cm->id, 'context' => $PAGE->context)
+            $event = appointment_added::create(
+                ['objectid' => $PAGE->cm->id, 'context' => $PAGE->context]
             );
             $event->trigger();
             organizer_prepare_and_send_message($slot, 'register_notify_teacher:register');
@@ -164,8 +169,8 @@ switch($action) {
                 $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_queued',
                     'organizer'), 'success');
             }
-            $event = \mod_organizer\event\queue_added::create(
-                array('objectid' => $PAGE->cm->id, 'context' => $PAGE->context)
+            $event = queue_added::create(
+                ['objectid' => $PAGE->cm->id, 'context' => $PAGE->context]
             );
             $event->trigger();
             organizer_prepare_and_send_message($slot, 'register_notify_teacher:queue');
@@ -192,13 +197,13 @@ switch($action) {
                 $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_unregistered',
                     'organizer'), 'success');
             }
-            $event = \mod_organizer\event\appointment_removed::create(
-                array('objectid' => $PAGE->cm->id, 'context' => $PAGE->context)
+            $event = appointment_removed::create(
+                ['objectid' => $PAGE->cm->id, 'context' => $PAGE->context]
             );
             $event->trigger();
             organizer_prepare_and_send_message($slot, 'register_notify_teacher:unregister');
             if ($group) {
-                $slotobj = $DB->get_record('organizer_slots', array('id' => $slot));
+                $slotobj = $DB->get_record('organizer_slots', ['id' => $slot]);
                 $members = get_enrolled_users($context, 'mod/organizer:register', $group->id, 'u.id', null, 0, 0, true);
                 foreach ($members as $member) {
                     if ($member->id != $USER->id) {
@@ -222,8 +227,8 @@ switch($action) {
                 $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_unqueued',
                     'organizer'), 'success');
             }
-            $event = \mod_organizer\event\queue_removed::create(
-                array('objectid' => $PAGE->cm->id, 'context' => $PAGE->context)
+            $event = queue_removed::create(
+                ['objectid' => $PAGE->cm->id, 'context' => $PAGE->context]
             );
             $event->trigger();
             organizer_prepare_and_send_message($slot, 'register_notify_teacher:unqueue');
@@ -246,12 +251,12 @@ switch($action) {
                 $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_reregistered',
                     'organizer'), 'success');
             }
-            $event = \mod_organizer\event\appointment_removed::create(
-                array('objectid' => $PAGE->cm->id, 'context' => $PAGE->context)
+            $event = appointment_removed::create(
+                ['objectid' => $PAGE->cm->id, 'context' => $PAGE->context]
             );
             $event->trigger();
-            $event = \mod_organizer\event\appointment_added::create(
-                array('objectid' => $PAGE->cm->id, 'context' => $PAGE->context)
+            $event = appointment_added::create(
+                ['objectid' => $PAGE->cm->id, 'context' => $PAGE->context]
             );
             $event->trigger();
             organizer_prepare_and_send_message($slot, 'register_notify_teacher:reregister');
@@ -288,7 +293,7 @@ redirect($redirecturl);
 function organizer_participants_action_allowed($action, $slot, $organizer, $context) {
     global $DB, $USER;
 
-    if (!$DB->record_exists('organizer_slots', array('id' => $slot))) {
+    if (!$DB->record_exists('organizer_slots', ['id' => $slot])) {
         return false;
     }
     $slotx = new organizer_slot($slot);

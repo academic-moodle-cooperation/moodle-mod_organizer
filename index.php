@@ -28,24 +28,26 @@
 
 // Replace organizer with the name of your module and remove this line.
 
+use mod_organizer\event\course_module_instance_list_viewed;
+
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/lib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
 $id = required_param('id', PARAM_INT);   // Course.
 
-$course = $DB->get_record('course', array('id' => $id));
+$course = $DB->get_record('course', ['id' => $id]);
 require_course_login($course);
 
 $PAGE->set_pagelayout('incourse');
 
-$event = \mod_organizer\event\course_module_instance_list_viewed::create(
-    array('context' => context_course::instance($course->id)));
+$event = course_module_instance_list_viewed::create(
+    ['context' => context_course::instance($course->id)]);
 $event->trigger();
 
 // Print the header.
 
-$PAGE->set_url('/mod/organizer/index.php', array('id' => $course->id));
+$PAGE->set_url('/mod/organizer/index.php', ['id' => $course->id]);
 $PAGE->navbar->add(get_string("modulenameplural", "organizer"));
 $PAGE->set_title($course->fullname);
 $PAGE->set_heading($course->shortname);
@@ -65,8 +67,8 @@ if (! $organizers = get_all_instances_in_course('organizer', $course)) {
 
 $table = new html_table();
 
-$table->head  = array();
-$table->align = array();
+$table->head  = [];
+$table->align = [];
 
 if ($course->format == 'weeks') {
     $table->head[] = get_string('week');
@@ -95,7 +97,7 @@ foreach ($organizers as $organizer) {
         $link = '<a href="view.php?id='.$organizer->coursemodule.'">'.format_string($organizer->name).'</a>';
     }
 
-    $row = array();
+    $row = [];
     if ($course->format == 'weeks' || $course->format == 'topics') {
         $row[] = $organizer->section;
     }
