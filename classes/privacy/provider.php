@@ -25,8 +25,6 @@
 
 namespace mod_organizer\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 use coding_exception;
 use context;
 use context_module;

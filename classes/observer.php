@@ -30,8 +30,6 @@ use core\event\user_enrolment_deleted;
 use mod_grouptool\event\registration_created;
 use mod_grouptool\event\registration_deleted;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Event observer for mod_organizer.
  */

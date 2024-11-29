@@ -706,8 +706,9 @@ function organizer_update_slot($data) {
                     $DB->delete_records_select(
                             'organizer_slot_trainer', 'slotid = ' . $slot->id . ' AND trainerid ' . $insql, $inparams
                     );
-                    if ($organizer->includetraineringroups && ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPBOOKING ||
-                        $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPSLOT)) {
+                    if ($organizer->includetraineringroups &&
+                        ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPBOOKING ||
+                            $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPSLOT)) {
                         foreach ($deletions as $trainerid) {
                             organizer_groupsynchronization($slot->id, $trainerid, 'remove');
                         }
@@ -725,7 +726,8 @@ function organizer_update_slot($data) {
                                 organizer_add_event_appointment_trainer($cm->id, $app, $trainerid);
                             }
                         }
-                        if ($organizer->includetraineringroups && ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPBOOKING ||
+                        if ($organizer->includetraineringroups &&
+                            ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPBOOKING ||
                                 $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPSLOT)) {
                             organizer_groupsynchronization($slot->id, $trainerid, 'add');
                         }
@@ -963,7 +965,7 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
 }
 
 function organizer_register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0,
-                                               $teacherapplicantid = null, $trainerevents = false, $trainerid = null, $ogranizerid = null) {
+    $teacherapplicantid = null, $trainerevents = false, $trainerid = null, $ogranizerid = null) {
     global $DB;
 
     [$cm, , $organizer, ] = organizer_get_course_module_data(null, $ogranizerid);
@@ -1843,7 +1845,7 @@ function organizer_fetch_printdetail_entries($slot) {
         $fieldname = $socialfield->shortname;
         $paramname = 'u_' . $fieldname . '_fieldid';
         $socialselect .= "$tablename.data AS $fieldname, ";
-        $socialjoin .= " LEFT JOIN {user_info_data} $tablename ON $tablename.userid = a.userid AND $tablename.fieldid = :$paramname";
+        $socialjoin .= " LEFT JOIN {user_info_data} $tablename ON $tablename.userid=a.userid AND $tablename.fieldid = :$paramname";
         $params[$paramname] = $socialfield->id;
     }
 

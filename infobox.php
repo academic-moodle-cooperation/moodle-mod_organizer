@@ -40,7 +40,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     // Display messages here.
     $output .= organizer_make_messages_section($params);
 
-    // Module description section
+    // Module description section.
     $output .= organizer_make_description_section($organizer);
 
     $jsparams = new stdClass();

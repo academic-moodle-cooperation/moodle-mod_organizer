@@ -37,11 +37,11 @@ class organizer_print_slots_form extends moodleform {
     private $_selcols;
 
     protected function definition() {
-        $this->_add_slot_info();
-        $this->_add_column_select();
+        $this->add_slot_info();
+        $this->add_column_select();
     }
 
-    private function _add_slot_info() {
+    private function add_slot_info() {
         $mform = &$this->_form;
         $data = &$this->_customdata;
 
@@ -64,7 +64,7 @@ class organizer_print_slots_form extends moodleform {
         }
     }
 
-    private function _add_column_select() {
+    private function add_column_select() {
         global $DB, $CFG;
 
         $mform = $this->_form;
@@ -150,13 +150,13 @@ class organizer_print_slots_form extends moodleform {
 
         $output .= '<div class="forced_scroll">';
         $output .= '<div style="float: left">';
-        $output .= $this->_create_preview_table($printcols);
+        $output .= $this->create_preview_table($printcols);
         $output .= '</div><div style="width: 1em; float: left;"> </div></div>';
 
         echo $output;
     }
 
-    private function _create_preview_table($columns) {
+    private function create_preview_table($columns) {
         global $PAGE, $OUTPUT, $cm, $CFG, $USER;
 
         $USER->ajax_updatable_user_prefs['mod_organizer_noprintfields'] = PARAM_TEXT;

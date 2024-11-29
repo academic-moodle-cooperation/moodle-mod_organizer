@@ -123,7 +123,7 @@ class organizer_evaluate_slots_form extends moodleform {
             // For each appointment of this slot.
             foreach ($apps as $app) {
                 $name = "apps[{$app->id}]";
-                $namelink = html_writer::div($this->_organizer_get_name_link($app->userid), 'd-block');
+                $namelink = html_writer::div($this->organizer_get_name_link($app->userid), 'd-block');
                 $mform->addElement($mform->createElement('static', '', '', $namelink));
                 // Formgroup evaluation.
                 $appgroup = [];
@@ -157,7 +157,7 @@ class organizer_evaluate_slots_form extends moodleform {
      * @param int $id
      * @return string
      */
-    private function _organizer_get_name_link($id) {
+    private function organizer_get_name_link($id) {
         global $DB;
         $profileurl = new moodle_url('/user/profile.php', ['id' => $id]);
         $user = $DB->get_record('user', ['id' => $id]);

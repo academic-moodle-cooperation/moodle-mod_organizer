@@ -25,6 +25,8 @@
 
 require_once(dirname(__FILE__, 4) .'/config.php');
 
+require_login();
+
 $location = $CFG->dirroot . '/mod/organizer/lang/en/organizer.php';
 $firstseparator = "defined('MOODLE_INTERNAL') || die();";
 $lineseparator = "';";

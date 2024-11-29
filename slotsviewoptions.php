@@ -29,6 +29,7 @@ define('AJAX_SCRIPT', true);
 
 require_once(__DIR__ . '/../../config.php');
 
+require_login();
 // Check access.
 if (!confirm_sesskey()) {
     throw new moodle_exception('invalidsesskey', 'error');

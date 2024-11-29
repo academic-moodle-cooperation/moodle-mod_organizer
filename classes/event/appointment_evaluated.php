@@ -29,7 +29,6 @@ namespace mod_organizer\event;
 use core\event\base;
 use moodle_url;
 
-defined('MOODLE_INTERNAL') || die();
 /**
  * The appointment_evaluated event class.
  **/

@@ -109,7 +109,7 @@ if ($ADMIN->fulltree) {
                     get_string('allowcreationofpasttimeslots', 'organizer'),
                     get_string('configallowcreationofpasttimeslots', 'organizer'), 0, $yesno));
 
-    // Show participant's identity in registration view
+    // Show participant's identity in registration view.
     $settings->add(new admin_setting_configcheckbox('organizer/dontshowidentity', get_string('cfg_dontshowidentity', 'organizer'),
         get_string('cfg_dontshowidentity_desc', 'organizer'), 0));
 
@@ -118,7 +118,8 @@ if ($ADMIN->fulltree) {
         get_string('cfg_limitedwidth_desc', 'organizer'), 0));
 
     // Synchronize organizer slots with Moodle group changes.
-    $settings->add(new admin_setting_configcheckbox('organizer/synchronizegroupmembers', get_string('synchronizegroupmembers', 'organizer'),
+    $settings->add(new admin_setting_configcheckbox('organizer/synchronizegroupmembers',
+        get_string('synchronizegroupmembers', 'organizer'),
         get_string('synchronizegroupmembers_help', 'organizer'), 0));
 
     // Predefine locations for slots, make location mandatory.

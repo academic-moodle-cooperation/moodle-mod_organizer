@@ -163,7 +163,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addHelpButton('relativedeadline', 'relativedeadline', 'organizer');
 
         // Grouporganizer.
-        $mform->addElement('select', 'isgrouporganizer', get_string('isgrouporganizer', 'organizer'), $this->_get_groupmodes());
+        $mform->addElement('select', 'isgrouporganizer', get_string('isgrouporganizer', 'organizer'), $this->get_groupmodes());
         $mform->setDefault('isgrouporganizer', 0);
         $mform->addHelpButton('isgrouporganizer', 'isgrouporganizer', 'organizer');
         // Include trainers.
@@ -188,7 +188,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->disabledif ('synchronizegroupmembers', 'isgrouporganizer', 'neq', 1);
 
         // Member visibility.
-        $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->_get_visibilities());
+        $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->get_visibilities());
         $mform->setType('visibility', PARAM_INT);
         $mform->setDefault('visibility', ORGANIZER_VISIBILITY_SLOT);
         $mform->addHelpButton('visibility', 'visibility', 'organizer');
@@ -246,7 +246,8 @@ class mod_organizer_mod_form extends moodleform_mod {
         // Select print slot userfields.
         $selectableprofilefields = organizer_printslotuserfields();
         $allowedprofilefields = organizer_get_allowed_printslotuserfields();
-        $allowslotprofilefieldchange = isset($organizerconfig->enableprintslotuserfields) && $organizerconfig->enableprintslotuserfields;
+        $allowslotprofilefieldchange = isset($organizerconfig->enableprintslotuserfields) &&
+            $organizerconfig->enableprintslotuserfields;
         $selectableprofilefields = ['' => '--'] + $selectableprofilefields;
         for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
             $fieldname = 'singleslotprintfield' . $i;
@@ -275,7 +276,8 @@ class mod_organizer_mod_form extends moodleform_mod {
         $this->add_action_buttons();
 
         // Grading Aggragation Methods.
-        $aggregationmethods = $mform->createElement('select', 'gradeaggregationmethod', get_string('gradeaggregationmethod', 'organizer'), $this->_get_gradeaggregationmethods());
+        $aggregationmethods = $mform->createElement('select', 'gradeaggregationmethod',
+            get_string('gradeaggregationmethod', 'organizer'), $this->get_gradeaggregationmethods());
         $mform->insertElementBefore($aggregationmethods, 'gradecat');
         $mform->setDefault('gradeaggregationmethod', 0);
         $mform->addHelpButton('gradeaggregationmethod', 'gradeaggregationmethod', 'organizer');
@@ -345,7 +347,7 @@ class mod_organizer_mod_form extends moodleform_mod {
             global $DB;
             $errormsg = '';
             $error = false;
-            $memberships = $this->_get_memberships($data['course'], $data['groupingid']);
+            $memberships = $this->get_memberships($data['course'], $data['groupingid']);
             foreach ($memberships as $userid => $groups) {
                 if (count($groups) > 1) {
                     if (!has_capability("mod/organizer:editslots", context_module::instance($data['coursemodule']),
@@ -384,7 +386,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         return $errors;
     }
 
-    private function _get_memberships($courseid, $groupingid) {
+    private function get_memberships($courseid, $groupingid) {
 
         $groups = groups_get_all_groups($courseid, 0, $groupingid, 'g.*', true);
         $memberships = [];
@@ -401,7 +403,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         return $memberships;
     }
 
-    private function _get_visibilities() {
+    private function get_visibilities() {
 
         $visibilities = [];
         $visibilities[ORGANIZER_VISIBILITY_ALL] = get_string('visibility_all', 'organizer');
@@ -411,7 +413,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         return $visibilities;
     }
 
-    private function _get_groupmodes() {
+    private function get_groupmodes() {
 
         $groupmodes = [];
         $groupmodes[ORGANIZER_GROUPMODE_NOGROUPS] = get_string('groupmodenogroups', 'organizer');
@@ -422,7 +424,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         return $groupmodes;
     }
 
-    private function _get_gradeaggregationmethods() {
+    private function get_gradeaggregationmethods() {
 
         $gradeaggregationmethods = [];
         $gradeaggregationmethods[0] = get_string('choose').'...';

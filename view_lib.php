@@ -1546,7 +1546,7 @@ function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $useri
     global $DB;
 
     $list = '';
-    // Groupmode with userid: id=slotid, no groupmode when no userid: id=appid
+    // Groupmode with userid: id=slotid, no groupmode when no userid: id=appid.
     if ($userid) {
         $appointment = $DB->get_record('organizer_slot_appointments', ['slotid' => $id, 'userid' => $userid]);
     } else {
@@ -1787,7 +1787,8 @@ function organizer_get_participant_list($params, $slot, $app) {
             $participantsvisible = $countapps;
         }
         if ($participantsvisible) {
-            $firstline = organizer_get_icon('plus-square', get_string('clicktohideshow'), null, null, 'collapseicon').$firstline.$slotvisibilitystr;
+            $firstline = organizer_get_icon('plus-square', get_string('clicktohideshow'),
+                    null, null, 'collapseicon').$firstline.$slotvisibilitystr;
             $firstline = html_writer::div($firstline, 'collapseclick text-nowrap', ['data-target' => '.s'.$slot->id]);
         } else {
             $firstline = html_writer::div($firstline.$slotvisibilitystr, 'text-nowrap');

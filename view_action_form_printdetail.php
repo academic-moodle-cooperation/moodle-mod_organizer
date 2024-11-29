@@ -42,13 +42,13 @@ class organizer_print_slotdetail_form extends moodleform {
      * @see moodleform::definition()
      */
     protected function definition() {
-        $this->_add_slot_info();
-        $this->_add_column_select();
+        $this->add_slot_info();
+        $this->add_column_select();
     }
     /**
      * adds the info of the slot to the form
      */
-    private function _add_slot_info() {
+    private function add_slot_info() {
         $mform = &$this->_form;
         $data = &$this->_customdata;
 
@@ -71,7 +71,7 @@ class organizer_print_slotdetail_form extends moodleform {
     /**
      * adds information which colums to select for printing
      */
-    private function _add_column_select() {
+    private function add_column_select() {
         global $DB, $CFG;
 
         $mform = $this->_form;
@@ -142,7 +142,7 @@ class organizer_print_slotdetail_form extends moodleform {
 
         $output .= '<div class="forced_scroll">';
         $output .= '<div style="float: left">';
-        $output .= $this->_create_preview_table($this->_selcols);
+        $output .= $this->create_preview_table($this->_selcols);
         $output .= '</div><div style="width: 1em; float: left;"> </div></div>';
 
         print $output;
@@ -153,7 +153,7 @@ class organizer_print_slotdetail_form extends moodleform {
      * @param array $columns the columns of the table
      * @return string the html of the table
      */
-    private function _create_preview_table($columns) {
+    private function create_preview_table($columns) {
         global $OUTPUT, $CFG, $DB, $PAGE;
 
         $PAGE->requires->js_call_amd('mod_organizer/printform', 'init', ['iconminus' => '', 'iconplus' => '']);
