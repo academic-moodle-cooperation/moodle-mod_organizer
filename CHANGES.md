@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.3.3 (2024-11-30)
+------------------
+* [FIXED]   Optional: Booked slot after deadline can not be source of reregistration
+
 4.3.2 (2024-05-23)
 ------------------
 * [FIXED]   Organizer Cron Job (digest, teacherid)

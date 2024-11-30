@@ -211,6 +211,14 @@ class mod_organizer_mod_form extends moodleform_mod {
             $mform->disabledIf('nocalendareventslotcreation', 'sesskey', 'neq', '');
         }
 
+        // No reregistrations after deadline.
+        $mform->addElement(
+            'advcheckbox', 'noreregistrations', get_string('noreregistrations', 'organizer'), null, null, [0, 1]
+        );
+        $mform->setType('noreregistrations', PARAM_INT);
+        $mform->setDefault('noreregistrations', 0);
+        $mform->addHelpButton('noreregistrations', 'noreregistrations', 'organizer');
+
         // Grading.
         $this->standard_grading_coursemodule_elements();
         $itemnumber = 0;
