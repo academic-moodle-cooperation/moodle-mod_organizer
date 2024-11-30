@@ -73,7 +73,8 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
                 'singleslotprintfield8',
                 'singleslotprintfield9',
                 'userslotsmin',
-                'userslotsmax')
+                'userslotsmax',
+                'noreregistrations')
         );
 
         $slots = new backup_nested_element('slots');

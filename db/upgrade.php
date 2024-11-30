@@ -738,5 +738,18 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023053100, 'organizer');
     }
 
+    if ($oldversion < 2024020803) {
+        $table = new xmldb_table('organizer');
+
+        // Define field noreregistrations to be added to organizer.
+        $field = new xmldb_field('noreregistrations', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'userslotsmax');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2024020803, 'organizer');
+    }
+
     return true;
 }
