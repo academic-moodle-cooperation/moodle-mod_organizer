@@ -42,7 +42,8 @@
         <FIELD NAME="userslotsmin" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="enableprintslotuserfields" NEXT="userslotsmax" COMMENT="How many slots must be booked by participant"/>
         <FIELD NAME="userslotsmax" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="userslotsmin" NEXT="synchronizegroupmembers" COMMENT="How many slots can be booked by participant"/>
         <FIELD NAME="synchronizegroupmembers" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="userslotsmax" NEXT="userslotsdailymax" COMMENT="Shall slots be synchronized wiht Moodle group member changes"/>
-        <FIELD NAME="userslotsdailymax" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="synchronizegroupmembers" COMMENT="How many slots can be booked by one participant per day"/>
+        <FIELD NAME="userslotsdailymax" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="synchronizegroupmembers" NEXT="noreregistrations" COMMENT="How many slots can be booked by one participant per day"/>
+        <FIELD NAME="noreregistrations" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="userslotsdailymax" COMMENT="Reregistrations after deadline are not allowed"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

@@ -2276,7 +2276,15 @@ function organizer_participants_action($params, $slot) {
             $action = 'register';
         } else {
             if ($hasbookedalready) {
-                $action = 'reregister';
+                if ($organizer->noreregistrations) {
+                    if (organizer_exist_bookedslotbeforedeadline($organizer->id, $USER->id)) {
+                        $action = 'reregister';
+                    } else {
+                        return "";
+                    }
+                } else {
+                    $action = 'reregister';
+                }
             } else {
                 return "";
             }

@@ -408,6 +408,27 @@ function organizer_get_last_user_appointment($organizer, $userid = null, $mergeg
     return $app;
 }
 
+function organizer_exist_bookedslotbeforedeadline($organizerid, $userid = null) {
+    global $DB;
+
+    $paramssql = ['userid' => $userid, 'organizerid' => $organizerid];
+    $query = "SELECT s.* FROM {organizer_slot_appointments} a
+            INNER JOIN {organizer_slots} s ON a.slotid = s.id
+            WHERE s.organizerid = :organizerid AND a.userid = :userid";
+    $slots = $DB->get_records_sql($query, $paramssql);
+
+    $exists = false;
+    foreach ($slots as $slot) {
+        $slotx = new organizer_slot($slot);
+        if (!$slotx->is_past_deadline()) {
+            $exists = true;
+            break;
+        }
+    }
+
+    return $exists;
+}
+
 function organizer_get_all_user_appointments($organizer, $userid = null, $mergegroupapps = true) {
     global $DB, $USER;
 
