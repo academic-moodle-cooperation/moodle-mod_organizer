@@ -161,6 +161,7 @@ $string['availableslotsfor'] = 'Available slots for';
 $string['back'] = 'Back';
 $string['btn_add'] = 'Add new slots';
 $string['btn_assign'] = 'Assign slot';
+$string['btn_calendarsingle'] = 'Export selected slot as an ICS file';
 $string['btn_comment'] = 'Edit your comment';
 $string['btn_delete'] = 'Remove selected slots';
 $string['btn_deleteappointment'] = 'Delete appointment';
