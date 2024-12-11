@@ -17,7 +17,6 @@ function export_ics_file($slot, $activityname, $activitydescription) {
 
     // Set security headers
     header('Content-Type: text/calendar; charset=utf-8');
-    //header('Content-Disposition: attachment; filename="slot.ics"');
     header('Content-Disposition: attachment; filename="' . $activityname . " - " . $startTime . '.ics"');
 
     // Start ICS data
@@ -93,14 +92,18 @@ function escape_ical_text($text) {
 }
 
 function convert_to_ical_description($html) {
+    // Ensure the HTML is in UTF-8 encoding
+    $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+
     // Load the HTML into DOMDocument
     $dom = new DOMDocument();
     libxml_use_internal_errors(true); // Suppress warnings for malformed HTML
     $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
     libxml_clear_errors();
 
-    // Extract text content
+    // Extract text content and decode HTML entities
     $text = $dom->textContent;
+    $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
 
     // Escape special characters for iCalendar
     $escaped_text = str_replace(
@@ -113,12 +116,19 @@ function convert_to_ical_description($html) {
     foreach ($dom->getElementsByTagName('a') as $link) {
         $url = $link->getAttribute('href');
         $text_content = $link->textContent;
-        $escaped_url = "<" . str_replace(["\\", ",", ";"], ["\\\\", "\\,", "\\;"], $url) . ">";
-        $escaped_text = str_replace($text_content, $text_content . " " . $escaped_url, $escaped_text);
+
+        // Format the link as "Link Text <URL>"
+        $formatted_link = $text_content . " <" . str_replace(["\\", ",", ";"], ["\\\\", "\\,", "\\;"], $url) . ">";
+
+        // Replace the text content of the link in the escaped text with the formatted link
+        $escaped_text = str_replace($text_content, $formatted_link, $escaped_text);
     }
 
     // Replace bullet points and indentation for structured content
     $escaped_text = preg_replace("/^\*\s*/m", "*\t", $escaped_text);
+
+    // Remove all newlines and extra spaces to produce a single line
+    $escaped_text = preg_replace('/\s+/', ' ', $escaped_text);
 
     // Return the final iCalendar-compliant description
     return $escaped_text;

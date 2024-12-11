@@ -2173,7 +2173,7 @@ function organizer_slot_commands($slotid, $params, $grades) {
 			array('id' => $params['id'], 'slot' => $slotid, 'mode' => $params['mode'])
 	);
 	$outstr .= \html_writer::link($actionurl, organizer_get_fa_icon(
-			"fa fa-calendar fa-fw", get_string('btn_calendarsingle', 'organizer'))
+			"fa fa-calendar fa-fw", get_string('btn_exportics', 'organizer'))
 	);
 
     return $outstr;
@@ -2298,7 +2298,7 @@ function organizer_participants_action($params, $slot) {
         $disabled |= !$rightunregister || $slotexpired;
     }
 
-    // Show slot comments if user is owner.
+    // Show slot comments and ICS export if user is owner.
     $commentbtn = "";
     if ($isuserslot) {
         $commenturl = new moodle_url(
@@ -2314,9 +2314,18 @@ function organizer_participants_action($params, $slot) {
             $commentbtn = '<a href="' . $commenturl . '" class="action">' . $commentlabel .
                 organizer_get_fa_icon('fa fa-commenting ml-1', $commentlabel)  . '</a>';
         }
+
+        // allow users to EXPORT ICS.
+        $actionurl = new moodle_url(
+            '/mod/organizer/slots_export.php',
+            array('id' => $params['id'], 'slot' => $slotx->get_id())
+        );
+        $exporticsbtn .= \html_writer::link($actionurl, get_string('exportics', 'organizer') .  organizer_get_fa_icon(
+            "fa fa-calendar fa-fw", get_string('exportics', 'organizer'))
+        );
     }
 
-    return organizer_get_reg_button($action, $slotx->get_id(), $params, $disabled).$commentbtn;
+    return organizer_get_reg_button($action, $slotx->get_id(), $params, $disabled).$commentbtn.$exporticsbtn;
 
 }
 
@@ -2685,3 +2694,5 @@ function organizer_bookingnotpossible($groupmode, $organizer, $entryid, $allowex
 
     return !$maxnotreached || !$places;
 }
+
+
