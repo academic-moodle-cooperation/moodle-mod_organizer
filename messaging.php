@@ -175,6 +175,23 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
     }
 }
 
+/**
+ * Sends a reminder message from the organizer.
+ *
+ * This function sends a message reminder based on the organizer ID, type, and other optional parameters
+ * such as group name and message digest. It ensures the sender has the appropriate rights and builds
+ * the message content dynamically before sending it.
+ *
+ * @param stdClass|int $sender The sender of the message, can be an object or user ID.
+ * @param stdClass|int $receiver The receiver of the message, can be an object or user ID.
+ * @param int $organizerid The ID of the organizer related to the message.
+ * @param string $type The type of message being sent (e.g., notification, reminder).
+ * @param string|null $groupname (Optional) The name of the group, if applicable.
+ * @param string|null $digest (Optional) Additional digest data for the message.
+ * @param array $customdata (Optional) Custom data to include in the message.
+ *
+ * @return bool True if the message was sent successfully, false otherwise.
+ */
 function organizer_send_message_reminder($sender, $receiver, $organizerid, $type, $groupname = null, $digest = null,
                                          $customdata = []) {
 
@@ -207,6 +224,22 @@ function organizer_send_message_reminder($sender, $receiver, $organizerid, $type
     }
 }
 
+
+/**
+ * Sends a message from the trainer associated with a specific slot.
+ *
+ * This function retrieves the trainer associated with the provided slot ID
+ * and sends a message to the specified receiver. It uses the `organizer_send_message`
+ * function to handle the message composition and sending process.
+ *
+ * @param stdClass|int $receiver The receiver of the message, can be an object or user ID.
+ * @param stdClass $slot The slot object containing slot-specific data.
+ * @param string $type The type of message being sent (e.g., notification type).
+ * @param string|null $digest (Optional) Additional digest data for the message.
+ * @param array $customdata (Optional) Custom data to include in the message.
+ *
+ * @return bool True if the message is successfully sent, false otherwise.
+ */
 function organizer_send_message_from_trainer($receiver, $slot, $type, $digest = null, $customdata = []) {
     global $DB;
 
@@ -221,6 +254,20 @@ function organizer_send_message_from_trainer($receiver, $slot, $type, $digest = 
 
 }
 
+
+/**
+ * Generates the HTML content for an email message.
+ *
+ * This function creates a structured HTML template for email content.
+ * It includes navigation links, the message content, and a link to the organizer view page.
+ *
+ * @param string $content The main content/message of the email.
+ * @param stdClass $organizer The organizer object containing organizer-related data.
+ * @param stdClass $cm The course module object.
+ * @param stdClass $course The course object containing course-related data.
+ *
+ * @return string The generated HTML content for the email.
+ */
 function organizer_make_html($content, $organizer, $cm, $course) {
     global $CFG;
 
@@ -242,6 +289,20 @@ function organizer_make_html($content, $organizer, $cm, $course) {
     return $posthtml;
 }
 
+
+/**
+ * Prepares and sends a message based on the given data and message type.
+ *
+ * Depending on the message type, this function handles sending notifications
+ * to students or trainers associated with the organizer slots or appointments.
+ * It utilizes other helper functions for retrieving necessary data and sending
+ * messages.
+ *
+ * @param stdClass $data The data containing slot or appointment information necessary for the message.
+ * @param string $type The type of message being sent (e.g., 'edit_notify_student', 'edit_notify_teacher', etc.).
+ *
+ * @return bool True if the message was successfully sent, false otherwise.
+ */
 function organizer_prepare_and_send_message($data, $type) {
     global $DB, $USER;
 
@@ -496,20 +557,24 @@ function organizer_check_messagerights($sender, $receiver, $cm, $course, $organi
     return $strings;
 }
 
-/*
- * Builds a part of the message to send
+/**
+ * Builds a message object for notifications in the organizer module.
  *
- * @param $namesplit
- * @param $cm
- * @param $course
- * @param $organizer
- * @param $sender
- * @param $receiver
- * @param $digest
- * @param $type
- * @param $strings
- * @param $customdata
- * @return \core\message\message
+ * This function constructs a notification message based on the provided parameters.
+ * It supports digest mode, multiple message types, and custom data replacements.
+ *
+ * @param array $namesplit The split parts of the message name.
+ * @param object $cm The course module instance related to the organizer.
+ * @param object $course The course record related to the organizer.
+ * @param object $organizer The organizer instance.
+ * @param object $sender The user sending the message.
+ * @param object $receiver The user receiving the message.
+ * @param string|null $digest Optional digest message string.
+ * @param string $type The type of the message.
+ * @param object $strings A collection of message strings.
+ * @param array $customdata Associative array of additional custom data for the message.
+ *
+ * @return message The constructed message object ready to be sent.
  * @throws coding_exception
  */
 function organizer_build_message($namesplit, $cm, $course, $organizer, $sender, $receiver, $digest,

@@ -22,18 +22,31 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 namespace mod_organizer\task;
 
 use core\task\scheduled_task;
 
+/**
+ * Cron task class.
+ */
 class cron_task extends scheduled_task {
 
+    /**
+     * Get name function
+     * @return \lang_string|string
+     * @throws \coding_exception
+     */
     public function get_name() {
         // Shown in admin screens.
         return get_string('crontaskname', 'mod_organizer');
     }
 
+    /**
+     * Class e  xecute function
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public function execute() {
         global $CFG;
         include_once($CFG->dirroot . '/mod/organizer/lib.php');

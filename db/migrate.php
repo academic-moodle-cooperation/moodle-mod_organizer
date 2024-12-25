@@ -147,6 +147,14 @@ foreach ($courses as $course) {
 echo "</pre>";
 die;
 
+/**
+ * Migrate each slot
+ * @param $cm
+ * @param $scheduler
+ * @param $organizer
+ * @return void
+ * @throws dml_exception
+ */
 function migrate_slots($cm, $scheduler, $organizer) {
     global $DB;
 
@@ -247,6 +255,13 @@ function migrate_slots($cm, $scheduler, $organizer) {
     echo "Organizer migrated successfully. $slotcount slots migrated.\n";
 }
 
+/**
+ * Add organizer course module
+ * @param $cmold
+ * @param $organizer
+ * @return stdClass
+ * @throws dml_exception
+ */
 function add_course_module_x($cmold, $organizer) {
     global $DB;
 

@@ -120,6 +120,19 @@ if ($data = $mform->get_data()) {
 
 die;
 
+/**
+ * Displays a printable slot detail table.
+ *
+ * @param array $columns The columns to display in the table.
+ * @param int $slotid The ID of the slot to display details for.
+ * @param int|bool $entriesperpage Number of entries per page (false if not paginated).
+ * @param string $textsize Text size of the table content (default is '10').
+ * @param string $orientation Orientation of the table ('L' for landscape, 'P' for portrait).
+ * @param bool $headerfooter Whether to include a header and footer (true by default).
+ *
+ * @throws dml_exception Throws an exception if the database query fails.
+ * @return void
+ */
 function organizer_display_printable_slotdetail_table($columns, $slotid, $entriesperpage = false, $textsize = '10',
         $orientation = 'L', $headerfooter = true) {
     global $DB;

@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
 defined('MOODLE_INTERNAL') || die();
 
 define('ORGANIZER_SPACING', '&nbsp;&nbsp;');
@@ -41,12 +39,34 @@ require_once(dirname(__FILE__) . '/locallib.php');
  */
 class organizer_add_slots_form extends moodleform {
 
+
+    /**
+     * Options for hours selection in the form.
+     *
+     * @var array
+     */
     private $pickeroptionshours;
 
+
+    /**
+     * Options for minutes selection in the form.
+     *
+     * @var array
+     */
     private $pickeroptionsminutes;
 
+    /**
+     * Array containing names of weekdays (e.g., Monday, Tuesday, etc.).
+     *
+     * @var array
+     */
     private $weekdays;
 
+    /**
+     * Spacing string used for form elements, depending on page body classes.
+     *
+     * @var string
+     */
     private $spacing;
 
     /**

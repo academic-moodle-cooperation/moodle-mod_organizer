@@ -107,6 +107,20 @@ if ($data = $mform->get_data()) {
 
 die;
 
+/**
+ * Displays a printable table for the organizer module.
+ *
+ * @param int $registrationsfromdate The date from which registrations are allowed.
+ * @param int $timedue The due date for the organizer.
+ * @param array $columns An array of column names to be displayed in the table.
+ * @param array $slots An array of slot data to be displayed.
+ * @param bool|int $entriesperpage The number of entries per page. Default is false.
+ * @param string $textsize The text size to use for the printable table. Default is '10'.
+ * @param string $orientation The page orientation ('L' for landscape, 'P' for portrait). Default is 'L'.
+ * @param bool $headerfooter Whether to include header and footer in the printable table. Default is true.
+ *
+ * @return void
+ */
 function organizer_display_printable_table($registrationsfromdate, $timedue, $columns,
     $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
     $headerfooter = true

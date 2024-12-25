@@ -34,8 +34,32 @@ require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/slotlib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
+/**
+ * Class organizer_delete_slots_form
+ *
+ * This class defines a form for deleting organizer slots in Moodle.
+ * It uses the Moodle form API (moodleform) to render and handle data
+ * related to slot deletions. The form ensures only appropriate actions
+ * are processed, validating the input and handling scenarios where
+ * slots cannot be deleted due to attached participants.
+ *
+ * @package   mod_organizer
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class organizer_delete_slots_form extends moodleform {
 
+    /**
+     * Defines the form elements for deleting organizer slots.
+     *
+     * This method uses the Moodle Form API to define the input elements
+     * required for processing a slot deletion. It dynamically adds
+     * fields based on the provided custom data such as slots to be deleted.
+     * Handles cases where slots have participants and need exceptions.
+     *
+     * @return void
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     protected function definition() {
         global $DB;
 
@@ -57,7 +81,7 @@ class organizer_delete_slots_form extends moodleform {
             } else {
                 $slots = $data['slots'];
             }
-            list($sql, $params) = $DB->get_in_or_equal($slots);
+            [$sql, $params] = $DB->get_in_or_equal($slots);
 
             $slots = $DB->get_records_sql('SELECT * FROM {organizer_slots} WHERE {organizer_slots}.id ' . $sql, $params);
 

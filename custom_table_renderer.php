@@ -26,6 +26,13 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Render table for organizer
+ * @param html_table $table
+ * @param $printfooter
+ * @param $overrideevenodd
+ * @return string
+ */
 function organizer_render_table_with_footer(html_table $table, $printfooter = true, $overrideevenodd = false) {
     // Prepare table data and populate missing properties with reasonable defaults.
     if (!empty($table->align)) {

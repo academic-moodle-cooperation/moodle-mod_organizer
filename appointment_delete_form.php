@@ -34,8 +34,17 @@ require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
+/**
+ * Form for deleting appointmentments
+ */
 class organizer_delete_appointment_form extends moodleform {
 
+    /**
+     * Defintion of class
+     * @return void
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     protected function definition() {
         global $DB;
 

@@ -145,6 +145,18 @@ echo $OUTPUT->footer();
 
 // Utility functions.
 
+/**
+ * Creates a URL for the organizer view with specific parameters.
+ *
+ * @param array $params The parameters used to generate the URL. The array can include:
+ *                      - 'id' (int): The course module id.
+ *                      - 'mode' (int, optional): The organizer view mode (default is 0).
+ *                      - 'sort' (string, optional): The sorting field (default is 'datetime').
+ *                      - 'dir' (string, optional): The sorting direction (default is 'ASC').
+ * @param bool $short Whether to generate a short version of the URL (default is false).
+ *
+ * @return moodle_url The composed URL object for the organizer view.
+ */
 function organizer_create_url($params, $short = false) {
     $url = new moodle_url('/mod/organizer/view.php');
     $url->param('id', $params['id']);
@@ -162,6 +174,31 @@ function organizer_create_url($params, $short = false) {
     return $url;
 }
 
+/**
+ * Loads and prepares parameters for the organizer based on the current instance.
+ *
+ * This function retrieves parameters used throughout the organizer module
+ * and initializes them based on both required and optional inputs from the user
+ * or default values. It handles different organizer views, sorts, and other param-specific logic.
+ *
+ * @param stdClass $instance The current instance of the organizer module.
+ *
+ * @return array The prepared array of parameters containing:
+ * - 'id' (int): The course module ID.
+ * - 'mode' (int): The organizer view mode.
+ * - 'group' (int): The group ID.
+ * - 'sort' (string): The sorting field.
+ * - 'assignid' (int, optional): The assignment ID, only present for assignment views.
+ * - 'slots' (array): Slots-related parameters.
+ * - 'pdir' (string): Sorting direction for participants.
+ * - 'psort' (string): Sorting field for participants.
+ * - 'dir' (string): Sorting direction.
+ * - 'data' (array): Additional data inputs.
+ * - 'messages' (array): Messages linked to the organizer.
+ * - 'xmessages' (array): External messages linked to the organizer.
+ * - 'usersort' (string): Field used for user sorting.
+ * @throws coding_exception
+ */
 function organizer_load_params($instance) {
 
     $params = [];

@@ -33,8 +33,30 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/locallib.php');
 
+/**
+ * Class organizer_remind_all_form
+ *
+ * This class defines the form for the "Remind All" action in the Moodle Organizer module.
+ * It generates a custom form to send reminder notifications to students or groups depending on the organizer settings.
+ *
+ * @package   mod_organizer
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class organizer_remind_all_form extends moodleform {
 
+    /**
+     * Defines the "Remind All" form.
+     *
+     * This method generates the form for sending reminder notifications
+     * to students or groups, depending on the organizer settings. It sets
+     * up hidden form elements for necessary data, counts recipients, and
+     * allows adding a custom message to the reminder. If no recipients
+     * are available, it disables the confirmation button and displays a
+     * relevant message.
+     *
+     * @return void
+     */
     protected function definition() {
 
         $mform = $this->_form;
@@ -51,7 +73,7 @@ class organizer_remind_all_form extends moodleform {
         $mform->addElement('hidden', 'recipientsstr', $data['recipients']);
         $mform->setType('recipientsstr', PARAM_TEXT);
 
-        list(, $course, $organizer, $context) = organizer_get_course_module_data();
+        [, $course, $organizer, $context] = organizer_get_course_module_data();
 
         $recipientscount = 0;
         if ($data['recipients']) {

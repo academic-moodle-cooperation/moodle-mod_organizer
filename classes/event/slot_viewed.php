@@ -34,20 +34,39 @@ use moodle_url;
  * The slot_viewed event class.
  **/
 class slot_viewed extends base {
+
+    /**
+     * Event init function
+     * @return void
+     */
     protected function init() {
         $this->data['crud'] = 'r'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'organizer_slot_appointments';
     }
 
+    /**
+     * Event get name
+     * @return \lang_string|string
+     * @throws \coding_exception
+     */
     public static function get_name() {
         return get_string('eventslotviewed', 'mod_organizer');
     }
 
+    /**
+     * Event get description
+     * @return string
+     */
     public function get_description() {
         return "The user with id {$this->userid} viewed appointments tab with the course module id {$this->objectid}.";
     }
 
+    /**
+     * Event get url
+     * @return moodle_url
+     * @throws \core\exception\moodle_exception
+     */
     public function get_url() {
         return new moodle_url('/mod/organizer/view.php', ['id' => $this->objectid]);
     }

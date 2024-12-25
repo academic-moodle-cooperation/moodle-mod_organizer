@@ -70,8 +70,9 @@ require_once(dirname(__FILE__) . '/slotlib.php');
  * will create a new instance and return the id number
  * of the new instance.
  *
- * @param  object $organizer An object from the form in mod_form.php
+ * @param object $organizer An object from the form in mod_form.php
  * @return int The id of the newly inserted organizer record
+ * @throws dml_exception
  */
 function organizer_add_instance($organizer) {
     global $DB;
@@ -101,8 +102,9 @@ function organizer_add_instance($organizer) {
  * (defined by the form in mod_form.php) this function
  * will update an existing instance with new data.
  *
- * @param  object $organizer An object from the form in mod_form.php
+ * @param object $organizer An object from the form in mod_form.php
  * @return boolean Success/Fail
+ * @throws dml_exception
  */
 function organizer_update_instance($organizer) {
     global $DB;
@@ -160,8 +162,9 @@ function organizer_update_instance($organizer) {
  * this function will permanently delete the instance
  * and any data that depends on it.
  *
- * @param  int $id Id of the module instance
+ * @param int $id Id of the module instance
  * @return boolean Success/Failure
+ * @throws dml_exception
  */
 function organizer_delete_instance($id) {
     global $DB;
@@ -211,7 +214,6 @@ function organizer_delete_instance($id) {
  * $return->info = a short text description
  *
  * @return null
- * @todo   Finish documenting this function
  */
 function organizer_user_outline($course, $user, $mod, $organizer) {
     // Tscpr: do we need this function if it's returning just nothing?
@@ -226,7 +228,6 @@ function organizer_user_outline($course, $user, $mod, $organizer) {
  * a given particular instance of this module, for user activity reports.
  *
  * @return boolean
- * @todo   Finish documenting this function
  */
 function organizer_user_complete($course, $user, $mod, $organizer) {
     // Tscpr: do we need this function if we don't support completions?
@@ -239,18 +240,29 @@ function organizer_user_complete($course, $user, $mod, $organizer) {
  * Return true if there was output, or false is there was none.
  *
  * @return boolean
- * @todo   Finish documenting this function
  */
 function organizer_print_recent_activity($course, $viewfullnames, $timestart) {
     return false; // True if anything was printed, otherwise false.
 }
 
+/**
+ * Add elements to reset course form for organizer module.
+ *
+ * @param MoodleQuickForm $mform Form to define elements on.
+ */
 function organizer_reset_course_form_definition(&$mform) {
     $mform->addElement('header', 'organizerheader', get_string('modulenameplural', 'organizer'));
     $mform->addElement('checkbox', 'reset_organizer_all', get_string('resetorganizerall', 'organizer'));
     $mform->addElement('checkbox', 'delete_organizer_grades', get_string('deleteorganizergrades', 'organizer'));
 }
 
+/**
+ * Reset user data for the organizer module during course reset.
+ *
+ * @param stdClass $data Data submitted by the reset course form.
+ * @return array Status information list for the reset process.
+ * @throws dml_exception
+ */
 function organizer_reset_userdata($data) {
     global $DB;
 
@@ -314,6 +326,13 @@ function organizer_reset_userdata($data) {
     return $status;
 }
 
+/**
+ * Reset organizer grades for a given course ID.
+ *
+ * @param int $courseid ID of the course being reset.
+ * @return bool Gradebook reset status.
+ * @throws dml_exception
+ */
 function organizer_reset_gradebook($courseid) {
     global $DB;
 
@@ -334,6 +353,14 @@ function organizer_reset_gradebook($courseid) {
     return $ok;
 }
 
+/**
+ * Retrieve grades for a user in an organizer instance.
+ *
+ * @param stdClass $organizer Organizer instance object.
+ * @param int $userid User ID to fetch grades for, or 0 for all users.
+ * @return array List of grade records.
+ * @throws dml_exception
+ */
 function organizer_get_user_grade($organizer, $userid = 0) {
     global $DB;
 
@@ -474,6 +501,14 @@ function organizer_grade_item_update($organizer, $grades = null) {
     return grade_update('mod/organizer', $organizer->courseid, 'mod', 'organizer', $organizer->id, 0, $grades, $params);
 }
 
+/**
+ * Display a formatted grade for an organizer activity.
+ *
+ * @param stdClass $organizer Organizer instance object.
+ * @param float|int $grade Raw grade from the gradebook.
+ * @param int $userid User ID for scale grade processing.
+ * @return string Formatted grade string or no-grade string.
+ */
 function organizer_display_grade($organizer, $grade, $userid) {
     global $DB;
     $nograde = get_string('nograde');
@@ -502,6 +537,16 @@ function organizer_display_grade($organizer, $grade, $userid) {
     }
 }
 
+/**
+ * Update all grades for the specified organizer.
+ *
+ * This function retrieves all students or groups enrolled in the specified organizer,
+ * calculates their grades, and updates them accordingly in the gradebook.
+ *
+ * @param int $organizerid The ID of the organizer whose grades need to be updated.
+ * @return int The number of student grades updated.
+ * @throws dml_exception If any database operation fails.
+ */
 function organizer_update_all_grades($organizerid) {
     global $DB;
 
@@ -531,7 +576,21 @@ function organizer_update_all_grades($organizerid) {
     return count($studentids);
 }
 
-// Tscpr: we can strip the trailing _organizer in this function name...
+/**
+ * Creates a grades menu for an organizer based on the grading type.
+ *
+ * This function generates a grade menu for the organizer activity. If the grading type
+ * is a scale, it fetches the corresponding scale items from the database and adds a "No grade" option.
+ * For numeric grading, it creates a menu with grades ranging from 0 to the maximum grade allowed.
+ *
+ * @param int $gradingtype The grading type of the organizer:
+ *                         - Negative values indicate a scale ID.
+ *                         - Positive values specify a maximum numeric grade.
+ * @return array An associative array representing the grades menu.
+ *               Keys are grades or scale indices, and values are their string representations.
+ *               Includes a "No grade" option.
+ * @throws dml_exception If there's an error fetching scale data from the database.
+ */
 function organizer_make_grades_menu_organizer($gradingtype) {
     global $DB;
 
@@ -552,6 +611,15 @@ function organizer_make_grades_menu_organizer($gradingtype) {
     return $grades;
 }
 
+/**
+ * Cleans up a numeric value by removing unnecessary trailing zeros from decimal numbers.
+ *
+ * This function checks whether the given number is an integer or a decimal.
+ * If it is a decimal, it removes trailing zeros and the decimal point if there are no significant decimals left.
+ *
+ * @param string|float|int $num The numeric value to clean. It can be a string, float, or integer.
+ * @return string The cleaned numeric value as a string.
+ */
 function organizer_clean_num($num) {
     $pos = strpos($num, '.');
     if ($pos === false) { // It is integer number.
@@ -561,6 +629,12 @@ function organizer_clean_num($num) {
     }
 }
 
+/**
+ * Retrieves the event action instance for a trainer in an organizer module.
+ *
+ * @param object $organizer The organizer module instance.
+ * @return string A localized string representing the event action instance.
+ */
 function organizer_get_eventaction_instance_trainer($organizer) {
     $a = organizer_get_counters($organizer);
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
@@ -578,6 +652,12 @@ function organizer_get_eventaction_instance_trainer($organizer) {
     }
 }
 
+/**
+ * Retrieves the event action instance for a student in an organizer module.
+ *
+ * @param object $organizer The organizer module instance.
+ * @return string A localized string representing the event action instance.
+ */
 function organizer_get_eventaction_instance_student($organizer) {
 
     $a = new stdClass();
@@ -615,6 +695,21 @@ function organizer_get_eventaction_instance_student($organizer) {
     return $str;
 }
 
+
+/**
+ * Fetches the group associated with a user in the specified organizer module.
+ *
+ * This function determines the group to which a user belongs in the given course and
+ * organizer module. If no user ID is provided, it defaults to the ID of the currently logged-in user.
+ *
+ * If the organizer parameter is passed as an integer ID, the corresponding organizer record
+ * will be fetched from the database.
+ *
+ * @param object|int $organizer The organizer module instance or its ID.
+ * @param int|null $userid The user ID for whom the group is to be fetched. Defaults to the current user.
+ * @return object The group object that the user belongs to.
+ * @throws dml_exception If there is a problem with retrieving records from the database.
+ */
 function organizer_fetch_group($organizer, $userid = null) {
     global $DB, $USER;
 
@@ -633,6 +728,7 @@ function organizer_fetch_group($organizer, $userid = null) {
 
     return $group;
 }
+
 /**
  * Function to be run periodically according to the moodle cron
  * This function searches for things that need to be done, such
@@ -641,6 +737,7 @@ function organizer_fetch_group($organizer, $userid = null) {
  * @return bool|mixed
  * @throws coding_exception
  * @throws dml_exception
+ * @throws moodle_exception
  **/
 function organizer_cron() {
     global $DB;
@@ -808,7 +905,18 @@ SQL;
     return $success;
 }
 
-
+/**
+ * Creates and sends a digest message for an organizer trainer.
+ *
+ * This function generates a digest of upcoming appointment slots that
+ * meet the criteria for notification. The digest includes the date, time,
+ * and location of each slot. It updates the notification status of the slots
+ * to prevent duplicate notifications and sends the digest message to the
+ * trainer.
+ *
+ * @param int $trainerid The ID of the trainer for whom the digest is created.
+ * @return bool True if the digest message is successfully sent, false otherwise.
+ */
 function organizer_create_digest($trainerid) {
     include_once(dirname(__FILE__) . '/messaging.php');
     global $DB;
@@ -842,7 +950,7 @@ function organizer_create_digest($trainerid) {
 /**
  * Must return an array of users who are participants for a given instance
  * of organizer. Must include every user involved in the instance,
- * independient of his role (student, teacher, admin...). The returned
+ * independent of his role (student, teacher, admin...). The returned
  * objects must contain at least id property.
  * See other modules as example.
  *
@@ -901,6 +1009,19 @@ function organizer_uninstall() {
     return true;
 }
 
+/**
+ * Defines support for certain features within the organizer module.
+ *
+ * This function takes a feature constant as input and returns whether
+ * the feature is supported by the organizer module. It uses a switch
+ * statement to check various predefined feature cases.
+ *
+ * Additional cases could be added as needed to extend support for new features.
+ *
+ * @param string $feature The feature constant to check support for.
+ * @return mixed True if the feature is supported, null otherwise.
+ *               Returns a string for specific custom cases like 'mod_purpose'.
+ */
 function organizer_supports($feature) {
     switch ($feature) {
         case FEATURE_GROUPS:
@@ -959,6 +1080,15 @@ function organizer_get_coursemodule_info($coursemodule) {
     return $result;
 }
 
+/**
+ * Removes all waiting queue entries for an organizer.
+ *
+ * This function deletes all records from the organizer_slot_queues table
+ * that are associated with a specific organizer's slots.
+ *
+ * @param stdClass $organizer The organizer object containing the ID of the organizer.
+ * @return bool True if the entries were successfully removed, false otherwise.
+ */
 function organizer_remove_waitingqueueentries($organizer) {
     global $DB;
 
@@ -966,7 +1096,6 @@ function organizer_remove_waitingqueueentries($organizer) {
     $ok = $DB->delete_records_select('organizer_slot_queues', $query);
     return $ok;
 }
-
 
 /**
  * This function receives a calendar event and returns the action associated with it, or null if there is none.
@@ -1069,6 +1198,16 @@ function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $us
     return $isvisible;
 }
 
+/**
+ * Updates or creates calendar events for an organizer instance.
+ *
+ * Depending on if event IDs are provided, this function either updates existing calendar events
+ * or creates new ones for the organizer instance in the calendar.
+ *
+ * @param object $organizer The organizer object containing details about the instance.
+ * @param array $eventids (optional) Array of event IDs to be updated, if any.
+ * @return bool|array False on failure or an array of created/updated event objects on success.
+ */
 function organizer_change_event_instance($organizer, $eventids = []) {
     global $USER;
 
@@ -1092,6 +1231,26 @@ function organizer_change_event_instance($organizer, $eventids = []) {
     }
 }
 
+/**
+ * Creates a calendar event for an organizer instance or its appointments/slots.
+ *
+ * Based on the event type, this function creates an event in the Moodle calendar
+ * for an organizer instance, appointments, or slots. It sets the event properties
+ * like type, description, duration, and more. If a UUID is provided for an
+ * appointment, it removes already existing slot events linked to that UUID.
+ *
+ * @param object $organizer The organizer object containing instance details.
+ * @param string $eventtitle The title of the event.
+ * @param string $eventdescription The description text for the event.
+ * @param int $eventtype The type of the event (e.g., instance or appointment).
+ * @param int $userid The ID of the user associated with the event.
+ * @param int $timestart The start time of the event in timestamp format.
+ * @param int $duration The duration of the event in seconds.
+ * @param int $group The group ID associated with the event (optional).
+ * @param string $uuid The unique identifier for the event/slot (optional).
+ *
+ * @return int|false Returns the event ID if created or false on failure.
+ */
 function organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, $eventtype, $userid,
     $timestart, $duration, $group, $uuid
 ) {
@@ -1156,6 +1315,22 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
     return $event->id;
 }
 
+/**
+ * Updates the details of one or more calendar events related to the organizer.
+ *
+ * @param array $eventids An array of event IDs to update.
+ * @param object $organizer The organizer object associated with the events.
+ * @param string $eventtitle The new title for the events.
+ * @param string $eventdescription The new description for the events.
+ * @param int $eventtype The type of the event (e.g. instance, appointment, slot).
+ * @param int $userid The ID of the user associated with the events.
+ * @param int $timestart The start time of the event in timestamp format.
+ * @param int $duration The duration of the event in seconds.
+ * @param int|null $group The group ID associated with the event (optional).
+ * @param string|null $uuid A unique identifier for the event/slot (optional).
+ *
+ * @return bool Returns true on successful update.
+ */
 function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
     $timestart, $duration, $group, $uuid
 ) {
@@ -1214,6 +1389,15 @@ function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eve
     return true;
 }
 
+/**
+ * Updates the event names of calendar events associated with a specific organizer.
+ *
+ * @param int $organizerid The ID of the organizer whose events are to be updated.
+ * @param string $oldname The old name to search for in event names and descriptions.
+ * @param string $newname The new name to replace the old name with in event names and descriptions.
+ *
+ * @return void
+ */
 function organizer_change_eventnames($organizerid, $oldname, $newname) {
     global $DB;
 
