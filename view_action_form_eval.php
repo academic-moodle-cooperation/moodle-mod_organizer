@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
@@ -153,9 +151,13 @@ class organizer_evaluate_slots_form extends moodleform {
         }
         $this->add_action_buttons(true, get_string('evaluate', 'organizer'));
     }
+
     /**
-     * @param int $id
-     * @return string
+     * Generates a link to the user's profile with their full name and optional identity.
+     *
+     * @param int $id The ID of the user whose profile link is to be generated.
+     * @return string The HTML link to the user's profile, including their full name and identity if available.
+     * @throws dml_exception If the user record cannot be retrieved from the database.
      */
     private function organizer_get_name_link($id) {
         global $DB;

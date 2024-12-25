@@ -21,11 +21,15 @@
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @author    Andreas Windbichler
+ * @author    Thomas Niedermaier
  * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace mod_organizer\event;
 
+/**
+ * Inherited core event when course module list is viewed
+ */
 class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed {
 }

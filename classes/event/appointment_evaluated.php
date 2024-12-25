@@ -33,21 +33,39 @@ use moodle_url;
  * The appointment_evaluated event class.
  **/
 class appointment_evaluated extends base {
+    /**
+     * Event init method
+     * @return void
+     */
     protected function init() {
         $this->data['crud'] = 'u'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'organizer_slot_appointments';
     }
 
+    /**
+     * Get name of event
+     * @return \lang_string|string
+     * @throws \coding_exception
+     */
     public static function get_name() {
         return get_string('eventappointmentevaluated', 'mod_organizer');
     }
 
+    /**
+     * Get description of event
+     * @return string
+     */
     public function get_description() {
         return "The user with id {$this->userid} graded an appointment of organizer activity " .
             "with the course module id {$this->contextinstanceid}.";
     }
 
+    /**
+     * Get url of event
+     * @return moodle_url
+     * @throws \core\exception\moodle_exception
+     */
     public function get_url() {
         return new moodle_url('/mod/organizer/view.php', ['id' => $this->objectid]);
     }

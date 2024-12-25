@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 defined('MOODLE_INTERNAL') || die();
 
-define('ORGANIZER_SPACING', '&nbsp;&nbsp;'); // TODO Remove this.
+define('ORGANIZER_SPACING', '&nbsp;&nbsp;');
 
 // Required for the form rendering.
 
@@ -35,11 +34,18 @@ require_once("$CFG->libdir/formslib.php");
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class organizer_edit_slots_form extends moodleform {
+
+    /**
+     * Spacing used for rendering form elements, depending on page layout.
+     *
+     * @var string
+     */
+    private $spacing;
+
     /**
      * {@inheritDoc}
      * @see moodleform::definition()
      */
-    private $spacing;
     protected function definition() {
         global $CFG, $PAGE;
 
@@ -65,11 +71,22 @@ class organizer_edit_slots_form extends moodleform {
         $this->addbuttons();
         $this->set_data($defaults);
     }
+
     /**
-     * @return number[]|NULL[]|array[]
+     * Retrieves the default values for the organizer edit slots form.
+     *
+     * This method fetches the default settings and values for various fields based
+     * on the provided slot IDs. It ensures defaults are only set if all selected slots
+     * have consistent values for a particular field. If any discrepancies are detected
+     * between the slot values for a field, that field is excluded from the defaults.
+     *
+     * @return array An associative array of default values for the form fields.
+     * @throws coding_exception
+     * @throws dml_exception
      */
     private function get_defaults() {
         global $DB;
+
         $defaults = [];
         $defset = ['visible' => false,  'trainerids' => false, 'visibility' => false,  'comments' => false,
                         'location' => false, 'locationlink' => false,
@@ -183,7 +200,7 @@ class organizer_edit_slots_form extends moodleform {
         return $defaults;
     }
     /**
-     * add sumbit, reset and cancel buttons
+     * add submit, reset and cancel buttons
      */
     private function addbuttons() {
         $mform = $this->_form;
@@ -208,7 +225,6 @@ class organizer_edit_slots_form extends moodleform {
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'mode', $data['mode']);
         $mform->setType('mode', PARAM_INT);
-        // TODO: might cause crashes!
         $mform->addElement('hidden', 'action', 'edit');
         $mform->setType('action', PARAM_ALPHANUMEXT);
 
@@ -222,8 +238,23 @@ class organizer_edit_slots_form extends moodleform {
             $mform->setType("slots[$i]", PARAM_INT);
         }
     }
+
     /**
-     * @param array $defaults
+     * Adds form fields based on the provided defaults and custom data.
+     *
+     * This method is responsible for rendering the form fields required to
+     * allow users to configure slot and visibility details, trainer assignments,
+     * location details, and more. It automatically handles default values and
+     * ensures proper initialization of each form element.
+     *
+     * @param array $defaults An array of default values for form fields. Includes keys like:
+     *                        - 'visible': Slot visibility.
+     *                        - 'trainerids': IDs of trainers.
+     *                        - 'location': Slot location.
+     *                        - 'teachervisible': Whether teachers can view the slot.
+     *                        - 'visibility': Slot visibility level.
+     *
+     * @throws coding_exception If required settings or defaults are missing.
      */
     private function addfields($defaults) {
         $mform = $this->_form;
@@ -403,9 +434,17 @@ class organizer_edit_slots_form extends moodleform {
         $mform->addElement('hidden', 'mod_comments', 0);
         $mform->setType('mod_comments', PARAM_BOOL);
     }
+
     /**
-     * @param mixed $value
-     * @return boolean
+     * Converts a value to an integer and verifies if the conversion is valid.
+     *
+     * This function checks whether the given value is numeric and,
+     * if the value is both an integer and a float, determines that
+     * the conversion is valid.
+     *
+     * @param mixed $value The value to be converted and validated.
+     * @return bool Returns true if the value can be converted to an
+     * integer and is valid, otherwise false.
      */
     private function converts_to_int($value) {
         if (is_numeric($value)) {
@@ -415,9 +454,19 @@ class organizer_edit_slots_form extends moodleform {
         }
         return false;
     }
+
     /**
-     * {@inheritDoc}
-     * @see moodleform::validation()
+     * Performs server-side validation for form data.
+     *
+     * This function overrides the parent validation method to add custom
+     * validation logic for multiple fields such as checking integer values,
+     * positive value requirements, mandatory location fields, and other specific
+     * rules applicable to the organizer.
+     *
+     * @param array $data The submitted form data to validate.
+     * @param array $files The uploaded files (if any) to validate.
+     * @return array An array of validation error messages, where keys are field names
+     * and values are explanatory error strings. Returns an empty array if no errors are found.
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
@@ -443,9 +492,15 @@ class organizer_edit_slots_form extends moodleform {
 
         return $errors;
     }
+
     /**
-     * {@inheritDoc}
-     * @see moodleform::get_data()
+     * Retrieves the submitted form data and performs additional processing for specific fields.
+     *
+     * This method overrides the parent `get_data` method to provide additional handling
+     * for certain fields, such as assigning the 'location' field directly from the POST
+     * request data if it's set.
+     *
+     * @return stdClass|null The processed form data as an object, or null if no data is available.
      */
     public function get_data() {
         if ($data = parent::get_data()) {
@@ -455,8 +510,15 @@ class organizer_edit_slots_form extends moodleform {
             return $data;
         }
     }
+
     /**
-     * @return string[]
+     * Loads the list of trainers who have the capability to lead slots.
+     *
+     * Fetches users with the 'mod/organizer:leadslots' capability for the current context,
+     * and formats their names and email addresses into a readable format.
+     *
+     * @return string[] An associative array of trainers, where keys are trainer IDs,
+     * and values are formatted strings containing the trainer's full name and email address.
      */
     private function load_trainers() {
         $context = organizer_get_context();
@@ -474,10 +536,17 @@ class organizer_edit_slots_form extends moodleform {
 
         return $trainers;
     }
+
     /**
-     * @param string $name
-     * @param boolean $noshow
-     * @return string
+     * Generates a warning icon HTML element with optional visibility.
+     *
+     * This method creates a warning icon using a FontAwesome icon class,
+     * adds a description as its tooltip, and assigns an ID for the icon.
+     * If `$noshow` is set to true, an empty string is returned instead of the icon.
+     *
+     * @param string $name The base name for the ID attribute of the icon.
+     * @param bool $noshow (Optional) Whether to suppress the icon's visibility. Defaults to false.
+     * @return string The HTML markup for the warning icon, or an empty string if `$noshow` is true.
      */
     private function warning_icon($name, $noshow = false) {
         if (!$noshow) {
@@ -489,9 +558,17 @@ class organizer_edit_slots_form extends moodleform {
             return '';
         }
     }
+
     /**
-     * @param int $time
-     * @return number
+     * Determines the appropriate time unit for a given time duration.
+     *
+     * This function analyzes a provided time duration and identifies the
+     * largest unit (days, hours, minutes, or seconds) that evenly divides
+     * the value. It returns the divisor representing the time unit.
+     *
+     * @param int $time The time duration in seconds to be evaluated.
+     * @return int Returns the divisor corresponding to the largest time unit
+     * (86400 for days, 3600 for hours, 60 for minutes, or 1 for seconds).
      */
     private function organizer_figure_out_unit($time) {
         if ($time % 86400 == 0) {
@@ -504,8 +581,17 @@ class organizer_edit_slots_form extends moodleform {
             return 1;
         }
     }
+
     /**
-     * @return string[]
+     * Retrieves the visibilities available for organizer slots.
+     *
+     * This function defines a list of visibility options that can be applied
+     * to organizer slots. Each visibility mode corresponds to a specific setting
+     * such as visible to all, anonymous, or visible based on the slot's configuration.
+     *
+     * @return array An associative array where keys are visibility constants
+     * and values are their corresponding descriptions as strings.
+     * @throws coding_exception
      */
     private function get_visibilities() {
 
@@ -516,8 +602,15 @@ class organizer_edit_slots_form extends moodleform {
 
         return $visibilities;
     }
+
     /**
-     * @return mixed
+     * Retrieves the visibility setting of the current organizer instance.
+     *
+     * This method fetches the organizer instance and returns the configured
+     * visibility setting for that instance.
+     *
+     * @return int The visibility setting of the organizer instance.
+     * @throws coding_exception
      */
     private function get_instance_visibility() {
 

@@ -32,8 +32,25 @@ require_once($CFG->dirroot . '/course/moodleform_mod.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 use core_grades\component_gradeitems;
 
+/**
+ * Populates additional data and initializes the module form after it has been assembled.
+ *
+ * This method is executed after the form has been populated with data, to further
+ * initialize and manage the module's form behavior based on available data or settings,
+ * such as synchronizing groups or enabling specific form elements.
+ *
+ * @return void
+ */
 class mod_organizer_mod_form extends moodleform_mod {
 
+    /**
+     * This method is executed after the main form data has been populated.
+     * It performs additional initialization and synchronization tasks,
+     * such as updating group organization settings or enabling specific UI elements,
+     * based on the provided form and database values.
+     *
+     * @return void
+     */
     public function definition_after_data() {
         global $PAGE, $DB;
         $mform = &$this->_form;
@@ -71,6 +88,20 @@ class mod_organizer_mod_form extends moodleform_mod {
 
     }
 
+    /**
+     * Defines the structure of the mod_organizer form.
+     *
+     * This function is responsible for setting up and adding all necessary
+     * form elements to handle the configuration of the mod_organizer module.
+     * These include general settings like name, intro, registration dates,
+     * and organizer-specific configuration options.
+     *
+     * The form elements are initialized with proper default values, input rules,
+     * and help buttons. This ensures that the module's configuration is user-friendly
+     * and adheres to required parameters.
+     *
+     * @return void
+     */
     public function definition() {
         global $PAGE, $CFG, $DB;
 
@@ -333,6 +364,14 @@ class mod_organizer_mod_form extends moodleform_mod {
 
     }
 
+    /**
+     * Validate the submitted form values on the server.
+     *
+     * @param int $courseid The ID of the course.
+     * @param int $groupingid The ID of the grouping.
+     * @return array An associative array where the keys are user IDs and the values are arrays of groups
+     *               the user belongs to within the specified grouping.
+     */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
@@ -394,6 +433,18 @@ class mod_organizer_mod_form extends moodleform_mod {
         return $errors;
     }
 
+    /**
+     * Retrieve the group memberships for a specific course and grouping.
+     *
+     * This method fetches all the groups within the specified grouping and identifies
+     * the membership of each user. If a user belongs to multiple groups, their memberships
+     * will be represented as an array of groups.
+     *
+     * @param int $courseid The ID of the course.
+     * @param int $groupingid The ID of the grouping.
+     * @return array An associative array where the keys are user IDs and the values are arrays of group objects
+     *               the user belongs to within the specified grouping.
+     */
     private function get_memberships($courseid, $groupingid) {
 
         $groups = groups_get_all_groups($courseid, 0, $groupingid, 'g.*', true);
@@ -411,6 +462,16 @@ class mod_organizer_mod_form extends moodleform_mod {
         return $memberships;
     }
 
+    /**
+     * Retrieves visibility options for the organizer.
+     *
+     * This function returns an associative array of available visibility settings
+     * for the organizer. The keys of the array are the visibility constants defined
+     * elsewhere, and the values are the respective language strings for those options.
+     *
+     * @return array An associative array where the keys are visibility constants
+     *               and the values are localized strings for the visibility modes.
+     */
     private function get_visibilities() {
 
         $visibilities = [];
@@ -421,6 +482,17 @@ class mod_organizer_mod_form extends moodleform_mod {
         return $visibilities;
     }
 
+    /**
+     * Retrieves the available group modes for the organizer.
+     *
+     * This method provides an associative array of group modes that
+     * can be used within the organizer. Each key in the array is a
+     * constant representing a group mode, and the corresponding value
+     * is the localized string describing the group mode.
+     *
+     * @return array An associative array where keys are group mode constants
+     *               and values are localized strings for the group modes.
+     */
     private function get_groupmodes() {
 
         $groupmodes = [];
@@ -432,6 +504,17 @@ class mod_organizer_mod_form extends moodleform_mod {
         return $groupmodes;
     }
 
+    /**
+     * Retrieves the available grade aggregation methods for the organizer.
+     *
+     * This method provides an associative array of grade aggregation methods
+     * that can be used within the organizer. The keys in the array represent
+     * different aggregation methods, and the corresponding values are localized
+     * strings describing those methods.
+     *
+     * @return array An associative array where keys are grade aggregation method constants
+     *               and values are localized strings for the grade aggregation methods.
+     */
     private function get_gradeaggregationmethods() {
 
         $gradeaggregationmethods = [];

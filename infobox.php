@@ -32,6 +32,16 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/slotlib.php');
 
+/**
+ * HTML code for rendering infobox
+ * @param $params
+ * @param $organizer
+ * @param $context
+ * @param $organizerexpired
+ * @return string
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_make_infobox($params, $organizer, $context, $organizerexpired = null) {
     global $PAGE, $USER;
 
@@ -81,6 +91,15 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
 
     return $output;
 }
+
+/**
+ * HTML for rendering an info section
+ * @param $name
+ * @param $content
+ * @param $hidden
+ * @return string
+ * @throws coding_exception
+ */
 function organizer_make_section($name, $content, $hidden = false) {
     $output = "";
     if ($name) {
@@ -97,6 +116,13 @@ function organizer_make_section($name, $content, $hidden = false) {
     $output .= '</div>';
     return $output;
 }
+
+/**
+ * HTML for rendering messages infobox
+ * @param $params
+ * @return string
+ * @throws coding_exception
+ */
 function organizer_make_messages_section($params) {
     global $OUTPUT;
 
@@ -124,11 +150,21 @@ function organizer_make_messages_section($params) {
         return '';
     }
 }
+
+/**
+ * HTML for rendering sendreminder infobox
+ * @param $params
+ * @param $context
+ * @param $organizer
+ * @return string
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ */
 function organizer_make_sendreminder_section($params, $context, $organizer) {
     global $OUTPUT;
     $recipients = organizer_get_reminder_recipients($organizer);
     $attributes = [];
-    list(, $places) = organizer_get_freeplaces($organizer);
+    [, $places] = organizer_get_freeplaces($organizer);
     if ($disabled = !$recipients || !has_capability("mod/organizer:sendreminders", $context) || !$places) {
         $attributes['disabled'] = true;
     }
@@ -142,6 +178,13 @@ function organizer_make_sendreminder_section($params, $context, $organizer) {
     }
     return organizer_make_section('infobox_messaging', $output);
 }
+
+/**
+ * HTML for rendering description infobox
+ * @param $organizer
+ * @return mixed
+ * @throws coding_exception
+ */
 function organizer_make_description_section($organizer) {
     global $OUTPUT;
 
@@ -199,6 +242,15 @@ function organizer_make_description_section($organizer) {
 
     return $OUTPUT->box($output, 'generalbox', 'intro');
 }
+
+/**
+ * HTML for rendering my app infobox
+ * @param $params
+ * @param $organizer
+ * @param $apps
+ * @return string
+ * @throws coding_exception
+ */
 function organizer_make_myapp_section($params, $organizer, $apps) {
     global $USER;
 
@@ -254,20 +306,28 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
     }
     return organizer_make_section('infobox_myslot', $output);
 }
+
+/**
+ * HTML for rendering registration statistic infobox
+ * @param $organizer
+ * @param $entries
+ * @return string
+ * @throws coding_exception
+ */
 function organizer_make_registrationstatistic_section($organizer, $entries) {
     $barwidth = 25;
     $a = new stdClass();
     $a->min = $organizer->userslotsmin;
     $a->max = $organizer->userslotsmax;
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        list($a->entries, $undermin, $a->maxreached) =
+        [$a->entries, $undermin, $a->maxreached] =
             organizer_registration_statistics($organizer, true, $entries,
                 $organizer->userslotsmin, $organizer->userslotsmax);
         $a->minreached = (int) $a->entries - (int) $undermin;
         $messageminreached = get_string('infobox_statistic_minreached_group', 'organizer', $a);
         $messagemaxreached = get_string('infobox_statistic_maxreached_group', 'organizer', $a);
     } else {
-        list($a->entries, $undermin, $a->maxreached) =
+        [$a->entries, $undermin, $a->maxreached] =
             organizer_registration_statistics($organizer, false, $entries,
                 $organizer->userslotsmin, $organizer->userslotsmax);
         $a->minreached = (int) $a->entries - (int) $undermin;
@@ -331,6 +391,13 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
 
     return organizer_make_section('infobox_registrationstatistic', $out);
 }
+
+/**
+ * HTML for rendering filter section
+ * @param $mode
+ * @return string
+ * @throws coding_exception
+ */
 function organizer_make_filtersection($mode) {
     global $OUTPUT;
 
@@ -388,6 +455,13 @@ function organizer_make_filtersection($mode) {
 
     return $output;
 }
+
+/**
+ * HTML for rendering filter section in registration view
+ * @param $groupmode
+ * @return string
+ * @throws coding_exception
+ */
 function organizer_make_filtersection_reg($groupmode) {
     global $OUTPUT, $PAGE;
 
@@ -420,6 +494,14 @@ function organizer_make_filtersection_reg($groupmode) {
 
     return $output;
 }
+
+/**
+ * HTML for rendering slotoptions section
+ * @param $mode
+ * @param $organizer
+ * @return string
+ * @throws coding_exception
+ */
 function organizer_make_slotoptions_section($mode, $organizer) {
     global $OUTPUT;
 
@@ -455,6 +537,15 @@ function organizer_make_slotoptions_section($mode, $organizer) {
 
     return organizer_make_section('infobox_slotoverview', $output);
 }
+
+/**
+ * HTML for rendering add slots button
+ * @param $params
+ * @param $organizerexpired
+ * @return string
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ */
 function organizer_make_addslotbutton_section($params, $organizerexpired) {
 
     $output = html_writer::start_div('mb-3 mt-1');
@@ -468,6 +559,13 @@ function organizer_make_addslotbutton_section($params, $organizerexpired) {
 
     return $output;
 }
+
+/**
+ * HTML for rendering appointment status infobox
+ * @param $organizer
+ * @return string
+ * @throws coding_exception
+ */
 function organizer_make_appointmentsstatus_section($organizer) {
     $output = html_writer::div(organizer_appointmentsstatus_bar($organizer), 'mb-3 mt-1');
     return organizer_make_section("", $output);

@@ -17,7 +17,7 @@
 /**
  * mtablepdf.php
  *
- * @package   mtablepdf
+ * @package   mod_organizer
  * @author    Andreas Hruska (andreas.hruska@tuwien.ac.at)
  * @author    Katarzyna Potocka (katarzyna.potocka@tuwien.ac.at)
  * @author    Thomas Niedermaier

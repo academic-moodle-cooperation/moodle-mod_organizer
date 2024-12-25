@@ -83,7 +83,7 @@ function organizer_load_eventsandslots($trainerid, $newslotid, $startdate, $endd
 }
 
 /**
- *
+ * Get link to the (actual) user
  * @param number $user
  * @return boolean|string
  */
@@ -102,6 +102,12 @@ function organizer_get_name_link($user = 0) {
     return html_writer::link($profileurl, $name);
 }
 
+/**
+ * Gets a user's profile picture along with their name linked to their profile.
+ *
+ * @param int|stdClass $user Optional. A user ID or a user object. Defaults to the currently logged-in user.
+ * @return false|string HTML link to the user's profile picture and name, or false if the user is invalid.
+ */
 function organizer_get_userpicture_link($user = 0) {
     global $DB, $USER, $COURSE;
     if (!$user) {
@@ -145,6 +151,7 @@ function organizer_check_collision($from, $to, $eventsandslots) {
     }
     return $collidingevents;
 }
+
 /**
  *
  * @param number $num
@@ -155,6 +162,7 @@ function organizer_check_collision($from, $to, $eventsandslots) {
 function organizer_between($num, $lower, $upper) {
     return $num > $lower && $num < $upper;
 }
+
 /**
  *
  * @param array $data
@@ -290,6 +298,7 @@ function organizer_add_new_slots($data) {
 
     return [$count, $slotsnotcreatedduetodeadline, $slotsnotcreatedduetopasttime, $collisionmessages];
 }
+
 /**
  *
  * @param int $slotdate
@@ -306,6 +315,7 @@ function organizer_get_slotstarttime($slotdate, $time) {
     $starttime = $t->getTimestamp();
     return $starttime;
 }
+
 /**
  *
  * @param int $dayto
@@ -371,10 +381,19 @@ function organizer_get_dayto($dayto, $dateday) {
     return $date;
 }
 
-function organizer_add_day_to_date($date, $days) {
-
-}
-
+/**
+ * Adds a calendar event for a specific organizer slot.
+ *
+ * This function either creates or updates a calendar event in Moodle for a given
+ * organizer slot and optionally associates it with a specific user or updates an existing
+ * event by its event ID.
+ *
+ * @param int $cmid The course module ID of the organizer.
+ * @param stdClass|int $slot The organizer slot object or its ID.
+ * @param int|null $userid The ID of the user associated with the event (optional).
+ * @param int|null $eventid The ID of an existing event to update (optional).
+ * @return bool True if the calendar event was successfully added or updated; false otherwise.
+ */
 function organizer_add_event_slot($cmid, $slot, $userid = null, $eventid = null) {
     global $DB;
 
@@ -460,7 +479,16 @@ function organizer_add_event_slot($cmid, $slot, $userid = null, $eventid = null)
     }
 }
 
-
+/**
+ * Adds an appointment event to the calendar.
+ *
+ * This function creates or updates calendar events for appointments in an organizer activity.
+ *
+ * @param int $cmid The course module ID for the organizer activity.
+ * @param stdClass|int $appointment The appointment object or its ID.
+ * @return void
+ * @throws dml_exception If a database error occurs.
+ */
 function organizer_add_event_appointment($cmid, $appointment) {
     global $DB;
 
@@ -545,6 +573,20 @@ function organizer_add_event_appointment($cmid, $appointment) {
 
 }
 
+/**
+ * Adds or updates a calendar event for an appointment trainer.
+ *
+ * This function either creates or updates calendar events for
+ * a trainer associated with an appointment. If no specific trainer
+ * is provided, the function processes all trainers associated with
+ * the appointment's time slot.
+ *
+ * @param int $cmid The course module ID of the organizer.
+ * @param int|stdClass $appointment The appointment ID or appointment record.
+ * @param int|null $trainerid Optional trainer ID. If not provided, all trainers
+ *     associated with the slot will be processed.
+ * @return bool True if the operation is successful.
+ */
 function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid = null) {
     global $DB;
 
@@ -571,6 +613,17 @@ function organizer_add_event_appointment_trainer($cmid, $appointment, $trainerid
 
 }
 
+/**
+ * Updates the comments of an appointment in the database.
+ *
+ * This function retrieves the appointment record by its ID and updates the
+ * associated comments field. If no comments are provided, the comments field
+ * is set to an empty string.
+ *
+ * @param int $appid The ID of the appointment to be updated.
+ * @param string|null $comments The new comments for the appointment. If null, the comments will be cleared.
+ * @return bool True if the update was successful, false otherwise.
+ */
 function organizer_update_comments($appid, $comments) {
     global $DB;
 
@@ -584,6 +637,19 @@ function organizer_update_comments($appid, $comments) {
     return $DB->update_record('organizer_slot_appointments', $appointment);
 }
 
+/**
+ * Updates various properties of a slot, handling changes to trainers, visibility,
+ * location, and other settings, as well as ensuring that max participants are
+ * correctly handled, especially in the presence of a queue.
+ *
+ * This function modifies the slot based on the provided data, including updating
+ * fields such as location, visibility, teacher's availability, and notification time.
+ * When the maximum number of participants is updated, it ensures that the change doesn't
+ * violate existing bookings and manages participants in the queue accordingly.
+ *
+ * @param stdClass $data The data object containing slot properties and modifications.
+ * @return void
+ */
 function organizer_update_slot($data) {
     global $DB;
 
@@ -756,6 +822,12 @@ function organizer_update_slot($data) {
     return $data->slots;
 }
 
+/**
+ * Deletes an appointment slot from the organizer.
+ *
+ * @param int $id The ID of the slot to be deleted.
+ * @return int|false The number of users notified about the deletion, or false if the slot does not exist.
+ */
 function organizer_delete_appointment_slot($id) {
     global $DB, $USER;
 
@@ -789,6 +861,18 @@ function organizer_delete_appointment_slot($id) {
     return $notifiedusers;
 }
 
+/**
+ * Deletes a specific user's appointment.
+ *
+ * If a group ID is provided, all queue entries for the group in the specified slot
+ * will be deleted. If no group ID is provided, the specific user's slot queue entry
+ * will be deleted.
+ *
+ * @param int $slotid The ID of the slot.
+ * @param int $userid The ID of the user.
+ * @param int|null $groupid The ID of the group, or null if it's an individual user.
+ * @return bool True if the deletion was successful, false otherwise.
+ */
 function organizer_delete_appointment($id) {
     global $DB, $USER;
 
@@ -807,6 +891,17 @@ function organizer_delete_appointment($id) {
     return true;
 }
 
+/**
+ * Deletes all appointments of the group members from a slot from an organizer.
+ *
+ * This function removes all queue entries for the specified user or group from the organizer's slots.
+ * It also deletes related event records in the database.
+ *
+ * @param int $organizerid The ID of the organizer.
+ * @param int $userid The ID of the user.
+ * @param int|null $groupid The ID of the group, or null for individual users.
+ * @return bool True if successful, false if no records were found.
+ */
 function organizer_delete_appointment_group($slotid, $groupid) {
     global $DB, $USER;
 
@@ -829,6 +924,19 @@ function organizer_delete_appointment_group($slotid, $groupid) {
     return true;
 }
 
+/**
+ * Deletes a user or group's queue entries for a specific slot in an organizer.
+ *
+ * This function removes all queue entries for a provided user or group from the specified slot.
+ * If the `groupid` parameter is provided, all queue entries related to that group in the slot
+ * will be deleted. Otherwise, only the specified user's queue entry for the slot will be removed.
+ *
+ * @param int $slotid The ID of the slot.
+ * @param int $userid The ID of the user whose queue entry is to be deleted.
+ * @param int|null $groupid Optional. The ID of the group whose queue entries are to be deleted.
+ *                          Defaults to null for individual users.
+ * @return bool True if the operation was successful, false otherwise.
+ */
 function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
     global $DB;
 
@@ -850,6 +958,18 @@ function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
     return true;
 }
 
+/**
+ * Deletes a user from any queue in the organizer.
+ *
+ * This function removes all queue entries for the specified user or group from
+ * all slots in the given organizer. It also deletes the related event records
+ * associated with these queue entries.
+ *
+ * @param int $organizerid The ID of the organizer.
+ * @param int $userid The ID of the user to be removed from the queue.
+ * @param int|null $groupid Optional. The ID of the group to be removed from the queue. Defaults to null for individual users.
+ * @return bool True if the operation was successful, false otherwise.
+ */
 function organizer_delete_user_from_any_queue($organizerid, $userid, $groupid = null) {
     global $DB;
 
@@ -877,6 +997,18 @@ function organizer_delete_user_from_any_queue($organizerid, $userid, $groupid = 
     return true;
 }
 
+/**
+ * Adds a user (or a group) to the queue for a particular organizer slot.
+ *
+ * If the organizer is configured for groups, all members of the group are added to the queue.
+ * Otherwise, only the specified user is added. This operation is only allowed if the organizer
+ * has queuing enabled.
+ *
+ * @param organizer_slot $slotobj The slot object representing the organizer slot.
+ * @param int $groupid Optional. The ID of the group to add to the queue. Defaults to 0 for individuals.
+ * @param int $userid Optional. The ID of the user to add to the queue. Defaults to the current user if not provided.
+ * @return bool True if the operation was successful, false otherwise.
+ */
 function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid = 0) {
     global $DB, $USER;
 
@@ -906,6 +1038,22 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
     return $ok;
 }
 
+/**
+ * Registers an appointment for a specific slot in the organizer module.
+ *
+ * This function allows either a single user or a group to be registered for an appointment
+ * in the specified slot. If the slot is already full, the user or group is added to the queue
+ * (if queuing is enabled). Notifications can be sent to the users involved and/or trainers
+ * based on the function's parameters.
+ *
+ * @param int $slotid The ID of the organizer slot to register the appointment for.
+ * @param int $groupid Optional. The ID of the group to register. Defaults to 0 for individuals.
+ * @param int $userid Optional. The ID of the user to register. Defaults to the current user if not provided.
+ * @param bool $sendmessage Optional. Whether to send a message to the participants or trainers. Defaults to false.
+ * @param int|null $teacherapplicantid Optional. The ID of the teacher who applies for the registration. Defaults to null.
+ * @param bool $slotnotfull Optional. Indicates whether the function should bypass the "full slot" check. Defaults to false.
+ * @return bool True if the registration or queuing operation was successful, false otherwise.
+ */
 function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sendmessage = false,
                                         $teacherapplicantid = null, $slotnotfull = false) {
     global $DB, $USER;
@@ -964,6 +1112,20 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
     return $ok;
 }
 
+/**
+ * Registers a single appointment in the system.
+ *
+ * @param int $slotid The ID of the organizer slot to register the appointment for.
+ * @param int $userid The ID of the user to register.
+ * @param int $applicantid Optional. The ID of the applicant registering the appointment. Defaults to 0.
+ * @param int $groupid Optional. The ID of the group to register. Defaults to 0 for individuals.
+ * @param int|null $teacherapplicantid Optional. The ID of the teacher applying for registration. Defaults to null.
+ * @param bool $trainerevents Optional. Whether to generate trainer-specific events. Defaults to false.
+ * @param int|null $trainerid Optional. The ID of the trainer for the event. Defaults to null if not provided.
+ * @param int|null $ogranizerid The ID of the organizer. Defaults to null if not provided.
+ *
+ * @return int The ID of the newly inserted appointment record.
+ */
 function organizer_register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0,
     $teacherapplicantid = null, $trainerevents = false, $trainerid = null, $ogranizerid = null) {
     global $DB;
@@ -1019,6 +1181,16 @@ function organizer_register_single_appointment($slotid, $userid, $applicantid = 
     return $appointment->id;
 }
 
+/**
+ * Adds a single appointment to the queue for a specific slot and user.
+ *
+ * @param int $slotid The ID of the organizer slot to queue the appointment for.
+ * @param int $userid The ID of the user to queue.
+ * @param int $applicantid Optional. The ID of the applicant queuing the appointment. Defaults to 0.
+ * @param int $groupid Optional. The ID of the group to queue. Defaults to 0 for individuals.
+ *
+ * @return int The ID of the newly inserted queue record.
+ */
 function organizer_queue_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0) {
     global $DB;
 
@@ -1038,6 +1210,18 @@ function organizer_queue_single_appointment($slotid, $userid, $applicantid = 0, 
     return $appointment->id;
 }
 
+/**
+ * Re-registers an appointment for a given slot and optionally for a specified group.
+ *
+ * This function unregisters previous appointments for the user or group and registers them
+ * for the specified slot. It also handles synchronization of group appointments and updates
+ * related queue entries.
+ *
+ * @param int $slotid The ID of the slot to register for.
+ * @param int $groupid Optional. The ID of the group to register. Defaults to 0 for individual users.
+ *
+ * @return bool True if the re-registration is successful, false otherwise.
+ */
 function organizer_reregister_appointment($slotid, $groupid = 0) {
     global $DB, $USER;
 
@@ -1123,6 +1307,14 @@ function organizer_reregister_appointment($slotid, $groupid = 0) {
     return $okregister && $okunregister;
 }
 
+/**
+ * Unregisters an appointment for a given slot for a group or a user.
+ *
+ * @param int $slotid The ID of the slot to unregister from.
+ * @param int $groupid The ID of the group to unregister, or 0 for individual users.
+ * @param int $organizerid The ID of the organizer instance.
+ * @return bool Returns true if the unregistration process completed successfully for all.
+ */
 function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
     global $DB, $USER;
 
@@ -1194,6 +1386,20 @@ function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
     return $ok;
 }
 
+/**
+ * Unregisters a single appointment for a given user and slot.
+ *
+ * This function removes an appointment record for a user from a specific slot,
+ * along with any associated event records. It also handles group synchronization
+ * if the organizer employs group booking modes.
+ *
+ * @param int $slotid The ID of the slot from which the user is to be unregistered.
+ * @param int $userid The ID of the user to be unregistered from the slot.
+ * @param stdClass|null $organizer The organizer object, or null to retrieve it dynamically.
+ *
+ *
+ * @return bool True if the unregistration is successful; false otherwise.
+ */
 function organizer_unregister_single_appointment($slotid, $userid, $organizer = null) {
     global $DB;
 
@@ -1225,6 +1431,17 @@ function organizer_unregister_single_appointment($slotid, $userid, $organizer = 
     return $ok;
 }
 
+/**
+ * Evaluates and updates slots based on the given data.
+ *
+ * This function processes the provided appointment data, updates the attendance,
+ * grades, and feedback for each appointment, and recalculates grades for users
+ * when necessary. It also returns a list of slot IDs that were modified.
+ *
+ * @param stdClass $data The data object containing appointment information and slot enablement data.
+
+ * @return array An array of slot IDs that were evaluated or updated.
+ */
 function organizer_evaluate_slots($data) {
     global $DB;
 
@@ -1259,6 +1476,20 @@ function organizer_evaluate_slots($data) {
     return $slotids;
 }
 
+/**
+ * Retrieves the course module data based on the provided parameters or current request parameters.
+ *
+ * This function attempts to load the course module, course, organizer, and context data
+ * either using the provided `$id` or `$n` parameters, or using the optional parameters from
+ * the current HTTP request. It ensures that the required details are fetched and throws
+ * an exception if neither `$id` nor `$n` is specified.
+ *
+ * @param int|null $id Optional course module ID.
+ * @param int|null $n Optional organizer instance ID.
+
+ * @return array An array containing the course module, course, organizer, and context objects.
+ * @throws coding_exception If neither a course module ID nor an instance ID is specified.
+ */
 function organizer_get_course_module_data($id = null, $n = null) {
     global $DB;
 
@@ -1282,6 +1513,20 @@ function organizer_get_course_module_data($id = null, $n = null) {
     return [$cm, $course, $organizer, $context];
 }
 
+/**
+ * Retrieves the organizer's course module data.
+ *
+ * This function fetches and returns the required information for the organizer,
+ * specifically the course module, course, organizer, and context. It uses
+ * parameters from the current HTTP request (`id` or `o`) and ensures the
+ * necessary details are fetched. The returned data is structured
+ * as object properties for better accessibility.
+
+ * @return stdClass An object containing the course module (`cm`), course (`course`),
+ *                  organizer (`organizer`), and context (`context`) objects.
+ *
+ * @throws coding_exception If neither a course module ID (`id`) nor an instance ID (`o`) is specified.
+ */
 function organizer_get_course_module_data_new() {
     global $DB;
 
@@ -1310,6 +1555,18 @@ function organizer_get_course_module_data_new() {
     return $instance;
 }
 
+/**
+ * Retrieves the organizer record based on the current HTTP request.
+ *
+ * This function fetches and returns the organizer instance record from the
+ * database. It uses the course module ID (`id`) or the organizer instance ID
+ * (`o`) provided in the HTTP request parameters. If neither is supplied, it
+ * throws an exception.
+
+ * @return stdClass The organizer instance record from the database.
+ *
+ * @throws coding_exception If neither a course module ID (`id`) nor an instance ID (`o`) is specified.
+ */
 function organizer_get_organizer() {
     global $DB;
 
@@ -1328,6 +1585,18 @@ function organizer_get_organizer() {
     return $organizer;
 }
 
+/**
+ * Retrieves the course module (cm) object
+ * based on the current HTTP request parameters.
+ *
+ * This function uses either the course module ID (`id`) or the organizer instance ID (`o`)
+ * provided in the HTTP request parameters to fetch the data. If neither parameter is given,
+ * an exception is thrown.
+ *
+ * @return stdClass An object containing the course module (`cm`) object.
+ *
+ * @throws coding_exception If neither a course module ID (`id`) nor an instance ID (`o`) is specified.
+ */
 function organizer_get_cm() {
     global $DB;
 
@@ -1347,6 +1616,20 @@ function organizer_get_cm() {
     return $cm;
 }
 
+/**
+ * Retrieves the context of the organizer module based on the current HTTP request.
+ *
+ * This function determines the context of the organizer module using either a
+ * course module ID (`id`) or an organizer instance ID (`o`) provided in the
+ * HTTP request parameters. If neither is provided, an exception is thrown.
+ *
+ * The result is a module-level context object that can be used for permission
+ * checks and other context-specific operations.
+ *
+ * @return context_module The context object of the organizer module.
+ *
+ * @throws coding_exception If neither a course module ID (`id`) nor an instance ID (`o`) is specified.
+ */
 function organizer_get_context() {
     global $DB;
 
@@ -1368,7 +1651,16 @@ function organizer_get_context() {
     return $context;
 }
 
-
+/**
+ * Determines whether the organizer is operating in group mode or not.
+ *
+ * This function checks the group mode of the organizer associated with the current course module.
+ * If the 'isgrouporganizer' property matches the defined group mode constant, the function returns true.
+ *
+ * @return bool Returns true if the organizer is in group mode, false otherwise.
+ *
+ * @throws \moodle_exception If the course module cannot be determined.
+ */
 function organizer_is_group_mode() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
@@ -1377,6 +1669,17 @@ function organizer_is_group_mode() {
     return $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS;
 }
 
+/**
+ * Checks whether queueing is enabled for the organizer module.
+ *
+ * This function determines if the organizer instance has the `queue` property set,
+ * indicating that queueing functionality is available.
+ *
+ * @return bool Returns true if queueing is enabled, false otherwise.
+ *
+ * @throws \dml_exception If there is an error with the database query.
+ * @throws \moodle_exception If the course module cannot be retrieved.
+ */
 function organizer_is_queueable() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
@@ -1385,6 +1688,18 @@ function organizer_is_queueable() {
     return $organizer->queue;
 }
 
+/**
+ * Fetches the current user's group in a course module for the organizer.
+ *
+ * This function determines if the organizer is operating in group mode and
+ * retrieves the user's group if they belong to one. It performs a SQL query
+ * to fetch the group details based on the user's ID and the course module's grouping ID.
+ *
+ * @return \stdClass|false The group object if found, or false if the organizer is not in group mode.
+ *
+ * @throws \dml_exception If there is an error while performing the database query.
+ * @throws \moodle_exception If the course module cannot be determined.
+ */
 function organizer_fetch_my_group() {
 
     if (organizer_is_group_mode()) {
@@ -1406,6 +1721,21 @@ function organizer_fetch_my_group() {
     }
 }
 
+/**
+ * Fetches the group of a specified user in a particular organizer module instance.
+ *
+ * This function retrieves the user's group within the context of the given organizer instance.
+ * It queries the database to find the group details based on the user ID and the grouping ID
+ * associated with the organizer's course module.
+ *
+ * @param int $userid The ID of the user whose group is to be fetched.
+ * @param int|null $id The ID of the organizer instance. Defaults to null.
+ *
+ * @return \stdClass|false Returns the group object if found, or false if the user is not part of a group.
+ *
+ * @throws \dml_exception If there is an error while querying the database.
+ * @throws \moodle_exception If the course module cannot be determined.
+ */
 function organizer_fetch_user_group($userid, $id = null) {
     global $DB;
 
@@ -1421,6 +1751,17 @@ function organizer_fetch_user_group($userid, $id = null) {
     return $group;
 }
 
+/**
+ * Fetches the 'hidecalendar' field for a specific organizer instance.
+ *
+ * This function retrieves the value of the 'hidecalendar' field
+ * from the organizer table for the specified course module.
+ *
+ * @return int|string The value of the 'hidecalendar' field for the organizer instance.
+ *
+ * @throws \dml_exception If there is an error while querying the database.
+ * @throws \moodle_exception If the course module with the given ID cannot be found.
+ */
 function organizer_fetch_hidecalendar() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
@@ -1429,7 +1770,21 @@ function organizer_fetch_hidecalendar() {
     return $hidecalendar;
 }
 
-
+/**
+ * Fetches table entries for given slots.
+ *
+ * This function retrieves details of organizer slots and their associated appointments, users,
+ * and groups from the database. It takes a list of slot IDs as input and an optional order by
+ * clause for customizing the sorting of results.
+ *
+ * @param array $slots An array of slot IDs for which table entries need to be fetched.
+ * @param string $orderby (Optional) The column(s) by which the results should be ordered.
+ *                          Defaults to "starttime ASC, id, lastname ASC, firstname ASC".
+ *
+ * @return array An associative array of records, with each record containing details of slots, appointments, users, and groups.
+ *
+ * @throws \dml_exception If a database query error occurs.
+ */
 function organizer_fetch_table_entries($slots, $orderby="") {
     global $DB;
 
@@ -1499,6 +1854,18 @@ function organizer_hasqueue($organizerid) {
     return $result;
 }
 
+/**
+ * Determines if grading is enabled for the current organizer instance.
+ *
+ * This function checks if grading is enabled for the organizer instance
+ * identified by a course module ID passed via a request parameter. If the
+ * grade field of the organizer record is not equal to 0, grading is considered
+ * enabled.
+ *
+ * @return int Returns 1 if grading is enabled, or 0 if grading is disabled.
+ *
+ * @throws \dml_exception If a database query error occurs.
+ */
 function organizer_with_grading() {
     global $DB;
     $id = optional_param('id', 0, PARAM_INT);
@@ -1511,6 +1878,23 @@ function organizer_with_grading() {
     }
 }
 
+/**
+ * Generates HTML or printable output for a teacher applicant based on their ID and modification time.
+ *
+ * This function retrieves the information of the teacher applicant, specifically their first and last name,
+ * and formats the output based on whether it's to be displayed in an HTML interface or in a printable format.
+ *
+ * When $printable is false, the function also includes a tooltip displaying additional information such as
+ * when the data was last modified. If $printable is true, a simple formatted string is returned.
+ *
+ * @param int $teacherapplicantid The ID of the teacher applicant.
+ * @param int|null $teacherapplicanttimemodified The timestamp of the teacher applicant's last modification. Optional.
+ * @param bool $printable If true, formats the output for printing. If false, formats it for HTML display.
+ *
+ * @return string Returns the formatted output containing initials of the teacher applicant, optionally with additional details.
+ *
+ * @throws \dml_exception If there's an error in fetching records from the database.
+ */
 function organizer_get_teacherapplicant_output($teacherapplicantid, $teacherapplicanttimemodified=null, $printable=false) {
     global $DB;
 
@@ -1536,6 +1920,18 @@ function organizer_get_teacherapplicant_output($teacherapplicantid, $teacherappl
 
 }
 
+/**
+ * Fetches the name of a group based on the provided group ID.
+ *
+ * This function retrieves the name of a group from the 'groups' database table,
+ * identified by its unique ID.
+ *
+ * @param int $groupid The ID of the group whose name is to be fetched.
+ *
+ * @return string|null The name of the group if found, or null if not found.
+ *
+ * @throws \dml_exception If a database query error occurs.
+ */
 function organizer_fetch_groupname($groupid) {
     global $DB;
 
@@ -1544,6 +1940,19 @@ function organizer_fetch_groupname($groupid) {
     return $groupname;
 }
 
+/**
+ * Fetches all users in a group based on the provided group ID.
+ *
+ * This function retrieves the members of a specific group from the 'groups_members'
+ * database table by performing a JOIN on the 'user' table to fetch the user's details.
+ *
+ * @param int $groupid The ID of the group whose members are to be retrieved.
+ *
+ * @return array An array of user objects, where each object contains the user's ID,
+ *               lastname, and firstname. Returns an empty array if no users are found.
+ *
+ * @throws \dml_exception If a database query error occurs.
+ */
 function organizer_fetch_groupusers($groupid) {
     global $DB;
 
@@ -1560,8 +1969,17 @@ function organizer_fetch_groupusers($groupid) {
     return $users;
 }
 
-/*
- * Are there appointments for this slot?.
+/**
+ * Counts the total number of appointments for the given slots.
+ *
+ * This function iterates over a set of slot IDs, queries the database
+ * to count the number of appointments in each slot, and returns the total count.
+ *
+ * @param array $slots An array of slot IDs for which appointment counts are to be determined.
+ *
+ * @return int The total number of appointments across all provided slots.
+ *
+ * @throws \dml_exception If a database query error occurs.
  */
 function organizer_count_slotappointments($slots) {
     global $DB;
@@ -1574,6 +1992,18 @@ function organizer_count_slotappointments($slots) {
     return $apps;
 }
 
+/**
+ * Filters out hidden slots from the provided list of slot IDs.
+ *
+ * This function checks the visibility of each slot in the 'organizer_slots' table
+ * and removes any slots that are marked as not visible.
+ *
+ * @param array $slots An array of slot IDs to be filtered.
+ *
+ * @return array The filtered array of slot IDs with only visible slots included.
+ *
+ * @throws \dml_exception If a database query error occurs.
+ */
 function organizer_sortout_hiddenslots($slots) {
     global $DB;
 
@@ -1588,6 +2018,19 @@ function organizer_sortout_hiddenslots($slots) {
     return $slots;
 }
 
+/**
+ * Retrieves the identity of a user based on defined configuration settings.
+ *
+ * This function returns an identifying value (such as the user ID number or email)
+ * for the given user, depending on the system's configuration settings. It ensures
+ * that sensitive information is not displayed if the configuration prohibits it.
+ *
+ * @param mixed $user A user object or the user's ID. If a numeric value is supplied, it is treated as the user ID.
+ *
+ * @return string The identity of the user based on the configuration, or an empty string if not applicable.
+ *
+ * @throws \dml_exception If a database query error occurs.
+ */
 function organizer_get_user_identity($user) {
     global $CFG, $DB;
 
@@ -1656,6 +2099,19 @@ function organizer_groupsynchronization($slotid, $userid, $action) {
 
 }
 
+/**
+ * Creates a course group for the specified slot and organizer.
+ *
+ * This function generates a new course group for the provided slot and organizer
+ * if it does not already exist. The group is named based on the organizer's name,
+ * slot's start time, and course ID. Additionally, if the organizer includes trainers
+ * in the group, the slot trainers are added as members upon creation.
+ *
+ * @param object $slot The slot object containing the relevant information (e.g., organizer ID, start time, etc.).
+ * @return int The ID of the newly created course group.
+ *
+ * @throws dml_exception If a database query error occurs.
+ */
 function organizer_create_coursegroup($slot) {
     global $DB, $CFG;
 
@@ -1681,6 +2137,19 @@ function organizer_create_coursegroup($slot) {
     return $groupid;
 }
 
+/**
+ * Creates a unique name for a course group based on the provided slot and course data.
+ *
+ * This function constructs a name using the organizer's name, slot's start time, and course ID,
+ * ensuring uniqueness by appending an incremented identifier if other groups share
+ * a similar name pattern.
+ *
+ * @param string $name The name of the organizer.
+ * @param int $time The start time (timestamp) of the slot.
+ * @param int $courseid The ID of the course.
+ * @return string A unique name for the course group.
+ * @throws dml_exception If a database error occurs during the query.
+ */
 function organizer_create_coursegroupname($name, $time, $courseid) {
     global $DB;
 
@@ -1710,6 +2179,18 @@ function organizer_create_coursegroupname($name, $time, $courseid) {
     return $coursename;
 }
 
+/**
+ * Deletes a course group based on the provided group ID or slot ID.
+ *
+ * This function deletes a course group from the database and ensures cleanup
+ * by using either the $groupid directly or deriving it based on the $slotid.
+ *
+ * @param int $groupid The ID of the group to delete. If null, it will be derived from the slot ID.
+ * @param int|null $slotid The slot ID used to retrieve the corresponding group ID if $groupid is not provided.
+ * @return bool True if the group was successfully deleted, false otherwise.
+ *
+ * @throws dml_exception If a database error occurs while querying or deleting.
+ */
 function organizer_delete_coursegroup($groupid, $slotid=null) {
     global $DB, $CFG;
 
@@ -1728,6 +2209,16 @@ function organizer_delete_coursegroup($groupid, $slotid=null) {
         return $ok;
 }
 
+/**
+ * Fetches all slots linked to a given organizer.
+ *
+ * This function retrieves all slots associated with a specific organizer
+ * by querying the database, using the provided organizer ID as the filter condition.
+ *
+ * @param int $organizerid The ID of the organizer whose slots are to be fetched.
+ * @return array An array of slots matching the organizer ID.
+ * @throws dml_exception If a database error occurs during the query.
+ */
 function organizer_fetch_allslots($organizerid) {
     global $DB;
 
@@ -1736,6 +2227,17 @@ function organizer_fetch_allslots($organizerid) {
     return $slots;
 }
 
+/**
+ * Fetches all appointments linked to a given organizer instance.
+ *
+ * This function retrieves all appointments associated with a specific organizer
+ * by querying the database, with the provided organizer ID as the filter condition.
+ * The results include details such as appointment ID, group ID, user ID, and event ID.
+ *
+ * @param int $organizerid The ID of the organizer whose appointments are to be fetched.
+ * @return array An array of appointments with keys as appointment IDs and details as values.
+ * @throws dml_exception If a database error occurs during the query.
+ */
 function organizer_fetch_allappointments($organizerid) {
     global $DB;
 
@@ -1748,6 +2250,16 @@ function organizer_fetch_allappointments($organizerid) {
     return $apps;
 }
 
+/**
+ * Fetches a list of participants for a specific slot.
+ *
+ * This function retrieves the user IDs of all participants registered
+ * for a given slot by querying the database.
+ *
+ * @param int $slotid The ID of the slot whose participants are to be fetched.
+ * @return array An array of user IDs of the participants in the slot.
+ * @throws dml_exception If a database error occurs during the query.
+ */
 function organizer_fetch_slotparticipants($slotid) {
     global $DB;
 
@@ -1802,7 +2314,16 @@ function organizer_printslotuserfields($nochoiceoption=false) {
     return $profilefields;
 }
 
-
+/**
+ * Retrieves a list of allowed printable user fields for slots.
+ *
+ * This function fetches the list of selectable profile fields for use in slot
+ * printing, based on either the site-wide organizer configuration or default values.
+ * The fields are used to define the information displayed for users in slot details.
+ *
+ * @return array Returns an associative array of allowed fields where the key is the field
+ *               identifier and the value is the field's display name.
+ */
 function organizer_get_allowed_printslotuserfields() {
     $selectableprofilefields = organizer_printslotuserfields();
     $selectedprofilefields = [];
@@ -1831,6 +2352,18 @@ function organizer_get_allowed_printslotuserfields() {
     return $selectedprofilefields;
 }
 
+/**
+ * Fetches the details of users assigned to a specific slot along with their profile information.
+ *
+ * This function constructs and executes an SQL query to retrieve user details,
+ * including social profile fields and other user-related information for a given slot ID.
+ * The result includes data like name, email, group name, and more.
+ *
+ * @param int $slot The ID of the slot to fetch user details for.
+ * @return array An array of user details records, where each record is an associative array
+ *               containing user-specific fields and additional information.
+ * @throws dml_exception If an error occurs while executing the database query.
+ */
 function organizer_fetch_printdetail_entries($slot) {
     global $DB;
 
@@ -1880,6 +2413,15 @@ function organizer_fetch_printdetail_entries($slot) {
     return $DB->get_records_sql($query, $params);
 }
 
+/**
+ * Filters and processes the given text using the appropriate filters for the current page context.
+ *
+ * This function sets up the page for filters, ensuring global configurations are activated,
+ * and then applies the filters on the provided text. The filtered string is then returned.
+ *
+ * @param string $text The input text to be filtered.
+ * @return string The filtered text after applying all active filters.
+ */
 function organizer_filter_text($text) {
     global $PAGE;
 
@@ -1891,6 +2433,17 @@ function organizer_filter_text($text) {
     return $text;
 }
 
+/**
+ * Retrieves information about users associated with a specific slot ID.
+ *
+ * This function fetches a list of user IDs linked to a given slot ID and
+ * formats them into a comma-separated string of user links. Each user link
+ * can provide a clickable representation of the names.
+ *
+ * @param int $slotid The ID of the slot to retrieve users for.
+ * @return string A comma-separated string of user links representing the users in the slot.
+ * @throws dml_exception If a database error occurs during fetching user data.
+ */
 function organizer_get_users_of_slot($slotid) {
     global $DB;
 
@@ -2386,6 +2939,22 @@ function organizer_userstatus_bar($bookings, $max, $minreached, $statusmsg, $msg
 
 }
 
+/**
+ * Generates a plain date-time string representation for a given slot.
+ *
+ * This function takes a slot object and returns a string that represents
+ * the start and end time of the slot in a formatted manner. If the slot's start
+ * and end time fall on the same day, the format will include only the time zone within
+ * that day. Otherwise, the format will include the full date and time for both start
+ * and end time.
+ *
+ * @param stdClass $slot An object containing slot information with properties:
+ *  - starttime (int): The start timestamp of the slot.
+ *  - duration (int): The duration of the slot in seconds.
+ *
+ * @return string A string representing the date and time range of the given slot,
+ *                or '-' if the slot or its starting time is not set.
+ */
 function organizer_date_time_plain($slot) {
     if (!isset($slot) || !isset($slot->starttime)) {
         return '-';
@@ -2410,6 +2979,23 @@ function organizer_date_time_plain($slot) {
     return $datestr;
 
 }
+
+/**
+ * Sends reminders to users or groups.
+ *
+ * This function is used to send reminder notifications to participants
+ * that are associated with an organizer. Recipients can be specified
+ * individually or as a list. If no recipients are provided, it attempts
+ * to send reminders to all users or groups based on the organizer mode.
+ *
+ * @param int|null $recipient Optional. The ID of a single recipient to send the reminder to.
+ * @param array $recipients Optional. An array of user IDs to send the reminders to.
+ * @param string $custommessage Optional. A custom message to include in the reminder.
+ *
+ * @return int The count of successfully sent reminders.
+ *
+ * @throws dml_exception If there is an error in database access operations.
+ */
 function organizer_remind_all($recipient = null, $recipients = [], $custommessage = "") {
     global $DB;
 
@@ -2471,6 +3057,21 @@ function organizer_remind_all($recipient = null, $recipients = [], $custommessag
     return $count;
 }
 
+/**
+ * Get array of recipients which have not reached the minimum of bookings.
+ *
+ * This function allows sending reminders to a specific user, a group of users, or all
+ * eligible users as per the organizer's mode. It also ensures recipients meet specific
+ * criteria before sending, and optionally includes a custom message.
+ *
+ * @param int|null $recipient Optional. The ID of a single recipient to send the reminder to.
+ * @param array $recipients Optional. An array of user IDs to send the reminders to.
+ * @param string $custommessage Optional. A custom message to include in the reminder.
+ *
+ * @return int The number of successfully sent reminders.
+ *
+ * @throws dml_exception If there is an error in database access operations.
+ */
 function organizer_get_reminder_recipients($organizer) {
 
     $params = ['group' => 0, 'sort' => '', 'dir' => '', 'psort' => '', 'pdir' => ''];
@@ -2519,6 +3120,15 @@ function organizer_get_reminder_recipients($organizer) {
     return $recipients;
 }
 
+/**
+ * Adds a "limitedwidth" class to the page body if the limited width option is enabled.
+ *
+ * This function checks the configuration for the organizer module to determine
+ * if a limited width setting is enabled. If enabled, it applies the `limitedwidth`
+ * class to the page body.
+ *
+ * @return bool True if the limited width class is added, false otherwise.
+ */
 function organizer_get_limitedwidth() {
     global $PAGE;
     $organizerconfig = get_config('organizer');
@@ -2530,6 +3140,21 @@ function organizer_get_limitedwidth() {
     }
 }
 
+/**
+ * Checks if the daily booking limit for a user or group has been reached.
+ *
+ * This function verifies whether the number of appointments booked by a user or group
+ * for the given organizer has reached the maximum allowed per day. If no daily limit
+ * is set (`$organizer->userslotsdailymax` is empty or `0`), the function will always return `false`.
+ *
+ * @param stdClass $organizer The organizer instance containing the configuration.
+ * @param int|null $userid The ID of the user to check, or null if checking by group.
+ * @param int|null $groupid The ID of the group to check, or null if checking by user.
+ *
+ * @return bool True if the daily booking limit has been reached, false otherwise.
+ *
+ * @throws dml_exception If there is an error in database access operations.
+ */
 function organizer_userslotsdailylimitreached($organizer, $userid, $groupid) {
     global $DB;
 

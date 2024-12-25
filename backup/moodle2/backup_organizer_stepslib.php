@@ -36,6 +36,12 @@
  */
 class backup_organizer_activity_structure_step extends backup_activity_structure_step {
 
+    /**
+     * Define structure of class
+     * @return backup_nested_element
+     * @throws base_element_struct_exception
+     * @throws base_step_exception
+     */
     protected function define_structure() {
         // Define each element separated.
         $organizer = new backup_nested_element(

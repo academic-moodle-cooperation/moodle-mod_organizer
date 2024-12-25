@@ -27,7 +27,14 @@
 
 namespace mod_organizer\event;
 
+/**
+ * Inherited core event when course module is viewed
+ */
 class course_module_viewed extends \core\event\course_module_viewed {
+    /**
+     * Event init method
+     * @return void
+     */
     protected function init() {
         $this->data['objecttable'] = 'organizer';
         parent::init();

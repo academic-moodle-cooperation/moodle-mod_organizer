@@ -57,7 +57,6 @@ class organizer_print_slotdetail_form extends moodleform {
         $mform->addElement('hidden', 'mode', $data['mode']);
         $mform->setType('mode', PARAM_INT);
 
-        // TODO: might cause crashes!
         $mform->addElement('hidden', 'action', 'print');
         $mform->setType('action', PARAM_ALPHANUMEXT);
 
@@ -68,11 +67,19 @@ class organizer_print_slotdetail_form extends moodleform {
             throw new coding_exception('This should not happen!');
         }
     }
+
     /**
-     * adds information which colums to select for printing
+     * Adds a column selection section to the form, allowing to customize the columns
+     * displayed in the preview and output.
+     *
+     * Retrieves necessary configuration and slot data from the database, determines user-configured
+     * or global defaults for the printable columns, and builds the form elements.
+     *
+     * @throws dml_exception If a database error occurs while retrieving slot data.
+     * @throws coding_exception If a configuration error is detected.
      */
     private function add_column_select() {
-        global $DB, $CFG;
+        global $DB;
 
         $mform = $this->_form;
         $data = &$this->_customdata;
@@ -123,10 +130,16 @@ class organizer_print_slotdetail_form extends moodleform {
             $mform->setType("cols[$key]", PARAM_ALPHANUMEXT);
         }
     }
+
     /**
+     * Displays the printable form, including the preview table and any additional elements.
      *
-     * {@inheritDoc}
-     * @see moodleform::display()
+     * The function ensures the form definition is finalized, retrieves the validation script, and generates
+     * the HTML output for the form. It also includes a preview table showcasing the selected columns for
+     * export and display purposes.
+     *
+     * @return void Outputs the generated HTML directly.
+     * @throws coding_exception
      */
     public function display() {
 
@@ -148,13 +161,25 @@ class organizer_print_slotdetail_form extends moodleform {
         print $output;
     }
 
+
     /**
+     * Creates a preview table based on the selected columns for export.
      *
-     * @param array $columns the columns of the table
-     * @return string the html of the table
+     * This method generates an HTML table to preview the user data corresponding to the selected columns.
+     * It includes details like user fields from the Moodle database or custom user fields. If no columns
+     * are selected, a message indicating no fields are available is displayed.
+     *
+     * Dependencies:
+     * - Uses $DB to query the database for custom user fields.
+     * - Uses $PAGE to include required JavaScript for dynamic functionalities.
+     *
+     * @param array $columns An array of column identifiers to display in the preview table.
+     *                       These identifiers include standard Moodle user fields, custom fields,
+     *                       or other special fields like attendance or grade.
+     * @return string The generated HTML for the preview table or a message if no fields are selected.
      */
     private function create_preview_table($columns) {
-        global $OUTPUT, $CFG, $DB, $PAGE;
+        global $DB, $PAGE;
 
         $PAGE->requires->js_call_amd('mod_organizer/printform', 'init', ['iconminus' => '', 'iconplus' => '']);
 

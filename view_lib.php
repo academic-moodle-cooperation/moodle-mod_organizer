@@ -43,6 +43,21 @@ require_once(dirname(__FILE__) . '/../../calendar/lib.php');
 require_once(dirname(__FILE__) . '/infobox.php');
 require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
+/**
+ * Displays a Moodle form with the given title.
+ *
+ * This function outputs the page header, the provided title,
+ * a container for the form, renders the form using the given
+ * Moodle form instance, and finally ends the page with a footer.
+ * It also handles whether calendar integration is enabled or not,
+ * adding the calendar if necessary.
+ *
+ * @param moodleform $mform An instance of the Moodle form to be displayed.
+ * @param string $title The title to be displayed on the page.
+ * @return void This function does not return a value, it exits using `die()`.
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
 function organizer_display_form(moodleform $mform, $title) {
     global $OUTPUT;
 
@@ -60,6 +75,20 @@ function organizer_display_form(moodleform $mform, $title) {
     die();
 }
 
+/**
+ * Adds a calendar block to the right position in the page layout.
+ *
+ * This function fetches or creates the calendar information for the given course
+ * (or the current course if none is provided). It generates the content for
+ * the calendar view, processes the footer options, and sets them in the calendar block
+ * with a title "Monthly view". It also initializes the necessary JavaScript for the calendar popover.
+ *
+ * @param int|false $courseid The ID of the course to fetch calendar information for.
+ *                            If false, the course ID of the current page is used.
+ * @return void
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ */
 function organizer_add_calendar($courseid = false) {
     global $PAGE, $CFG;
 
@@ -88,6 +117,20 @@ function organizer_add_calendar($courseid = false) {
     $renderer->add_pretend_calendar_block($block, BLOCK_POS_RIGHT);
 }
 
+/**
+ * Generates the appointments view for the organizer module.
+ *
+ * This function prepares and returns the HTML output for the appointments view,
+ * including JavaScript initialization, the information box, and the main table content.
+ * It includes configuration for limited width views and adds the necessary actions
+ * depending on expired organizer settings.
+ *
+ * @param array $params Parameters for generating the view, including filters and options.
+ * @param object $instance The instance of the organizer module containing organizer data.
+ * @return string The HTML output of the appointments view.
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_generate_appointments_view($params, $instance) {
     global $PAGE;
     $PAGE->requires->js_call_amd('mod_organizer/initcheckboxes', 'init', [false]);
@@ -95,7 +138,8 @@ function organizer_generate_appointments_view($params, $instance) {
     $organizerexpired = isset($instance->organizer->duedate) && $instance->organizer->duedate - time() < 0;
 
     $output = organizer_generate_tab_row($params, $instance->context);
-    $output .= organizer_begin_form($params);
+    $url = new moodle_url('/mod/organizer/view_action.php');
+    $output .= organizer_begin_form($params, $url);
     $output .= organizer_make_infobox($params, $instance->organizer, $instance->context, $organizerexpired);
 
     if ($params['limitedwidth']) {
@@ -122,6 +166,28 @@ function organizer_generate_appointments_view($params, $instance) {
     return $output;
 }
 
+/**
+ * Generates the student view for the organizer module.
+ *
+ * This function creates and returns the HTML output for the organizer's student view.
+ * It includes the tab row, information box, and a table that displays available slots
+ * for registration based on the organizer's configuration and settings.
+ *
+ * - If the registration period has started, the function generates a table to display
+ *   the available slots with associated details.
+ * - If the registration period hasn't started yet, it shows a message indicating
+ *   the start date for registrations.
+ *
+ * @param array $params Parameters for generating the view, including options like
+ *                      limited width or filters for the data.
+ * @param object $instance The instance of the organizer module containing the organizer data.
+ *                         Includes configuration details like registration settings
+ *                         and display options.
+ * @return string The HTML output of the student view, including the information box
+ *                and either the table of slots or a message about the registration period.
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_generate_student_view($params, $instance) {
     $output = organizer_generate_tab_row($params, $instance->context);
     $output .= organizer_make_infobox($params, $instance->organizer, $instance->context);
@@ -163,6 +229,24 @@ function organizer_generate_student_view($params, $instance) {
     return $output;
 }
 
+/**
+ * Generates the registration status view for the organizer module.
+ *
+ * This function creates and returns the HTML output for the organizer's registration status view.
+ * It initializes required JavaScript, generates the tab row, and displays a table
+ * showing the registration status of all slots. Depending on whether the organizer is configured
+ * for groups or individuals, the columns and data representation may vary.
+ *
+ * The table includes sortable columns as well as actions for managing registrations.
+ * Additional alignment settings are applied to ensure proper formatting.
+ *
+ * @param array $params Parameters for generating the view, including limited width and data filters.
+ * @param stdClass $instance The instance object of the organizer module containing configuration
+ *                           and contextual data, such as groups mode and organizer settings.
+ * @return string The HTML output containing the tab row, registration status table, and action links.
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_generate_registration_status_view($params, $instance) {
     global $PAGE;
     $PAGE->requires->js_call_amd('mod_organizer/initcheckboxes', 'init', [false]);
@@ -195,14 +279,43 @@ function organizer_generate_registration_status_view($params, $instance) {
     );
     $table->align = $align;
 
-    $output .= organizer_begin_reg_form($params);
+    $url = new moodle_url('/mod/organizer/send_reminder.php');
+    $output .= organizer_begin_form($params, $url);
+
     $output .= organizer_render_table_with_footer($table);
-    $output .= organizer_generate_reg_actionlink_bar($params);
+
+    $context = context_module::instance($params['id'], MUST_EXIST);
+    if (!has_capability("mod/organizer:sendreminders", $context)) {
+        $output .= '<div name="actionlink_bar" class="buttons mdl-align">';
+        $output .= html_writer::span(get_string('selectedslots', 'organizer'));
+        $actions['sendreminder'] = get_string('btn_remind', 'organizer');
+        $output .= html_writer::select(
+            $actions, 'bulkaction', ['sendreminder' => get_string('btn_remind', 'organizer')], null,
+            ['style' => 'margin-left:0.3em;margin-right:0.3em;']
+        );
+        $output .= '<input type="submit" class="btn btn-primary" name="bulkactionbutton" id="bulkactionbutton" disabled value="' .
+            get_string('btn_start', 'organizer') . '"/>';
+        $output .= '</div>';
+    }
+
     $output .= organizer_end_form();
 
     return $output;
 }
 
+/**
+ * Generates the assignment view for the organizer module.
+ *
+ * This function creates and returns the HTML output for the organizer's assignment view.
+ * It displays available slots for group or individual assignment and generates a table containing the slot list.
+ * The structure of columns and alignment depends on the limited width configuration.
+ *
+ * @param array $params Parameters used for generating the view, such as limited width and assignment details.
+ * @param stdClass $instance The instance of the organizer module, including relevant configuration details and context.
+ * @return string The HTML output containing the assignment overview and the table.
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_generate_assignment_view($params, $instance) {
 
     if ($instance->organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
@@ -236,8 +349,22 @@ function organizer_generate_assignment_view($params, $instance) {
     return $output;
 }
 
-function organizer_begin_form($params) {
-    $url = new moodle_url('/mod/organizer/view_action.php');
+/**
+ * Begins a form for the organizer module.
+ *
+ * This function generates the opening `<form>` tag and initializes the form structure
+ * with all necessary hidden fields for the organizer module, such as the instance ID,
+ * mode, and session key. Usage of this function ensures that the form starts properly
+ * when used in other modules or views.
+ *
+ * @param array $params An associative array of parameters for the form:
+ *                      - 'id' (int): The instance ID of the organizer.
+ *                      - 'mode' (string): The active mode for the organizer view.
+ * @param moodle_url $url The URL where the form should be submitted.
+ *
+ * @return string The HTML string containing the opening `<form>` tag and hidden fields.
+ */
+function organizer_begin_form($params, $url) {
     $output = '<form name="viewform" action="' . $url->out() . '" method="post">';
     $output .= '<input type="hidden" name="id" value="' . $params['id'] . '" />';
     $output .= '<input type="hidden" name="mode" value="' . $params['mode'] . '" />';
@@ -246,20 +373,37 @@ function organizer_begin_form($params) {
     return $output;
 }
 
-function organizer_begin_reg_form($params) {
-    $url = new moodle_url('/mod/organizer/send_reminder.php');
-    $output = '<form name="viewform" action="' . $url->out() . '" method="post">';
-    $output .= '<input type="hidden" name="id" value="' . $params['id'] . '" />';
-    $output .= '<input type="hidden" name="mode" value="' . $params['mode'] . '" />';
-    $output .= '<input type="hidden" name="sesskey" value="' . sesskey() . '" />';
-
-    return $output;
-}
-
+/**
+ * Ends a form for the organizer module.
+ *
+ * This function generates the closing `</form>` tag and ends the form structure
+ * initiated by functions like `organizer_begin_form()` or `organizer_begin_reg_form()`.
+ *
+ * @return string The HTML string containing the closing `</form>` tag.
+ */
 function organizer_end_form() {
     return '</form>';
 }
 
+/**
+ * Generates a row of navigation tabs for the organizer module.
+ *
+ * This function creates a navigation row containing tabs for different organizer views
+ * (e.g., All Appointments, Registration Status, Student View) based on the user's capabilities.
+ * Tabs are rendered as a dropdown selector if multiple options are available. If only one option
+ * is enabled, the selector is not displayed.
+ *
+ * @param array $params Parameters for generating the tab row:
+ *                      - 'id' (int): Current organizer instance ID.
+ *                      - 'mode' (string): The active mode indicating the current tab view.
+ * @param context $context The context of the current organizer module instance.
+ *
+ * @return string The HTML string for the generated tab row, or an empty string if only
+ *                one view is available.
+ * @throws \core\exception\coding_exception
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ */
 function organizer_generate_tab_row($params, $context) {
     global $OUTPUT;
 
@@ -293,6 +437,28 @@ function organizer_generate_tab_row($params, $context) {
     }
 }
 
+/**
+ * Generates an action link bar for the organizer module.
+ *
+ * This function creates a collection of buttons and dropdown actions
+ * for performing bulk actions on available organizer slots. The available
+ * actions depend on the user's capabilities and the state of the organizer.
+ *
+ * Examples of available actions:
+ * - Editing slots
+ * - Deleting slots
+ * - Printing slots
+ * - Evaluating slots
+ *
+ * The function also ensures buttons are disabled if no slots are selected.
+ *
+ * @param context $context The context of the current organizer module instance.
+ * @param bool $organizerexpired Indicates whether the organizer has expired.
+ * @param stdClass $organizer The organizer instance data, including settings like grade.
+ *
+ * @return string The HTML string containing the action link bar.
+ * @throws coding_exception
+ */
 function organizer_generate_actionlink_bar($context, $organizerexpired, $organizer) {
 
     $output = '<div name="actionlink_bar" class="buttons mdl-align">';
@@ -325,27 +491,28 @@ function organizer_generate_actionlink_bar($context, $organizerexpired, $organiz
     return $output;
 }
 
-function organizer_generate_reg_actionlink_bar($params) {
-
-    [, , , $context] = organizer_get_course_module_data($params['id']);
-    if (!has_capability("mod/organizer:sendreminders", $context)) {
-        return "";
-    }
-
-    $output = '<div name="actionlink_bar" class="buttons mdl-align">';
-    $output .= html_writer::span(get_string('selectedslots', 'organizer'));
-    $actions['sendreminder'] = get_string('btn_remind', 'organizer');
-    $output .= html_writer::select(
-        $actions, 'bulkaction', ['sendreminder' => get_string('btn_remind', 'organizer')], null,
-        ['style' => 'margin-left:0.3em;margin-right:0.3em;']
-    );
-    $output .= '<input type="submit" class="btn btn-primary" name="bulkactionbutton" id="bulkactionbutton" disabled value="' .
-        get_string('btn_start', 'organizer') . '"/>';
-    $output .= '</div>';
-
-    return $output;
-}
-
+/**
+ * Generates the table header for the organizer registration table.
+ *
+ * This function creates an array of table header cells for the registration table
+ * in the organizer module. The headers are determined based on the specified columns,
+ * sortable fields, and provided parameters. It supports dynamically generating
+ * sorting links for sortable columns and includes a column-specific logic for
+ * handling groups and participants columns.
+ *
+ * Examples of how the table header is rendered:
+ * - Sortable columns display sorting icons and update the order when clicked.
+ * - Non-sortable columns include static labels.
+ * - Custom logic for specific columns (e.g., "group" and "participants").
+ *
+ * @param array $columns The array of column names for the table.
+ * @param array $sortable The array of sortable column names.
+ * @param array $params The array of parameters used for sorting and rendering the table.
+ *                      Parameters may include 'sort', 'dir', 'id', 'mode', etc.
+ *
+ * @return array The array of `html_table_cell` objects to be used as the table header.
+ * @throws coding_exception|\core\exception\moodle_exception If there are issues with rendering output.
+ */
 function organizer_generate_table_header($columns, $sortable, $params) {
     global $OUTPUT;
 
@@ -389,6 +556,29 @@ function organizer_generate_table_header($columns, $sortable, $params) {
     return $header;
 }
 
+/**
+ * Generates the registration table header in the organizer module.
+ *
+ * This function creates an array of table header cells for the registration table,
+ * with support for sortable columns and column-specific logic for "group" and "participants".
+ * It generates sorting links for appropriate columns and includes custom rendering
+ * for non-standard columns. The table header cells are returned as an array
+ * of `html_table_cell` objects.
+ *
+ * Examples of how the table header is rendered:
+ * - Sortable columns display sorting icons and update the order when clicked.
+ * - Non-sortable columns and custom logic (e.g., "group" and "participants") render specific labels/icons.
+ *
+ * @param array $columns An array of column names used in the table.
+ * @param array $sortable An array of sortable column names.
+ * @param array $params An associative array of parameters such as:
+ *                      - 'sort' (current sort column)
+ *                      - 'dir' (current sort direction: 'ASC' or 'DESC')
+ *                      - 'id', 'mode', etc., which might be required for generating URLs.
+ *
+ * @return array An array of `html_table_cell` objects representing the table headers.
+ * @throws coding_exception|\core\exception\moodle_exception If there are any issues with rendering output.
+ */
 function organizer_generate_reg_table_header($columns, $sortable, $params) {
 
     $header = [];
@@ -483,6 +673,27 @@ function organizer_generate_reg_table_header($columns, $sortable, $params) {
     return $header;
 }
 
+/**
+ * Generates table content for the organizer module.
+ *
+ * This function creates a table with relevant slot and participant data based on the given parameters for the organizer module.
+ * It supports different sorting modes and views, including options for filtering only user-specific slots or slots visible
+ * to students.
+ *
+ * @param array $columns The columns to be displayed in the table.
+ * @param array $params Parameters for generating the table, including sorting and mode options.
+ *                      - 'sort': The column by which the table should be sorted (e.g., 'participants', 'name', 'id').
+ *                      - 'dir': The sorting direction ('ASC' or 'DESC').
+ *                      - 'mode': The view mode for the organizer.
+ * @param stdClass $organizer The organizer instance containing related data.
+ * @param bool $onlyownslots Whether to show only slots belonging to the current user. Defaults to false.
+ *
+ * @return array An array of table rows containing slot and participant data.
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ * @throws dml_exception
+ *
+ */
 function organizer_generate_table_content($columns, $params, $organizer, $onlyownslots = false) {
     global $DB, $USER;
 
@@ -743,6 +954,21 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
     return $rows;
 }
 
+/**
+ * Retrieves the registration status table entries for a group in the organizer.
+ *
+ * This function generates entries for the registration status table based on the
+ * provided parameters. It retrieves groups associated with a course module and
+ * organizes entries based on the selected sort and direction options.
+ *
+ * @param array $params Parameters for retrieving registration status, which may include:
+ *                      - 'group': The group ID. If set to 0, all groups are included.
+ *                      - 'sort': The column to sort by ('status', 'group', 'datetime', 'name', 'id').
+ *                      - 'dir': The sort direction ('ASC' or 'DESC').
+ * @return array An array of table entries, where each entry consists of group details
+ *               and registration-related information.
+ * @throws dml_exception If there is an issue with database querying.
+ */
 function organizer_get_span_cell($text, $colspan) {
     $cell = new html_table_cell();
     $cell->colspan = $colspan;
@@ -752,6 +978,40 @@ function organizer_get_span_cell($text, $colspan) {
     return $cell;
 }
 
+/**
+ * Retrieves registration status table entries grouped by group.
+ *
+ * This function fetches entries for the registration status table for groups in a specific organizer instance.
+ * The entries include group-related details and registration information such as registration status, session time,
+ * location, and other appointment-related data.
+ *
+ * The grouping depends on the `$params['group']` parameter, which defines whether all groups or specific ones
+ * should be included. Results can also be sorted based on a selected column and direction.
+ *
+ * @param array $params Parameters for filtering and sorting registration status table entries:
+ *                      - 'group' (int): The group ID. If set to 0, all groups will be retrieved.
+ *                      - 'sort' (string): The column to sort by. Supported values:
+ *                              - 'status': Sort by registration status.
+ *                              - 'group': Sort by group name.
+ *                              - 'datetime': Sort by appointment start time.
+ *                              - 'name': Sort by group name.
+ *                              - 'id': Sort by group ID number.
+ *                      - 'dir' (string): The sorting direction ('ASC' or 'DESC'). Defaults to 'ASC'.
+ * @return array An array of table entries containing group details and registration-related information,
+ *               such as:
+ *               - `id`: Group ID.
+ *               - `name`: Group name.
+ *               - `idnumber`: Group ID number.
+ *               - `status`: Registration status, based on constants like:
+ *                   - ORGANIZER_APP_STATUS_ATTENDED
+ *                   - ORGANIZER_APP_STATUS_PENDING
+ *                   - ORGANIZER_APP_STATUS_REGISTERED
+ *                   - ORGANIZER_APP_STATUS_NOT_REGISTERED
+ *                   - ORGANIZER_APP_STATUS_INVALID
+ *               - Other appointment-related information: `starttime`, `duration`, `location`,
+ *                 `teachercomments`, etc.
+ * @throws dml_exception If there is an issue querying the database.
+ */
 function organizer_get_reg_status_table_entries_group($params) {
     global $DB;
     [$cm, , $organizer, ] = organizer_get_course_module_data();
@@ -1296,6 +1556,22 @@ function organizer_generate_registration_table_content($columns, $params, $organ
     return $rows;
 }
 
+/**
+ * Generates the content for an assignment table based on the organizer and provided parameters.
+ *
+ * This function retrieves slot records associated with the given organizer and processes them
+ * to populate a table structure with rows and cells corresponding to the selected columns.
+ * It handles different column types and their associated data, adding styles to the cells
+ * as needed. If no slots are shown or available, it generates a message row to indicate this.
+ *
+ * @param array $columns List of columns to include in the table (e.g., 'datetime', 'location').
+ * @param array $params Parameters for filtering and rendering the table (e.g., 'limitedwidth', 'sort').
+ * @param object $organizer The organizer object containing data used for generating slots.
+ *
+ * @return array An array of html_table_row objects representing the rows of the table.
+ *
+ * @throws coding_exception If an unrecognized column type is encountered.
+ */
 function organizer_generate_assignment_table_content($columns, $params, $organizer) {
     global $DB;
 
@@ -1370,6 +1646,16 @@ function organizer_generate_assignment_table_content($columns, $params, $organiz
     return $rows;
 }
 
+/**
+ * Provides detailed information about an organizer appointment.
+ *
+ * This function generates HTML output containing information about a given
+ * organizer appointment, including comments, attendance status, grade, and feedback.
+ *
+ * @param stdClass $appointment The appointment object containing details about the user's appointment.
+ * @return string HTML output displaying the appointment details. Returns an empty string if no appointment exists.
+ * @throws coding_exception
+ */
 function organizer_app_details($appointment) {
 
     if (!isset($appointment)) {
@@ -1405,22 +1691,20 @@ function organizer_app_details($appointment) {
     return $list;
 }
 
-function organizer_registration_allowed($organizer, $userid = null) {
-    $app = organizer_get_last_user_appointment($organizer, $userid);
-    if ($app) { // Appointment made, check the flag.
-        $slotx = new organizer_slot($app->slotid);
-        if ($slotx->is_past_deadline()) {
-            return isset($app->allownewappointments) && $app->allownewappointments;
-        } else {
-            return !isset($app->allownewappointments) || $app->allownewappointments;
-        }
-    } else { // No appointment made, allowed.
-        return true;
-    }
-}
-
-// Content generating functions.
-
+/**
+ * Generates a string containing formatted HTML for displaying the date and time
+ * of an organizer slot along with its duration.
+ *
+ * Depending on whether the slot is within the same day or spans multiple days,
+ * the output includes styled date and time badges, showing the start and end time
+ * of the slot. The duration is also included as a title attribute on the generated HTML.
+ *
+ * @param stdClass $slot The slot object containing start time and duration information.
+ * @param bool $nobreak Whether to display the result in a single line without breaking. Defaults to false.
+ * @return string A string of HTML elements displaying the date, time, and duration of the slot.
+ *                Returns '-' if the slot or its start time is not set.
+ * @throws coding_exception
+ */
 function organizer_date_time($slot, $nobreak = false) {
     if (!isset($slot) || !isset($slot->starttime)) {
         return '-';
@@ -1459,10 +1743,39 @@ function organizer_date_time($slot, $nobreak = false) {
 
 }
 
+/**
+ * Formats a given date using a specified template.
+ *
+ * This function wraps the `userdate()` function and ensures the date
+ * is formatted according to the given template.
+ *
+ * @param int $date The Unix timestamp of the date to be formatted.
+ * @param string $format The template string to format the date.
+ * @return string The formatted date string.
+ */
 function organizer_userdate($date, $format) {
     return userdate($date, $format, null, false, false);
 }
 
+/**
+ * Collects and formats trainer data for a given slot.
+ *
+ * This function retrieves information about trainers assigned to a slot, evaluates their visibility,
+ * and generates a formatted output based on the trainers' access rights and parameters provided.
+ * It supports modes such as limited-width views and different tabs (e.g., student view).
+ *
+ * The function evaluates conditions such as whether the slot is accessible, expired, or beyond deadlines
+ * and takes care of cases where trainers might be invisible to students. It also handles comments
+ * added by trainers to the slot.
+ *
+ * @param array $params Parameters that include settings like mode and limited width.
+ * @param stdClass $slot The slot object containing information about the appointment, such as deadlines and visibility.
+ * @param array|null $trainerids A list of trainer IDs assigned to the slot. Defaults to null.
+ *                                Passing an empty or null value results in returning a placeholder output.
+ * @return string A formatted string with links or pictures of trainers, optionally including comments or icons.
+ *                Returns '-' if the slot or trainer IDs are not set.
+ * @throws dml_exception If a database read fails.
+ */
 function organizer_trainer_data($params, $slot, $trainerids = null) {
     global $USER, $DB;
 
@@ -1542,6 +1855,20 @@ function organizer_trainer_data($params, $slot, $trainerids = null) {
     return $output;
 }
 
+/**
+ * Retrieves a formatted list of organizer appointment details based on the provided parameters.
+ *
+ * @param object $organizer The organizer object containing relevant organizer information.
+ * @param bool $groupmode Indicates whether group mode is enabled.
+ * @param int $id The identifier for the slot or appointment, depending on context.
+ * @param null $userid Optional user ID for fetching a specific user's appointment details.
+ *
+ * @return string A formatted HTML string containing the appointment details, including grades,
+ *                feedback, and comments, if available.
+ * @throws coding_exception
+ * @throws dml_exception
+ *
+ */
 function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $userid = null) {
     global $DB;
 
@@ -1572,6 +1899,19 @@ function organizer_reg_organizer_app_details($organizer, $groupmode, $id, $useri
     return $list;
 }
 
+/**
+ * Generates the waiting list status description for a given user or group in an organizer activity.
+ *
+ * This function retrieves details about a user's or group's position in the waiting list
+ * for an appointment slot within the specified organizer activity.
+ *
+ * @param int $organizerid The ID of the organizer activity.
+ * @param int $userid Optional user ID to retrieve their waiting list status. Default is 0.
+ * @param int $groupid Optional group ID to retrieve the waiting list status for a group. Default is 0.
+ *
+ * @return string HTML content describing the waiting list status and relevant details.
+ * @throws dml_exception|coding_exception If there is an issue with the database query.
+ */
 function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupid = 0) {
     global $DB;
 
@@ -1620,6 +1960,25 @@ function organizer_reg_waitinglist_status($organizerid, $userid = 0, $groupid = 
 
 }
 
+/**
+ * Handles teacher actions for a specific appointment entry in an organizer activity.
+ *
+ * This function generates various actions that teachers can perform on an appointment entry.
+ * These actions include grading the appointment, sending reminders, assigning new users,
+ * and deleting the appointment. It also determines the availability of each action based
+ * on the user's capabilities, the organizer's settings, and the appointment's status.
+ *
+ * @param array $params Array containing parameters such as the organizer activity ID.
+ * @param stdClass $entry The appointment entry containing details such as slot ID and status.
+ * @param context $context The context of the organizer activity.
+ * @param stdClass $organizer The organizer activity object containing settings such as grading.
+ * @param bool $groupmode Whether the organizer activity is in group mode.
+ *
+ * @return array An array of button objects representing the available actions for the teacher.
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_teacher_action($params, $entry, $context, $organizer, $groupmode) {
 
     $evalurl = new moodle_url(
@@ -1708,6 +2067,24 @@ function organizer_teacher_action($params, $entry, $context, $organizer, $groupm
     return $output;
 }
 
+/**
+ * Retrieves a list of participants for a given slot, including their relevant details,
+ * and generates the appropriate content based on sorting parameters, slot visibility,
+ * and group mode settings.
+ *
+ * @param array $params Parameters for sorting and filtering the participant list (e.g., 'psort', 'pdir', etc.).
+ * @param stdClass $slot Slot object containing details like visibility, start time, and max participants.
+ * @param stdClass|null $app Appointment object for the current user and slot, if available.
+ *
+ * @return string HTML content for the participant list or an unavailability notice if the slot is not available.
+ *
+ * Generates a summary indicating the slot's availability, participant visibility,
+ * and details of registered appointments. Additionally, handles various display cases
+ * based on slot visibility mode and group mode configuration.
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
 function organizer_get_participant_list($params, $slot, $app) {
     global $DB, $USER;
 
@@ -1927,6 +2304,15 @@ function organizer_get_participant_list($params, $slot, $app) {
     return $content;
 }
 
+/**
+ * Retrieves the appropriate icon depending on the attendance status of the appointment.
+ *
+ * @param stdClass $appointment The appointment object containing attendance details.
+ * @param bool $gradeactive A flag indicating whether the grading is active or not.
+ *
+ * @return string HTML representation of the attendance status icon.
+ * @throws coding_exception
+ */
 function organizer_get_attended_icon($appointment, $gradeactive) {
     if (isset($appointment->attended) && $appointment->attended == 1) {
         return organizer_get_fa_icon('fa fa-circle fa-xs ml-1 mr-1 green',
@@ -1941,6 +2327,16 @@ function organizer_get_attended_icon($appointment, $gradeactive) {
     }
 }
 
+/**
+ * Renders a location link for a given slot.
+ *
+ * If the slot has a valid location link, it generates a clickable hyperlink.
+ * If the location link is missing or invalid, it returns the plain text of the location or a placeholder.
+ *
+ * @param stdClass $slot An object containing slot details, including `location` and `locationlink`.
+ *
+ * @return string The HTML link or location text, or a placeholder if no location is set.
+ */
 function organizer_location_link($slot) {
     if (!isset($slot) || !isset($slot->location) || $slot->location == '') {
         return '-';
@@ -1961,10 +2357,36 @@ function organizer_location_link($slot) {
     return $slot->location;
 }
 
+/**
+ * Generates an HTML image element with the specified attributes.
+ *
+ * This function creates an HTML `<img>` element using the provided source URL, alternative text,
+ * title attribute, ID, and additional attributes. It is commonly used to include images with
+ * desired metadata in a webpage.
+ *
+ * @param string $src The source URL of the image. This is a required attribute for the image tag.
+ * @param string $alt The alternative text for the image. This text provides context when the image cannot be displayed.
+ * @param string $title The title attribute for the image, typically displayed as a tooltip upon hover.
+ * @param string $id An optional ID attribute for the image element. Defaults to an empty string if not provided.
+ * @param string $other Any additional attributes to include in the image element. Defaults to an empty string.
+ *
+ * @return string The generated HTML `<img>` tag.
+ */
 function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
     return '<img src="' . $src . '" alt="' . $alt . '" title="' . $title . '" id="' . $id . '" ' . $other . ' />';
 }
 
+/**
+ * Generates an HTML image element with specified source, alt text, title, and additional attributes.
+ *
+ * @param string $src The source URL of the image.
+ * @param string $alt The alternative text for the image.
+ * @param string $title The title attribute for the image, typically shown as a tooltip.
+ * @param string $id An optional ID attribute for the image element. Defaults to an empty string.
+ * @param string $other Any additional attributes to include in the HTML element. Defaults to an empty string.
+ *
+ * @return string The generated HTML <img> tag.
+ */
 function organizer_get_icon_msg($name, $infotxt) {
     $out = "";
     switch ($name) {
@@ -2020,6 +2442,20 @@ function organizer_get_icon_msg($name, $infotxt) {
     }
     return $out;
 }
+
+/**
+ * Retrieves an icon element with specified Font Awesome classes, tooltip, and additional attributes.
+ *
+ * This function generates an HTML string for a Font Awesome icon. It optionally includes
+ * a tooltip and additional attributes to enhance the icon's functionality and accessibility.
+ *
+ * @param string $classes The CSS classes to apply to the icon element.
+ * @param string $tooltiptext The text for the tooltip, displayed when hovering over the icon. Defaults to an empty string.
+ * @param string $other Additional attributes to include in the icon's HTML element. This is useful for customizations.
+ *  Defaults to an empty string.
+ *
+ * @return string The generated HTML <i> tag for the icon, including the specified classes and attributes.
+ */
 function organizer_get_fa_icon($classes, $tooltiptext = "", $other = "") {
     if ($tooltiptext) {
         $other .= $tooltiptext ?
@@ -2028,6 +2464,21 @@ function organizer_get_fa_icon($classes, $tooltiptext = "", $other = "") {
     return "<i class='$classes' $other></i>";
 }
 
+/**
+ * Generates a stacked Font Awesome icon with optional tooltip and additional attributes.
+ *
+ * This function creates an HTML structure for a Font Awesome stacked icon,
+ * combining two Font Awesome icons with different CSS classes. Tooltip functionality
+ * and additional HTML attributes can also be included if required.
+ *
+ * @param string $classesback The CSS classes for the background icon of the stack.
+ * @param string $classesfront The CSS classes for the foreground icon of the stack.
+ * @param string $tooltiptext The text for the tooltip, displayed when hovering over the icon. Defaults to an empty string.
+ * @param string $other Additional attributes to include in the stacked icon's HTML element. This is useful for customizations.
+ *  Defaults to an empty string.
+ *
+ * @return string The generated HTML for the stacked Font Awesome icon (<span> element with included icons and attributes).
+ */
 function organizer_get_fa_icon_stacked($classesback, $classesfront, $tooltiptext = "", $other = "") {
     if ($tooltiptext) {
         $other .= $tooltiptext ?
@@ -2040,6 +2491,17 @@ function organizer_get_fa_icon_stacked($classesback, $classesfront, $tooltiptext
     return $out;
 }
 
+/**
+ * Returns the appropriate icon based on the given status and available Font Awesome styles.
+ *
+ * This function serves as a utility to fetch correct HTML markup
+ * for various icons depending on a provided case or status type.
+ *
+ * @param string $status The status determining which icon to retrieve.
+ * @param string $infotxt Optional text that can be displayed as a tooltip or accompanying text for the icon.
+ *
+ * @return string The generated HTML for the icon element corresponding to the status.
+ */
 function organizer_get_icon($iconname, $string, $size="small", $id="", $class="") {
     global $OUTPUT;
 
@@ -2055,7 +2517,24 @@ function organizer_get_icon($iconname, $string, $size="small", $id="", $class=""
     return $icon = $OUTPUT->pix_icon($iconname, $alt, 'mod_organizer', $attributes);
 }
 
-
+/**
+ * Determines the status of a given organizer slot and returns the corresponding icon or link.
+ *
+ * This function evaluates various properties of an organizer slot, such as whether it is full,
+ * past its deadline, or contains participants, and generates appropriate status representations
+ * (e.g., icons or links) using Font Awesome and tooltips. The representation changes depending on the
+ * slot's state and actions that can be performed on it.
+ *
+ * @param array $params An associative array containing parameters such as 'id' (the course module ID)
+ *                      and 'limitedwidth' (a boolean indicating if a smaller icon size is used).
+ * @param object $slot A slot object containing details about the organizer slot being evaluated.
+ *
+ * @return string The generated HTML string representing the status of the slot,
+ *                which could include icons, links, or tooltips.
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_slot_status($params, $slot) {
     $slotx = new organizer_slot($slot);
 
@@ -2119,6 +2598,22 @@ function organizer_slot_status($params, $slot) {
     }
 }
 
+/**
+ * Generates a string of HTML representing various actions (edit, delete, print, grade)
+ * available for a specific organizer slot.
+ *
+ * The actions are determined based on user capabilities and slot properties.
+ *
+ * @param int $slotid The ID of the slot for which actions are being generated.
+ * @param array $params Parameters for the organizer, including 'id' (the course module ID),
+ *                      and 'mode' (current organizer view mode).
+ * @param bool $grades Indicates whether grading options are available for the slot.
+ *
+ * @return string The generated HTML string of action links and icons for the slot.
+ *                Includes links for editing, deleting, printing, or evaluating the slot.
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ */
 function organizer_slot_commands($slotid, $params, $grades) {
     global $PAGE;
 
@@ -2173,6 +2668,21 @@ function organizer_slot_commands($slotid, $params, $grades) {
     return $outstr;
 }
 
+/**
+ * Determines the registration status of a specific slot for a given organizer.
+ *
+ * This function will check various conditions (e.g., expiration, deadlines, fullness, attendance)
+ * to generate and return an appropriate HTML output including an icon and a message representing
+ * the current registration status of a given organizer slot.
+ *
+ * @param object $organizer The organizer instance, containing properties such as grading options.
+ * @param object $slot The slot object containing relevant slot data (e.g., availability, due status).
+ * @param null $onlyownslotsmsg Optional message displayed for own slots.
+ *
+ * @return string HTML string containing the icon and message for the slot's registration status.
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function organizer_slot_reg_status($organizer, $slot, $onlyownslotsmsg = null) {
     global $PAGE;
 
@@ -2235,6 +2745,24 @@ function organizer_slot_reg_status($organizer, $slot, $onlyownslotsmsg = null) {
     return $output;
 }
 
+/**
+ * Executes actions related to participants for a given appointment slot.
+ *
+ * Depending on the user's capabilities, the slot's status, and booking limits,
+ * this function determines the action the participant can perform, such as
+ * registering, unregistering, queuing, or unqueuing for a slot.
+ *
+ * @param array $params An array containing parameters for the action.
+ * @param stdClass $slot The appointment slot object.
+ *
+ * @return string The action to be performed, such as 'register', 'unregister',
+ *                'queue', 'unqueue', 'reregister', or an empty string if no action is allowed.
+ *
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
 function organizer_participants_action($params, $slot) {
     global $USER;
 
@@ -2322,6 +2850,23 @@ function organizer_participants_action($params, $slot) {
 
 }
 
+/**
+ * Generates a button for handling organizer registration actions.
+ *
+ * This function generates a registration button for an organizer slot based
+ * on the provided action, slot ID, and parameters. It also optionally disables
+ * the button depending on the state.
+ *
+ * @param string $action The action to be performed (e.g., 'register', 'unregister', 'queue').
+ * @param int $slotid The ID of the organizer slot.
+ * @param array $params An array of parameters including organizer details such as ID and mode.
+ * @param bool $disabled Optional. Determines whether the button is disabled. Defaults to false.
+ *
+ * @return string The HTML output of the rendered button.
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ *
+ */
 function organizer_get_reg_button($action, $slotid, $params, $disabled = false) {
     global $OUTPUT;
 
@@ -2340,6 +2885,23 @@ function organizer_get_reg_button($action, $slotid, $params, $disabled = false) 
     return $out;
 }
 
+/**
+ * Retrieves a button for assigning a user to an organizer slot.
+ *
+ * This function generates a button for assigning users to an organizer slot.
+ * It forms a link to the slot assignment page with the necessary parameters
+ * and ensures consistent styling for the button.
+ *
+ * @param int $slotid The ID of the organizer slot.
+ * @param array $params An array of parameters including:
+ *                      - 'id': Organizer ID.
+ *                      - 'mode': Organizer mode.
+ *                      - 'assignid': ID of the user to be assigned.
+ *
+ * @return string The HTML output of the rendered button.
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ */
 function organizer_get_assign_button($slotid, $params) {
     global $OUTPUT;
 
@@ -2354,6 +2916,20 @@ function organizer_get_assign_button($slotid, $params) {
     return $out;
 }
 
+/**
+ * Determines the size of the font-awesome icon class and returns a specific icon for the organizer slot status.
+ *
+ * This function evaluates the current organizer slot's status and chooses the appropriate font-awesome icon
+ * along with its size and explanation from the language strings. It handles different statuses such as attended,
+ * pending, registered, and not registered, as well as evaluated slots.
+ *
+ * @param int $status The status of the organizer slot (e.g., attended, pending, etc.).
+ * @param object $organizer The organizer object containing configuration data.
+ * @param bool $slotevaluated Optional. True if the slot has been evaluated. Defaults to false.
+ *
+ * @return string HTML for the font-awesome icon with the corresponding status and description.
+ * @throws coding_exception
+ */
 function organizer_get_status_icon_reg($status, $organizer, $slotevaluated = false) {
     global $PAGE;
 
@@ -2364,32 +2940,55 @@ function organizer_get_status_icon_reg($status, $organizer, $slotevaluated = fal
         $sizeclass = "2x";
     }
 
+    $out = "";
     if ($slotevaluated) {
-        return organizer_get_fa_icon("fa fa-check-square fa-$sizeclass text-primary",
+        $out = organizer_get_fa_icon("fa fa-check-square fa-$sizeclass text-primary",
             get_string('img_title_evaluated', 'organizer'));
     } else {
         switch ($status) {
             case ORGANIZER_APP_STATUS_ATTENDED:
-                return organizer_get_fa_icon("fa fa-check-square-o fa-$sizeclass slotovercolor",
+                $out = organizer_get_fa_icon("fa fa-check-square-o fa-$sizeclass slotovercolor",
                     get_string('reg_status_slot_attended', 'organizer'));
+                break;
             case ORGANIZER_APP_STATUS_PENDING:
                 if ($organizer->grade) {
-                    return organizer_get_fa_icon("fa fa-flag-o fa-$sizeclass slotovercolor",
+                    $out = organizer_get_fa_icon("fa fa-flag-o fa-$sizeclass slotovercolor",
                         get_string('reg_status_slot_pending', 'organizer'));
                 } else {
-                    return organizer_get_fa_icon("fa fa-circle fa-$sizeclass slotovercolor",
+                    $out = organizer_get_fa_icon("fa fa-circle fa-$sizeclass slotovercolor",
                         get_string('reg_status_registered', 'organizer'));
                 }
+                break;
             case ORGANIZER_APP_STATUS_REGISTERED:
-                return organizer_get_fa_icon("fa fa-circle fa-$sizeclass slotactivecolor",
+                $out = organizer_get_fa_icon("fa fa-circle fa-$sizeclass slotactivecolor",
                     get_string('reg_status_registered', 'organizer'));
+                break;
             case ORGANIZER_APP_STATUS_NOT_REGISTERED:
-                return organizer_get_fa_icon("fa fa-circle-thin fa-$sizeclass slotovercolor",
+                $out = organizer_get_fa_icon("fa fa-circle-thin fa-$sizeclass slotovercolor",
                     get_string('reg_status_not_registered', 'organizer'));
+                break;
+            default:
+                throw new \Exception('Unexpected value');
         }
     }
+    return $out;
 }
 
+/**
+ * Determines the appropriate time unit (days, hours, minutes, or seconds) for a given time in seconds.
+ *
+ * This function analyzes the input time in seconds and selects the largest applicable time unit
+ * (e.g., days, hours, minutes, or seconds). It also returns the corresponding language string
+ * for the unit name (singular or plural) and the unit factor.
+ *
+ * @param int $time The time in seconds to be analyzed.
+ *
+ * @return array An array containing:
+ *               - string $unit: The language string for the unit name (e.g., day, hour).
+ *               - int $factor: The factor representing the chosen unit in seconds (e.g., 86400 for days).
+ *
+ * @throws coding_exception If a language string is missing or cannot be retrieved.
+ */
 function organizer_figure_out_unit($time) {
     if ($time % 86400 == 0) {
         $out = (($time / 86400) == 1) ? get_string('day', 'organizer') : get_string('day_pl', 'organizer');
@@ -2406,6 +3005,20 @@ function organizer_figure_out_unit($time) {
     }
 }
 
+/**
+ * Retrieves a countdown representation of a given time in days, hours, minutes, and seconds.
+ *
+ * This function takes a time period in seconds as input and splits it into an
+ * array containing the number of days, hours, minutes, and seconds remaining.
+ *
+ * @param int $time The time in seconds to be converted to a countdown format.
+ *
+ * @return array An indexed array containing:
+ *               - int $days: The number of days in the countdown.
+ *               - int $hrs: The number of hours in the countdown.
+ *               - int $min: The number of minutes in the countdown.
+ *               - int $sec: The number of seconds in the countdown.
+ */
 function organizer_get_countdown($time) {
     $secsinday = 24 * ($secsinhour = 60 * ($secsinmin = 60));
     $days = intval($time / $secsinday);
@@ -2415,6 +3028,21 @@ function organizer_get_countdown($time) {
     return [$days, $hrs, $min, $sec];
 }
 
+/**
+ * Checks if a given organizer slot is free for a user.
+ *
+ * This function checks if the provided organizer slot is available based on various conditions, such as:
+ * - Whether the slot is already full.
+ * - Whether the slot is past its due time.
+ * - Whether the user already has an appointment for this slot.
+ *
+ * @param stdClass $slot The slot object containing details about the organizer slot.
+ * @param int $userid The ID of the user for whom the slot availability is being checked.
+ * @param bool|null $assignmentview Optional. Whether to consider the current assignment view when evaluating the slot.
+ *
+ * @return bool True if the slot is free for the user, false otherwise.
+ * @throws dml_exception
+ */
 function organizer_slot_is_free($slot, $userid, $assignmentview = null) {
     $slotx = new organizer_slot($slot);
     if ($assignmentview) {
@@ -2428,7 +3056,7 @@ function organizer_slot_is_free($slot, $userid, $assignmentview = null) {
     }
     if (!$ispastdue && !$slotx->is_full() && $slotx->is_available() ) {
         $apps = organizer_get_all_user_appointments($slot->organizerid, $userid);
-        foreach ($apps as $app) {  // Is own slot?
+        foreach ($apps as $app) {  // Its own slot?
             if ($app->slotid == $slot->id) {
                 return false;
             }
@@ -2438,20 +3066,44 @@ function organizer_slot_is_free($slot, $userid, $assignmentview = null) {
     return false;
 }
 
-function organizer_register_popup() {
-    static $id = 0;
-    $elementid = "organizer_popup_icon_{$id}";
-    $id++;
-    return $elementid;
-}
-
+/**
+ * Outputs HTML for displaying places in the queue with the user's position.
+ *
+ * This function generates a stylized HTML output that includes an icon and a
+ * formatted string showing the user's position in the queue for the organizer.
+ *
+ * @param stdClass $a An object containing data related to the position in the queue.
+ *
+ * @return string The formatted HTML output showing the queue position with styling.
+ * @throws coding_exception
+ */
 function organizer_write_places_inqueue_position($a) {
-    $output = "";
-    $output .= organizer_get_fa_icon("fa fa-coffee mr-1 ml-1")."<span class='mr-1 text-danger font-italic'>" .
+    $output = organizer_get_fa_icon("fa fa-coffee mr-1 ml-1")."<span class='mr-1 text-danger font-italic'>" .
         get_string('places_inqueue_withposition', 'organizer', $a) . "</span>";
     return $output;
 }
 
+/**
+ * Retrieves the formatted output for places in the queue based on the user's position.
+ *
+ * This function combines the queue data, slot information, and additional parameters
+ * to generate an HTML string that can be displayed to the user. It includes stylized
+ * elements like icons and conditional formatting based on parameters such as
+ * viewing mode and slot visibility.
+ *
+ * - If the view mode is not student view or the slot visibility is set to public,
+ *   it retrieves detailed queue information.
+ * - Supports both individual and group modes to fetch appropriate entries in the queue.
+ *
+ * @param stdClass $a An object containing user or queue-related information.
+ * @param stdClass $slot The slot object that includes organizer slot details.
+ * @param array $params An associative array of additional options:
+ *                      - 'mode': The viewing mode for the organizer.
+ *
+ * @return string The HTML string containing the formatted output for places in the queue.
+ * @throws coding_exception
+ * @throws moodle_exception
+ */
 function organizer_write_places_inqueue($a, $slot, $params) {
     $output = "";
     $output .= "<span class='mr-1 font-italic'>" . get_string('places_inqueue', 'organizer', $a);
@@ -2467,6 +3119,18 @@ function organizer_write_places_inqueue($a, $slot, $params) {
     return $output;
 }
 
+/**
+ * Retrieves the queue entries for a specific slot in individual mode.
+ *
+ * This function fetches and formats the list of queue entries for the given slot
+ * where users have registered in the queue. It returns an HTML-formatted string
+ * listing the queue entries along with their position in the queue.
+ *
+ * @param stdClass $slot The slot object containing details of the organizer slot.
+ *
+ * @return string The formatted HTML string containing the queue entries.
+ * @throws dml_exception If there is an issue executing the database query.
+ */
 function organizer_get_entries_queue($slot) {
     global $DB;
 
@@ -2492,6 +3156,18 @@ function organizer_get_entries_queue($slot) {
     return $output;
 }
 
+/**
+ * Retrieves the queue entries for a specific slot in group mode.
+ *
+ * This function fetches and formats the list of queue entries for the given slot
+ * where groups have registered in the queue. It returns an HTML-formatted string
+ * listing the group names along with their position in the queue.
+ *
+ * @param stdClass $slot The slot object containing details of the organizer slot.
+ *
+ * @return string The formatted HTML string containing the queue entries for groups.
+ * @throws dml_exception If there is an issue executing the database query.
+ */
 function organizer_get_entries_queue_group($slot) {
     global $DB;
 
@@ -2551,6 +3227,29 @@ function organizer_slotpages_header() {
     return [$cm, $course, $organizer, $context, $redirecturl];
 }
 
+/**
+ * Retrieves a table header cell for the participants table with sorting functionality
+ * and an optional help icon.
+ *
+ * This function generates a table header cell, including sorting options for
+ * participant columns (sorted by "participant" or "name"). It also
+ * appends a help icon to the header if provided.
+ *
+ * @param array $params An associative array containing parameters for the table.
+ *                      It must include:
+ *                      - 'sort' (string): The current sorting field.
+ *                      - 'dir' (string): The current sorting direction, 'ASC' or 'DESC'.
+ *                      - 'psort' (string): The current "name" sorting field.
+ *                      - 'pdir' (string): The current "name" sorting direction.
+ *                      - 'id' (int): The course module ID.
+ *                      - 'mode' (int): The organizer mode.
+ * @param string $column The column name to generate the header for.
+ * @param string $columnhelpicon HTML string representing the help icon for the column.
+ *
+ * @return html_table_cell The formatted header cell for the participants table.
+ * @throws \core\exception\moodle_exception
+ * @throws coding_exception
+ */
 function organizer_get_participants_tableheadercell($params, $column, $columnhelpicon) {
 
     if ($params['sort'] == 'participant') {
@@ -2584,13 +3283,10 @@ function organizer_get_participants_tableheadercell($params, $column, $columnhel
 /**
  * Returns the html of a status bar indicating the user's status regarding his bookings.
  *
- * @param int $bookings amount of user bookings
- * @param int $max max amount of bookings per user
- * @param boolean $minreached if user has reached minimum of bookings
- * @param string $statusmsg to be written
- * @param string $msg for the tooltip
- *
+ * @param $organizer
  * @return object $out html output of status bar
+ * @throws coding_exception
+ * @throws dml_exception
  */
 function organizer_appointmentsstatus_bar($organizer) {
     global $DB;
@@ -2653,6 +3349,19 @@ function organizer_appointmentsstatus_bar($organizer) {
 
 }
 
+/**
+ * Calculates and returns the number of free slots and free places in the organizer.
+ *
+ * This function determines the number of unexpired, available slots and their remaining capacity
+ * in terms of participant places. Expired slots are excluded from the calculation unless explicitly
+ * allowed by the `$allowexpiredslotsassignment` parameter.
+ *
+ * @param stdClass $organizer The organizer object containing relevant organizer details.
+ * @param bool $allowexpiredslotsassignment Optional. If true, expired slots are included in the calculation.
+ * @return array An indexed array where the first element represents the total number of free slots
+ *               and the second element represents the total number of free places.
+ * @throws dml_exception If a database query fails.
+ */
 function organizer_get_freeplaces($organizer, $allowexpiredslotsassignment = false) {
     global $DB;
 
@@ -2675,6 +3384,20 @@ function organizer_get_freeplaces($organizer, $allowexpiredslotsassignment = fal
     return [$slotscount, $places];
 }
 
+/**
+ * Determines whether a booking is possible for a user or group in the specified organizer.
+ *
+ * This function checks if there are free places available in the organizer and whether the maximum
+ * number of bookings allowed for the user or group has been reached. The function considers group
+ * mode and whether expired slots are included in the booking.
+ *
+ * @param bool $groupmode Indicates if the booking is in group mode. True if group mode is enabled, false otherwise.
+ * @param stdClass $organizer The organizer object containing necessary organizer details.
+ * @param int $entryid The ID of the user or group for which the booking is being checked.
+ * @param bool $allowexpiredslotsassignment Optional. If true, expired slots are considered as available for booking.
+ * @return bool True if booking is not possible, false if booking is possible.
+ * @throws dml_exception
+ */
 function organizer_bookingnotpossible($groupmode, $organizer, $entryid, $allowexpiredslotsassignment = false) {
 
     if ($groupmode) {

@@ -33,21 +33,40 @@ use moodle_url;
  * The appointment_reminder_sent event class.
  **/
 class appointment_reminder_sent extends base {
+
+    /**
+     * Init method of event
+     * @return void
+     */
     protected function init() {
         $this->data['crud'] = 'r'; // Options: c (reate), r (ead), u (pdate), d (elete).
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'organizer_slot_appointments';
     }
 
+    /**
+     * Get event name
+     * @return \lang_string|string
+     * @throws \coding_exception
+     */
     public static function get_name() {
         return get_string('eventappointmentremindersent', 'mod_organizer');
     }
 
+    /**
+     * Get event description
+     * @return string
+     */
     public function get_description() {
         return "The user with id {$this->userid} send a reminder to all users from the organizer activity " .
             "with the course module id {$this->contextinstanceid} which are not yet registered to a slot.";
     }
 
+    /**
+     * Get url of event
+     * @return moodle_url
+     * @throws \core\exception\moodle_exception
+     */
     public function get_url() {
         return new moodle_url('/mod/organizer/view.php', ['id' => $this->objectid]);
     }

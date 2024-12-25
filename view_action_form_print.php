@@ -32,15 +32,57 @@ require_once("$CFG->libdir/formslib.php");
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/custom_table_renderer.php');
 
+/**
+ * Class organizer_print_slots_form
+ *
+ * This class represents a custom print slots form for the Moodle Organizer module.
+ * It extends the Moodle core `moodleform` class to manage the definition and display
+ * of the form, which includes slot information and customizable column selection
+ * for printing or exporting.
+ *
+ * @package   mod_organizer
+ * @author    Andreas Hruska
+ * @author    Katarzyna Potocka
+ * @author    Andreas Windbichler
+ * @author    Ivan Šakić
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class organizer_print_slots_form extends moodleform {
 
+    /**
+     * Selected columns for the export or printing.
+     *
+     * This variable stores an array of column identifiers
+     * that are selected for display and used in export or print functionalities.
+     *
+     * @var string[]
+     */
     private $_selcols;
 
+    /**
+     * Class constructor to initialize the organizer_print_slots_form.
+     *
+     * This constructor is inherited from the `moodleform` class and allows
+     * initialization of the form with any required custom data.
+     *
+     * @param mixed $caller The caller object that initializes this form.
+     * @param array $customdata An array of data containing additional parameters required by the form.
+     * @throws coding_exception
+     */
     protected function definition() {
         $this->add_slot_info();
         $this->add_column_select();
     }
 
+    /**
+     * Adds hidden elements for slot information to the form.
+     *
+     * This method populates the form with hidden fields required for proper handling
+     * of slot-related data based on the provided custom data.
+     *
+     * @throws coding_exception If the required slots data is missing in the custom data.
+     */
     private function add_slot_info() {
         $mform = &$this->_form;
         $data = &$this->_customdata;
@@ -50,7 +92,6 @@ class organizer_print_slots_form extends moodleform {
         $mform->addElement('hidden', 'mode', $data['mode']);
         $mform->setType('mode', PARAM_INT);
 
-        // TODO: might cause crashes!
         $mform->addElement('hidden', 'action', 'print');
         $mform->setType('action', PARAM_ALPHANUMEXT);
 
@@ -64,6 +105,19 @@ class organizer_print_slots_form extends moodleform {
         }
     }
 
+    /**
+     * Adds column selection and export format fields to the form.
+     *
+     * This method populates the form with elements used to customize the export functionality.
+     * It adds fields for selecting the columns to be included in the export, defines various
+     * output formats (e.g. PDF, XLSX, CSV), and specifies additional settings like group visibility
+     * or identity field configurations. It also prepares a button group for submitting or canceling the form.
+     *
+     * The generated form elements account for whether the organizer is a group organizer or not,
+     * and dynamically adapt the column list based on identity fields enabled in the site configuration.
+     *
+     * @throws coding_exception If there's an error building form elements.
+     */
     private function add_column_select() {
         global $DB, $CFG;
 
@@ -122,6 +176,22 @@ class organizer_print_slots_form extends moodleform {
         }
     }
 
+    /**
+     * Displays the form and preview table for the selected columns.
+     *
+     * This method ensures the form is fully defined and finalized before rendering.
+     * It generates and outputs the HTML for the form, processes the selected columns
+     * for preview, and handles the visibility of identity fields based on site
+     * configuration.
+     *
+     * The method dynamically builds a column preview table, which can be modified
+     * based on user preferences, such as toggling specific columns' visibility
+     * within the preview.
+     *
+     * @throws coding_exception If there is an error during form or preview table initialization.
+     *
+     * @return void
+     */
     public function display() {
         global $CFG;
 
@@ -156,6 +226,22 @@ class organizer_print_slots_form extends moodleform {
         echo $output;
     }
 
+    /**
+     * Creates a preview table for selected columns.
+     *
+     * This method dynamically generates a table to preview column content, allowing users
+     * to toggle column visibility, sort columns, and customize the table's appearance
+     * based on their preferences.
+     *
+     * The function integrates sorting and user preferences for hiding/displaying specific
+     * columns. It also ensures compatibility with AJAX updates by initializing
+     * relevant parameters and JS scripts.
+     *
+     * @param array $columns An array of selected columns to be displayed.
+     *
+     * @return html_table The table object containing the preview of column data with customizable options.
+     * @throws dml_exception If there is an issue fetching user preferences.
+     */
     private function create_preview_table($columns) {
         global $PAGE, $OUTPUT, $cm, $CFG, $USER;
 
