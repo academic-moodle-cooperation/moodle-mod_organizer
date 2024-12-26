@@ -24,11 +24,11 @@ function export_ics_file($slot, $activityname, $activitydescription) {
     // Set the timezone to the web server's default timezone.
     core_date::set_default_server_timezone();
 
-    // Convert start time and end time with Bennu
+    // Convert start time and end time with Bennu.
     $starttime = Bennu::timestamp_to_datetime($slot->starttime);
     $endtime = Bennu::timestamp_to_datetime($slot->starttime + $slot->duration);
 
-    // Set security headers
+    // Set security headers.
     header('Content-Type: text/calendar; charset=utf-8');
     header('Content-Disposition: attachment; filename="' . $activityname . " - " . $starttime . '.ics"');
 
@@ -48,11 +48,11 @@ function export_ics_file($slot, $activityname, $activitydescription) {
     $icscontent .= "DTSTART:$starttime\r\n";
     $icscontent .= "DTEND:$endtime\r\n";
 
-    // Summary of the event
+    // Summary of the event.
     $summary = isset($activityname) ? $activityname : "Moodle Slot";
     $icscontent .= "SUMMARY:" . escape_ical_text($summary) . "\r\n";
 
-    // Add description and comments
+    // Add description and comments.
     if (!empty($activitydescription)) {
         $description = convert_to_ical_description($activitydescription);
     }
@@ -63,7 +63,7 @@ function export_ics_file($slot, $activityname, $activitydescription) {
         $icscontent .= "DESCRIPTION:$description\r\n";
     }
 
-    // Add location and locationlink
+    // Add location and locationlink.
     if (!empty($slot->location)) {
         $location = escape_ical_text($slot->location);
     }
@@ -74,76 +74,76 @@ function export_ics_file($slot, $activityname, $activitydescription) {
         $icscontent .= "LOCATION:$location\r\n";
     }
 
-    // Add reminder
-    if (!empty($slot->notificationtime))
-    {
+    // Add reminder.
+    if (!empty($slot->notificationtime)) {
         $notificationtime = escape_ical_text($slot->notificationtime);
-        $icscontent .= "BEGIN:VALARM\r\nTRIGGER:-PT" . $notificationtime . "S\r\nACTION:DISPLAY\r\nDESCRIPTION:Reminder\r\nEND:VALARM\r\n";
+        $icscontent .= "BEGIN:VALARM\r\nTRIGGER:-PT" . $notificationtime .
+            "S\r\nACTION:DISPLAY\r\nDESCRIPTION:Reminder\r\nEND:VALARM\r\n";
     }
 
-    // Add timestamp
+    // Add timestamp.
     $timestamp = gmdate('Ymd\THis\Z');
     $icscontent .= "DTSTAMP:$timestamp\r\n";
 
-    // End the event
+    // End the event.
     $icscontent .= "END:VEVENT\r\n";
 
-    // Close the calendar
+    // Close the calendar.
     $icscontent .= "END:VCALENDAR\r\n";
 
-    // Output ICS data
+    // Output ICS data.
     echo $icscontent;
     exit;
 }
 
 function escape_ical_text($text) {
-    // Replace actual newlines with the iCalendar \n
+    // Replace actual newlines with the iCalendar \n.
     $text = str_replace(["\r\n", "\r", "\n"], "\\n", $text);
 
-    // Escape other special characters
+    // Escape other special characters.
     return addcslashes($text, ",;\\");
 }
 
 function convert_to_ical_description($html) {
-    // Ensure the HTML is in UTF-8 encoding
+    // Ensure the HTML is in UTF-8 encoding.
     $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
 
-    // Load the HTML into DOMDocument
+    // Load the HTML into DOMDocument.
     $dom = new DOMDocument();
     libxml_use_internal_errors(true); // Suppress warnings for malformed HTML
     $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
     libxml_clear_errors();
 
-    // Extract text content and decode HTML entities
+    // Extract text content and decode HTML entities.
     $text = $dom->textContent;
     $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
 
-    // Escape special characters for iCalendar
+    // Escape special characters for iCalendar.
     $escapedtext = str_replace(
-        ["\\", ",", ";", "\n"], // Characters to escape
-        ["\\\\", "\\,", "\\;", "\\n"], // Escaped equivalents
+        ["\\", ",", ";", "\n"], // Characters to escape.
+        ["\\\\", "\\,", "\\;", "\\n"], // Escaped equivalents.
         $text
     );
 
-    // Handle links separately: Replace links in HTML with iCalendar-friendly "<URL>" syntax
+    // Handle links separately: Replace links in HTML with iCalendar-friendly "<URL>" syntax.
     foreach ($dom->getElementsByTagName('a') as $link) {
         $url = $link->getAttribute('href');
         $textcontent = $link->textContent;
 
-        // Format the link as "Link Text <URL>"
-        $formatted_link = $textcontent . " <" . str_replace(["\\", ",", ";"], ["\\\\", "\\,", "\\;"], $url) . ">";
+        // Format the link as "Link Text <URL>".
+        $formattedlink = $textcontent . " <" . str_replace(["\\", ",", ";"], ["\\\\", "\\,", "\\;"], $url) . ">";
 
-        // Replace the text content of the link in the escaped text with the formatted link
-        $escapedtext = str_replace($textcontent, $formatted_link, $escapedtext);
+        // Replace the text content of the link in the escaped text with the formatted link.
+        $escapedtext = str_replace($textcontent, $formattedlink, $escapedtext);
     }
 
-    // Replace bullet points and indentation for structured content
+    // Replace bullet points and indentation for structured content.
     $escapedtext = preg_replace("/^\*\s*/m", "*\t", $escapedtext);
 
-    // Remove all newlines and extra spaces to produce a single line
+    // Remove all newlines and extra spaces to produce a single line.
     $escapedtext = preg_replace('/\s+/', ' ', $escapedtext);
 
-    // Return the final iCalendar-compliant description
+    // Return the final iCalendar-compliant description.
     return $escapedtext;
 }
 

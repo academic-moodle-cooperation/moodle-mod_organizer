@@ -2851,9 +2851,9 @@ function organizer_participants_action($params, $slot) {
                 organizer_get_fa_icon('fa fa-commenting ml-1', $commentlabel)  . '</a>';
         }
 
-        // allow users to EXPORT ICS.
+        // Allow users to EXPORT ICS.
         $actionurl = new moodle_url(
-            '/mod/organizer/slots_export.php', array('id' => $params['id'], 'slot' => $slotx->get_id())
+            '/mod/organizer/slots_export.php', ['id' => $params['id'], 'slot' => $slotx->get_id()]
         );
         $exporticsbtn = \html_writer::link($actionurl,
             get_string('exportics', 'organizer') .  organizer_get_fa_icon(
