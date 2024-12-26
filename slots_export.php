@@ -14,9 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * slots_export.php
+ *
+ * @package   mod_organizer
+ * @author    Ramon
+ * @author    Thomas Niedermaier (thomas.niedermaier@gmail.com)
+ * @copyright 2014 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 require_once('../../config.php');
 require_once('locallib.php');
 
+/**
+ * Exports an iCalendar (ICS) file for a given slot with activity details.
+ *
+ * @param stdClass $slot An object containing details of the slot, including start time, duration,
+ *                       location, comments, and notification time.
+ * @param string $activityname The name of the activity to be used as the event summary.
+ * @param string $activitydescription The description of the activity to be included in the ICS file.
+ *
+ * @return void This function outputs an ICS file to the browser and exits the script.
+ */
 function export_ics_file($slot, $activityname, $activitydescription) {
     global $CFG;
     require_once($CFG->libdir . '/bennu/bennu.class.php');
@@ -96,6 +116,16 @@ function export_ics_file($slot, $activityname, $activitydescription) {
     exit;
 }
 
+/**
+ * Escapes special characters in text to make it compatible with iCalendar specifications.
+ *
+ * This function replaces actual newlines with the iCalendar newline character (\n)
+ * and escapes special characters such as commas, semicolons, and backslashes.
+ *
+ * @param string $text The text to be escaped for iCalendar compatibility.
+ *
+ * @return string The escaped text.
+ */
 function escape_ical_text($text) {
     // Replace actual newlines with the iCalendar \n.
     $text = str_replace(["\r\n", "\r", "\n"], "\\n", $text);
@@ -104,13 +134,25 @@ function escape_ical_text($text) {
     return addcslashes($text, ",;\\");
 }
 
+/**
+ * Converts an HTML input to a sanitized, escaped description suitable for an iCalendar entry.
+ *
+ * This function ensures the input HTML is properly encoded, sanitizes it,
+ * extracts its text content, and escapes special characters according to
+ * the iCalendar specification. Additionally, it processes hyperlinks in the
+ * HTML, formatting them in an iCalendar-compatible format.
+ *
+ * @param string $html The HTML content to be converted and escaped.
+ *
+ * @return string The sanitized and escaped iCalendar-compliant description.
+ */
 function convert_to_ical_description($html) {
     // Ensure the HTML is in UTF-8 encoding.
     $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
 
     // Load the HTML into DOMDocument.
     $dom = new DOMDocument();
-    libxml_use_internal_errors(true); // Suppress warnings for malformed HTML
+    libxml_use_internal_errors(true); // Suppress warnings for malformed HTML.
     $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
     libxml_clear_errors();
 
