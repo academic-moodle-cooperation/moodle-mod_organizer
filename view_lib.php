@@ -2665,14 +2665,11 @@ function organizer_slot_commands($slotid, $params, $grades) {
         );
     }
 
-	// EXPORT ICS.
-	$actionurl = new moodle_url(
-			'/mod/organizer/slots_export.php',
-			array('id' => $params['id'], 'slot' => $slotid, 'mode' => $params['mode'])
-	);
-	$outstr .= \html_writer::link($actionurl, organizer_get_fa_icon(
-			"fa fa-calendar fa-fw", get_string('btn_exportics', 'organizer'))
-	);
+    // EXPORT ICS.
+    $actionurl = new moodle_url('/mod/organizer/slots_export.php',
+        ['id' => $params['id'], 'slot' => $slotid, 'mode' => $params['mode']]);
+    $outstr .= \html_writer::link($actionurl,
+        organizer_get_fa_icon("fa fa-calendar fa-fw", get_string('btn_exportics', 'organizer')));
 
     return $outstr;
 }
@@ -2856,11 +2853,11 @@ function organizer_participants_action($params, $slot) {
 
         // allow users to EXPORT ICS.
         $actionurl = new moodle_url(
-            '/mod/organizer/slots_export.php',
-            array('id' => $params['id'], 'slot' => $slotx->get_id())
+            '/mod/organizer/slots_export.php', array('id' => $params['id'], 'slot' => $slotx->get_id())
         );
-        $exporticsbtn .= \html_writer::link($actionurl, get_string('exportics', 'organizer') .  organizer_get_fa_icon(
-            "fa fa-calendar fa-fw", get_string('exportics', 'organizer'))
+        $exporticsbtn = \html_writer::link($actionurl,
+            get_string('exportics', 'organizer') .  organizer_get_fa_icon(
+                "fa fa-calendar fa-fw", get_string('exportics', 'organizer'))
         );
     }
 
