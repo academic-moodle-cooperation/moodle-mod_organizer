@@ -396,6 +396,7 @@ $string['eventtitle'] = '{$a->coursename} / {$a->organizername}: {$a->appwith}';
 $string['eventwith'] = 'with';
 $string['eventwithout'] = 'with';
 $string['exportics'] = 'Export ICS';
+$string['exporticsaction'] = 'export ICS';
 $string['exportsettings'] = 'Export settings';
 $string['filtertable'] = '\'Filterting this table\'';
 $string['filtertable_help'] = 'Search these slots for mutual strings here.';

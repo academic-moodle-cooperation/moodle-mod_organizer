@@ -2647,6 +2647,7 @@ function organizer_get_registrationview_entries($groupmode, $params) {
  * Obtains slots parameters if present
  *
  * @return array slots
+ * @throws coding_exception
  */
 function organizer_get_param_slots() {
     $slots = [];
@@ -2664,11 +2665,12 @@ function organizer_get_param_slots() {
 /**
  * How many slots a participant has booked
  *
- * @param int $organizerid  ID of organizer instance
+ * @param int $organizerid ID of organizer instance
  * @param int $userid ID of user
  * @param int $groupid ID of group (if instance is groupmode)
  *
  * @return int $slots
+ * @throws dml_exception
  */
 function organizer_count_bookedslots($organizerid, $userid = null, $groupid = null) {
     global $DB, $USER;

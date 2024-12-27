@@ -37,76 +37,84 @@ require_once('locallib.php');
  *
  * @return void This function outputs an ICS file to the browser and exits the script.
  */
-function export_ics_file($slot, $activityname, $activitydescription) {
+function export_ics_file($slots, $activityname, $activitydescription) {
     global $CFG;
     require_once($CFG->libdir . '/bennu/bennu.class.php');
 
     // Set the timezone to the web server's default timezone.
     core_date::set_default_server_timezone();
 
-    // Convert start time and end time with Bennu.
-    $starttime = Bennu::timestamp_to_datetime($slot->starttime);
-    $endtime = Bennu::timestamp_to_datetime($slot->starttime + $slot->duration);
-
     // Set security headers.
     header('Content-Type: text/calendar; charset=utf-8');
-    header('Content-Disposition: attachment; filename="' . $activityname . " - " . $starttime . '.ics"');
 
     // Start ICS data.
     $icscontent = "BEGIN:VCALENDAR\r\n";
     $icscontent .= "VERSION:2.0\r\n";
     $icscontent .= "PRODID:-//Moodle mod/organizer Slot Export//EN\r\n";
 
-    // Create a single event.
-    $icscontent .= "BEGIN:VEVENT\r\n";
+    $headertitle = false;
+    foreach ($slots as $slot) {
+        // Convert start time and end time with Bennu.
+        $starttime = Bennu::timestamp_to_datetime($slot->starttime);
+        $endtime = Bennu::timestamp_to_datetime($slot->starttime + $slot->duration);
 
-    // UID for the event (unique for calendar applications).
-    $uid = uniqid('moodle-organizer-slot-', true) . "@" . parse_url($CFG->wwwroot)['host'];
-    $icscontent .= "UID:$uid\r\n";
+        // Write headertitle with startdate of first slot.
+        if (!$headertitle) {
+            header('Content-Disposition: attachment; filename="' . $activityname . " - " . $starttime . '.ics"');
+            $headertitle = true;
+        }
+        // Create a single event.
+        $icscontent .= "BEGIN:VEVENT\r\n";
 
-    // Set start and end time.
-    $icscontent .= "DTSTART:$starttime\r\n";
-    $icscontent .= "DTEND:$endtime\r\n";
+        // UID for the event (unique for calendar applications).
+        $uid = uniqid('moodle-organizer-slot-', true) . "@" . parse_url($CFG->wwwroot)['host'];
+        $icscontent .= "UID:$uid\r\n";
 
-    // Summary of the event.
-    $summary = isset($activityname) ? $activityname : "Moodle Slot";
-    $icscontent .= "SUMMARY:" . escape_ical_text($summary) . "\r\n";
+        // Set start and end time.
+        $icscontent .= "DTSTART:$starttime\r\n";
+        $icscontent .= "DTEND:$endtime\r\n";
 
-    // Add description and comments.
-    if (!empty($activitydescription)) {
-        $description = convert_to_ical_description($activitydescription);
+        // Summary of the event.
+        $summary = isset($activityname) ? $activityname : get_string('timeslot', 'mod_organizer');
+        $icscontent .= "SUMMARY:" . escape_ical_text($summary) . "\r\n";
+
+        // Add description and comments.
+        if (!empty($activitydescription)) {
+            $description = convert_to_ical_description($activitydescription);
+        }
+        if (!empty($slot->comments)) {
+            $description .= " " . escape_ical_text($slot->comments);
+        }
+        if (!empty($description)) {
+            $icscontent .= "DESCRIPTION:$description\r\n";
+        }
+
+        // Add location and locationlink.
+        if (!empty($slot->location)) {
+            $location = escape_ical_text($slot->location);
+        }
+        if (!empty($slot->locationlink)) {
+            $location .= " " . escape_ical_text($slot->locationlink);
+        }
+        if (!empty($location)) {
+            $icscontent .= "LOCATION:$location\r\n";
+        }
+
+        // Add reminder.
+        if (!empty($slot->notificationtime)) {
+            $notificationtime = escape_ical_text($slot->notificationtime);
+            $icscontent .= "BEGIN:VALARM\r\nTRIGGER:-PT" . $notificationtime .
+                "S\r\nACTION:DISPLAY\r\nDESCRIPTION:Reminder\r\nEND:VALARM\r\n";
+        }
+
+        // Add timestamp.
+        $timestamp = gmdate('Ymd\THis\Z');
+        $icscontent .= "DTSTAMP:$timestamp\r\n";
+
+        // End the event.
+        $icscontent .= "END:VEVENT\r\n";
+
     }
-    if (!empty($slot->comments)) {
-        $description .= " " . escape_ical_text($slot->comments);
-    }
-    if (!empty($description)) {
-        $icscontent .= "DESCRIPTION:$description\r\n";
-    }
-
-    // Add location and locationlink.
-    if (!empty($slot->location)) {
-        $location = escape_ical_text($slot->location);
-    }
-    if (!empty($slot->locationlink)) {
-        $location .= " " . escape_ical_text($slot->locationlink);
-    }
-    if (!empty($location)) {
-        $icscontent .= "LOCATION:$location\r\n";
-    }
-
-    // Add reminder.
-    if (!empty($slot->notificationtime)) {
-        $notificationtime = escape_ical_text($slot->notificationtime);
-        $icscontent .= "BEGIN:VALARM\r\nTRIGGER:-PT" . $notificationtime .
-            "S\r\nACTION:DISPLAY\r\nDESCRIPTION:Reminder\r\nEND:VALARM\r\n";
-    }
-
-    // Add timestamp.
-    $timestamp = gmdate('Ymd\THis\Z');
-    $icscontent .= "DTSTAMP:$timestamp\r\n";
-
-    // End the event.
-    $icscontent .= "END:VEVENT\r\n";
 
     // Close the calendar.
     $icscontent .= "END:VCALENDAR\r\n";
@@ -148,7 +156,7 @@ function escape_ical_text($text) {
  */
 function convert_to_ical_description($html) {
     // Ensure the HTML is in UTF-8 encoding.
-    $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+    $html = html_entity_decode($html, ENT_QUOTES, 'UTF-8');
 
     // Load the HTML into DOMDocument.
     $dom = new DOMDocument();
@@ -197,9 +205,11 @@ require_login($course, false, $cm);
 $activity = $DB->get_record('organizer', ['id' => $cm->instance], '*', MUST_EXIST);
 $activitydescription = format_module_intro('organizer', $activity, $cm->id);
 
-// Get the slot.
-$slotid = optional_param('slot', null, PARAM_INT);
-$slot = $DB->get_record('organizer_slots', ['id' => $slotid], '*', MUST_EXIST);
+// Get the slots.
+$slots = optional_param('slots', null, PARAM_TEXT);
+$arrslots = explode(',', $slots);
+[$slotselect, $slotparams] = $DB->get_in_or_equal($arrslots, SQL_PARAMS_NAMED);
+$rslots = $DB->get_records_select('organizer_slots', 'id ' . $slotselect, $slotparams);
 
 // Export the ICS file for the slot.
-export_ics_file($slot, $cm->name, $activitydescription);
+export_ics_file($rslots, $cm->name, $activitydescription);

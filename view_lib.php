@@ -444,11 +444,12 @@ function organizer_generate_tab_row($params, $context) {
  * for performing bulk actions on available organizer slots. The available
  * actions depend on the user's capabilities and the state of the organizer.
  *
- * Examples of available actions:
+ * Available actions:
  * - Editing slots
  * - Deleting slots
  * - Printing slots
  * - Evaluating slots
+ * - Exporting slots as ics-files
  *
  * The function also ensures buttons are disabled if no slots are selected.
  *
@@ -478,6 +479,7 @@ function organizer_generate_actionlink_bar($context, $organizerexpired, $organiz
     if (has_capability("mod/organizer:evalslots", $context, null, true) && $organizer->grade) {
         $actions['eval'] = get_string('actionlink_eval', 'organizer');
     }
+    $actions['export'] = get_string('exporticsaction', 'organizer');
 
     $output .= html_writer::select(
         $actions, 'bulkaction', ['edit' => get_string('actionlink_edit', 'organizer')], null,
@@ -2667,7 +2669,7 @@ function organizer_slot_commands($slotid, $params, $grades) {
 
     // EXPORT ICS.
     $actionurl = new moodle_url('/mod/organizer/slots_export.php',
-        ['id' => $params['id'], 'slot' => $slotid, 'mode' => $params['mode']]);
+        ['id' => $params['id'], 'slots' => $slotid, 'mode' => $params['mode']]);
     $outstr .= \html_writer::link($actionurl,
         organizer_get_fa_icon("fa fa-calendar fa-fw", get_string('btn_exportics', 'organizer')));
 
@@ -2853,7 +2855,7 @@ function organizer_participants_action($params, $slot) {
 
         // Allow users to EXPORT ICS.
         $actionurl = new moodle_url(
-            '/mod/organizer/slots_export.php', ['id' => $params['id'], 'slot' => $slotx->get_id()]
+            '/mod/organizer/slots_export.php', ['id' => $params['id'], 'slots' => [$slotx->get_id()]]
         );
         $exporticsbtn = \html_writer::link($actionurl,
             get_string('exportics', 'organizer') .  organizer_get_fa_icon(
