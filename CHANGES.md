@@ -3,6 +3,7 @@ CHANGELOG
 
 4.5.0 (2024-11-19)
 ------------------
+* [FEATURE] Add github workflow
 * [FEATURE] Added action to export slot as ics calendar file
 * Moodle 4.5 compatible version
 
