@@ -1,0 +1,11 @@
+name: Moodle Plugin CI
+
+########################################################################################################################
+
+on: [ push, pull_request ]
+
+########################################################################################################################
+
+jobs:
+  call-moodle-ci-workflow:
+    uses: academic-moodle-cooperation/moodle-workflows/.github/workflows/moodle-ci.yml@main
