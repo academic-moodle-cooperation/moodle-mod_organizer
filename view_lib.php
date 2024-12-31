@@ -2838,6 +2838,7 @@ function organizer_participants_action($params, $slot) {
 
     // Show slot comments and ICS export if user is owner.
     $commentbtn = "";
+    $exporticsbtn = "";
     if ($isuserslot) {
         $commenturl = new moodle_url(
             '/mod/organizer/comment_edit.php',
@@ -2855,7 +2856,7 @@ function organizer_participants_action($params, $slot) {
 
         // Allow users to EXPORT ICS.
         $actionurl = new moodle_url(
-            '/mod/organizer/slots_export.php', ['id' => $params['id'], 'slots' => [$slotx->get_id()]]
+            '/mod/organizer/slots_export.php', ['id' => $params['id'], 'slots' => $slotx->get_id()]
         );
         $exporticsbtn = \html_writer::link($actionurl,
             get_string('exportics', 'organizer') .  organizer_get_fa_icon(

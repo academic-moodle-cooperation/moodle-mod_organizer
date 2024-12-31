@@ -21,7 +21,7 @@
  */
 
 /**
- * In edit form: Force selection of grouping if group mode is choosen.
+ * In edit form: Signalling fields with different values when multi-editing.
  */
 
 

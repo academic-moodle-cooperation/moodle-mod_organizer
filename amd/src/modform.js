@@ -21,7 +21,7 @@
  */
 
 /**
- * In mod_form: Force selection of grouping if group mode is choosen.
+ * In mod_form: Show/Hide select field grouping if select field group mode is chosen/not chosen.
  */
 
 
@@ -43,9 +43,6 @@ define(
             if (param.activateduedatecheckbox) {
                 this.activateduedatecheckbox = param.activateduedatecheckbox;
             }
-            var warningdiv = $("#groupingid_warning").parent().parent();
-            warningdiv.addClass('advanced');
-            warningdiv.hide();
 
             /**
              * Display/Hide groupings if groupmode is selected.
@@ -63,7 +60,6 @@ define(
                         $(this).removeAttr('hidden');
                     });
                     $('#id_groupingid').removeAttr('disabled');
-                    warningdiv.show();
                 } else if (isgrouporganizer.val() == 0) {
                     $('#id_groupmode').val('0').click();
                     $('#fitem_id_groupingid').prop('hidden', true);
@@ -72,7 +68,6 @@ define(
                         $(this).prop('hidden', true);
                     });
                     $('#id_groupingid').prop("disabled", true);
-                    warningdiv.hide();
                 }
             }
 
@@ -87,7 +82,6 @@ define(
                     $('#id_isgrouporganizer').val('0');
                     $('#fitem_id_groupingid').hide();
                     $('#id_groupingid').prop('disabled', 'disabled');
-                    warningdiv.hide();
                 }
             }
 

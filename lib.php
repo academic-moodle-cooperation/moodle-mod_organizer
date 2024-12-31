@@ -540,7 +540,7 @@ function organizer_display_grade($organizer, $grade, $userid) {
 /**
  * Update all grades for the specified organizer.
  *
- * This function retrieves all students or groups enrolled in the specified organizer,
+ * This function retrieves all students of the course or grouping enrolled in the specified organizer,
  * calculates their grades, and updates them accordingly in the gradebook.
  *
  * @param int $organizerid The ID of the organizer whose grades need to be updated.
@@ -552,22 +552,17 @@ function organizer_update_all_grades($organizerid) {
 
     [$cm, , $organizer, $context] = organizer_get_course_module_data(null, $organizerid);
 
-    $studentids = [];
-
-    if ($organizer->isgrouporganizer != ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $students = get_enrolled_users($context, 'mod/organizer:register');
-        foreach ($students as $student) {
-            $studentids[] = $student->id;
-        }
-    } else if ($cm->groupingid != 0) {
-        $query = "SELECT u.id FROM {user} u
-        INNER JOIN {groups_members} gm ON u.id = gm.userid
-        INNER JOIN {groups} g ON gm.groupid = g.id
-        INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
-        WHERE gg.groupingid = :grouping";
-        $par = ['grouping' => $cm->groupingid];
-        $studentids = $DB->get_fieldset_sql($query, $par);
-    }
+   if ($cm->groupingid != 0) {
+       $query = "SELECT u.id FROM {user} u
+       INNER JOIN {groups_members} gm ON u.id = gm.userid
+       INNER JOIN {groups} g ON gm.groupid = g.id
+       INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
+       WHERE gg.groupingid = :grouping";
+       $par = ['grouping' => $cm->groupingid];
+       $studentids = $DB->get_fieldset_sql($query, $par);
+   } else {
+       $studentids = array_keys(get_enrolled_users($context, 'mod/organizer:register'));
+   }
 
     foreach ($studentids as $studentid) {
         organizer_update_grades($organizer, $studentid);
