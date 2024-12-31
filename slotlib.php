@@ -144,6 +144,7 @@ class organizer_slot {
      * required information from the database.
      *
      * @return stdClass|null The organizer object associated with this slot, or null if not available.
+     * @throws dml_exception
      */
     public function get_organizer() {
         $this->load_organizer();
@@ -171,6 +172,7 @@ class organizer_slot {
      * their count.
      *
      * @return bool True if the slot has participants, false otherwise.
+     * @throws dml_exception
      */
     public function has_participants() {
         $this->load_appointments();
@@ -185,6 +187,7 @@ class organizer_slot {
      * (in seconds) calculated based on the organizer's configuration.
      *
      * @return int|null The relative deadline in seconds, or null if not set.
+     * @throws dml_exception
      */
     public function get_rel_deadline() {
         $this->load_organizer();
@@ -199,6 +202,7 @@ class organizer_slot {
      * defined by the organizer for this slot.
      *
      * @return int|null The absolute deadline timestamp, or null if not set.
+     * @throws dml_exception
      */
     public function get_abs_deadline() {
         $this->load_organizer();
@@ -253,6 +257,7 @@ class organizer_slot {
      * maximum number of participants allowed (`maxparticipants`).
      *
      * @return bool True if the slot is full, false otherwise.
+     * @throws dml_exception
      */
     public function is_full() {
         $this->load_organizer();
@@ -284,6 +289,7 @@ class organizer_slot {
      * by comparing the current time with the organizer's defined `duedate`.
      *
      * @return bool True if the organizer has expired, false otherwise.
+     * @throws dml_exception
      */
     public function organizer_expired() {
         $this->load_organizer();
@@ -299,6 +305,7 @@ class organizer_slot {
      * the organizer is considered unavailable.
      *
      * @return bool True if the organizer is unavailable, false otherwise.
+     * @throws dml_exception
      */
     public function organizer_unavailable() {
         $this->load_organizer();
@@ -314,6 +321,7 @@ class organizer_slot {
      * an attended status (>= 0) and there is at least one appointment.
      *
      * @return bool True if all appointments are evaluated, false otherwise.
+     * @throws dml_exception
      */
     public function is_evaluated() {
         $this->load_appointments();
@@ -334,23 +342,19 @@ class organizer_slot {
      * within the required grouping.
      *
      * @return bool True if the user has access, false otherwise.
+     * @throws dml_exception
      */
     public function organizer_groupmode_user_has_access() {
         $this->load_organizer();
         global $DB;
         if ($this->organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $moduleid = $DB->get_field('modules', 'id', ['name' => 'organizer']);
-            $courseid = $DB->get_field(
-                'course_modules', 'course',
-                ['module' => $moduleid, 'instance' => $this->organizer->id]
-            );
-            $groups = groups_get_user_groups($courseid);
-            $groupingid = $DB->get_field(
-                'course_modules', 'groupingid',
-                ['module' => $moduleid, 'instance' => $this->organizer->id]
-            );
-            if (!isset($groups[$groupingid]) || !count($groups[$groupingid])) {
-                return false;
+            if ($groupingid = $DB->get_field('course_modules', 'groupingid',
+                ['module' => $moduleid, 'instance' => $this->organizer->id])) {
+                $groups = groups_get_user_groups($this->organizer->course);
+                if (!isset($groups[$groupingid]) || !count($groups[$groupingid])) {
+                    return false;
+                }
             }
         }
         return true;
@@ -364,6 +368,7 @@ class organizer_slot {
      * the `grade` property.
      *
      * @return mixed The grade setting of the organizer.
+     * @throws dml_exception
      */
     public function gradingisactive() {
         $this->load_organizer();
@@ -377,6 +382,7 @@ class organizer_slot {
      * Returns 0 if the user is not in the queue.
      *
      * @param int $userid The ID of the user.
+     * @throws dml_exception
      */
     public function is_user_in_queue($userid) {
         $result = 0;
@@ -405,8 +411,10 @@ class organizer_slot {
      *  Returns the position of a given group in this slot's queue starting at 1.
      *  Returns 0 if the group is not in the queue.
      *
-     * @param  Int $groupid The ID of the group.
+     * @param Int $groupid The ID of the group.
      * @return Int the group's position in queue
+     * @throws dml_exception
+     * @throws moodle_exception
      */
     public function is_group_in_queue($groupid = 0) {
         $result = 0;
@@ -441,6 +449,7 @@ class organizer_slot {
      *  null otherwise.
      *
      * @return Ambigous <NULL, mixed>
+     * @throws dml_exception
      */
     public function get_next_in_queue() {
         $result = null;
@@ -460,6 +469,7 @@ class organizer_slot {
      * If the queue is not empty, the next entry is returned; otherwise, null is returned.
      *
      * @return mixed|null The next entry in the group queue, or null if the queue is empty.
+     * @throws dml_exception
      */
     public function get_next_in_queue_group() {
         $result = null;
