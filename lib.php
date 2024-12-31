@@ -552,17 +552,17 @@ function organizer_update_all_grades($organizerid) {
 
     [$cm, , $organizer, $context] = organizer_get_course_module_data(null, $organizerid);
 
-   if ($cm->groupingid != 0) {
-       $query = "SELECT u.id FROM {user} u
-       INNER JOIN {groups_members} gm ON u.id = gm.userid
-       INNER JOIN {groups} g ON gm.groupid = g.id
-       INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
-       WHERE gg.groupingid = :grouping";
-       $par = ['grouping' => $cm->groupingid];
-       $studentids = $DB->get_fieldset_sql($query, $par);
-   } else {
-       $studentids = array_keys(get_enrolled_users($context, 'mod/organizer:register'));
-   }
+    if ($cm->groupingid != 0) {
+        $query = "SELECT u.id FROM {user} u
+        INNER JOIN {groups_members} gm ON u.id = gm.userid
+        INNER JOIN {groups} g ON gm.groupid = g.id
+        INNER JOIN {groupings_groups} gg ON g.id = gg.groupid
+        WHERE gg.groupingid = :grouping";
+        $par = ['grouping' => $cm->groupingid];
+        $studentids = $DB->get_fieldset_sql($query, $par);
+    } else {
+        $studentids = array_keys(get_enrolled_users($context, 'mod/organizer:register'));
+    }
 
     foreach ($studentids as $studentid) {
         organizer_update_grades($organizer, $studentid);
