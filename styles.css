@@ -208,3 +208,7 @@
 .path-mod-organizer #my_slot_overview .userinitialstext {
     display: none;
 }
+
+.path-mod-organizer > .custom-select.singleselect {
+    margin-left: 0.2rem;
+}

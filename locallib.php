@@ -1707,13 +1707,22 @@ function organizer_fetch_my_group() {
         $id = optional_param('id', 0, PARAM_INT);
         $cm = get_coursemodule_from_id('organizer', $id, 0, false, MUST_EXIST);
 
-        $params = ['groupingid' => $cm->groupingid, 'userid' => $USER->id];
-        $query = "SELECT {groups}.* FROM {groups}
+        if ($cm->groupingid) {
+            $params = ['groupingid' => $cm->groupingid, 'userid' => $USER->id];
+            $query = "SELECT {groups}.* FROM {groups}
                     INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
                     INNER JOIN {groups_members} ON {groups}.id = {groups_members}.groupid
                     WHERE {groupings_groups}.groupingid = :groupingid
                     AND {groups_members}.userid = :userid
                     ORDER BY {groups}.name ASC";
+        } else {
+            $params = ['courseid' => $cm->course, 'userid' => $USER->id];
+            $query = "SELECT {groups}.* FROM {groups}
+                    INNER JOIN {groups_members} ON {groups}.id = {groups_members}.groupid
+                    WHERE {groups}.courseid = :courseid
+                    AND {groups_members}.userid = :userid
+                    ORDER BY {groups}.name ASC";
+        }
         $group = $DB->get_record_sql($query, $params, IGNORE_MULTIPLE);
         return $group;
     } else {
@@ -1741,12 +1750,20 @@ function organizer_fetch_user_group($userid, $id = null) {
 
     $cm = get_coursemodule_from_instance('organizer', $id, 0, false, MUST_EXIST);
 
-    $params = ['groupingid' => $cm->groupingid, 'userid' => $userid];
-    $query = "SELECT {groups}.id FROM {groups}
+    if ($cm->groupingid) {
+        $params = ['groupingid' => $cm->groupingid, 'userid' => $userid];
+        $query = "SELECT {groups}.id FROM {groups}
                 INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
                 INNER JOIN {groups_members} ON {groups}.id = {groups_members}.groupid
                 WHERE {groupings_groups}.groupingid = :groupingid
                 AND {groups_members}.userid = :userid";
+    } else {
+        $params = ['courseid' => $cm->course, 'userid' => $userid];
+        $query = "SELECT {groups}.id FROM {groups}
+                INNER JOIN {groups_members} ON {groups}.id = {groups_members}.groupid
+                WHERE {groups}.courseid = :courseid
+                AND {groups_members}.userid = :userid";
+    }
     $group = $DB->get_record_sql($query, $params, IGNORE_MULTIPLE);
     return $group;
 }
@@ -2842,11 +2859,11 @@ function organizer_get_counters($organizer, $cm = null) {
         $cm = get_coursemodule_from_instance('organizer', $organizer->id, $organizer->course, false, MUST_EXIST);
     }
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $params = ['groupingid' => $cm->groupingid];
-        $query = 'SELECT {groups}.id FROM {groups}
-                INNER JOIN {groupings_groups} ON {groups}.id = {groupings_groups}.groupid
-                WHERE {groupings_groups}.groupingid = :groupingid';
-        $groups = $DB->get_records_sql($query, $params);
+        if ($cm->groupingid) {
+            $groups = groups_get_all_groups($cm->course, null, $cm->groupingid, 'g.id');
+        } else {
+            $groups = groups_get_all_groups($cm->course, null, null, 'g.id');
+        }
         $attended = 0;
         $registered = 0;
         foreach ($groups as $group) {

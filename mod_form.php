@@ -50,6 +50,8 @@ class mod_organizer_mod_form extends moodleform_mod {
      * based on the provided form and database values.
      *
      * @return void
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function definition_after_data() {
         global $PAGE, $DB;
@@ -101,6 +103,8 @@ class mod_organizer_mod_form extends moodleform_mod {
      * and adheres to required parameters.
      *
      * @return void
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function definition() {
         global $PAGE, $CFG, $DB;
@@ -323,13 +327,6 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->disabledIf('gradeaggregationmethod', 'grade[modgrade_type]', 'neq', 'point');
         $mform->hideIf('gradeaggregationmethod', 'grade[modgrade_type]', 'neq', 'point');
 
-        // Insert grouping-ID warning.
-        $warning = $mform->createElement(
-            'static', '', '',
-            '<span id="groupingid_warning">' . get_string('warning_groupingid', 'organizer') . '</span>'
-        );
-        $mform->insertElementBefore($warning, 'groupingid');
-
         // Add warning popup/noscript tag, if grades are changed by user.
         $hasgrade = false;
         if (!empty($this->_instance)) {
@@ -367,10 +364,12 @@ class mod_organizer_mod_form extends moodleform_mod {
     /**
      * Validate the submitted form values on the server.
      *
-     * @param int $courseid The ID of the course.
-     * @param int $groupingid The ID of the grouping.
+     * @param $data
+     * @param $files
      * @return array An associative array where the keys are user IDs and the values are arrays of groups
-     *               the user belongs to within the specified grouping.
+     *               the user belongs to within the course or the specified grouping.
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
@@ -383,14 +382,9 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         if ($data['isgrouporganizer'] == 1 && $data['groupmode'] == 0) {
             $errors['groupmode'] = get_string('warninggroupmode', 'organizer');
-        } else if ($data['isgrouporganizer'] == 1 && $data['groupingid'] == 0) {
-            $errors['isgrouporganizer'] = get_string('invalidgrouping', 'organizer');
         }
 
-        if ($data['groupmode'] != 0 && $data['groupingid'] == 0) {
-            $errormsg = get_string('invalidgrouping', 'organizer');
-            $errors['groupingid'] = $errormsg;
-        } else if ($data['groupmode'] != 0 && $data['groupingid'] != 0) {
+        if ($data['groupmode'] != 0) {
             global $DB;
             $errormsg = '';
             $error = false;
@@ -434,9 +428,9 @@ class mod_organizer_mod_form extends moodleform_mod {
     }
 
     /**
-     * Retrieve the group memberships for a specific course and grouping.
+     * Retrieve the group memberships for a specific course or grouping.
      *
-     * This method fetches all the groups within the specified grouping and identifies
+     * This method fetches all the groups within the specified course or grouping and identifies
      * the membership of each user. If a user belongs to multiple groups, their memberships
      * will be represented as an array of groups.
      *
@@ -445,7 +439,7 @@ class mod_organizer_mod_form extends moodleform_mod {
      * @return array An associative array where the keys are user IDs and the values are arrays of group objects
      *               the user belongs to within the specified grouping.
      */
-    private function get_memberships($courseid, $groupingid) {
+    private function get_memberships($courseid, $groupingid = null) {
 
         $groups = groups_get_all_groups($courseid, 0, $groupingid, 'g.*', true);
         $memberships = [];
@@ -471,6 +465,7 @@ class mod_organizer_mod_form extends moodleform_mod {
      *
      * @return array An associative array where the keys are visibility constants
      *               and the values are localized strings for the visibility modes.
+     * @throws coding_exception
      */
     private function get_visibilities() {
 
@@ -492,6 +487,7 @@ class mod_organizer_mod_form extends moodleform_mod {
      *
      * @return array An associative array where keys are group mode constants
      *               and values are localized strings for the group modes.
+     * @throws coding_exception
      */
     private function get_groupmodes() {
 
@@ -514,6 +510,7 @@ class mod_organizer_mod_form extends moodleform_mod {
      *
      * @return array An associative array where keys are grade aggregation method constants
      *               and values are localized strings for the grade aggregation methods.
+     * @throws coding_exception
      */
     private function get_gradeaggregationmethods() {
 
