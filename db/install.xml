@@ -18,8 +18,8 @@
         <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="allowregistrationsfromdate" NEXT="alwaysshowdescription"/>
         <FIELD NAME="alwaysshowdescription" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="duedate" NEXT="relativedeadline"/>
         <FIELD NAME="relativedeadline" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="alwaysshowdescription" NEXT="assessed"/>
-        <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="relativedeadline" NEXT="gradeaggregationmethod"/>
-        <FIELD NAME="gradeaggregationmethod" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="grade" NEXT="scale"/>
+        <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="relativedeadline" NEXT="gradeaggregationmethod"/>
+        <FIELD NAME="gradeaggregationmethod" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="grade" NEXT="scale"/>
         <FIELD NAME="scale" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="gradeaggregationmethod" NEXT="queue"/>
         <FIELD NAME="queue" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="grade" NEXT="visibility" COMMENT="Flag to trigger waiting queues for slot appointments."/>
         <FIELD NAME="visibility" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" PREVIOUS="queue" NEXT="hidecalendar"/>
@@ -39,8 +39,8 @@
         <FIELD NAME="singleslotprintfield9" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield8" NEXT="allowedprofilefieldsprint"/>
         <FIELD NAME="allowedprofilefieldsprint" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="singleslotprintfield9" NEXT="enableprintslotuserfields"/>
         <FIELD NAME="enableprintslotuserfields" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" PREVIOUS="allowedprofilefieldsprint" NEXT="userslotsmin"/>
-        <FIELD NAME="userslotsmin" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="enableprintslotuserfields" NEXT="userslotsmax" COMMENT="How many slots must be booked by participant"/>
-        <FIELD NAME="userslotsmax" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="userslotsmin" NEXT="synchronizegroupmembers" COMMENT="How many slots can be booked by participant"/>
+        <FIELD NAME="userslotsmin" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" PREVIOUS="enableprintslotuserfields" NEXT="userslotsmax" COMMENT="How many slots must be booked by participant"/>
+        <FIELD NAME="userslotsmax" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" PREVIOUS="userslotsmin" NEXT="synchronizegroupmembers" COMMENT="How many slots can be booked by participant"/>
         <FIELD NAME="synchronizegroupmembers" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="userslotsmax" NEXT="userslotsdailymax" COMMENT="Shall slots be synchronized wiht Moodle group member changes"/>
         <FIELD NAME="userslotsdailymax" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="synchronizegroupmembers" NEXT="noreregistrations" COMMENT="How many slots can be booked by one participant per day"/>
         <FIELD NAME="noreregistrations" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="userslotsdailymax" COMMENT="Reregistrations after deadline are not allowed"/>
