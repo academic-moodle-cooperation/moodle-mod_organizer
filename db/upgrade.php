@@ -774,5 +774,31 @@ function xmldb_organizer_upgrade($oldversion) {
 
         upgrade_mod_savepoint(true, 2024111901, 'organizer');
     }
+
+    if ($oldversion < 2025010100) {
+        $table = new xmldb_table('organizer');
+
+        // Define field grade to change its type.
+        $field = new xmldb_field('grade',
+            XMLDB_TYPE_INTEGER, '10', null, true, null, '1', 'enableprintslotuserfields');
+        $dbman->change_field_type($table, $field);
+
+        // Define field gradeaggregationmethod to change its default value.
+        $field = new xmldb_field('gradeaggregationmethod', XMLDB_TYPE_INTEGER, '4', null, true, null, '1', 'grade');
+        $dbman->change_field_default($table, $field);
+
+        // Define field userslotsmin to change its default value.
+        $field = new xmldb_field('userslotsmin',
+            XMLDB_TYPE_INTEGER, '4', null, false, null, '1', 'enableprintslotuserfields');
+        $dbman->change_field_default($table, $field);
+
+        // Define field userslotsmax to change its default value.
+        $field = new xmldb_field('userslotsmax',
+            XMLDB_TYPE_INTEGER, '4', null, false, null, '1', 'userslotsmin');
+        $dbman->change_field_default($table, $field);
+
+        upgrade_mod_savepoint(true, 2025010100, 'organizer');
+    }
+
     return true;
 }
