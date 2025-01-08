@@ -2398,7 +2398,7 @@ function organizer_get_icon_msg($name, $infotxt) {
             break;
         case 'nogroup':
             $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-danger',
-                'fa-group fa-stack-1x text-danger', $infotxt);
+                'fa-group fa-stack-1x text-danger', $infotxt).'<span class="text-danger">'.$infotxt.'</span>';
             break;
         case 'expires':
             $out = organizer_get_fa_icon_stacked('fa-circle-thin fa-stack-2x text-primary',

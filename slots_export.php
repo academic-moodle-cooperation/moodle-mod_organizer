@@ -79,6 +79,7 @@ function export_ics_file($slots, $activityname, $activitydescription) {
         $icscontent .= "SUMMARY:" . escape_ical_text($summary) . "\r\n";
 
         // Add description and comments.
+        $description = '';
         if (!empty($activitydescription)) {
             $description = convert_to_ical_description($activitydescription);
         }

@@ -1334,7 +1334,7 @@ function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
     }
 
     if (organizer_hasqueue($organizerid)) {
-         $slotx = new organizer_slot($slotid);
+        $slotx = new organizer_slot($slotid);
         if (organizer_is_group_mode()) {
             if ($next = $slotx->get_next_in_queue_group()) {
                 organizer_register_appointment($slotid, $next->groupid, 0, true);

@@ -51,7 +51,7 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     $output .= organizer_make_messages_section($params);
 
     // Module description section.
-    $output .= organizer_make_description_section($organizer);
+    $output .= organizer_make_description_section($organizer, $context);
 
     $jsparams = new stdClass();
     $jsparams->studentview = 0;
@@ -185,20 +185,24 @@ function organizer_make_sendreminder_section($params, $context, $organizer) {
  * @return mixed
  * @throws coding_exception
  */
-function organizer_make_description_section($organizer) {
+function organizer_make_description_section($organizer, $context) {
     global $OUTPUT;
 
     $output = "";
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $group = organizer_fetch_my_group();
-        if ($group) {
-            $a = new stdClass();
-            $a->groupname = $group->name;
-            $infotxt = get_string('grouporganizer_desc_hasgroup', 'organizer', $a);
+        if (has_capability('mod/organizer:viewallslots', $context)) {
+            $infotxt = get_string('grouporganizer_desc', 'organizer');
             $output .= organizer_get_icon_msg('group', $infotxt);
         } else {
-            $infotxt = get_string('grouporganizer_desc_novalidgroup', 'organizer');
-            $output .= organizer_get_icon_msg('nogroup', $infotxt);
+            if ($group = organizer_fetch_my_group()) {
+                $a = new stdClass();
+                $a->groupname = $group->name;
+                $infotxt = get_string('grouporganizer_desc_participant', 'organizer', $a);
+                $output .= organizer_get_icon_msg('group', $infotxt);
+            } else {
+                $infotxt = get_string('grouporganizer_desc_novalidgroup', 'organizer');
+                $output .= organizer_get_icon_msg('nogroup', $infotxt);
+            }
         }
     }
     if (isset($organizer->duedate)) {
