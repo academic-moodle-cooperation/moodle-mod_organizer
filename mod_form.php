@@ -416,7 +416,7 @@ class mod_organizer_mod_form extends moodleform_mod {
             }
 
             if ($error) {
-                $errors['groupingid'] = $errormsg . get_string('multimember', 'organizer');
+                $errors['groupmode'] = $errormsg . get_string('multimember', 'organizer');
             }
         }
 
