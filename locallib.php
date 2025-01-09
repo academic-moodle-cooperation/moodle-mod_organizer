@@ -827,6 +827,9 @@ function organizer_update_slot($data) {
  *
  * @param int $id The ID of the slot to be deleted.
  * @return int|false The number of users notified about the deletion, or false if the slot does not exist.
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
  */
 function organizer_delete_appointment_slot($id) {
     global $DB, $USER;
@@ -868,24 +871,31 @@ function organizer_delete_appointment_slot($id) {
  * will be deleted. If no group ID is provided, the specific user's slot queue entry
  * will be deleted.
  *
- * @param int $slotid The ID of the slot.
- * @param int $userid The ID of the user.
- * @param int|null $groupid The ID of the group, or null if it's an individual user.
+ * @param $id
  * @return bool True if the deletion was successful, false otherwise.
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
  */
-function organizer_delete_appointment($id) {
+function organizer_delete_appointment($id, $withnotification = true) {
     global $DB, $USER;
 
     if (!$appointment = $DB->get_record('organizer_slot_appointments', ['id' => $id])) {
         return false;
     }
 
-    // Send a message to the participant.
     $slot = $DB->get_record('organizer_slots', ['id' => $appointment->slotid]);
-    $receiver = intval($appointment->userid);
-    // App delete: Send notification to participant.
-    organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
-    $DB->delete_records('event', ['id' => $appointment->eventid]);
+    if ($withnotification) {
+        // Send a message to the participant.
+        $receiver = intval($appointment->userid);
+        organizer_send_message($USER, $receiver, $slot, 'appointmentdeleted_notify_student');
+    }
+    if (ORGANIZER_DELETE_EVENTS) {
+        $DB->delete_records('event', ['id' => $appointment->eventid]);
+        $DB->delete_records('event', ['uuid' => $appointment->id,
+            'modulename' => 'organizer', 'instance' => $slot->organizerid,
+            'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT]);
+    }
     $DB->delete_records('organizer_slot_appointments', ['id' => $id]);
 
     return true;
@@ -894,13 +904,12 @@ function organizer_delete_appointment($id) {
 /**
  * Deletes all appointments of the group members from a slot from an organizer.
  *
- * This function removes all queue entries for the specified user or group from the organizer's slots.
- * It also deletes related event records in the database.
- *
- * @param int $organizerid The ID of the organizer.
- * @param int $userid The ID of the user.
+ * @param $slotid
  * @param int|null $groupid The ID of the group, or null for individual users.
  * @return bool True if successful, false if no records were found.
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
  */
 function organizer_delete_appointment_group($slotid, $groupid) {
     global $DB, $USER;
@@ -927,15 +936,12 @@ function organizer_delete_appointment_group($slotid, $groupid) {
 /**
  * Deletes a user or group's queue entries for a specific slot in an organizer.
  *
- * This function removes all queue entries for a provided user or group from the specified slot.
- * If the `groupid` parameter is provided, all queue entries related to that group in the slot
- * will be deleted. Otherwise, only the specified user's queue entry for the slot will be removed.
- *
  * @param int $slotid The ID of the slot.
  * @param int $userid The ID of the user whose queue entry is to be deleted.
- * @param int|null $groupid Optional. The ID of the group whose queue entries are to be deleted.
+ * @param null $groupid Optional. The ID of the group whose queue entries are to be deleted.
  *                          Defaults to null for individual users.
  * @return bool True if the operation was successful, false otherwise.
+ * @throws dml_exception
  */
 function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
     global $DB;
@@ -960,10 +966,6 @@ function organizer_delete_from_queue($slotid, $userid, $groupid = null) {
 
 /**
  * Deletes a user from any queue in the organizer.
- *
- * This function removes all queue entries for the specified user or group from
- * all slots in the given organizer. It also deletes the related event records
- * associated with these queue entries.
  *
  * @param int $organizerid The ID of the organizer.
  * @param int $userid The ID of the user to be removed from the queue.
@@ -1008,9 +1010,11 @@ function organizer_delete_user_from_any_queue($organizerid, $userid, $groupid = 
  * @param int $groupid Optional. The ID of the group to add to the queue. Defaults to 0 for individuals.
  * @param int $userid Optional. The ID of the user to add to the queue. Defaults to the current user if not provided.
  * @return bool True if the operation was successful, false otherwise.
+ * @throws coding_exception
+ * @throws dml_exception
  */
 function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid = 0) {
-    global $DB, $USER;
+    global $USER;
 
     if (!$userid) {
         $userid = $USER->id;
@@ -1050,9 +1054,12 @@ function organizer_add_to_queue(organizer_slot $slotobj, $groupid = 0, $userid =
  * @param int $groupid Optional. The ID of the group to register. Defaults to 0 for individuals.
  * @param int $userid Optional. The ID of the user to register. Defaults to the current user if not provided.
  * @param bool $sendmessage Optional. Whether to send a message to the participants or trainers. Defaults to false.
- * @param int|null $teacherapplicantid Optional. The ID of the teacher who applies for the registration. Defaults to null.
+ * @param null $teacherapplicantid Optional. The ID of the teacher who applies for the registration. Defaults to null.
  * @param bool $slotnotfull Optional. Indicates whether the function should bypass the "full slot" check. Defaults to false.
  * @return bool True if the registration or queuing operation was successful, false otherwise.
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
  */
 function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sendmessage = false,
                                         $teacherapplicantid = null, $slotnotfull = false) {
@@ -1119,12 +1126,14 @@ function organizer_register_appointment($slotid, $groupid = 0, $userid = 0, $sen
  * @param int $userid The ID of the user to register.
  * @param int $applicantid Optional. The ID of the applicant registering the appointment. Defaults to 0.
  * @param int $groupid Optional. The ID of the group to register. Defaults to 0 for individuals.
- * @param int|null $teacherapplicantid Optional. The ID of the teacher applying for registration. Defaults to null.
+ * @param null $teacherapplicantid Optional. The ID of the teacher applying for registration. Defaults to null.
  * @param bool $trainerevents Optional. Whether to generate trainer-specific events. Defaults to false.
- * @param int|null $trainerid Optional. The ID of the trainer for the event. Defaults to null if not provided.
- * @param int|null $ogranizerid The ID of the organizer. Defaults to null if not provided.
+ * @param null $trainerid Optional. The ID of the trainer for the event. Defaults to null if not provided.
+ * @param null $ogranizerid The ID of the organizer. Defaults to null if not provided.
  *
  * @return int The ID of the newly inserted appointment record.
+ * @throws coding_exception
+ * @throws dml_exception
  */
 function organizer_register_single_appointment($slotid, $userid, $applicantid = 0, $groupid = 0,
     $teacherapplicantid = null, $trainerevents = false, $trainerid = null, $ogranizerid = null) {
@@ -1334,7 +1343,7 @@ function organizer_unregister_appointment($slotid, $groupid, $organizerid) {
     }
 
     if (organizer_hasqueue($organizerid)) {
-         $slotx = new organizer_slot($slotid);
+        $slotx = new organizer_slot($slotid);
         if (organizer_is_group_mode()) {
             if ($next = $slotx->get_next_in_queue_group()) {
                 organizer_register_appointment($slotid, $next->groupid, 0, true);
