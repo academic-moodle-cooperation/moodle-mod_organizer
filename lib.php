@@ -177,12 +177,13 @@ function organizer_delete_instance($id) {
 
     $slots = $DB->get_records('organizer_slots', ['organizerid' => $id]);
     foreach ($slots as $slot) {
-        $slotx = new organizer_slot($slot);
-        $apps = $DB->get_records('organizer_slot_appointments', ['slotid' => $slot->id]);
-        foreach ($apps as $app) {
+        if ($apps = $DB->get_records('organizer_slot_appointments', ['slotid' => $slot->id])) {
+            $slotx = new organizer_slot($slot);
             $notify = $slotx->is_upcoming();
-            organizer_delete_appointment($app->id, $notify);
-        } // Foreach app.
+            foreach ($apps as $app) {
+                organizer_delete_appointment($app->id, $notify);
+            } // Foreach app.
+        }
 
         $trainers = organizer_get_slot_trainers($slot->id);
         foreach ($trainers as $trainerid) {
