@@ -173,19 +173,23 @@ function organizer_delete_instance($id) {
         return false;
     }
 
+    include_once(__DIR__ . '/locallib.php');
+
     $slots = $DB->get_records('organizer_slots', ['organizerid' => $id]);
     foreach ($slots as $slot) {
-        $DB->delete_records('organizer_slot_trainer', ['slotid' => $slot->id]);
+        $slotx = new organizer_slot($slot);
         $apps = $DB->get_records('organizer_slot_appointments', ['slotid' => $slot->id]);
         foreach ($apps as $app) {
-            if (ORGANIZER_DELETE_EVENTS) {
-                $DB->delete_records('event', ['id' => $app->eventid]);
-                $DB->delete_records('event', ['uuid' => $app->id,
-                    'modulename' => 'organizer', 'instance' => $organizer->id,
-                    'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_APPOINTMENT]);
-            }
-            $DB->delete_records('organizer_slot_appointments', ['id' => $app->id]);
+            $notify = $slotx->is_upcoming();
+            organizer_delete_appointment($app->id, $notify);
         } // Foreach app.
+
+        $trainers = organizer_get_slot_trainers($slot->id);
+        foreach ($trainers as $trainerid) {
+            $slottrainer = $DB->get_record('organizer_slot_trainer', ['slotid' => $slot->id, 'trainerid' => $trainerid]);
+            $DB->delete_records('event', ['id' => $slottrainer->eventid]);
+            $DB->delete_records('organizer_slot_trainer', ['id' => $slottrainer->id]);
+        }
 
         if (ORGANIZER_DELETE_EVENTS) {
             $DB->delete_records('event', ['uuid' => $slot->id,
