@@ -391,7 +391,7 @@ class mod_organizer_mod_form extends moodleform_mod {
             $memberships = $this->get_memberships($data['course'], $data['groupingid']);
             foreach ($memberships as $userid => $groups) {
                 if (count($groups) > 1) {
-                    if (!has_capability("mod/organizer:editslots", context_module::instance($data['coursemodule']),
+                    if (!has_capability("mod/organizer:editslots", context_course::instance($data['course']),
                         $userid)) {
                         $error = true;
                         $a = new stdClass();
