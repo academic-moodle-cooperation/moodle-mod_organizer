@@ -1,10 +1,14 @@
 CHANGELOG
 =========
 
-4.5.0 (2024-11-19)
+4.5.0 (2025-01-14)
 ------------------
-* [FEATURE] Add github workflow
+* [FEATURE] Deleting an organizer instance: notify participants of future appointments
+* [FEATURE] Groupmode: Groupings not mandatory anymore
 * [FEATURE] Added action to export slot as ics calendar file
+* [FEATURE] Add github workflow
+* [FIXED] Remove differences in database schema
+* [FIXED] Fix Codechecker warnings
 * Moodle 4.5 compatible version
 
 4.4.2 (2024-07-11)

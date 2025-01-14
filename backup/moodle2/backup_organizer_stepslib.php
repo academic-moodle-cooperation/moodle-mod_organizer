@@ -77,7 +77,10 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
                 'singleslotprintfield8',
                 'singleslotprintfield9',
                 'userslotsmin',
-                'userslotsmax']
+                'userslotsmax',
+                'synchronizegroupmembers',
+                'userslotsdailymax',
+                'noreregistrations']
         );
 
         $slots = new backup_nested_element('slots');
@@ -133,7 +136,7 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
             $trainer->set_source_table('organizer_slot_trainer', ['slotid' => backup::VAR_PARENTID]);
         }
 
-        // Annotate the user id's where required.
+        // Annotate the user ids where required.
         $slot->annotate_ids('event', 'eventid');
         $appointment->annotate_ids('user', 'userid');
         $appointment->annotate_ids('user', 'applicantid');
