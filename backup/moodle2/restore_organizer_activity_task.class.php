@@ -105,32 +105,16 @@ class restore_organizer_activity_task extends restore_activity_task {
      * course logs. It must return one array
      * of {@link restore_log_rule} objects
      *
-     * Note this rules are applied when restoring course logs
+     * Note these rules are applied when restoring course logs
      * by the restore final task, but are defined here at
      * activity level. All them are rules not linked to any module instance (cmid = 0)
      */
     public static function define_restore_log_rules_for_course() {
         $rules = [];
 
+        // No particular settings for this activity
+
         return $rules;
     }
 
-    /**
-     * If there is no instance's groupingid - which can only be the case
-     * if either the backup instance was not in groupmode or the backup option "no groups and groupings"
-     * was selected - the groupmode is set to none.
-     */
-    public function after_restore() {
-        global $DB;
-
-        $organizerid = $this->get_activityid();
-        $courseid = $this->get_courseid();
-        $cm = get_coursemodule_from_instance('organizer', $organizerid, $courseid, false, MUST_EXIST);
-        if (!$cm->groupingid) {
-            $DB->set_field_select('course_modules', 'groupmode', '0',  'id = :cmid',
-                    ['cmid' => $cm->id]);
-            $DB->set_field_select('organizer', 'isgrouporganizer', '0',  'id = :organizerid',
-                    ['organizerid' => $organizerid]);
-        }
-    }
 }

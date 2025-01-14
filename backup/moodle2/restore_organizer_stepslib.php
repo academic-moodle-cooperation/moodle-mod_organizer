@@ -54,9 +54,12 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
 
         return $this->prepare_activity_structure($paths);
     }
+
     /**
      * process organizer data for the stepslib
      * @param mixed $data
+     * @throws base_step_exception
+     * @throws dml_exception
      */
     protected function process_organizer($data) {
         global $DB;
@@ -75,9 +78,12 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
         $newitemid = $DB->insert_record('organizer', $data);
         $this->apply_activity_instance($newitemid);
     }
+
     /**
      * process slotdata for restore
      * @param  $data
+     * @throws dml_exception
+     * @throws restore_step_exception
      */
     protected function process_slot($data) {
         global $DB;
@@ -94,10 +100,14 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
         $newitemid = $DB->insert_record('organizer_slots', $data);
         $this->set_mapping('slot', $oldid, $newitemid);
     }
+
     /**
      * process appointment data for restore
      * Only restore appointments if user is enrolled with right to register in new course or there is a group id
      * @param $data
+     * @throws base_step_exception
+     * @throws dml_exception
+     * @throws restore_step_exception
      */
     protected function process_appointment($data) {
         global $DB;
@@ -126,10 +136,14 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
             $this->set_mapping('appointment', $oldid, $newitemid);
         }
     }
+
     /**
      * process trainer data for restore
      * Only import trainers who are enrolled in the course with the right to manage slots
      * @param mixed $data
+     * @throws base_step_exception
+     * @throws dml_exception
+     * @throws restore_step_exception
      */
     protected function process_trainer($data) {
         global $DB;
@@ -150,11 +164,15 @@ class restore_organizer_activity_structure_step extends restore_activity_structu
             $this->set_mapping('trainer', $oldid, $newitemid);
         }
     }
+
     /**
      * process queue data for restore
      * Only import queue entries of users who are enrolled in the new course with the right to register or
      * there is a group id
      * @param mixed $data
+     * @throws base_step_exception
+     * @throws dml_exception
+     * @throws restore_step_exception
      */
     protected function process_queue($data) {
         global $DB;
