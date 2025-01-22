@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-4.5.0 (2025-01-14)
+4.5.0 (2025-01-22)
 ------------------
 * [FEATURE] Deleting an organizer instance: notify participants of future appointments
 * [FEATURE] Groupmode: Groupings not mandatory anymore

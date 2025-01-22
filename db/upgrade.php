@@ -775,7 +775,7 @@ function xmldb_organizer_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2024111901, 'organizer');
     }
 
-    if ($oldversion < 2025010100) {
+    if ($oldversion < 2025012200) {
         $table = new xmldb_table('organizer');
 
         // Define field grade to change its type.
@@ -797,7 +797,7 @@ function xmldb_organizer_upgrade($oldversion) {
             XMLDB_TYPE_INTEGER, '4', null, false, null, '1', 'userslotsmin');
         $dbman->change_field_default($table, $field);
 
-        upgrade_mod_savepoint(true, 2025010100, 'organizer');
+        upgrade_mod_savepoint(true, 2025012200, 'organizer');
     }
 
     return true;
