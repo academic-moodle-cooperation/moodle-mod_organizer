@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.5.1 (2025-03-06)
+------------------
+* [FIXED] Error message after deactivating "hide calendar" instance option
+
 4.5.0 (2025-01-22)
 ------------------
 * [FEATURE] Deleting an organizer instance: notify participants of future appointments
