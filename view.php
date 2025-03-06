@@ -69,9 +69,9 @@ $params['limitedwidth'] = organizer_get_limitedwidth();
 
 if ($instance->organizer->hidecalendar != 1) {
     if (!$DB->record_exists('block_instances', ['parentcontextid' => $instance->context->id, 'blockname' => 'calendar_month'])) {
-        $organizeroutput = $PAGE->get_renderer('mod_organizer');
         if ($PAGE->blocks->is_known_block_type('calendar_month')) {
-            $PAGE->blocks->add_block('calendar_month', 'side-pre', 2, 0);
+            $defaultregion = $PAGE->blocks->get_default_region();
+            $PAGE->blocks->add_block('calendar_month', $defaultregion, 2, 0);
         }
     }
 } else {
