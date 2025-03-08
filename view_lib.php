@@ -91,7 +91,7 @@ function organizer_add_calendar() {
 
     if ($PAGE->blocks->is_known_block_type('calendar_month')) {
         $defaultregion = $PAGE->blocks->get_default_region();
-        $PAGE->blocks->add_block('calendar_month', $defaultregion, 2, 0);
+        $PAGE->blocks->add_block('calendar_month', $defaultregion, 0, false, 'mod-organizer-*');
     }
 }
 
