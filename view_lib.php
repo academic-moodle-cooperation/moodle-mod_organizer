@@ -59,10 +59,15 @@ require_once(dirname(__FILE__) . '/custom_table_renderer.php');
  * @throws moodle_exception
  */
 function organizer_display_form(moodleform $mform, $title) {
-    global $OUTPUT;
+    global $OUTPUT, $DB;
 
-    if (organizer_fetch_hidecalendar() != 1) {
-        organizer_add_calendar();
+    $instance = organizer_get_course_module_data_new();
+    if ($instance->organizer->hidecalendar != 1) {
+        if (!$DB->record_exists('block_instances', ['parentcontextid' => $instance->context->id, 'blockname' => 'calendar_month'])) {
+            organizer_add_calendar();
+        }
+    } else {
+        $DB->delete_records('block_instances', ['parentcontextid' => $instance->context->id, 'blockname' => 'calendar_month']);
     }
 
     echo $OUTPUT->header();
@@ -77,44 +82,17 @@ function organizer_display_form(moodleform $mform, $title) {
 
 /**
  * Adds a calendar block to the right position in the page layout.
- *
- * This function fetches or creates the calendar information for the given course
- * (or the current course if none is provided). It generates the content for
- * the calendar view, processes the footer options, and sets them in the calendar block
- * with a title "Monthly view". It also initializes the necessary JavaScript for the calendar popover.
- *
- * @param int|false $courseid The ID of the course to fetch calendar information for.
- *                            If false, the course ID of the current page is used.
+
  * @return void
- * @throws \core\exception\moodle_exception
- * @throws coding_exception
+ * @throws dml_exception
  */
-function organizer_add_calendar($courseid = false) {
-    global $PAGE, $CFG;
+function organizer_add_calendar() {
+    global $PAGE;
 
-    if (!$courseid) {
-        $courseid = $PAGE->course->id;
+    if ($PAGE->blocks->is_known_block_type('calendar_month')) {
+        $defaultregion = $PAGE->blocks->get_default_region();
+        $PAGE->blocks->add_block('calendar_month', $defaultregion, 2, 0);
     }
-    $calendar = calendar_information::create(time(), $courseid);
-    [$data, $template] = calendar_get_view($calendar, 'monthblock', isloggedin());
-
-    $renderer = $PAGE->get_renderer('core_calendar');
-    $content = $renderer->render_from_template($template, $data);
-
-    $options = [
-        'showfullcalendarlink' => true,
-    ];
-    [$footerdata, $footertemplate] = calendar_get_footer_options($calendar, $options);
-    $content .= $renderer->render_from_template($footertemplate, $footerdata);
-    $content .= $renderer->complete_layout();
-
-    $PAGE->requires->js_call_amd('core_calendar/popover');
-
-    $block = new block_contents;
-    $block->content = $content;
-    $block->footer = '';
-    $block->title = get_string('monthlyview', 'organizer');
-    $renderer->add_pretend_calendar_block($block, BLOCK_POS_RIGHT);
 }
 
 /**
