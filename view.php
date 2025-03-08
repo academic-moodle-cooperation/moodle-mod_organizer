@@ -69,10 +69,7 @@ $params['limitedwidth'] = organizer_get_limitedwidth();
 
 if ($instance->organizer->hidecalendar != 1) {
     if (!$DB->record_exists('block_instances', ['parentcontextid' => $instance->context->id, 'blockname' => 'calendar_month'])) {
-        if ($PAGE->blocks->is_known_block_type('calendar_month')) {
-            $defaultregion = $PAGE->blocks->get_default_region();
-            $PAGE->blocks->add_block('calendar_month', $defaultregion, 2, 0);
-        }
+        organizer_add_calendar();
     }
 } else {
     $DB->delete_records('block_instances', ['parentcontextid' => $instance->context->id, 'blockname' => 'calendar_month']);
