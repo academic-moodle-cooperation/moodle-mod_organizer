@@ -452,7 +452,7 @@ function organizer_update_grades($organizer, $userid = 0) {
                                 $sum += $value->rawgrade;
                             }
                         }
-                        $grade->rawgrade = $sum / $i;
+                        $grade->rawgrade = $i ? $sum / $i : 0;
                 }
             }
             return organizer_grade_item_update($organizer, $grade);
