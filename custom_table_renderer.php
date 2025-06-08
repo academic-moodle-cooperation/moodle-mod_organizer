@@ -28,9 +28,10 @@
 
 /**
  * Render table for organizer
+ *
  * @param html_table $table
- * @param $printfooter
- * @param $overrideevenodd
+ * @param bool $printfooter
+ * @param bool $overrideevenodd
  * @return string
  */
 function organizer_render_table_with_footer(html_table $table, $printfooter = true, $overrideevenodd = false) {
@@ -346,8 +347,9 @@ function organizer_build_printsettingsform($mform, $exportformats) {
 /**
  * Finalize the printform and give back its output
  *
- * @param moodle_form $mform the printform
+ * @param $output
  * @return string output of form
+ * @throws \core\exception\coding_exception
  * @throws coding_exception
  */
 function organizer_printtablepreview_icons($output) {

@@ -225,12 +225,11 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
     }
 
     /**
-     * Fetches all of the user's appointments and adds them to the export
+     * Fetches all the user's appointments and adds them to the export
      *
-     * @param  context $context
-     * @param  $organizer
-     * @param  stdClass $user
-     * @param  array $path Current directory path that we are exporting to.
+     * @param context $context
+     * @param object $organizer
+     * @param stdClass $user
      * @throws dml_exception
      */
     protected static function export_appointments(context $context, $organizer, stdClass $user) {

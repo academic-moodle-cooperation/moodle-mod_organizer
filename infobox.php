@@ -34,13 +34,16 @@ require_once(dirname(__FILE__) . '/slotlib.php');
 
 /**
  * HTML code for rendering infobox
+ *
  * @param $params
  * @param $organizer
  * @param $context
- * @param $organizerexpired
+ * @param null $organizerexpired
  * @return string
+ * @throws \core\exception\moodle_exception
  * @throws coding_exception
  * @throws dml_exception
+ * @throws moodle_exception
  */
 function organizer_make_infobox($params, $organizer, $context, $organizerexpired = null) {
     global $PAGE, $USER;
@@ -94,9 +97,10 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
 
 /**
  * HTML for rendering an info section
+ *
  * @param $name
  * @param $content
- * @param $hidden
+ * @param bool $hidden
  * @return string
  * @throws coding_exception
  */
@@ -119,6 +123,7 @@ function organizer_make_section($name, $content, $hidden = false) {
 
 /**
  * HTML for rendering messages infobox
+ *
  * @param $params
  * @return string
  * @throws coding_exception
@@ -152,13 +157,15 @@ function organizer_make_messages_section($params) {
 }
 
 /**
- * HTML for rendering sendreminder infobox
+ * HTML for rendering send reminder infobox
+ *
  * @param $params
  * @param $context
  * @param $organizer
  * @return string
  * @throws \core\exception\moodle_exception
  * @throws coding_exception
+ * @throws dml_exception
  */
 function organizer_make_sendreminder_section($params, $context, $organizer) {
     global $OUTPUT;
@@ -181,9 +188,13 @@ function organizer_make_sendreminder_section($params, $context, $organizer) {
 
 /**
  * HTML for rendering description infobox
+ *
  * @param $organizer
+ * @param $context
  * @return mixed
  * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
  */
 function organizer_make_description_section($organizer, $context) {
     global $OUTPUT;
@@ -249,11 +260,15 @@ function organizer_make_description_section($organizer, $context) {
 
 /**
  * HTML for rendering my app infobox
+ *
  * @param $params
  * @param $organizer
  * @param $apps
  * @return string
+ * @throws \core\exception\moodle_exception
  * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
  */
 function organizer_make_myapp_section($params, $organizer, $apps) {
     global $USER;
@@ -313,6 +328,7 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
 
 /**
  * HTML for rendering registration statistic infobox
+ *
  * @param $organizer
  * @param $entries
  * @return string
@@ -398,6 +414,7 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
 
 /**
  * HTML for rendering filter section
+ *
  * @param $mode
  * @return string
  * @throws coding_exception
@@ -462,6 +479,7 @@ function organizer_make_filtersection($mode) {
 
 /**
  * HTML for rendering filter section in registration view
+ *
  * @param $groupmode
  * @return string
  * @throws coding_exception
@@ -501,10 +519,12 @@ function organizer_make_filtersection_reg($groupmode) {
 
 /**
  * HTML for rendering slotoptions section
+ *
  * @param $mode
  * @param $organizer
  * @return string
  * @throws coding_exception
+ * @throws dml_exception
  */
 function organizer_make_slotoptions_section($mode, $organizer) {
     global $OUTPUT;
@@ -544,6 +564,7 @@ function organizer_make_slotoptions_section($mode, $organizer) {
 
 /**
  * HTML for rendering add slots button
+ *
  * @param $params
  * @param $organizerexpired
  * @return string
@@ -566,9 +587,11 @@ function organizer_make_addslotbutton_section($params, $organizerexpired) {
 
 /**
  * HTML for rendering appointment status infobox
+ *
  * @param $organizer
  * @return string
  * @throws coding_exception
+ * @throws dml_exception
  */
 function organizer_make_appointmentsstatus_section($organizer) {
     $output = html_writer::div(organizer_appointmentsstatus_bar($organizer), 'mb-3 mt-1');

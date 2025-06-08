@@ -149,6 +149,7 @@ die;
 
 /**
  * Migrate each slot
+ *
  * @param $cm
  * @param $scheduler
  * @param $organizer
@@ -257,6 +258,7 @@ function migrate_slots($cm, $scheduler, $organizer) {
 
 /**
  * Add organizer course module
+ *
  * @param $cmold
  * @param $organizer
  * @return stdClass
