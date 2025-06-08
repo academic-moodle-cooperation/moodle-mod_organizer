@@ -263,15 +263,15 @@ function organizer_generate_registration_status_view($params, $instance) {
     $output .= organizer_render_table_with_footer($table);
 
     $context = context_module::instance($params['id'], MUST_EXIST);
-    if (!has_capability("mod/organizer:sendreminders", $context)) {
-        $output .= '<div name="actionlink_bar" class="buttons mdl-align">';
-        $output .= html_writer::span(get_string('selectedslots', 'organizer'));
+    if (has_capability("mod/organizer:sendreminders", $context)) {
+        $output .= '<div name="actionlink_bar">';
+        $output .= html_writer::span(get_string('selectedslots', 'organizer'), 'float-start');
         $actions['sendreminder'] = get_string('btn_remind', 'organizer');
         $output .= html_writer::select(
             $actions, 'bulkaction', ['sendreminder' => get_string('btn_remind', 'organizer')], null,
-            ['style' => 'margin-left:0.3em;margin-right:0.3em;']
+            ['class' => 'float-start', 'style' => 'margin-left:0.3em;margin-right:0.3em;']
         );
-        $output .= '<input type="submit" class="btn btn-primary" name="bulkactionbutton" id="bulkactionbutton" disabled value="' .
+        $output .= '<input type="submit" class="btn btn-primary float-start" name="bulkactionbutton" id="bulkactionbutton" disabled value="' .
             get_string('btn_start', 'organizer') . '"/>';
         $output .= '</div>';
     }
@@ -440,9 +440,9 @@ function organizer_generate_tab_row($params, $context) {
  */
 function organizer_generate_actionlink_bar($context, $organizerexpired, $organizer) {
 
-    $output = '<div name="actionlink_bar" class="buttons mdl-align">';
+    $output = '<div name="actionlink_bar">';
 
-    $output .= html_writer::span(get_string('selectedslots', 'organizer'));
+    $output .= html_writer::span(get_string('selectedslots', 'organizer'), 'float-start mt-1');
 
     $actions = [];
     if (has_capability("mod/organizer:editslots", $context, null, true) && !$organizerexpired) {
@@ -461,9 +461,9 @@ function organizer_generate_actionlink_bar($context, $organizerexpired, $organiz
 
     $output .= html_writer::select(
         $actions, 'bulkaction', ['edit' => get_string('actionlink_edit', 'organizer')], null,
-        ['style' => 'margin-left:0.3em;margin-right:0.3em;']
+        ['class' => 'float-start', 'style' => 'margin-left:0.3em;margin-right:0.3em;']
     );
-    $output .= '<input type="submit" id="bulkactionbutton" disabled class="btn btn-primary" value="' .
+    $output .= '<input type="submit" id="bulkactionbutton" disabled class="btn btn-primary float-start" value="' .
         get_string('btn_start', 'organizer') . '"/>';
 
     $output .= '</div>';
@@ -1699,19 +1699,19 @@ function organizer_date_time($slot, $nobreak = false) {
         $datefrom = html_writer::span(organizer_userdate($slot->starttime, '%a'), 'badge badge-info font-big mr-1');
         $datefrom .= organizer_userdate($slot->starttime, get_string('datetemplate', 'organizer')) . " " .
             html_writer::span(organizer_userdate($slot->starttime, get_string('timetemplate', 'organizer')),
-                'badge badge-dark font-big mr-1');
+                'badge badge-dark mr-1');
         $dateto = html_writer::span(organizer_userdate($slot->starttime + $slot->duration,
-            get_string('timetemplate', 'organizer')), 'badge badge-dark font-big ml-1');
+            get_string('timetemplate', 'organizer')), 'badge badge-dark ml-1');
     } else {
         $datefrom = html_writer::span(organizer_userdate($slot->starttime, '%a'), 'badge badge-info font-big mr-1');
         $datefrom .= organizer_userdate($slot->starttime, get_string('datetemplate', 'organizer')) . " " .
             html_writer::span(organizer_userdate($slot->starttime, get_string('timetemplate', 'organizer')),
-                'badge badge-dark font-big mr-1');
+                'badge badge-dark mr-1');
         $slotendtime = $slot->starttime + $slot->duration;
         $dateto = html_writer::span(organizer_userdate($slotendtime, '%a'), 'badge badge-info font-big mr-1');
         $dateto .= organizer_userdate($slotendtime, get_string('datetemplate', 'organizer')) .
             html_writer::span(organizer_userdate($slotendtime, get_string('timetemplate', 'organizer')),
-                'badge badge-dark font-big ml-1');
+                'badge badge-dark ml-1');
     }
 
     if ($nobreak) {
@@ -2535,7 +2535,7 @@ function organizer_slot_status($params, $slot) {
     if ($params['limitedwidth']) {
         $sizeclass = "1x";
     } else {
-        $sizeclass = "2x";
+        $sizeclass = "1x";
     }
     if ($slotpastdue) {  // Slot starttime has passed.
         if ($slotevaluated) {
