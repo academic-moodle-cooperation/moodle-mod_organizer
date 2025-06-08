@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4.5.1 (2025-06-08)
+------------------
+* Moodle 5.0 compatible version
+
 4.5.1 (2025-03-06)
 ------------------
 * [FIXED] Error message after deactivating "hide calendar" instance option
