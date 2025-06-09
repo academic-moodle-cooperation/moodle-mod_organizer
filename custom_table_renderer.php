@@ -279,9 +279,9 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
 /**
  * Builds part of the print settings form
  *
- * @param Moodle_form $mform
+ * @param MoodleQuickForm $mform
  * @param array $exportformats
- * @return Moodle_form
+ * @return MoodleQuickForm
  * @throws coding_exception
  */
 function organizer_build_printsettingsform($mform, $exportformats) {
@@ -345,9 +345,9 @@ function organizer_build_printsettingsform($mform, $exportformats) {
 }
 
 /**
- * Finalize the printform and give back its output
+ * Finalize the print form and give back its output
  *
- * @param $output
+ * @param string $output
  * @return string output of form
  * @throws \core\exception\coding_exception
  * @throws coding_exception

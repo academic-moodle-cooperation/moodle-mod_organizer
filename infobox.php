@@ -35,10 +35,10 @@ require_once(dirname(__FILE__) . '/slotlib.php');
 /**
  * HTML code for rendering infobox
  *
- * @param $params
- * @param $organizer
- * @param $context
- * @param null $organizerexpired
+ * @param array $params
+ * @param object $organizer
+ * @param object $context
+ * @param bool $organizerexpired
  * @return string
  * @throws \core\exception\moodle_exception
  * @throws coding_exception
@@ -98,8 +98,8 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
 /**
  * HTML for rendering an info section
  *
- * @param $name
- * @param $content
+ * @param string $name
+ * @param object $content
  * @param bool $hidden
  * @return string
  * @throws coding_exception
