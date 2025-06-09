@@ -253,9 +253,8 @@ function organizer_user_complete($course, $user, $mod, $organizer) {
  * Return true if there was output, or false is there was none.
  *
  * @param object $course
- * @param object $user
- * @param object $mod
- * @param object $organizer
+ * @param object $viewfullnames
+ * @param object $timestart
  * @return boolean
  */
 function organizer_print_recent_activity($course, $viewfullnames, $timestart) {
@@ -980,6 +979,7 @@ function organizer_get_participants($organizerid) {
  * as reference.
  *
  * @param int $organizerid ID of an instance of this module
+ * @param int $scaleid
  * @return bool
  * @throws dml_exception
  */

@@ -134,6 +134,7 @@ function organizer_get_userpicture_link($user = 0) {
  *
  * @param int $from
  * @param int $to
+ * @param array $eventsandslots
  * @return array an array of events
  */
 function organizer_check_collision($from, $to, $eventsandslots) {
@@ -3093,7 +3094,7 @@ function organizer_remind_all($recipient = null, $recipients = [], $custommessag
  * eligible users as per the organizer's mode. It also ensures recipients meet specific
  * criteria before sending, and optionally includes a custom message.
  *
- * @param $organizer
+ * @param object $organizer
  * @return array The number of successfully sent reminders.
  *
  * @throws coding_exception
