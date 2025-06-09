@@ -941,13 +941,10 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
  * provided parameters. It retrieves groups associated with a course module and
  * organizes entries based on the selected sort and direction options.
  *
- * @param array $params Parameters for retrieving registration status, which may include:
- *                      - 'group': The group ID. If set to 0, all groups are included.
- *                      - 'sort': The column to sort by ('status', 'group', 'datetime', 'name', 'id').
- *                      - 'dir': The sort direction ('ASC' or 'DESC').
- * @return array An array of table entries, where each entry consists of group details
+ * @param string $text
+ * @param int $colspan
+ * @return object $cell An array of table entries, where each entry consists of group details
  *               and registration-related information.
- * @throws dml_exception If there is an issue with database querying.
  */
 function organizer_get_span_cell($text, $colspan) {
     $cell = new html_table_cell();
@@ -1095,7 +1092,7 @@ function organizer_get_reg_status_table_entries_group($params) {
 /**
  * Returns all the participants of this organizer instance including data which indicates the booking status.
  *
- * @param $params ... the sort and dir parameter of these parameters is used here
+ * @param array $params ... the sort and dir parameter of these parameters is used here
  * @return array|moodle_recordset   ... one record for each participant
  * @throws coding_exception
  * @throws dml_exception
@@ -1208,13 +1205,15 @@ function organizer_get_reg_status_table_entries($params) {
 /**
  * Returns the table rows of the registration view entries.
  *
- * @param $columns ... table columns to show
- * @param $params
- * @param $organizer  ... organizer instance data
- * @param $context    ... context data
+ * @param array $columns ... table columns to show
+ * @param array $params
+ * @param object $organizer ... organizer instance data
+ * @param object $context ... context data
  * @return array      ... html table rows, each for each entry
+ * @throws \core\exception\moodle_exception
  * @throws coding_exception
  * @throws dml_exception
+ * @throws moodle_exception
  */
 function organizer_generate_registration_table_content($columns, $params, $organizer, $context) {
 
@@ -2359,12 +2358,8 @@ function organizer_get_img($src, $alt, $title, $id = '', $other = '') {
 /**
  * Generates an HTML image element with specified source, alt text, title, and additional attributes.
  *
- * @param string $src The source URL of the image.
- * @param string $alt The alternative text for the image.
- * @param string $title The title attribute for the image, typically shown as a tooltip.
- * @param string $id An optional ID attribute for the image element. Defaults to an empty string.
- * @param string $other Any additional attributes to include in the HTML element. Defaults to an empty string.
- *
+ * @param string $name
+ * @param string $infotxt
  * @return string The generated HTML <img> tag.
  */
 function organizer_get_icon_msg($name, $infotxt) {
@@ -2477,9 +2472,11 @@ function organizer_get_fa_icon_stacked($classesback, $classesfront, $tooltiptext
  * This function serves as a utility to fetch correct HTML markup
  * for various icons depending on a provided case or status type.
  *
- * @param string $status The status determining which icon to retrieve.
- * @param string $infotxt Optional text that can be displayed as a tooltip or accompanying text for the icon.
- *
+ * @param string $iconname
+ * @param string $string
+ * @param string $size
+ * @param string $id
+ * @param string $class
  * @return string The generated HTML for the icon element corresponding to the status.
  */
 function organizer_get_icon($iconname, $string, $size="small", $id="", $class="") {
@@ -3279,8 +3276,8 @@ function organizer_get_participants_tableheadercell($params, $column, $columnhel
 /**
  * Returns the html of a status bar indicating the user's status regarding his bookings.
  *
- * @param $organizer
- * @return object $out html output of status bar
+ * @param object $organizer
+ * @return string $out html output of status bar
  * @throws coding_exception
  * @throws dml_exception
  */

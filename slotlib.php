@@ -579,8 +579,6 @@ class organizer_slot {
      * or not explicitly defined in the class. It assigns the given value to the specified
      * property name.
      *
-     * @param string $name The name of the property to set.
-     * @param mixed $value The value to assign to the property.
      * @return void
      */
     public function get_id() {
@@ -660,9 +658,11 @@ function organizer_get_slot_user_appointment($slotx, $userid = null, $mergegroup
  * The check is useful for validating if the user still has valid,
  * upcoming appointments for the organizer.
  *
- * @param int $organizerid The ID of the organizer to check.
- * @param int|null $userid The ID of the user whose slots are being checked
+ * @param int $organizer The ID of the organizer to check.
+ * @param null $userid The ID of the user whose slots are being checked
  *                         (defaults to the current user's ID if not provided).
+ * @param bool $mergegroupapps
+ * @param bool $getevaluated
  * @return bool True if a slot exists that the user booked before the deadline, otherwise false.
  * @throws dml_exception
  */

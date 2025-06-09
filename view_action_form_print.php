@@ -66,8 +66,6 @@ class organizer_print_slots_form extends moodleform {
      * This constructor is inherited from the `moodleform` class and allows
      * initialization of the form with any required custom data.
      *
-     * @param mixed $caller The caller object that initializes this form.
-     * @param array $customdata An array of data containing additional parameters required by the form.
      * @throws coding_exception
      */
     protected function definition() {

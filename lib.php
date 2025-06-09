@@ -218,7 +218,11 @@ function organizer_delete_instance($id) {
  * $return->time = the time they did it
  * $return->info = a short text description
  *
- * @return null
+ * @param object $course
+ * @param object $user
+ * @param object $mod
+ * @param object $organizer
+ * @return object
  */
 function organizer_user_outline($course, $user, $mod, $organizer) {
     // Tscpr: do we need this function if it's returning just nothing?
@@ -232,6 +236,10 @@ function organizer_user_outline($course, $user, $mod, $organizer) {
  * Print a detailed representation of what a user has done with
  * a given particular instance of this module, for user activity reports.
  *
+ * @param object $course
+ * @param object $user
+ * @param object $mod
+ * @param object $organizer
  * @return boolean
  */
 function organizer_user_complete($course, $user, $mod, $organizer) {
@@ -244,6 +252,10 @@ function organizer_user_complete($course, $user, $mod, $organizer) {
  * that has occurred in organizer activities and print it out.
  * Return true if there was output, or false is there was none.
  *
+ * @param object $course
+ * @param object $user
+ * @param object $mod
+ * @param object $organizer
  * @return boolean
  */
 function organizer_print_recent_activity($course, $viewfullnames, $timestart) {
@@ -967,8 +979,9 @@ function organizer_get_participants($organizerid) {
  * modified if necessary. See forum, glossary or journal modules
  * as reference.
  *
- * @param  int $organizerid ID of an instance of this module
- * @return mixed
+ * @param int $organizerid ID of an instance of this module
+ * @return bool
+ * @throws dml_exception
  */
 function organizer_scale_used($organizerid, $scaleid) {
     global $DB;
@@ -986,8 +999,9 @@ function organizer_scale_used($organizerid, $scaleid) {
  *
  * This is used to find out if scale used anywhere
  *
- * @param  $scaleid int
+ * @param int $scaleid
  * @return boolean True if the scale is used by any organizer
+ * @throws dml_exception
  */
 function organizer_scale_used_anywhere($scaleid) {
     global $DB;
@@ -1104,7 +1118,7 @@ function organizer_remove_waitingqueueentries($organizer) {
  * This is used by block_myoverview in order to display the event appropriately. If null is returned then the event
  * is not displayed on the block.
  *
- * @param  calendar_event                $event
+ * @param  calendar_event $event
  * @param  action_factory $factory
  * @return action_interface|null
  */
@@ -1120,8 +1134,12 @@ function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
  *
  * This is used to determine global visibility of an event in all places throughout Moodle.
  *
- * @param  calendar_event $event
+ * @param calendar_event $event
+ * @param int $userid
  * @return bool Returns true if the event is visible to the current user, false otherwise.
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
  */
 function mod_organizer_core_calendar_is_event_visible(calendar_event $event, $userid = 0) {
     global $USER, $DB, $CFG;

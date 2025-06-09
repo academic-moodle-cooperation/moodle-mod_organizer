@@ -364,8 +364,8 @@ class mod_organizer_mod_form extends moodleform_mod {
     /**
      * Validate the submitted form values on the server.
      *
-     * @param $data
-     * @param $files
+     * @param array $data
+     * @param array $files
      * @return array An associative array where the keys are user IDs and the values are arrays of groups
      *               the user belongs to within the course or the specified grouping.
      * @throws coding_exception

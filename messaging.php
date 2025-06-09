@@ -38,12 +38,13 @@ require_once(dirname(__FILE__) . '/locallib.php');
 /**
  * Last strings of a message are provided here and finally the email message is sent.
  *
- * @param $sender   ... the user who sends this message
- * @param $receiver ... the user who receives this message
+ * @param object $sender   ... the user who sends this message
+ * @param object $receiver ... the user who receives this message
  * @param stdClass $slot  ... the time slot
  * @param string $type  ... messagetype
  * @param null $digest  ... if this is a email sent by cron to the teachers with all appointments lying ahead
  * @param array $customdata ... additional optional message-relevant data
+ * @param bool $trainercheck
  * @return bool|mixed  ... whether message was sent successfully or not
  * @throws coding_exception
  * @throws dml_exception
@@ -519,11 +520,11 @@ function organizer_prepare_and_send_message($data, $type) {
 /**
  * Checks if organizer instance is available and if receiver has enough rights and returns message strings for
  * the message to send
- * @param user record or id $sender
- * @param user record or id $receiver
- * @param record $cm organizer coursemodule
- * @param record $course
- * @param record $organizer instance
+ * @param object $sender record or id $sender
+ * @param object $receiver record or id $receiver
+ * @param object $cm organizer coursemodule
+ * @param object $course
+ * @param object $organizer instance
  * @param object $context
  * @param bool $trainercheck if receiver is trainer and notifications are off don't send
  * @return bool|stdClass

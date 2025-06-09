@@ -124,7 +124,7 @@ function organizer_make_section($name, $content, $hidden = false) {
 /**
  * HTML for rendering messages infobox
  *
- * @param $params
+ * @param array $params
  * @return string
  * @throws coding_exception
  */
@@ -159,9 +159,9 @@ function organizer_make_messages_section($params) {
 /**
  * HTML for rendering send reminder infobox
  *
- * @param $params
- * @param $context
- * @param $organizer
+ * @param array $params
+ * @param object $context
+ * @param object $organizer
  * @return string
  * @throws \core\exception\moodle_exception
  * @throws coding_exception
@@ -189,8 +189,8 @@ function organizer_make_sendreminder_section($params, $context, $organizer) {
 /**
  * HTML for rendering description infobox
  *
- * @param $organizer
- * @param $context
+ * @param object $organizer
+ * @param object $context
  * @return mixed
  * @throws coding_exception
  * @throws dml_exception
@@ -261,9 +261,9 @@ function organizer_make_description_section($organizer, $context) {
 /**
  * HTML for rendering my app infobox
  *
- * @param $params
- * @param $organizer
- * @param $apps
+ * @param array $params
+ * @param object $organizer
+ * @param array $apps
  * @return string
  * @throws \core\exception\moodle_exception
  * @throws coding_exception
@@ -329,8 +329,8 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
 /**
  * HTML for rendering registration statistic infobox
  *
- * @param $organizer
- * @param $entries
+ * @param object $organizer
+ * @param array $entries
  * @return string
  * @throws coding_exception
  */
@@ -415,7 +415,7 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
 /**
  * HTML for rendering filter section
  *
- * @param $mode
+ * @param string $mode
  * @return string
  * @throws coding_exception
  */
@@ -480,7 +480,7 @@ function organizer_make_filtersection($mode) {
 /**
  * HTML for rendering filter section in registration view
  *
- * @param $groupmode
+ * @param bool $groupmode
  * @return string
  * @throws coding_exception
  */
@@ -520,8 +520,8 @@ function organizer_make_filtersection_reg($groupmode) {
 /**
  * HTML for rendering slotoptions section
  *
- * @param $mode
- * @param $organizer
+ * @param string $mode
+ * @param object $organizer
  * @return string
  * @throws coding_exception
  * @throws dml_exception
@@ -565,8 +565,8 @@ function organizer_make_slotoptions_section($mode, $organizer) {
 /**
  * HTML for rendering add slots button
  *
- * @param $params
- * @param $organizerexpired
+ * @param array $params
+ * @param bool $organizerexpired
  * @return string
  * @throws \core\exception\moodle_exception
  * @throws coding_exception
@@ -588,7 +588,7 @@ function organizer_make_addslotbutton_section($params, $organizerexpired) {
 /**
  * HTML for rendering appointment status infobox
  *
- * @param $organizer
+ * @param object $organizer
  * @return string
  * @throws coding_exception
  * @throws dml_exception

@@ -302,10 +302,15 @@ class organizer_add_slots_form extends moodleform {
             $data['noerrors'] = $this->validation_step1($mform->_submitValues);
         }
     }
+
     /**
+     * Validate max participant and start date
      *
-     * {@inheritDoc}
-     * @see moodleform::validation()
+     * @param object $data
+     * @param array $files
+     * @return array
+     * @throws coding_exception
+     * @throws dml_exception
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);

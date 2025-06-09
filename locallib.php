@@ -132,8 +132,8 @@ function organizer_get_userpicture_link($user = 0) {
 /**
  * Checks if the given events are in the given time frame.
  *
- * @param  number    $from
- * @param  number to
+ * @param int $from
+ * @param int $to
  * @return array an array of events
  */
 function organizer_check_collision($from, $to, $eventsandslots) {
@@ -871,7 +871,8 @@ function organizer_delete_appointment_slot($id) {
  * will be deleted. If no group ID is provided, the specific user's slot queue entry
  * will be deleted.
  *
- * @param $id
+ * @param int $id
+ * @param bool $withnotification
  * @return bool True if the deletion was successful, false otherwise.
  * @throws coding_exception
  * @throws dml_exception
@@ -904,7 +905,7 @@ function organizer_delete_appointment($id, $withnotification = true) {
 /**
  * Deletes all appointments of the group members from a slot from an organizer.
  *
- * @param $slotid
+ * @param int $slotid
  * @param int|null $groupid The ID of the group, or null for individual users.
  * @return bool True if successful, false if no records were found.
  * @throws coding_exception
@@ -2092,9 +2093,9 @@ function organizer_get_user_identity($user) {
  * Add or remove trainer or participant to/from the slot group.
  * Create slot group if there is none.
  *
- * @param $slotid ID of slot
- * @param $userid participant or trainer ID
- * @param $action 'add' to group or 'remove' from group
+ * @param int $slotid ID of slot
+ * @param int $userid participant or trainer ID
+ * @param string $action 'add' to group or 'remove' from group
  * @return bool default: true
  * @throws coding_exception
  * @throws dml_exception
@@ -2654,8 +2655,8 @@ function organizer_print_setuserprefs_and_triggerevent($data, $cm, $context) {
 /**
  * Returns the entries for the registration view.
  *
- * @param $groupmode ... whether organizer instance is group mode or single mode
- * @param $params
+ * @param bool $groupmode ... whether organizer instance is group mode or single mode
+ * @param array $params
  * @return array|moodle_recordset  ... the entries
  * @throws coding_exception
  * @throws dml_exception
@@ -3092,12 +3093,10 @@ function organizer_remind_all($recipient = null, $recipients = [], $custommessag
  * eligible users as per the organizer's mode. It also ensures recipients meet specific
  * criteria before sending, and optionally includes a custom message.
  *
- * @param int|null $recipient Optional. The ID of a single recipient to send the reminder to.
- * @param array $recipients Optional. An array of user IDs to send the reminders to.
- * @param string $custommessage Optional. A custom message to include in the reminder.
+ * @param $organizer
+ * @return array The number of successfully sent reminders.
  *
- * @return int The number of successfully sent reminders.
- *
+ * @throws coding_exception
  * @throws dml_exception If there is an error in database access operations.
  */
 function organizer_get_reminder_recipients($organizer) {

@@ -30,12 +30,12 @@ require_once('locallib.php');
 /**
  * Exports an iCalendar (ICS) file for a given slot with activity details.
  *
- * @param stdClass $slot An object containing details of the slot, including start time, duration,
- *                       location, comments, and notification time.
+ * @param array $slots
  * @param string $activityname The name of the activity to be used as the event summary.
  * @param string $activitydescription The description of the activity to be included in the ICS file.
  *
  * @return void This function outputs an ICS file to the browser and exits the script.
+ * @throws coding_exception
  */
 function export_ics_file($slots, $activityname, $activitydescription) {
     global $CFG;
