@@ -58,7 +58,8 @@ define(
             if (instance.displayallslots == 0) { // So the form is loaded initially.
 
                 // Hide all days except the first one.
-                for (var i = instance.totalslots - 1; i > 0; i--) {
+                let i;
+                for (i = instance.totalslots - 1; i > 0; i--) {
                     if ($('#id_newslots_' + String(i) + '_day').val() == -1) {
                         $("#id_newslots_" + String(i) + "_day").closest(".form-group.row.fitem").hide(); // Boost-theme.
                         $("#fgroup_id_slotgroup" + String(i)).hide(); // Clean-theme.
@@ -102,16 +103,17 @@ define(
             function startevaluation(e) {
                 var name = $(e.target).attr("name");
                 var i = parseInt(name.replace('newslots[', ''));
-                var valdayfrom = parseInt($("select[name='newslots\[" + i + "\]\[day\]']").val());
-                var valdayto = parseInt($("select[name='newslots\[" + i + "\]\[dayto\]']").val());
-                var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[fromh\]']").val()) +
-                    parseInt($("select[name='newslots\[" + i + "\]\[fromm\]']").val());
+                var valdayfrom = parseInt($("select[name='newslots[" + i + "][day]']").val());
+                var valdayto = parseInt($("select[name='newslots[" + i + "][dayto]']").val());
+                var valfrom = parseInt($("select[name='newslots[" + i + "][fromh]']").val()) +
+                    parseInt($("select[name='newslots[" + i + "][fromm]']").val());
                 // Proposal for to-date's time when from-date's time has been changed.
                 if (valdayfrom != -1 && name.indexOf('dayto') == -1 && name.indexOf('toh') == -1 && name.indexOf('tom') == -1) {
                     var periodstartdate = getstartdate();
                     var periodenddate = getenddate();
+                    var jsdaydate = 0;
                     for (var daydate = periodstartdate; daydate <= periodenddate; daydate = addDays(daydate * 1000, 1)) {
-                        var jsdaydate = new Date(daydate * 1000);
+                        jsdaydate = new Date(daydate * 1000);
                         var iday = jsdaydate.getDay();
                         var iweekday = iday ? (iday - 1) : 6;
                         if (valdayfrom == iweekday) {
@@ -122,14 +124,14 @@ define(
                     var jspdate = new Date(pdate * 1000);
                     var pday = jspdate.getDay();
                     var pweekday = pday ? (pday - 1) : 6;
-                    $("select[name='newslots\[" + i + "\]\[dayto\]']").val(pweekday);
+                    $("select[name='newslots[" + i + "][dayto]']").val(pweekday);
                     valdayto = pweekday;
                     var hours = jspdate.getHours();
                     var minutes = jspdate.getMinutes();
                     minutes = minutes % 5 ? minutes + (5 - (minutes % 5)) : minutes;
                     var pseconds = minutes * 60;
-                    $("select[name='newslots\[" + i + "\]\[toh\]']").val(hours * 3600);
-                    $("select[name='newslots\[" + i + "\]\[tom\]']").val(pseconds);
+                    $("select[name='newslots[" + i + "][toh]']").val(hours * 3600);
+                    $("select[name='newslots[" + i + "][tom]']").val(pseconds);
                 }
                 if (valdayfrom != -1 && valdayto != -1) {
                     evaluaterow(i);
@@ -198,22 +200,22 @@ define(
              */
             function getslots(i) {
                 // No selected day-from: return 0.
-                var dayfromvalue = parseInt($("select[name^='newslots\[" + i + "\]\[day\]']").val());
+                var dayfromvalue = parseInt($("select[name^='newslots[" + i + "][day]']").val());
                 if (dayfromvalue == -1) {
                     return [0, 0, 0];
                 }
                 // No selected day to: return 0.
-                var daytovalue = parseInt($("select[name^='newslots\[" + i + "\]\[dayto\]']").val());
+                var daytovalue = parseInt($("select[name^='newslots[" + i + "][dayto]']").val());
                 if (daytovalue == -1) {
                     return [0, 0, 0];
                 }
                 // Get period, time from, slot duration and gap between slots.
                 var periodstartdate = getstartdate();
                 var periodenddate = getenddate();
-                var valfrom = parseInt($("select[name='newslots\[" + i + "\]\[fromh\]']").val()) +
-                    parseInt($("select[name='newslots\[" + i + "\]\[fromm\]']").val());
-                var valto = parseInt($("select[name='newslots\[" + i + "\]\[toh\]']").val()) +
-                    parseInt($("select[name='newslots\[" + i + "\]\[tom\]']").val());
+                var valfrom = parseInt($("select[name='newslots[" + i + "][fromh]']").val()) +
+                    parseInt($("select[name='newslots[" + i + "][fromm]']").val());
+                var valto = parseInt($("select[name='newslots[" + i + "][toh]']").val()) +
+                    parseInt($("select[name='newslots[" + i + "][tom]']").val());
                 // Duration + gap in seconds.
                 var duration = getduration();
                 var iteration = duration + getgap();
@@ -294,9 +296,9 @@ define(
              * @return {number}
              */
             function getstartdate() {
-                var startdateday = $("select[name='startdate\[day\]']").val();
-                var startdatemonth = $("select[name='startdate\[month\]']").val() - 1;
-                var startdateyear = $("select[name='startdate\[year\]']").val();
+                var startdateday = $("select[name='startdate[day]']").val();
+                var startdatemonth = $("select[name='startdate[month]']").val() - 1;
+                var startdateyear = $("select[name='startdate[year]']").val();
                 var startdatedate = new Date(startdateyear, startdatemonth, startdateday);
                 return startdatedate.getTime() / 1000;
             }
@@ -306,9 +308,9 @@ define(
              * @return {number}
              */
             function getenddate() {
-                var enddateday = $("select[name='enddate\[day\]']").val();
-                var enddatemonth = $("select[name='enddate\[month\]']").val() - 1;
-                var enddateyear = $("select[name='enddate\[year\]']").val();
+                var enddateday = $("select[name='enddate[day]']").val();
+                var enddatemonth = $("select[name='enddate[month]']").val() - 1;
+                var enddateyear = $("select[name='enddate[year]']").val();
                 var enddatedate = new Date(enddateyear, enddatemonth, enddateday);
                 return enddatedate.getTime() / 1000 + 86400; // Include last day of period.
             }
@@ -318,8 +320,8 @@ define(
              * @return {number} in seconds
              */
             function getduration() {
-                var durationnumber = parseInt($("input[name='duration\[number\]']").val());
-                var durationtimeunit = parseInt($("select[name='duration\[timeunit\]']").val());
+                var durationnumber = parseInt($("input[name='duration[number]']").val());
+                var durationtimeunit = parseInt($("select[name='duration[timeunit]']").val());
                 if (isNaN(durationnumber)) {
                     return 0;
                 }
@@ -333,8 +335,8 @@ define(
              * @return {number} in seconds
              */
             function getgap() {
-                var gapnumber = parseInt($("input[name='gap\[number\]']").val());
-                var gaptimeunit = parseInt($("select[name='gap\[timeunit\]']").val());
+                var gapnumber = parseInt($("input[name='gap[number]']").val());
+                var gaptimeunit = parseInt($("select[name='gap[timeunit]']").val());
                 if (isNaN(gapnumber)) {
                     gapnumber = 0;
                 }
