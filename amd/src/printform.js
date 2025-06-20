@@ -29,9 +29,9 @@ define(
     ['jquery', 'core/config', 'core/log'], function($, config, log) {
 
         /**
-     * @constructor
-     * @alias module:mod_organizer/printform
-     */
+         * @constructor
+         * @alias module:mod_organizer/printform
+         */
         var Printform = function() {
             this.iconminus = "";
             this.iconplus = "";
@@ -44,7 +44,7 @@ define(
             /**
              * Writes expand icon (+) and hide icon (-) in every header cell. Every expand icon is set to hidden.
              */
-            function init_header() {
+            function initHeader() {
                 var printpreview = $('#print_preview');
                 printpreview.find('th').find('a[name$=_cell]').each(function() {
                     var name = $(this).attr("name");
@@ -55,15 +55,19 @@ define(
                     $('#' + col + '_thiconplus').hide();
                 });
                 var $form = $('#organizer_main_cointainer form');
-                $('input[name="downloadfile"]').click(function() { $form.attr('target', '_blank'); });
-                $('input[name="cancel"]').click(function() { $form.attr('target', '_self'); });
+                $('input[name="downloadfile"]').click(function() {
+                    $form.attr('target', '_blank');
+                });
+                $('input[name="cancel"]').click(function() {
+                    $form.attr('target', '_self');
+                });
             }
 
             /**
              * During initialization of the table every column which is set to hidden in the user preferences
              * will be hidden here.
              */
-            function init_noprints() {
+            function initNoprints() {
                 var printpreview = $('#print_preview');
                 printpreview.find('th').find('a[noprint*=1]').each(function() {
                     var name = $(this).attr("name");
@@ -75,7 +79,7 @@ define(
             /**
              * Stores the invisible columms of the print preview table in the moodle user preferences table.
              */
-            function set_user_preference() {
+            function setUserPreference() {
                 var name = "mod_organizer_noprintfields";
                 var values = "";
                 $("img[id$='_thiconplus']").not(':hidden').each(function() {
@@ -107,7 +111,7 @@ define(
              * Hide a former visible column or show a former hidden column here.
              * @param {object} e the click event of the + or - icon
              */
-            function toggle_column(e) {
+            function toggleColumn(e) {
                 var target = $(e.target);
                 var col = target.attr('col');
                 var src = target.attr('src');
@@ -133,18 +137,18 @@ define(
                         }
                     }
                 );
-                set_user_preference();
+                setUserPreference();
             }
 
             instance.iconminus = param.iconminus;
             instance.iconplus = param.iconplus;
 
-            init_header();
+            initHeader();
 
             var printpreview = $('#print_preview');
-            printpreview.find('th').find('img[id*=_thicon]').on('click', toggle_column);
+            printpreview.find('th').find('img[id*=_thicon]').on('click', toggleColumn);
 
-            init_noprints();
+            initNoprints();
         };
         return instance;
 

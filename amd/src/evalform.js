@@ -30,9 +30,9 @@ define(
     ['jquery'], function($) {
 
         /**
-     * @constructor
-     * @alias module:mod_organizer/evalform
-     */
+         * @constructor
+         * @alias module:mod_organizer/evalform
+         */
         var Evalform = function() {};
 
         var instance = new Evalform();
@@ -43,18 +43,18 @@ define(
              * Display the icon for changed content.
              * @param {object} e element which has been clicked
              */
-            function toggle_all(e) {
+            function toggleAll(e) {
                 var target = $(e.target);
                 var checked = target.is(':checked');
-                var sender_class = target.attr('class').match(/allow\d+/g)[0];
-                $('input.' + sender_class).val(checked ? "1" : "0");
+                var senderClass = target.attr('class').match(/allow\d+/g)[0];
+                $('input.' + senderClass).val(checked ? "1" : "0");
             }
 
-            $('[name*=allownewappointments]').on('click', toggle_all);
+            $('[name*=allownewappointments]').on('click', toggleAll);
 
             var container = document.querySelector("#organizer_main_cointainer");
             var inputs = container.querySelectorAll("input, select");
-            for (const el of inputs){
+            for (const el of inputs) {
                 if (el.type == "checkbox") {
                     el.oldValue = el.checked;
                 } else {

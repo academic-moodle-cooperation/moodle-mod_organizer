@@ -29,9 +29,9 @@ define(
     ['jquery'], function($) {
 
         /**
-     * @constructor
-     * @alias module:mod_organizer/initcheckboxes
-     */
+         * @constructor
+         * @alias module:mod_organizer/initcheckboxes
+         */
         var Initcheckboxes = function() {};
 
         var instance = new Initcheckboxes();
@@ -42,7 +42,7 @@ define(
              * Check or uncheck checkboxes of slot overview.
              * @param {object} e element which has been clicked
              */
-            function organizer_check_all(e) {
+            function organizerCheckAll(e) {
                 var checked = $(e.target).is(':checked');
                 var table = $('#slot_overview');
 
@@ -61,8 +61,8 @@ define(
                 table.find('tfoot').find('input[type=checkbox]').prop('checked', checked);
             }
 
-            $('#slot_overview thead').find('input[type=checkbox]').on('click', organizer_check_all);
-            $('#slot_overview tfoot').find('input[type=checkbox]').on('click', organizer_check_all);
+            $('#slot_overview thead').find('input[type=checkbox]').on('click', organizerCheckAll);
+            $('#slot_overview tfoot').find('input[type=checkbox]').on('click', organizerCheckAll);
             $("input:not([disabled])[type=checkbox]").click(function() {
                 $("#bulkactionbutton").attr("disabled", true);
                 $('#slot_overview').find('input:not([disabled]):not([name="select"])[type=checkbox]').each(
@@ -70,6 +70,8 @@ define(
                         if ($(this).prop('checked') == true) {
                             $("#bulkactionbutton").attr("disabled", false);
                             return false;
+                        } else {
+                            return true;
                         }
                     }
                 );

@@ -48,12 +48,12 @@ define(
              * Check if input field has been changed.
              * @param {object} e input element
              */
-            function detect_change(e) {
+            function detectChange(e) {
                 var element = $(e.target);
                 var name = element.attr('name').split("[")[0];
                 if ($("[id^=mform1] input[name^=mod_" + name + "]").val() != "1") {
                     $("[id^=mform1] input[name^=mod_" + name + "]").val("1");
-                    set_icon_changed(name);
+                    setIconChanged(name);
                 }
             }
 
@@ -61,7 +61,7 @@ define(
              * Display the icon for changed content.
              * @param {string} name of the icon
              */
-            function set_icon_changed(name) {
+            function setIconChanged(name) {
                 var icon = $("[id^=mform1] img[id$=" + name + "_warning]");
                 if (icon.attr('src') != instance.imagepaths.changed) {
                     icon.attr('src', instance.imagepaths.changed);
@@ -74,7 +74,7 @@ define(
             /**
              * Reset the edit form.
              */
-            function reset_edit_form() {
+            function resetEditForm() {
                 $("[id^=mform1] input[name^=mod_]").val(0);
                 var icons = $("[id^=mform1] img[name$=_warning]");
                 icons.attr('src', instance.imagepaths.warning);
@@ -82,9 +82,9 @@ define(
                 $('[id^=mform1] [name^=availablefrom]:not([name*=now])').attr('disabled', initialstate);
             }
 
-            $('[id^=mform1]').find('select, input[type=checkbox]').on('change', detect_change);
-            $('[id^=mform1]').find('input[type=text], textarea').on('keydown', detect_change);
-            $('#id_editreset').on('click', reset_edit_form);
+            $('[id^=mform1]').find('select, input[type=checkbox]').on('change', detectChange);
+            $('[id^=mform1]').find('input[type=text], textarea').on('keydown', detectChange);
+            $('#id_editreset').on('click', resetEditForm);
 
         };
 

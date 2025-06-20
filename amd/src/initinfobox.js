@@ -28,9 +28,9 @@
 define(['jquery', 'core/config'], function($, config) {
 
         /**
-     * @constructor
-     * @alias module:mod_organizer/initinfobox
-     */
+         * @constructor
+         * @alias module:mod_organizer/initinfobox
+         */
         var Initinfobox = function() {
             this.studentview = 0;
             this.registrationview = 0;
@@ -49,7 +49,7 @@ define(['jquery', 'core/config'], function($, config) {
              * What happens when a view option checkbox is clicked or the filter field has been changed.
              * @param {object} event element which has been clicked
              */
-            function toggle_all_slots(event) {
+            function toggleAllSlots(event) {
                 if (event != undefined && instance.registrationview == 0) {
                     saveuserpreference();
                 }
@@ -146,13 +146,13 @@ define(['jquery', 'core/config'], function($, config) {
                 tablebody.show();
                 $('#counttabrows').text(tablebody.find('tr:visible:not(.info)').length);
 
-                toggle_info();
+                toggleInfo();
             }
 
             /**
              * Check or uncheck the info row(s).
              */
-            function toggle_info() {
+            function toggleInfo() {
                 var tablebody = $('#slot_overview tbody');
                 var noninforows = tablebody.find('tr:not(.info)');
                 var noneexist = noninforows.length === 0;
@@ -225,7 +225,7 @@ define(['jquery', 'core/config'], function($, config) {
              * Toggle single participantslist.
              * @param {object} target element which has been clicked
              */
-            function participantslist_toggle(target) {
+            function participantslistToggle(target) {
                 let clickeddiv = $(target).parent();
                 let targetclass = clickeddiv.attr('data-target');
                 $(targetclass).toggle();
@@ -242,7 +242,7 @@ define(['jquery', 'core/config'], function($, config) {
             /**
              * Toggle all participantslists.
              */
-            function participantslists_all_toggle() {
+            function participantslistsAllToggle() {
                 if (instance.registrationview == 0) {
                     saveuserpreference();
                 }
@@ -271,20 +271,37 @@ define(['jquery', 'core/config'], function($, config) {
                 }
             }
 
-            $('#show_past_slots').on('click', function() { toggle_all_slots(event); });
-            $('#show_all_participants').on('click', function() { participantslists_all_toggle(); });
-            $('#show_my_slots_only').on('click', function() { toggle_all_slots(event); });
-            $('#show_free_slots_only').on('click', function() { toggle_all_slots(event); });
-            $('#show_hidden_slots').on('click', function() { toggle_all_slots(event); });
-            $('#show_registrations_only').on('click', function() { toggle_all_slots(event); });
-            $('.organizer_filtertable').on('keyup', function() { toggle_all_slots(event); });
-            $('.collapseclick').on('click', function() { participantslist_toggle(event.target); });
-            toggle_all_slots();
-            participantslists_all_toggle();
-            $('.organizer_filtertable').keypress(function(event){
+            $('#show_past_slots').on('click', function() {
+                toggleAllSlots(event);
+            });
+            $('#show_all_participants').on('click', function() {
+                participantslistsAllToggle();
+            });
+            $('#show_my_slots_only').on('click', function() {
+                toggleAllSlots(event);
+            });
+            $('#show_free_slots_only').on('click', function() {
+                toggleAllSlots(event);
+            });
+            $('#show_hidden_slots').on('click', function() {
+                toggleAllSlots(event);
+            });
+            $('#show_registrations_only').on('click', function() {
+                toggleAllSlots(event);});
+            $('.organizer_filtertable').on('keyup', function() {
+                toggleAllSlots(event);
+            });
+            $('.collapseclick').on('click', function() {
+                participantslistToggle(event.target);
+            });
+            toggleAllSlots();
+            participantslistsAllToggle();
+            $('.organizer_filtertable').keypress(function(event) {
                 var keycode = (event.which ? event.which : event.keyCode);
-                if(keycode == '13'){
+                if (keycode == '13') {
                     return false;
+                } else {
+                    return true;
                 }
             });
         };
