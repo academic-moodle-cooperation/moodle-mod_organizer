@@ -405,17 +405,6 @@ function organizer_update_grades($organizer, $userid = 0) {
             $grade = reset($grades);
             if ($organizer->grade > 0) { // Numerical.
                 switch ($organizer->gradeaggregationmethod) {
-                    case GRADEAGGREGATIONMETHOD_AVERAGE:
-                        $sum = 0;
-                        $i = 0;
-                        foreach ($grades as $value) {
-                            if ($value->rawgrade) {
-                                $i++;
-                                $sum += $value->rawgrade;
-                            }
-                        }
-                        $grade->rawgrade = $i ? $sum / $i : 0;
-                        break;
                     case GRADEAGGREGATIONMETHOD_SUM:
                         $sum = 0;
                         foreach ($grades as $value) {
@@ -447,8 +436,8 @@ function organizer_update_grades($organizer, $userid = 0) {
                         }
                         $grade->rawgrade = $min;
                         break;
-                    default:
-                        // If no grade method is selected take average method.
+                    case GRADEAGGREGATIONMETHOD_AVERAGE:
+                    default: // If no grade method is selected take average method.
                         $sum = 0;
                         $i = 0;
                         foreach ($grades as $value) {
@@ -457,7 +446,8 @@ function organizer_update_grades($organizer, $userid = 0) {
                                 $sum += $value->rawgrade;
                             }
                         }
-                        $grade->rawgrade = $sum / $i;
+                        $grade->rawgrade = $i ? $sum / $i : 0;
+                        break;
                 }
             }
             return organizer_grade_item_update($organizer, $grade);
