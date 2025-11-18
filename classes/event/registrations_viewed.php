@@ -34,7 +34,6 @@ use moodle_url;
  * The registrations_viewed event class.
  **/
 class registrations_viewed extends base {
-
     /**
      * Event init function
      * @return void

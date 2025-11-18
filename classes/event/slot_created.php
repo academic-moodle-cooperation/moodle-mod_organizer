@@ -34,7 +34,6 @@ use moodle_url;
  * The slots_created event class.
  **/
 class slot_created extends base {
-
     /**
      * Event init function
      * @return void

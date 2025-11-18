@@ -38,7 +38,6 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * Form for deleting appointmentments
  */
 class organizer_delete_appointment_form extends moodleform {
-
     /**
      * Defintion of class
      * @return void

@@ -42,7 +42,8 @@ require_course_login($course);
 $PAGE->set_pagelayout('incourse');
 
 $event = course_module_instance_list_viewed::create(
-    ['context' => context_course::instance($course->id)]);
+    ['context' => context_course::instance($course->id)]
+);
 $event->trigger();
 
 // Print the header.
@@ -91,10 +92,10 @@ $table->align[] = 'center';
 foreach ($organizers as $organizer) {
     if (!$organizer->visible) {
         // Show dimmed if the mod is hidden.
-        $link = '<a class="dimmed" href="view.php?id='.$organizer->coursemodule.'">'.format_string($organizer->name).'</a>';
+        $link = '<a class="dimmed" href="view.php?id=' . $organizer->coursemodule . '">' . format_string($organizer->name) . '</a>';
     } else {
         // Show normal if the mod is visible.
-        $link = '<a href="view.php?id='.$organizer->coursemodule.'">'.format_string($organizer->name).'</a>';
+        $link = '<a href="view.php?id=' . $organizer->coursemodule . '">' . format_string($organizer->name) . '</a>';
     }
 
     $row = [];
@@ -114,11 +115,11 @@ foreach ($organizers as $organizer) {
         if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $reg = get_string('mymoodle_registered_group_short', 'organizer', $a);
             $att = get_string('mymoodle_attended_group_short', 'organizer', $a);
-            $str = '<p>'.$reg.'</p><p>'.$att.'</p>';
+            $str = '<p>' . $reg . '</p><p>' . $att . '</p>';
         } else {
             $reg = get_string('mymoodle_registered_short', 'organizer', $a);
             $att = get_string('mymoodle_attended_short', 'organizer', $a);
-            $str = '<p>'.$reg.'</p><p>'.$att.'</p>';
+            $str = '<p>' . $reg . '</p><p>' . $att . '</p>';
         }
         $row[] = $str;
         $row[] = '-';

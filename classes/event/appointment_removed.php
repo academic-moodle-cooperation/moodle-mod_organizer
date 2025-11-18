@@ -33,7 +33,6 @@ use moodle_url;
  * The appointment_removed event class.
  **/
 class appointment_removed extends base {
-
     /**
      * Init method of e ent
      * @return void

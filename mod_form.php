@@ -42,7 +42,6 @@ use core_grades\component_gradeitems;
  * @return void
  */
 class mod_organizer_mod_form extends moodleform_mod {
-
     /**
      * This method is executed after the main form data has been populated.
      * It performs additional initialization and synchronization tasks,
@@ -64,8 +63,10 @@ class mod_organizer_mod_form extends moodleform_mod {
             $isgrouporganizerdb = $DB->get_field('organizer', 'isgrouporganizer', ['id' => $instance]);
             $isgrouporganizerdata = $mform->getElementValue('isgrouporganizer');
             $isgrouporganizerdata = reset($isgrouporganizerdata);
-            if ($isgrouporganizerdata[0] != $isgrouporganizerdb &&
-                $isgrouporganizerdata[0] == ORGANIZER_GROUPMODE_NEWGROUPSLOT) {
+            if (
+                $isgrouporganizerdata[0] != $isgrouporganizerdb &&
+                $isgrouporganizerdata[0] == ORGANIZER_GROUPMODE_NEWGROUPSLOT
+            ) {
                 if ($slots = organizer_fetch_allslots($instance)) {
                     foreach ($slots as $slot) {
                         if ($participants = organizer_fetch_slotparticipants($slot->id)) {
@@ -87,7 +88,6 @@ class mod_organizer_mod_form extends moodleform_mod {
         $PAGE->requires->js_call_amd('mod_organizer/modform', 'init', [$params]);
 
         parent::definition_after_data();
-
     }
 
     /**
@@ -133,14 +133,18 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         // Registration dates.
         $mform->addElement(
-            'date_time_selector', 'allowregistrationsfromdate', get_string('allowsubmissionsfromdate', 'organizer'),
+            'date_time_selector',
+            'allowregistrationsfromdate',
+            get_string('allowsubmissionsfromdate', 'organizer'),
             ['optional' => true]
         );
         $mform->setDefault('allowregistrationsfromdate', mktime(0, 0, 0, date('m'), date('d'), date('y')));
         $mform->setType('allowregistrationsfromdate', PARAM_INT);
         $mform->addHelpButton('allowregistrationsfromdate', 'allowsubmissionsfromdate', 'organizer');
         $mform->addElement(
-            'date_time_selector', 'duedate', get_string('absolutedeadline', 'organizer'),
+            'date_time_selector',
+            'duedate',
+            get_string('absolutedeadline', 'organizer'),
             ['optional' => true]
         );
         $mform->setDefault('duedate', mktime(0, 0, 0, date('m'), date('d'), date('y') + 1) - (5 * 60));
@@ -155,7 +159,7 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addElement('advcheckbox', 'alwaysshowdescription', get_string('alwaysshowdescription', 'organizer'), '');
         $mform->addHelpButton('alwaysshowdescription', 'alwaysshowdescription', 'organizer');
         $mform->setDefault('alwaysshowdescription', 1);
-        $mform->disabledif ('alwaysshowdescription', 'allowregistrationsfromdate[enabled]', 'notchecked');
+        $mform->disabledif('alwaysshowdescription', 'allowregistrationsfromdate[enabled]', 'notchecked');
 
         $mform->setExpanded('availability');
 
@@ -163,11 +167,19 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addElement('header', 'organizercommon', get_string('organizercommon', 'organizer'));
 
         // Allowed/Required bookings per user.
-        $mform->addElement('text', 'userslotsmin', get_string('userslotsmin', 'organizer'),
-            ['size' => '2', 'class' => 'text-center']);
+        $mform->addElement(
+            'text',
+            'userslotsmin',
+            get_string('userslotsmin', 'organizer'),
+            ['size' => '2', 'class' => 'text-center']
+        );
         $mform->setType('userslotsmin', PARAM_INT);
-        $mform->addElement('text', 'userslotsmax', get_string('userslotsmax', 'organizer'),
-            ['size' => '2', 'class' => 'text-center']);
+        $mform->addElement(
+            'text',
+            'userslotsmax',
+            get_string('userslotsmax', 'organizer'),
+            ['size' => '2', 'class' => 'text-center']
+        );
         $mform->setType('userslotsmax', PARAM_INT);
         $mform->addHelpButton('userslotsmin', 'userslotsmin', 'organizer');
         $mform->addHelpButton('userslotsmax', 'userslotsmax', 'organizer');
@@ -181,8 +193,12 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addRule('userslotsmax', null, 'required', null, 'client');
 
         // Allowed bookings per user/group and day.
-        $mform->addElement('text', 'userslotsdailymax', get_string('userslotsdailymax', 'organizer'),
-            ['size' => '2', 'class' => 'text-center']);
+        $mform->addElement(
+            'text',
+            'userslotsdailymax',
+            get_string('userslotsdailymax', 'organizer'),
+            ['size' => '2', 'class' => 'text-center']
+        );
         $mform->setType('userslotsdailymax', PARAM_INT);
         $mform->addHelpButton('userslotsdailymax', 'userslotsdailymax', 'organizer');
         $mform->setDefault('userslotsdailymax', 0);
@@ -203,24 +219,32 @@ class mod_organizer_mod_form extends moodleform_mod {
         $mform->addHelpButton('isgrouporganizer', 'isgrouporganizer', 'organizer');
         // Include trainers.
         $mform->addElement(
-                'advcheckbox', 'includetraineringroups', get_string('includetraineringroups', 'organizer'), '',
-                null, [0, 1]
+            'advcheckbox',
+            'includetraineringroups',
+            get_string('includetraineringroups', 'organizer'),
+            '',
+            null,
+            [0, 1]
         );
         $mform->addHelpButton('includetraineringroups', 'includetraineringroups', 'organizer');
         $mform->setType('includetraineringroups', PARAM_INT);
         $mform->setDefault('includetraineringroups', 0);
-        $mform->disabledif ('includetraineringroups', 'isgrouporganizer', 'eq', 0);
-        $mform->disabledif ('includetraineringroups', 'isgrouporganizer', 'eq', 1);
+        $mform->disabledif('includetraineringroups', 'isgrouporganizer', 'eq', 0);
+        $mform->disabledif('includetraineringroups', 'isgrouporganizer', 'eq', 1);
 
         // Synchronize Moodle group members.
         $mform->addElement(
-            'advcheckbox', 'synchronizegroupmembers', get_string('synchronizegroupmembers', 'organizer'), null,
-            null, [0, 1]
+            'advcheckbox',
+            'synchronizegroupmembers',
+            get_string('synchronizegroupmembers', 'organizer'),
+            null,
+            null,
+            [0, 1]
         );
         $mform->addHelpButton('synchronizegroupmembers', 'synchronizegroupmembers', 'organizer');
         $mform->setType('synchronizegroupmembers', PARAM_INT);
         $mform->setDefault('synchronizegroupmembers', $organizerconfig->synchronizegroupmembers ?? 0);
-        $mform->disabledif ('synchronizegroupmembers', 'isgrouporganizer', 'neq', 1);
+        $mform->disabledif('synchronizegroupmembers', 'isgrouporganizer', 'neq', 1);
 
         // Member visibility.
         $mform->addElement('select', 'visibility', get_string('visibility', 'organizer'), $this->get_visibilities());
@@ -246,7 +270,12 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         // Hidecalendar.
         $mform->addElement(
-                'advcheckbox', 'hidecalendar', get_string('hidecalendar', 'organizer'), null, null, [0, 1]
+            'advcheckbox',
+            'hidecalendar',
+            get_string('hidecalendar', 'organizer'),
+            null,
+            null,
+            [0, 1]
         );
         $mform->setType('hidecalendar', PARAM_INT);
         $mform->setDefault('hidecalendar', 1);
@@ -254,8 +283,12 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         // Calendar events.
         $mform->addElement(
-                'advcheckbox', 'nocalendareventslotcreation',
-                get_string('nocalendareventslotcreation', 'organizer'), null, null, [0, 1]
+            'advcheckbox',
+            'nocalendareventslotcreation',
+            get_string('nocalendareventslotcreation', 'organizer'),
+            null,
+            null,
+            [0, 1]
         );
         $mform->setType('nocalendareventslotcreation', PARAM_INT);
         $mform->setDefault('nocalendareventslotcreation', 1);
@@ -266,7 +299,12 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         // No reregistrations after deadline.
         $mform->addElement(
-            'advcheckbox', 'noreregistrations', get_string('noreregistrations', 'organizer'), null, null, [0, 1]
+            'advcheckbox',
+            'noreregistrations',
+            get_string('noreregistrations', 'organizer'),
+            null,
+            null,
+            [0, 1]
         );
         $mform->setType('noreregistrations', PARAM_INT);
         $mform->setDefault('noreregistrations', 0);
@@ -319,8 +357,12 @@ class mod_organizer_mod_form extends moodleform_mod {
         $this->add_action_buttons();
 
         // Grading Aggragation Methods.
-        $aggregationmethods = $mform->createElement('select', 'gradeaggregationmethod',
-            get_string('gradeaggregationmethod', 'organizer'), $this->get_gradeaggregationmethods());
+        $aggregationmethods = $mform->createElement(
+            'select',
+            'gradeaggregationmethod',
+            get_string('gradeaggregationmethod', 'organizer'),
+            $this->get_gradeaggregationmethods()
+        );
         $mform->insertElementBefore($aggregationmethods, 'gradecat');
         $mform->setDefault('gradeaggregationmethod', 0);
         $mform->addHelpButton('gradeaggregationmethod', 'gradeaggregationmethod', 'organizer');
@@ -358,7 +400,6 @@ class mod_organizer_mod_form extends moodleform_mod {
 
         $mform->setExpanded('organizercommon');
         $mform->setExpanded('modstandardelshdr');
-
     }
 
     /**
@@ -391,8 +432,13 @@ class mod_organizer_mod_form extends moodleform_mod {
             $memberships = $this->get_memberships($data['course'], $data['groupingid']);
             foreach ($memberships as $userid => $groups) {
                 if (count($groups) > 1) {
-                    if (!has_capability("mod/organizer:editslots", context_course::instance($data['course']),
-                        $userid)) {
+                    if (
+                        !has_capability(
+                            "mod/organizer:editslots",
+                            context_course::instance($data['course']),
+                            $userid
+                        )
+                    ) {
                         $error = true;
                         $a = new stdClass();
                         $user = $DB->get_record('user', ['id' => $userid]);
@@ -515,7 +561,7 @@ class mod_organizer_mod_form extends moodleform_mod {
     private function get_gradeaggregationmethods() {
 
         $gradeaggregationmethods = [];
-        $gradeaggregationmethods[0] = get_string('choose').'...';
+        $gradeaggregationmethods[0] = get_string('choose') . '...';
         $gradeaggregationmethods[GRADEAGGREGATIONMETHOD_AVERAGE] = get_string('aggregatemean', 'grades');
         $gradeaggregationmethods[GRADEAGGREGATIONMETHOD_SUM] = get_string('aggregatesum', 'grades');
         $gradeaggregationmethods[GRADEAGGREGATIONMETHOD_BEST] = get_string('aggregatemax', 'grades');

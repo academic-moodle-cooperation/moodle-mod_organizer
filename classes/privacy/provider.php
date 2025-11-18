@@ -52,7 +52,7 @@ use stdClass;
  * @copyright  2018 Academic Moodle Cooperation {@link http://www.academic-moodle-cooperation.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements metadataprovider, pluginprovider, core_userlist_provider {
+class provider implements core_userlist_provider, metadataprovider, pluginprovider {
     /**
      * Provides meta data that is stored about a user with mod_organizer
      *
@@ -80,12 +80,21 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'trainerid' => 'privacy:metadata:trainerid',
         ];
 
-        $collection->add_database_table('organizer_slot_appointments', $organizerslotappointments,
-            'privacy:metadata:organizerslotappointments');
-        $collection->add_database_table('organizer_slot_queues', $organizerslotqueues,
-            'privacy:metadata:organizerslotqueues');
-        $collection->add_database_table('organizer_slot_trainer', $organizerslottrainer,
-            'privacy:metadata:organizerslottrainer');
+        $collection->add_database_table(
+            'organizer_slot_appointments',
+            $organizerslotappointments,
+            'privacy:metadata:organizerslotappointments'
+        );
+        $collection->add_database_table(
+            'organizer_slot_queues',
+            $organizerslotqueues,
+            'privacy:metadata:organizerslotqueues'
+        );
+        $collection->add_database_table(
+            'organizer_slot_trainer',
+            $organizerslottrainer,
+            'privacy:metadata:organizerslottrainer'
+        );
 
         return $collection;
     }
@@ -208,7 +217,6 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             writer::with_context($context)->export_data([], $organizerdata);
 
             static::export_appointments($context, $organizer, $user);
-
         }
         static::export_user_preferences($user->id);
     }
@@ -344,7 +352,8 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
             'Groupmember' => transform::yesno($appointment->groupid),
             'Groupname' => $appointment->groupid ? $appointment->groupname : "",
             'You booked the group' => $appointment->groupid ? transform::yesno(
-                $appointment->applicantid == $appointment->userid) : "No",
+                $appointment->applicantid == $appointment->userid
+            ) : "No",
             'attended' => transform::yesno($appointment->attended),
             'grade' => $appointment->grade,
             'comments' => $appointment->comments,
@@ -495,10 +504,11 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
 
         // Delete all appointments of this user.
         [$slotidssql, $slotidsparams] = $DB->get_in_or_equal($slotids, SQL_PARAMS_NAMED);
-        $DB->delete_records_select('organizer_slot_appointments',
+        $DB->delete_records_select(
+            'organizer_slot_appointments',
             "(userid = :userid) AND slotid " . $slotidssql,
-            $slotidsparams + ['userid' => $user->id]);
-
+            $slotidsparams + ['userid' => $user->id]
+        );
     }
 
 
@@ -538,10 +548,12 @@ class provider implements metadataprovider, pluginprovider, core_userlist_provid
 
                 [$usersql, $userparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
                 // Delete all appointments of these users in these slots.
-                $DB->delete_records_select('organizer_slot_appointments', "slotid " . $slotidssql . " AND userid " . $usersql,
-                    $slotidsparams + $userparams);
+                $DB->delete_records_select(
+                    'organizer_slot_appointments',
+                    "slotid " . $slotidssql . " AND userid " . $usersql,
+                    $slotidsparams + $userparams
+                );
             }
         }
     }
-
 }

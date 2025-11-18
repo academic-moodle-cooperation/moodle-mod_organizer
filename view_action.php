@@ -86,38 +86,49 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', ['id' => $cm->id, 'mode
 if ($bulkaction) {
     if (!$slots) { // No slots selected.
         // If an action is chosen but no slots were selected: redirect with message.
-        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected', 'organizer'),
-            'error');
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(
+            get_string('message_warning_no_slots_selected', 'organizer'),
+            'error'
+        );
     } else { // If bulkaction and slots.
         $slotids = implode(',', array_values($slots));
 
         $organizerexpired = isset($organizer->duedate) && $organizer->duedate - time() < 0;
-        switch($bulkaction) {
+        switch ($bulkaction) {
             case 'edit':
                 require_capability('mod/organizer:editslots', $context);
-                $redirecturl = new moodle_url('/mod/organizer/slots_edit.php',
-                    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slotids]);
-            break;
+                $redirecturl = new moodle_url(
+                    '/mod/organizer/slots_edit.php',
+                    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slotids]
+                );
+                break;
             case 'delete':
                 require_capability('mod/organizer:deleteslots', $context);
-                $redirecturl = new moodle_url('/mod/organizer/slots_delete.php',
-                    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slotids]);
-            break;
+                $redirecturl = new moodle_url(
+                    '/mod/organizer/slots_delete.php',
+                    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slotids]
+                );
+                break;
             case 'print':
                 require_capability('mod/organizer:printslots', $context);
-                $redirecturl = new moodle_url('/mod/organizer/slots_print.php',
-                    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slotids]);
-            break;
+                $redirecturl = new moodle_url(
+                    '/mod/organizer/slots_print.php',
+                    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slotids]
+                );
+                break;
             case 'eval':
                 require_capability('mod/organizer:evalslots', $context);
-                $redirecturl = new moodle_url('/mod/organizer/slots_eval.php',
-                    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slotids]);
-            break;
-            case 'export':
-                $redirecturl = new moodle_url('/mod/organizer/slots_export.php',
-                    ['id' => $cm->id, 'slots' => $slotids]);
+                $redirecturl = new moodle_url(
+                    '/mod/organizer/slots_eval.php',
+                    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slotids]
+                );
                 break;
-
+            case 'export':
+                $redirecturl = new moodle_url(
+                    '/mod/organizer/slots_export.php',
+                    ['id' => $cm->id, 'slots' => $slotids]
+                );
+                break;
         }
     }
     redirect($redirecturl);
@@ -127,8 +138,10 @@ if ($bulkaction) {
 
 // Check if allowed. Fires also in case the page is reloaded after an error whereas the action has been processed.
 if (!organizer_participants_action_allowed($action, $slot, $organizer, $context)) {
-    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_action_notallowed',
-        'organizer'), 'error');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+        'message_error_action_notallowed',
+        'organizer'
+    ), 'error');
     redirect($redirecturl);
 }
 
@@ -136,16 +149,20 @@ if (!organizer_participants_action_allowed($action, $slot, $organizer, $context)
 $group = organizer_fetch_my_group();
 $groupid = $group ? $group->id : 0;
 
-switch($action) {
+switch ($action) {
     case ORGANIZER_ACTION_REGISTER:
         require_capability('mod/organizer:register', $context);
         if ($success = organizer_register_appointment($slot, $groupid)) {
             if ($groupid) {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_registered_group',
-                    'organizer'), 'success');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_info_registered_group',
+                    'organizer'
+                ), 'success');
             } else {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_registered',
-                    'organizer'), 'success');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_info_registered',
+                    'organizer'
+                ), 'success');
             }
             $event = appointment_added::create(
                 ['objectid' => $PAGE->cm->id, 'context' => $PAGE->context]
@@ -157,11 +174,15 @@ switch($action) {
             }
         } else { // No success.
             if ($groupid) {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_slot_full_group',
-                    'organizer'), 'error');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_error_slot_full_group',
+                    'organizer'
+                ), 'error');
             } else {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_slot_full_single',
-                    'organizer'), 'error');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_error_slot_full_single',
+                    'organizer'
+                ), 'error');
             }
         }
         break;
@@ -169,11 +190,15 @@ switch($action) {
         require_capability('mod/organizer:register', $context);
         if ($success = organizer_register_appointment($slot, $groupid)) {
             if ($groupid) {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_queued_group',
-                    'organizer'), 'success');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_info_queued_group',
+                    'organizer'
+                ), 'success');
             } else {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_queued',
-                    'organizer'), 'success');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_info_queued',
+                    'organizer'
+                ), 'success');
             }
             $event = queue_added::create(
                 ['objectid' => $PAGE->cm->id, 'context' => $PAGE->context]
@@ -185,11 +210,15 @@ switch($action) {
             }
         } else { // No success.
             if ($groupid) {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_slot_full_group',
-                    'organizer'), 'error');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_error_slot_full_group',
+                    'organizer'
+                ), 'error');
             } else {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_slot_full_single',
-                    'organizer'), 'error');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_error_slot_full_single',
+                    'organizer'
+                ), 'error');
             }
         }
         break;
@@ -197,11 +226,15 @@ switch($action) {
         require_capability('mod/organizer:unregister', $context);
         if ($success = organizer_unregister_appointment($slot, $groupid, $organizer->id)) {
             if ($groupid) {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_unregistered_group',
-                    'organizer'), 'success');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_info_unregistered_group',
+                    'organizer'
+                ), 'success');
             } else {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_unregistered',
-                    'organizer'), 'success');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_info_unregistered',
+                    'organizer'
+                ), 'success');
             }
             $event = appointment_removed::create(
                 ['objectid' => $PAGE->cm->id, 'context' => $PAGE->context]
@@ -213,25 +246,38 @@ switch($action) {
                 $members = get_enrolled_users($context, 'mod/organizer:register', $group->id, 'u.id', null, 0, 0, true);
                 foreach ($members as $member) {
                     if ($member->id != $USER->id) {
-                        $sentok = organizer_send_message(intval($USER->id), intval($member->id),
-                            $slotobj, 'group_registration_notify:student:unregister', null, null, true);
+                        $sentok = organizer_send_message(
+                            intval($USER->id),
+                            intval($member->id),
+                            $slotobj,
+                            'group_registration_notify:student:unregister',
+                            null,
+                            null,
+                            true
+                        );
                     }
                 }
             }
         } else { // No success.
-            $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_unknown_unregister',
-                'organizer'), 'error');
+            $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                'message_error_unknown_unregister',
+                'organizer'
+            ), 'error');
         }
         break;
     case ORGANIZER_ACTION_UNQUEUE:
         require_capability('mod/organizer:unregister', $context);
         if ($success = organizer_delete_from_queue($slot, $USER->id, $groupid)) {
             if ($groupid) {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_unqueued_group',
-                    'organizer'), 'success');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_info_unqueued_group',
+                    'organizer'
+                ), 'success');
             } else {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_unqueued',
-                    'organizer'), 'success');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_info_unqueued',
+                    'organizer'
+                ), 'success');
             }
             $event = queue_removed::create(
                 ['objectid' => $PAGE->cm->id, 'context' => $PAGE->context]
@@ -242,8 +288,10 @@ switch($action) {
                 organizer_prepare_and_send_message($slot, 'group_registration_notify:student:unqueue');
             }
         } else { // No success.
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_unknown_unqueue',
-                    'organizer'), 'error');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_error_unknown_unqueue',
+                    'organizer'
+                ), 'error');
         }
         break;
     case ORGANIZER_ACTION_REREGISTER:
@@ -251,11 +299,15 @@ switch($action) {
         require_capability('mod/organizer:unregister', $context);
         if ($success = organizer_reregister_appointment($slot, $groupid)) {
             if ($groupid) {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_reregistered_group',
-                    'organizer'), 'success');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_info_reregistered_group',
+                    'organizer'
+                ), 'success');
             } else {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_reregistered',
-                    'organizer'), 'success');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_info_reregistered',
+                    'organizer'
+                ), 'success');
             }
             $event = appointment_removed::create(
                 ['objectid' => $PAGE->cm->id, 'context' => $PAGE->context]
@@ -271,11 +323,15 @@ switch($action) {
             }
         } else { // No success.
             if (organizer_is_group_mode()) {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_slot_full_group',
-                    'organizer'), 'error');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_error_slot_full_group',
+                    'organizer'
+                ), 'error');
             } else {
-                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_error_slot_full_single',
-                    'organizer'), 'error');
+                $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+                    'message_error_slot_full_single',
+                    'organizer'
+                ), 'error');
             }
         }
         break;

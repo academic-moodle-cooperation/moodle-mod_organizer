@@ -49,8 +49,10 @@ require_login($course, false, $cm);
 $slots = organizer_sortout_hiddenslots($slots);
 
 if (count($slots) == 0) {
-    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_visible_slots_selected',
-        'organizer'), 'error');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+        'message_warning_no_visible_slots_selected',
+        'organizer'
+    ), 'error');
     redirect($redirecturl);
 }
 
@@ -75,8 +77,10 @@ if ($data = $mform->get_data()) {
     $slots = $_SESSION['organizer_slots'];
 
     if (count($slots) == 0) {
-        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected',
-            'organizer'), 'error');
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+            'message_warning_no_slots_selected',
+            'organizer'
+        ), 'error');
         redirect($redirecturl);
     }
 
@@ -84,21 +88,26 @@ if ($data = $mform->get_data()) {
 
     organizer_display_printable_table(
         $organizer->allowregistrationsfromdate,
-        $organizer->duedate, $data->cols, $data->slots, $ppp, $data->textsize,
-        $data->pageorientation, $data->headerfooter
+        $organizer->duedate,
+        $data->cols,
+        $data->slots,
+        $ppp,
+        $data->textsize,
+        $data->pageorientation,
+        $data->headerfooter
     );
     redirect($redirecturl);
-
 } else if ($mform->is_cancelled()) {
     // Form canceled.
     unset($_SESSION['organizer_slots']);
     redirect($redirecturl);
-
 } else {
     // Display printpreview.
     if ($slots == null || count($slots) == 0) {
-        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected',
-            'organizer'), 'error');
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+            'message_warning_no_slots_selected',
+            'organizer'
+        ), 'error');
         redirect($redirecturl);
     }
 
@@ -121,8 +130,14 @@ die;
  *
  * @return void
  */
-function organizer_display_printable_table($registrationsfromdate, $timedue, $columns,
-    $slots, $entriesperpage = false, $textsize = '10', $orientation = 'L',
+function organizer_display_printable_table(
+    $registrationsfromdate,
+    $timedue,
+    $columns,
+    $slots,
+    $entriesperpage = false,
+    $textsize = '10',
+    $orientation = 'L',
     $headerfooter = true
 ) {
 
@@ -175,43 +190,43 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                 case 'datetime':
                     $columnwidth[] = ['value' => 64, 'mode' => 'Relativ'];
                     $columnformats[] = ['fill' => 0, 'align' => 'C'];
-                break;
+                    break;
                 case 'location':
                     $columnwidth[] = ['value' => 48, 'mode' => 'Relativ'];
                     $columnformats[] = ['fill' => 0, 'align' => 'C'];
-                break;
+                    break;
                 case 'teacher':
                     $columnwidth[] = ['value' => 32, 'mode' => 'Relativ'];
                     $columnformats[] = ['fill' => 0, 'align' => 'C'];
-                break;
+                    break;
                 case 'groupname':
                     $columnwidth[] = ['value' => 32, 'mode' => 'Relativ'];
                     $columnformats[] = ['fill' => 0, 'align' => 'C'];
-                break;
+                    break;
                 case 'participant':
                     $columnwidth[] = ['value' => 32, 'mode' => 'Relativ'];
                     $columnformats[] = ['fill' => 0, 'align' => 'C'];
-                break;
+                    break;
                 case 'email':
                     $columnwidth[] = ['value' => 32, 'mode' => 'Relativ'];
                     $columnformats[] = ['fill' => 0, 'align' => 'C'];
-                break;
+                    break;
                 case 'idnumber':
                     $columnwidth[] = ['value' => 24, 'mode' => 'Relativ'];
                     $columnformats[] = ['fill' => 0, 'align' => 'C'];
-                break;
+                    break;
                 case 'attended':
                     $columnwidth[] = ['value' => 12, 'mode' => 'Relativ'];
                     $columnformats[] = ['fill' => 0, 'align' => 'C'];
-                break;
+                    break;
                 case 'grade':
                     $columnwidth[] = ['value' => 18, 'mode' => 'Relativ'];
                     $columnformats[] = ['fill' => 0, 'align' => 'C'];
-                break;
+                    break;
                 case 'feedback':
                     $columnwidth[] = ['value' => 64, 'mode' => 'Relativ'];
                     $columnformats[] = ['fill' => 1, 'align' => 'L'];
-                break;
+                    break;
                 case 'comments':
                     $columnwidth[] = ['value' => 64, 'mode' => 'Relativ'];
                     $columnformats[] = ['fill' => 1, 'align' => 'L'];
@@ -224,34 +239,34 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
         }
     }
 
-    switch($tsort) {
-        case "datetime";
+    switch ($tsort) {
+        case "datetime":
             $sort = "starttime";
-        break;
+            break;
         case "location":
             $sort = "s.location";
-        break;
+            break;
         case "groupname":
             $sort = "groupname";
-        break;
+            break;
         case "participant":
             $sort = "u.lastname";
-        break;
+            break;
         case "email":
             $sort = "u.email";
-        break;
+            break;
         case "idnumber":
             $sort = "u.idnumber";
-        break;
+            break;
         case "attended":
             $sort = "a.attended";
-        break;
+            break;
         case "grade":
             $sort = "a.grade";
-        break;
+            break;
         case "feedback":
             $sort = "a.feedback";
-        break;
+            break;
         case "comments":
             $sort = "a.commentsk";
             break;
@@ -274,8 +289,10 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
         $dosort = "";
     }
 
-    $registrationsfromdate = $registrationsfromdate ? userdate($registrationsfromdate) : get_string('pdf_notactive',
-        'organizer');
+    $registrationsfromdate = $registrationsfromdate ? userdate($registrationsfromdate) : get_string(
+        'pdf_notactive',
+        'organizer'
+    );
     $timedue = $timedue ? userdate($timedue) : get_string('pdf_notactive', 'organizer');
 
     $mpdftable = new MTablePDF($orientation, $columnwidth);
@@ -290,12 +307,18 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
     $format = optional_param('format', 'pdf', PARAM_TEXT);
     if ($format != "csv_comma") {
         $mpdftable->setHeaderText(
-            get_string('course') . ':', $coursename,
-            get_string('modulename', 'organizer') . ':', $organizername,
-            get_string('availablefrom', 'organizer').':', $registrationsfromdate,
-            get_string('duedate', 'organizer').':', $timedue,
-            '', get_string('created', 'organizer') . " " . userdate(time()),
-            '', ''
+            get_string('course') . ':',
+            $coursename,
+            get_string('modulename', 'organizer') . ':',
+            $organizername,
+            get_string('availablefrom', 'organizer') . ':',
+            $registrationsfromdate,
+            get_string('duedate', 'organizer') . ':',
+            $timedue,
+            '',
+            get_string('created', 'organizer') . " " . userdate(time()),
+            '',
+            ''
         );
     }
 
@@ -319,14 +342,14 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                         . userdate($entry->starttime + $entry->duration, get_string('timetemplate', 'organizer'));
                         $row[] = ['data' => $datetime, 'rowspan' => $rowspan - 1];
                     }
-                break;
+                    break;
                 case 'location':
                     if ($rowspan != $entry->rowspan) {
                         $row[] = null;
                     } else {
                         $row[] = ['data' => $entry->location, 'rowspan' => $rowspan - 1];
                     }
-                break;
+                    break;
                 case 'teacher':
                     if ($rowspan != $entry->rowspan) {
                         $row[] = null;
@@ -343,7 +366,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                         }
                         $row[] = ['data' => $name, 'rowspan' => $rowspan - 1, 'name' => 'teacher'];
                     }
-                break;
+                    break;
                 case 'teachercomments':
                     $teachercomments = !empty($entry->teachercomments) ? $entry->teachercomments : '';
                     if ($rowspan != $entry->rowspan) {
@@ -351,7 +374,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                     } else {
                         $row[] = ['data' => $teachercomments, 'rowspan' => $rowspan - 1];
                     }
-                break;
+                    break;
                 case 'groupname':
                     if ($rowspan != $entry->rowspan) {
                         $row[] = null;
@@ -362,7 +385,7 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                         }
                         $row[] = ['data' => $groupname, 'rowspan' => $rowspan - 1];
                     }
-                break;
+                    break;
                     // These columns cannot have rowspan.
                 case 'participant':
                     $a = new stdClass();
@@ -373,14 +396,14 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                         $name .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null, true);
                     }
                     $row[] = ['data' => $name, 'rowspan' => 0, 'name' => 'participant'];
-                break;
+                    break;
                 case 'email':
                     $row[] = ['data' => $entry->email, 'rowspan' => 0, 'name' => 'email'];
-                break;
+                    break;
                 case 'idnumber':
                     $idnumber = (isset($entry->idnumber) && $entry->idnumber !== '') ? $entry->idnumber : '';
                     $row[] = ['data' => $idnumber, 'rowspan' => 0];
-                break;
+                    break;
                 case 'attended':
                     $attended = $entry->attended ?? -1;
                     switch ($attended) {
@@ -394,15 +417,15 @@ function organizer_display_printable_table($registrationsfromdate, $timedue, $co
                             $content = get_string('yes');
                     }
                     $row[] = ['data' => $content, 'rowspan' => 0];
-                break;
+                    break;
                 case 'grade':
                     $grade = isset($entry->grade) && $entry->grade >= 0 ? sprintf("%01.2f", $entry->grade) : '';
                     $row[] = ['data' => $grade, 'rowspan' => 0];
-                break;
+                    break;
                 case 'feedback':
                     $feedback = isset($entry->feedback) && $entry->feedback !== '' ? $entry->feedback : '';
                     $row[] = ['data' => $feedback, 'rowspan' => 0];
-                break;
+                    break;
                 case 'comments':
                     $comments = isset($entry->comments) && $entry->comments !== '' ? $entry->comments : '';
                     $row[] = ['data' => $comments, 'rowspan' => 0];

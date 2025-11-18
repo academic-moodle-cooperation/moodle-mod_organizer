@@ -65,15 +65,21 @@ $redirecturl = new moodle_url('/mod/organizer/view.php', ['id' => $cm->id, 'mode
 require_capability('mod/organizer:printslots', $context);
 
 if (!$slot) {
-    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_visible_slots_selected',
-        'organizer'), 'error');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+        'message_warning_no_visible_slots_selected',
+        'organizer'
+    ), 'error');
     redirect($redirecturl);
 } else {
     $_SESSION['organizer_slot'] = $slot;
 }
 
-$mform = new organizer_print_slotdetail_form(null, ['id' => $cm->id, 'mode' => $mode, 'slot' => $slot],
-    'post', '_blank');
+$mform = new organizer_print_slotdetail_form(
+    null,
+    ['id' => $cm->id, 'mode' => $mode, 'slot' => $slot],
+    'post',
+    '_blank'
+);
 
 if ($data = $mform->get_data()) {
     // Create pdf.
@@ -83,33 +89,44 @@ if ($data = $mform->get_data()) {
     }
 
     if (!$slot) {
-        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected',
-            'organizer'), 'error');
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+            'message_warning_no_slots_selected',
+            'organizer'
+        ), 'error');
         redirect($redirecturl);
     }
 
     $ppp = organizer_print_setuserprefs_and_triggerevent($data, $cm, $context);
 
     if (!isset($data->cols)) {
-        redirect($redirecturl, get_string('nosingleslotprintfields', 'organizer'), null,
-            notification::NOTIFY_ERROR);
+        redirect(
+            $redirecturl,
+            get_string('nosingleslotprintfields', 'organizer'),
+            null,
+            notification::NOTIFY_ERROR
+        );
     } else {
-        organizer_display_printable_slotdetail_table($data->cols, $data->slot, $ppp, $data->textsize,
-            $data->pageorientation, $data->headerfooter
+        organizer_display_printable_slotdetail_table(
+            $data->cols,
+            $data->slot,
+            $ppp,
+            $data->textsize,
+            $data->pageorientation,
+            $data->headerfooter
         );
         redirect($redirecturl);
     }
-
 } else if ($mform->is_cancelled()) {
     // Form canceled.
     unset($_SESSION['organizer_slot']);
     redirect($redirecturl);
-
 } else {
     // Display printpreview.
     if (!$slot) {
-        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected',
-            'organizer'), 'error');
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+            'message_warning_no_slots_selected',
+            'organizer'
+        ), 'error');
         redirect($redirecturl);
     }
 
@@ -133,8 +150,14 @@ die;
  * @throws dml_exception Throws an exception if the database query fails.
  * @return void
  */
-function organizer_display_printable_slotdetail_table($columns, $slotid, $entriesperpage = false, $textsize = '10',
-        $orientation = 'L', $headerfooter = true) {
+function organizer_display_printable_slotdetail_table(
+    $columns,
+    $slotid,
+    $entriesperpage = false,
+    $textsize = '10',
+    $orientation = 'L',
+    $headerfooter = true
+) {
     global $DB;
 
     [, $course, $organizer, ] = organizer_get_course_module_data();
@@ -152,48 +175,47 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
     $columnformats = [];
 
     foreach ($columns as $column) {
-
         switch ($column) {
             case 'lastname':
                 $titles[] = organizer_filter_text(get_string('lastname'));
                 $columnwitdh[] = ['value' => 64, 'mode' => 'Relativ'];
                 $columnformats[] = ['fill' => 0, 'align' => 'C'];
-            break;
+                break;
             case 'firstname':
                 $titles[] = organizer_filter_text(get_string('firstname'));
                 $columnwitdh[] = ['value' => 48, 'mode' => 'Relativ'];
                 $columnformats[] = ['fill' => 0, 'align' => 'C'];
-            break;
+                break;
             case 'email':
                 $titles[] = organizer_filter_text(get_string('email'));
                 $columnwitdh[] = ['value' => 64, 'mode' => 'Relativ'];
                 $columnformats[] = ['fill' => 0, 'align' => 'C'];
-            break;
+                break;
             case 'idnumber':
                 $titles[] = organizer_filter_text(get_string('idnumber'));
                 $columnwitdh[] = ['value' => 24, 'mode' => 'Relativ'];
                 $columnformats[] = ['fill' => 0, 'align' => 'C'];
-            break;
+                break;
             case 'attended':
                 $titles[] = organizer_filter_text(get_string('attended', 'organizer'));
                 $columnwitdh[] = ['value' => 12, 'mode' => 'Relativ'];
                 $columnformats[] = ['fill' => 0, 'align' => 'C'];
-            break;
+                break;
             case 'grade':
                 $titles[] = organizer_filter_text(get_string('gradenoun'));
                 $columnwitdh[] = ['value' => 12, 'mode' => 'Relativ'];
                 $columnformats[] = ['fill' => 0, 'align' => 'C'];
-            break;
+                break;
             case 'feedback':
                 $titles[] = organizer_filter_text(get_string('feedback'));
                 $columnwitdh[] = ['value' => 32, 'mode' => 'Relativ'];
                 $columnformats[] = ['fill' => 0, 'align' => 'C'];
-            break;
+                break;
             case 'signature':
                 $titles[] = organizer_filter_text(get_string('signature', 'organizer'));
                 $columnwitdh[] = ['value' => 48, 'mode' => 'Relativ'];
                 $columnformats[] = ['fill' => 0, 'align' => 'C'];
-            break;
+                break;
             default:
                 if (is_numeric($column)) { // Custom user field.
                     $userinfofield = $DB->get_record_select('user_info_field', 'id = :id', ['id' => $column]);
@@ -306,12 +328,18 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
     $mpdftable->ShowHeaderFooter($headerfooter);
     $mpdftable->SetFontSize($textsize);
     $mpdftable->setheadertext(
-            get_string('course')                  . ':', $coursename,
-            get_string('shortnamecourse')         . ':', $courseshortname,
-            get_string('modulename', 'organizer') . ':', $organizername,
-            get_string('slot', 'organizer')       . ':', $slotdatetime,
-            get_string('trainer', 'organizer')    . ':', $trainerstr,
-            get_string('created', 'organizer')    . ':', userdate(time())
+        get_string('course')                  . ':',
+        $coursename,
+        get_string('shortnamecourse')         . ':',
+        $courseshortname,
+        get_string('modulename', 'organizer') . ':',
+        $organizername,
+        get_string('slot', 'organizer')       . ':',
+        $slotdatetime,
+        get_string('trainer', 'organizer')    . ':',
+        $trainerstr,
+        get_string('created', 'organizer')    . ':',
+        userdate(time())
     );
     $mpdftable->setTitles($titles);
     $mpdftable->setColumnFormat($columnformats);
@@ -319,7 +347,6 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
     foreach ($entries as $entry) {
         $row = [];
         foreach ($columns as $column) {
-
             switch ($column) {
                 case 'fullnameuser':
                     $content = fullname($entry);
@@ -376,10 +403,15 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                     break;
                 default:
                     if (is_numeric($column)) {
-                        if ($userinfodata = $DB->get_field(
-                                'user_info_data', 'data', ['fieldid' => $column, 'userid' => $entry->id])
+                        if (
+                            $userinfodata = $DB->get_field(
+                                'user_info_data',
+                                'data',
+                                ['fieldid' => $column, 'userid' => $entry->id]
+                            )
                         ) {
-                            if (isset($userinfofields[$column]) &&
+                            if (
+                                isset($userinfofields[$column]) &&
                                     ($userinfofields[$column] == 'text' || $userinfofields[$column] == 'textarea')
                             ) {
                                 $row[] = ['data' => $userinfodata];
@@ -413,7 +445,6 @@ function organizer_display_printable_slotdetail_table($columns, $slotid, $entrie
                         }
                     }
             }
-
         }
         $mpdftable->addRow($row);
     }

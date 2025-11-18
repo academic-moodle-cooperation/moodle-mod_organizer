@@ -64,13 +64,17 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode;
 require_capability('mod/organizer:editslots', $context);
 
 if (!$slots) {
-    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_warning_no_slots_selected', 'organizer'),
-        'error');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(
+        get_string('message_warning_no_slots_selected', 'organizer'),
+        'error'
+    );
     redirect($redirecturl);
 }
 
 $mform = new organizer_edit_slots_form(
-    null, ['id' => $cm->id, 'mode' => $mode, 'slots' => $slots]);
+    null,
+    ['id' => $cm->id, 'mode' => $mode, 'slots' => $slots]
+);
 
 if ($mform->is_cancelled()) {
     redirect($redirecturl);
@@ -80,11 +84,16 @@ if ($mform->is_cancelled()) {
     $a = new stdClass();
     $a->count = count($slotids);
     if ($a->count == 1) {
-        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_slots_edited_sg',
-            'organizer', $a), 'success');
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+            'message_info_slots_edited_sg',
+            'organizer',
+            $a
+        ), 'success');
     } else {
-        $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('message_info_slots_edited_pl', 'organizer', $a),
-            'success');
+        $_SESSION["infoboxmessage"] = $OUTPUT->notification(
+            get_string('message_info_slots_edited_pl', 'organizer', $a),
+            'success'
+        );
     }
 
     $data->slot_trainer = $data->slot_trainer ?? "-";

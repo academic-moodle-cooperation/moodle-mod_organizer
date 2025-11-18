@@ -60,24 +60,29 @@ function organizer_make_infobox($params, $organizer, $context, $organizerexpired
     $jsparams->studentview = 0;
     $jsparams->registrationview = 0;
 
-    switch($params['mode']) {
+    switch ($params['mode']) {
         case ORGANIZER_TAB_APPOINTMENTS_VIEW:
             $output .= organizer_make_addslotbutton_section($params, $organizerexpired);
-        break;
+            break;
         case ORGANIZER_TAB_STUDENT_VIEW:
             // My own booking information section.
-            $output .= organizer_make_myapp_section($params, $organizer,
-                organizer_get_all_user_appointments($organizer));
+            $output .= organizer_make_myapp_section(
+                $params,
+                $organizer,
+                organizer_get_all_user_appointments($organizer)
+            );
             $jsparams->studentview = 1;
-        break;
+            break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             // Button for sending reminders to all participants without an appointment.
             $entries = organizer_get_registrationview_entries(
-                $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS, $params);
+                $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS,
+                $params
+            );
             $output .= organizer_make_sendreminder_section($params, $context, $organizer);
             $output .= organizer_make_registrationstatistic_section($organizer, $entries);
             $jsparams->registrationview = 1;
-        break;
+            break;
     }
     if ($params['mode'] != ORGANIZER_TAB_REGISTRATION_STATUS_VIEW) {
         // Display section with predefined filter view options like "hidden slots only" etc..
@@ -293,14 +298,14 @@ function organizer_make_myapp_section($params, $organizer, $apps) {
         $minreached = false;
         $statusbarstatusmsg = get_string('infobox_myslot_userslots_status', 'organizer', $a);
         if ($userslotsstate == USERSLOTS_MIN_NOT_REACHED) {
-            $statusbarmsg .= get_string('infobox_myslot_userslots_min_not_reached'.$groupstr, 'organizer', $a);
+            $statusbarmsg .= get_string('infobox_myslot_userslots_min_not_reached' . $groupstr, 'organizer', $a);
         } else if ($userslotsstate == USERSLOTS_MAX_REACHED) {
             $minreached = true;
-            $statusbarmsg .= get_string('infobox_myslot_userslots_max_reached'.$groupstr, 'organizer', $a);
+            $statusbarmsg .= get_string('infobox_myslot_userslots_max_reached' . $groupstr, 'organizer', $a);
         } else {
             $minreached = true;
-            $statusbarmsg .= get_string('infobox_myslot_userslots_min_reached'.$groupstr, 'organizer', $a).
-                ' '.get_string('infobox_myslot_userslots_left'.$groupstr, 'organizer', $a);
+            $statusbarmsg .= get_string('infobox_myslot_userslots_min_reached' . $groupstr, 'organizer', $a) .
+                ' ' . get_string('infobox_myslot_userslots_left' . $groupstr, 'organizer', $a);
         }
         $statusbar = organizer_userstatus_bar($a->booked, $a->max, $minreached, $statusbarstatusmsg, $statusbarmsg);
         $output .= $statusbar;
@@ -341,15 +346,25 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
     $a->max = $organizer->userslotsmax;
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
         [$a->entries, $undermin, $a->maxreached] =
-            organizer_registration_statistics($organizer, true, $entries,
-                $organizer->userslotsmin, $organizer->userslotsmax);
+            organizer_registration_statistics(
+                $organizer,
+                true,
+                $entries,
+                $organizer->userslotsmin,
+                $organizer->userslotsmax
+            );
         $a->minreached = (int) $a->entries - (int) $undermin;
         $messageminreached = get_string('infobox_statistic_minreached_group', 'organizer', $a);
         $messagemaxreached = get_string('infobox_statistic_maxreached_group', 'organizer', $a);
     } else {
         [$a->entries, $undermin, $a->maxreached] =
-            organizer_registration_statistics($organizer, false, $entries,
-                $organizer->userslotsmin, $organizer->userslotsmax);
+            organizer_registration_statistics(
+                $organizer,
+                false,
+                $entries,
+                $organizer->userslotsmin,
+                $organizer->userslotsmax
+            );
         $a->minreached = (int) $a->entries - (int) $undermin;
         $messageminreached = get_string('infobox_statistic_minreached', 'organizer', $a);
         $messagemaxreached = get_string('infobox_statistic_maxreached', 'organizer', $a);
@@ -362,22 +377,31 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
     // Minreached bar.
     $out .= html_writer::start_div('registrationstatusbar mb-3 w-100', ['title' => $messageminreached]);
     if ($allminreached) {
-        $out .= html_writer::div(' ',
+        $out .= html_writer::div(
+            ' ',
             'registrationstatusbarleg align-middle border border-success bg-success rounded-left rounded-right',
-            ['style' => "width: $barwidth%"]);
+            ['style' => "width: $barwidth%"]
+        );
     } else {
         $partialfullwidth = $a->minreached * 100 / $a->entries * $barwidth / 100;
         $partialemptywidth = $barwidth - $partialfullwidth;
         if ($partialfullwidth > 0) {
-            $out .= html_writer::div(' ',
+            $out .= html_writer::div(
+                ' ',
                 'registrationstatusbarleg align-middle border border-info bg-info rounded-left',
-                ['style' => "width: $partialfullwidth%"]);
-            $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info rounded-right',
-                ['style' => "width: $partialemptywidth%"]);
+                ['style' => "width: $partialfullwidth%"]
+            );
+            $out .= html_writer::div(
+                ' ',
+                'registrationstatusbarleg align-middle border border-info rounded-right',
+                ['style' => "width: $partialemptywidth%"]
+            );
         } else {
-            $out .= html_writer::div(' ',
+            $out .= html_writer::div(
+                ' ',
                 'registrationstatusbarleg align-middle border border-info rounded-right rounded-left',
-                ['style' => "width: $partialemptywidth%"]);
+                ['style' => "width: $partialemptywidth%"]
+            );
         }
     }
     $out .= html_writer::div($messageminreached, 'd-inline ml-3');
@@ -387,22 +411,31 @@ function organizer_make_registrationstatistic_section($organizer, $entries) {
     if ($organizer->userslotsmin != $organizer->userslotsmax) {
         $out .= html_writer::start_div('registrationstatusbar mb-4 w-100', ['title' => $messagemaxreached]);
         if ($allmaxreached) {
-            $out .= html_writer::div(' ',
+            $out .= html_writer::div(
+                ' ',
                 'registrationstatusbarleg align-middle border border-success bg-success rounded-left rounded-right',
-                ['style' => "width: $barwidth%"]);
+                ['style' => "width: $barwidth%"]
+            );
         } else {
             $partialfullwidth = $a->maxreached * 100 / $a->entries * $barwidth / 100;
             $partialemptywidth = $barwidth - $partialfullwidth;
             if ($partialfullwidth > 0) {
-                $out .= html_writer::div(' ',
+                $out .= html_writer::div(
+                    ' ',
                     'registrationstatusbarleg align-middle border border-info bg-info rounded-left',
-                    ['style' => "width: $partialfullwidth%"]);
-                $out .= html_writer::div(' ', 'registrationstatusbarleg align-middle border border-info rounded-right',
-                    ['style' => "width: $partialemptywidth%"]);
+                    ['style' => "width: $partialfullwidth%"]
+                );
+                $out .= html_writer::div(
+                    ' ',
+                    'registrationstatusbarleg align-middle border border-info rounded-right',
+                    ['style' => "width: $partialemptywidth%"]
+                );
             } else {
-                $out .= html_writer::div(' ',
+                $out .= html_writer::div(
+                    ' ',
                     'registrationstatusbarleg align-middle border border-info rounded-right rounded-left',
-                    ['style' => "width: $partialemptywidth%"]);
+                    ['style' => "width: $partialemptywidth%"]
+                );
             }
         }
         $out .= html_writer::div($messagemaxreached, 'd-inline-block ml-3');
@@ -424,10 +457,13 @@ function organizer_make_filtersection($mode) {
 
     // Display filter - options.
     $output = html_writer::start_div('organizer_filterblock pt-1');
-    $output .= html_writer::start_span('', ['id' => 'organizer_filterfield']).
-        get_string('searchfilter', 'organizer').$OUTPUT->help_icon('filtertable', 'organizer', '');
-    $output .= html_writer::tag('input', null,
-        ['type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable']);
+    $output .= html_writer::start_span('', ['id' => 'organizer_filterfield']) .
+        get_string('searchfilter', 'organizer') . $OUTPUT->help_icon('filtertable', 'organizer', '');
+    $output .= html_writer::tag(
+        'input',
+        null,
+        ['type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable']
+    );
     $output .= html_writer::end_span();
 
     $displaymyslotsonly = true;
@@ -444,20 +480,32 @@ function organizer_make_filtersection($mode) {
     }
     if ($mode != ORGANIZER_TAB_STUDENT_VIEW) {
         if ($displaymyslotsonly) {
-            $output .= html_writer::checkbox('show_my_slots_only', '1', $showmyslotsonly,
+            $output .= html_writer::checkbox(
+                'show_my_slots_only',
+                '1',
+                $showmyslotsonly,
                 get_string('infobox_showmyslotsonly', 'organizer'),
-                ['id' => 'show_my_slots_only', 'class' => 'slotoptions']);
+                ['id' => 'show_my_slots_only', 'class' => 'slotoptions']
+            );
         }
     }
     if ($displayfreeslots) {
-        $output .= html_writer::checkbox('show_free_slots_only', '1', $showfreeslotsonly,
+        $output .= html_writer::checkbox(
+            'show_free_slots_only',
+            '1',
+            $showfreeslotsonly,
             get_string('infobox_showfreeslots', 'organizer'),
-            ['id' => 'show_free_slots_only', 'class' => 'slotoptions']);
+            ['id' => 'show_free_slots_only', 'class' => 'slotoptions']
+        );
     }
     if ($displayregistrationsonly) {
-        $output .= html_writer::checkbox('show_registrations_only', '1', $showregistrationsonly,
+        $output .= html_writer::checkbox(
+            'show_registrations_only',
+            '1',
+            $showregistrationsonly,
             get_string('infobox_showregistrationsonly', 'organizer'),
-            ['id' => 'show_registrations_only', 'class' => 'slotoptions']);
+            ['id' => 'show_registrations_only', 'class' => 'slotoptions']
+        );
     }
     $output .= html_writer::end_div();
 
@@ -466,9 +514,13 @@ function organizer_make_filtersection($mode) {
     $output .= html_writer::span('', 'text-info', ['id' => 'counttabrows']);
     $output .= html_writer::span(get_string('infobox_counter_slotrows', 'mod_organizer'), 'ml-1 text-info');
     if ($displayallparticipants) {
-        $output .= html_writer::checkbox('show_all_participants', '1', $showallparticipants,
+        $output .= html_writer::checkbox(
+            'show_all_participants',
+            '1',
+            $showallparticipants,
             get_string('infobox_showallparticipants', 'organizer'),
-            ['id' => 'show_all_participants', 'class' => 'slotoptions']);
+            ['id' => 'show_all_participants', 'class' => 'slotoptions']
+        );
     }
     $output .= html_writer::end_div();
 
@@ -492,10 +544,13 @@ function organizer_make_filtersection_reg($groupmode) {
     $groupselectorstyle = $groupmode ? "span6" : "";
     // Display filter - options and input field.
     $output .= html_writer::start_div("$groupselectorstyle pt-3");
-    $output .= html_writer::start_span('', ['id' => 'organizer_filterfield']).
-        get_string('searchfilter', 'organizer').$OUTPUT->help_icon('filtertable', 'organizer', '');
-    $output .= html_writer::tag('input', null,
-        ['type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable']);
+    $output .= html_writer::start_span('', ['id' => 'organizer_filterfield']) .
+        get_string('searchfilter', 'organizer') . $OUTPUT->help_icon('filtertable', 'organizer', '');
+    $output .= html_writer::tag(
+        'input',
+        null,
+        ['type' => 'text', 'name' => 'filterparticipants', 'class' => 'organizer_filtertable']
+    );
     $output .= html_writer::end_span();
     $output .= html_writer::end_div();  // Filter options.
 
@@ -537,7 +592,7 @@ function organizer_make_slotoptions_section($mode, $organizer) {
 
     // Display show more - options.
     $output .= html_writer::start_div('mt-3');
-    $output .= html_writer::span(get_string('showmore', 'organizer').
+    $output .= html_writer::span(get_string('showmore', 'organizer') .
         $OUTPUT->help_icon('slotoptionstable', 'organizer'));
     $displayhiddenslots = $mode == ORGANIZER_TAB_APPOINTMENTS_VIEW;
     $displaypastslots = true;
@@ -548,14 +603,22 @@ function organizer_make_slotoptions_section($mode, $organizer) {
         $showhiddenslots = $showpastslots = false;
     }
     if ($displayhiddenslots) {
-        $output .= html_writer::checkbox('show_hidden_slots', '1', $showhiddenslots,
+        $output .= html_writer::checkbox(
+            'show_hidden_slots',
+            '1',
+            $showhiddenslots,
             get_string('infobox_showhiddenslots', 'organizer'),
-            ['id' => 'show_hidden_slots', 'class' => 'slotoptions']);
+            ['id' => 'show_hidden_slots', 'class' => 'slotoptions']
+        );
     }
     if ($displaypastslots) {
-        $output .= html_writer::checkbox('show_past_slots', '1', $showpastslots,
+        $output .= html_writer::checkbox(
+            'show_past_slots',
+            '1',
+            $showpastslots,
             get_string('infobox_showslots', 'organizer'),
-            ['id' => 'show_past_slots', 'class' => 'slotoptions']);
+            ['id' => 'show_past_slots', 'class' => 'slotoptions']
+        );
     }
     $output .= html_writer::end_div();
 

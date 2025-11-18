@@ -41,7 +41,7 @@ require_once(dirname(__FILE__) . '/../../calendar/lib.php');
 require_once(dirname(__FILE__) . '/lib.php');
 require_once(dirname(__FILE__) . '/view_lib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
-require_once($CFG->libdir.'/completionlib.php');
+require_once($CFG->libdir . '/completionlib.php');
 
 $instance = organizer_get_course_module_data_new();
 
@@ -50,8 +50,10 @@ require_login($instance->course, false, $instance->cm);
 $params = organizer_load_params($instance);
 
 if (isset($_SESSION["organizer_new_instance"])) {
-    if ($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW &&
-            ("".$_SESSION["organizer_new_instance"] == "".$instance->organizer->id)) {
+    if (
+        $params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW &&
+            ("" . $_SESSION["organizer_new_instance"] == "" . $instance->organizer->id)
+    ) {
         $_SESSION["organizer_new_instance"] = null;
         $redirecturl = new moodle_url('/mod/organizer/slots_add.php', ['id' => $params['id']]);
         redirect($redirecturl);
@@ -96,7 +98,7 @@ switch ($params['mode']) {
         } else {
             throw new coding_exception('You do not have the permission to view this page!');
         }
-    break;
+        break;
     case ORGANIZER_TAB_STUDENT_VIEW:
         if (has_capability('mod/organizer:viewstudentview', $instance->context)) {
             $event = course_module_viewed::create(
@@ -111,7 +113,7 @@ switch ($params['mode']) {
         } else {
             throw new coding_exception('You do not have the permission to view this page!');
         }
-    break;
+        break;
     case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
         if (has_capability('mod/organizer:viewregistrations', $instance->context)) {
             $event = registrations_viewed::create(
@@ -125,14 +127,14 @@ switch ($params['mode']) {
         } else {
             throw new coding_exception('You do not have the permission to view this page!');
         }
-    break;
+        break;
     case ORGANIZER_ASSIGNMENT_VIEW:
         if (has_capability('mod/organizer:assignslots', $instance->context)) {
             echo organizer_generate_assignment_view($params, $instance);
         } else {
             throw new coding_exception('You do not have the permission to view this page!');
         }
-    break;
+        break;
     default:
         throw new coding_exception("Invalid view mode: {$params['mode']}");
     break;
@@ -215,14 +217,14 @@ function organizer_load_params($instance) {
         case ORGANIZER_TAB_APPOINTMENTS_VIEW:
         case ORGANIZER_TAB_STUDENT_VIEW:
             $params['sort'] = optional_param('sort', 'datetime', PARAM_ALPHA);
-        break;
+            break;
         case ORGANIZER_TAB_REGISTRATION_STATUS_VIEW:
             $params['sort'] = optional_param('sort', '', PARAM_ALPHA);
-        break;
+            break;
         case ORGANIZER_ASSIGNMENT_VIEW:
             $params['assignid'] = required_param('assignid', PARAM_INT);
             $params['sort'] = optional_param('sort', 'datetime', PARAM_ALPHA);
-        break;
+            break;
     }
 
     $params['slots'] = organizer_get_param_slots();

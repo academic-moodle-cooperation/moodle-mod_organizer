@@ -30,7 +30,6 @@ use core\task\scheduled_task;
  * Cron task class.
  */
 class cron_task extends scheduled_task {
-
     /**
      * Get name function
      * @return \lang_string|string
@@ -52,5 +51,4 @@ class cron_task extends scheduled_task {
         include_once($CFG->dirroot . '/mod/organizer/lib.php');
         organizer_cron();
     }
-
 }

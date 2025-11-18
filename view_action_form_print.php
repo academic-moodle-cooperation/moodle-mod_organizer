@@ -49,7 +49,6 @@ require_once(dirname(__FILE__) . '/custom_table_renderer.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class organizer_print_slots_form extends moodleform {
-
     /**
      * Selected columns for the export or printing.
      *
@@ -127,7 +126,8 @@ class organizer_print_slots_form extends moodleform {
             "SELECT o.isgrouporganizer
                 FROM {organizer} o
                 INNER JOIN {organizer_slots} s ON o.id = s.organizerid
-                WHERE s.id = :slotid", $params
+                WHERE s.id = :slotid",
+            $params
         );
 
         $identityfields = explode(',', $CFG->showuseridentity);
@@ -160,7 +160,7 @@ class organizer_print_slots_form extends moodleform {
                 'csv_comma' => get_string('format_csv_comma', 'organizer')];
 
         $mform = organizer_build_printsettingsform($mform, $exportformats);
-        $mform->disabledif ('headerfooter', 'format', 'neq', 'pdf');
+        $mform->disabledif('headerfooter', 'format', 'neq', 'pdf');
 
         $buttonarray = [];
         $buttonarray[] = &$mform->createElement('submit', 'downloadfile', get_string('downloadfile', 'organizer'));
@@ -267,10 +267,18 @@ class organizer_print_slots_form extends moodleform {
             }
         }
 
-        $iconup = $OUTPUT->image_icon('t/up', get_string('up'), 'moodle',
-            ['style' => 'cursor:pointer;margin-left:3px;']);
-        $icondown = $OUTPUT->image_icon('t/down', get_string('down'), 'moodle',
-            ['style' => 'cursor:pointer;margin-left:3px;']);
+        $iconup = $OUTPUT->image_icon(
+            't/up',
+            get_string('up'),
+            'moodle',
+            ['style' => 'cursor:pointer;margin-left:3px;']
+        );
+        $icondown = $OUTPUT->image_icon(
+            't/down',
+            get_string('down'),
+            'moodle',
+            ['style' => 'cursor:pointer;margin-left:3px;']
+        );
 
         $header = [];
         $noprintfieldsarray = [];
@@ -286,7 +294,6 @@ class organizer_print_slots_form extends moodleform {
         $urlinit .= '&action=print';
 
         foreach ($columns as $column) {
-
             $url = $urlinit;
 
             $icon = "";
@@ -320,38 +327,38 @@ class organizer_print_slots_form extends moodleform {
         }
         $table->head = $header;
 
-        switch($tsort) {
+        switch ($tsort) {
             case "datetime":
                 $sort = "starttime";
-            break;
+                break;
             case "location":
                 $sort = "s.location";
-            break;
+                break;
             case "teacher":
                 $sort = null;
                 $order = null;
-            break;
+                break;
             case "groupname":
                 $sort = "groupname";
-            break;
+                break;
             case "participant":
                 $sort = "u.lastname";
-            break;
+                break;
             case "email":
                 $sort = "u.email";
-            break;
+                break;
             case "idnumber":
                 $sort = "u.idnumber";
-            break;
+                break;
             case "attended":
                 $sort = "a.attended";
-            break;
+                break;
             case "grade":
                 $sort = "a.grade";
-            break;
+                break;
             case "feedback":
                 $sort = "a.feedback";
-            break;
+                break;
             default:
                 $sort = null;
                 $order = null;
@@ -379,13 +386,13 @@ class organizer_print_slots_form extends moodleform {
                             . userdate(
                                 $entry->starttime + $entry->duration,
                                 get_string('timetemplate', 'organizer')
-                                );
+                            );
                                 $content = "<span name='{$column}_cell'>" . $datetime . '</span>';
                                 $cell = new html_table_cell($content);
                                 $cell->rowspan = $entry->rowspan;
                                 $cell->attributes['class'] = 'align-middle p-2';
                                 $row->cells[] = $cell;
-                        break;
+                            break;
                         case 'location':
                             $location = $entry->location;
                             $content = "<span name='{$column}_cell'>" . $location . '</span>';
@@ -393,7 +400,7 @@ class organizer_print_slots_form extends moodleform {
                             $cell->rowspan = $entry->rowspan;
                             $cell->attributes['class'] = 'align-middle p-2';
                             $row->cells[] = $cell;
-                        break;
+                            break;
                         case 'teacher':
                             $a = new stdClass();
                             $trainers = organizer_get_slot_trainers($entry->slotid, true);
@@ -410,7 +417,7 @@ class organizer_print_slots_form extends moodleform {
                             $cell->rowspan = $entry->rowspan;
                             $cell->attributes['class'] = 'align-middle p-2';
                             $row->cells[] = $cell;
-                        break;
+                            break;
                         case 'teachercomments':
                             $content = "<span name='{$column}_cell'>" . organizer_filter_text($entry->teachercomments) . '</span>';
                             $cell = new html_table_cell($content);
@@ -428,9 +435,9 @@ class organizer_print_slots_form extends moodleform {
                             $cell->rowspan = $entry->rowspan;
                             $cell->attributes['class'] = 'align-middle p-2';
                             $row->cells[] = $cell;
-                        break;
+                            break;
                         default:
-                        break;
+                            break;
                     }
                 }
 
@@ -441,7 +448,7 @@ class organizer_print_slots_form extends moodleform {
                         $a->firstname = $entry->firstname;
                         $a->lastname = $entry->lastname;
                         $name = get_string('fullname_template', 'organizer', $a);
-                        $content = html_writer::start_span('', ['name' => $column.'_cell']);
+                        $content = html_writer::start_span('', ['name' => $column . '_cell']);
                         $content .= $name;
                         if (!$isgrouporganizer) {
                             $content .= organizer_get_teacherapplicant_output($entry->teacherapplicantid, null);
@@ -450,41 +457,41 @@ class organizer_print_slots_form extends moodleform {
                         $cell = new html_table_cell($content);
                         $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'email':
                         $content = "<span name='{$column}_cell'>" . $entry->email . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'idnumber':
                         $idnumber = (isset($entry->idnumber) && $entry->idnumber !== '') ? $entry->idnumber : '';
                         $content = "<span name='{$column}_cell'>" . $idnumber . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'attended':
                         $attended = isset($entry->attended) ? ($entry->attended == 1 ? 'Yes' : 'No') : '';
                         $content = "<span name='{$column}_cell'>" . $attended . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'grade':
                         $grade = isset($entry->grade) && $entry->grade >= 0 ? sprintf("%01.2f", $entry->grade) : '';
                         $content = "<span name='{$column}_cell'>" . $grade . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'feedback':
                         $feedback = isset($entry->feedback) && $entry->feedback !== '' ? $entry->feedback : '';
                         $content = "<span name='{$column}_cell'>" . $feedback . '</span>';
                         $cell = new html_table_cell($content);
                         $cell->attributes['class'] = 'align-middle p-2';
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'comments':
                         $comments = isset($entry->comments) && $entry->comments !== '' ? $entry->comments : '';
                         $content = "<span name='{$column}_cell'>" . organizer_filter_text($comments) . '</span>';
@@ -497,7 +504,7 @@ class organizer_print_slots_form extends moodleform {
                     case 'teacher':
                     case 'groupname':
                     case 'teachercomments':
-                    break;
+                        break;
                     default:
                         throw new coding_exception("Unsupported column type: $column");
                 }

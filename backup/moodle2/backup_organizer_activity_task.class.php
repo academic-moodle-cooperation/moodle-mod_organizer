@@ -35,7 +35,6 @@ require_once($CFG->dirroot . '/mod/organizer/backup/moodle2/backup_organizer_ste
  * complete backup of the activity
  */
 class backup_organizer_activity_task extends backup_activity_task {
-
     /**
      * Define (add) particular settings this activity can have
      */

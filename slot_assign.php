@@ -81,11 +81,15 @@ if (organizer_is_group_mode()) {
 
 $sent = organizer_prepare_and_send_message($data, 'assign_notify_student'); // Message.
 if ($sent) {  // If slot not in the past.
-    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('assignsuccess',
-        'organizer'), 'success');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+        'assignsuccess',
+        'organizer'
+    ), 'success');
 } else {
-    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string('assignsuccessnotsent',
-        'organizer'), 'error');
+    $_SESSION["infoboxmessage"] = $OUTPUT->notification(get_string(
+        'assignsuccessnotsent',
+        'organizer'
+    ), 'error');
 }
 organizer_prepare_and_send_message($data, 'assign_notify_teacher'); // Message.
 

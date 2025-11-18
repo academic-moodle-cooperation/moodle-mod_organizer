@@ -69,11 +69,15 @@ if ($data = $mform->get_data()) {
                 ]
             );
             $groupname = organizer_fetch_groupname($app->groupid);
-            $infoboxmessage .= $OUTPUT->notification(get_string('message_info_appointment_deleted_group', 'organizer'),
-                'success');
+            $infoboxmessage .= $OUTPUT->notification(
+                get_string('message_info_appointment_deleted_group', 'organizer'),
+                'success'
+            );
         } else {
-            $infoboxmessage .= $OUTPUT->notification(get_string('message_info_appointment_not_deleted', 'organizer'),
-                'error');
+            $infoboxmessage .= $OUTPUT->notification(
+                get_string('message_info_appointment_not_deleted', 'organizer'),
+                'error'
+            );
         }
     } else {
         if (organizer_delete_appointment($data->appid)) {
@@ -83,12 +87,16 @@ if ($data = $mform->get_data()) {
                     'context' => $context,
                 ]
             );
-            $infoboxmessage .= $OUTPUT->notification(get_string('message_info_appointment_deleted', 'organizer'),
-                'success');
+            $infoboxmessage .= $OUTPUT->notification(
+                get_string('message_info_appointment_deleted', 'organizer'),
+                'success'
+            );
             $redirecturl->param('messages[]', 'message_info_appointment_deleted');
         } else {
-            $infoboxmessage .= $OUTPUT->notification(get_string('message_info_appointment_not_deleted', 'organizer'),
-                'error');
+            $infoboxmessage .= $OUTPUT->notification(
+                get_string('message_info_appointment_not_deleted', 'organizer'),
+                'error'
+            );
         }
     }
     $event->trigger();

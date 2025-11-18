@@ -87,24 +87,26 @@ class organizer_print_slotdetail_form extends moodleform {
 
         $params = ['slotid' => $data['slot']];
         $organizer = $DB->get_records_sql(
-                'SELECT o.*
+            'SELECT o.*
                  FROM {organizer} o
                  INNER JOIN {organizer_slots} s ON o.id = s.organizerid
-                 WHERE s.id = :slotid', $params);
+                 WHERE s.id = :slotid',
+            $params
+        );
 
         $organizer = reset($organizer);
 
         if (isset($organizerconfig->enableprintslotuserfields) && $organizerconfig->enableprintslotuserfields) {
             $selcols = [];
             for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
-                if ($organizer->{'singleslotprintfield'.$i}) {
-                    $selcols[] = $organizer->{'singleslotprintfield'.$i};
+                if ($organizer->{'singleslotprintfield' . $i}) {
+                    $selcols[] = $organizer->{'singleslotprintfield' . $i};
                 }
             }
         } else {
             for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
-                if ($organizerconfig->{'singleslotprintfield'.$i}) {
-                    $selcols[] = $organizerconfig->{'singleslotprintfield'.$i};
+                if ($organizerconfig->{'singleslotprintfield' . $i}) {
+                    $selcols[] = $organizerconfig->{'singleslotprintfield' . $i};
                 }
             }
         }
@@ -197,8 +199,7 @@ class organizer_print_slotdetail_form extends moodleform {
 
         $userinfofields = [];
         foreach ($columns as $column) {
-
-            switch($column) {
+            switch ($column) {
                 case 'lastname':
                     $cell = new html_table_cell(organizer_filter_text(get_string('lastname')));
                     break;
@@ -316,7 +317,6 @@ class organizer_print_slotdetail_form extends moodleform {
         foreach ($entries as $entry) {
             $row = $rows[] = new html_table_row();
             foreach ($columns as $column) {
-
                 switch ($column) {
                     case 'fullnameuser':
                         $content = "<span name='{$column}_cell'>" . fullname($entry->id) . '</span>';
@@ -327,7 +327,7 @@ class organizer_print_slotdetail_form extends moodleform {
                         $content = "<span name='{$column}_cell'>" . $entry->lastname . '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'firstname':
                         $content = "<span name='{$column}_cell'>" . $entry->firstname . '</span>';
                         $cell = new html_table_cell($content);
@@ -337,48 +337,55 @@ class organizer_print_slotdetail_form extends moodleform {
                         $content = "<span name='{$column}_cell'>" . $entry->email . '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'idnumber':
                         $idnumber = (isset($entry->idnumber) && $entry->idnumber !== '') ? $entry->idnumber : '';
                         $content = "<span name='{$column}_cell'>" . $idnumber . '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'attended':
                         $attended = isset($entry->attended) ? ($entry->attended == 1 ? get_string('yes') : get_string('no')) : '';
                         $content = "<span name='{$column}_cell'>" . $attended . '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'grade':
                         $grade = isset($entry->grade) && $entry->grade >= 0 ? sprintf("%01.2f", $entry->grade) : '';
                         $content = "<span name='{$column}_cell'>" . $grade . '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'feedback':
                         $feedback = isset($entry->feedback) && $entry->feedback !== '' ? $entry->feedback : '';
                         $content = "<span name='{$column}_cell'>" . $feedback . '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'groupname':
                         $content = "<span name='{$column}_cell'>" . $entry->groupname . '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     case 'signature':
                         $content = "<span name='{$column}_cell'>" . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' .
                             '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
-                    break;
+                        break;
                     default:
                         if (is_numeric($column)) {
-                            if ($userinfodata = $DB->get_field(
-                                    'user_info_data', 'data', ['fieldid' => $column, 'userid' => $entry->id])) {
-                                if (isset($userinfofields[$column]) && ($userinfofields[$column] == 'text' ||
-                                        $userinfofields[$column] == 'textarea')) {
+                            if (
+                                $userinfodata = $DB->get_field(
+                                    'user_info_data',
+                                    'data',
+                                    ['fieldid' => $column, 'userid' => $entry->id]
+                                )
+                            ) {
+                                if (
+                                    isset($userinfofields[$column]) && ($userinfofields[$column] == 'text' ||
+                                        $userinfofields[$column] == 'textarea')
+                                ) {
                                     $cell = new html_table_cell($userinfodata);
                                 } else {
                                     $cell = new html_table_cell("Unsupported column type: $column");
@@ -420,5 +427,4 @@ class organizer_print_slotdetail_form extends moodleform {
 
         return organizer_render_table_with_footer($table, false, true);
     }
-
 }

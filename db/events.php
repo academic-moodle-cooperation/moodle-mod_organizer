@@ -54,4 +54,3 @@ $observers = [
     // We get groupid, userid with this handler.
 
 ];
-
