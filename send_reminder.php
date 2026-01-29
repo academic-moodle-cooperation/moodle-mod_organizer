@@ -57,8 +57,16 @@ $logurl = 'view_action.php?id=' . $cm->id . '&mode=' . $mode . '&action=' . $act
 if ($recipient != null) {
     $recipients = [];
     if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
-        $recipients = get_enrolled_users($context, 'mod/organizer:register', $recipient, 'u.id',
-            'lastname,firstname', null, null, true);
+        $recipients = get_enrolled_users(
+            $context,
+            'mod/organizer:register',
+            $recipient,
+            'u.id',
+            'lastname,firstname',
+            null,
+            null,
+            true
+        );
     } else {
         $recipients = $DB->get_records_list('user', 'id', [$recipient]);
     }
@@ -84,7 +92,8 @@ if ($recipient != null) {
 }
 
 $mform = new organizer_remind_all_form(
-    null, [
+    null,
+    [
         'id' => $cm->id,
         'mode' => $mode,
         'recipients' => isset($recipientsstr) ? $recipientsstr : '',
@@ -99,11 +108,15 @@ if ($data = $mform->get_data()) {
     $count = organizer_remind_all($data->recipient, $recipients, $data->message_custommessage['text']);
     $a->count = $count;
     if ($count == 1) {
-        $infoboxmessage .= $OUTPUT->notification(get_string('message_info_reminders_sent_sg', 'organizer', $a),
-            'success');
+        $infoboxmessage .= $OUTPUT->notification(
+            get_string('message_info_reminders_sent_sg', 'organizer', $a),
+            'success'
+        );
     } else {
-        $infoboxmessage .= $OUTPUT->notification(get_string('message_info_reminders_sent_pl', 'organizer', $a),
-            'success');
+        $infoboxmessage .= $OUTPUT->notification(
+            get_string('message_info_reminders_sent_pl', 'organizer', $a),
+            'success'
+        );
     }
     $event = appointment_reminder_sent::create(
         [

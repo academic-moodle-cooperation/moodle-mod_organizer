@@ -39,7 +39,7 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
     if (!empty($table->align)) {
         foreach ($table->align as $key => $aa) {
             if ($aa) {
-                $table->align[$key] = 'text-align:'. fix_align_rtl($aa) .';';  // Fix for RTL languages.
+                $table->align[$key] = 'text-align:' . fix_align_rtl($aa) . ';';  // Fix for RTL languages.
             } else {
                 $table->align[$key] = null;
             }
@@ -48,7 +48,7 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
     if (!empty($table->size)) {
         foreach ($table->size as $key => $ss) {
             if ($ss) {
-                $table->size[$key] = 'width:'. $ss .';';
+                $table->size[$key] = 'width:' . $ss . ';';
             } else {
                 $table->size[$key] = null;
             }
@@ -74,7 +74,6 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
             if (!isset($table->wrap[$key])) {
                 $table->wrap[$key] = null;
             }
-
         }
     }
     if (empty($table->attributes['class'])) {
@@ -87,7 +86,8 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
     // Explicitly assigned properties override those defined via $table->attributes.
     $table->attributes['class'] = trim($table->attributes['class']);
     $attributes = array_merge(
-        $table->attributes, [
+        $table->attributes,
+        [
             'id'            => $table->id,
             'width'         => $table->width,
             'summary'       => $table->summary,
@@ -141,7 +141,8 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                 }
                 $heading->attributes['class'] = trim($heading->attributes['class']);
                 $attributes = array_merge(
-                    $heading->attributes, [
+                    $heading->attributes,
+                    [
                         'style'     => $table->align[$key] . $table->size[$key] . $heading->style,
                         'scope'     => $heading->scope,
                         'colspan'   => $heading->colspan,
@@ -176,7 +177,8 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
         foreach ($table->data as $key => $row) {
             if (($row === 'hr') && ($countcols)) {
                 $output .= html_writer::tag(
-                    'td', html_writer::tag('div', '', ['class' => 'tabledivider']),
+                    'td',
+                    html_writer::tag('div', '', ['class' => 'tabledivider']),
                     ['colspan' => $countcols]
                 );
             } else {
@@ -250,7 +252,8 @@ function organizer_render_table_with_footer(html_table $table, $printfooter = tr
                     $tdstyle .= isset($table->wrap[$key]) ? $table->wrap[$key] : '';
                     $cell->attributes['class'] = trim($cell->attributes['class']);
                     $tdattributes = array_merge(
-                        $cell->attributes, [
+                        $cell->attributes,
+                        [
                             'style' => $tdstyle . $cell->style,
                             'colspan' => $cell->colspan,
                             'rowspan' => $cell->rowspan,
@@ -300,8 +303,11 @@ function organizer_build_printsettingsform($mform, $exportformats) {
     $pppgroup = [];
     $pppgroup[] = &$mform->createElement('text', 'entriesperpage', get_string('numentries', 'organizer'), ['size' => '2']);
     $pppgroup[] = &$mform->createElement(
-        'advcheckbox', 'printperpage_optimal',
-        '', get_string('stroptimal', 'organizer'), ["group" => 1]
+        'advcheckbox',
+        'printperpage_optimal',
+        '',
+        get_string('stroptimal', 'organizer'),
+        ["group" => 1]
     );
 
     $mform->addGroup($pppgroup, 'printperpagegrp', get_string('numentries', 'organizer'), [' '], false);
@@ -312,29 +318,37 @@ function organizer_build_printsettingsform($mform, $exportformats) {
 
     $mform->addHelpButton('printperpagegrp', 'numentries', 'organizer');
 
-    $mform->disabledif ('entriesperpage', 'printperpage_optimal', 'checked');
-    $mform->disabledif ('printperpagegrp', 'format', 'neq', 'pdf');
+    $mform->disabledif('entriesperpage', 'printperpage_optimal', 'checked');
+    $mform->disabledif('printperpagegrp', 'format', 'neq', 'pdf');
 
     $mform->addElement(
-        'select', 'textsize', get_string('textsize', 'organizer'),
+        'select',
+        'textsize',
+        get_string('textsize', 'organizer'),
         ['8' => get_string('font_small', 'organizer'), '10' => get_string('font_medium', 'organizer'),
             '12' => get_string('font_large', 'organizer')]
     );
 
     $mform->setDefault('textsize', $textsize);
-    $mform->disabledif ('textsize', 'format', 'neq', 'pdf');
+    $mform->disabledif('textsize', 'format', 'neq', 'pdf');
 
     $mform->addElement(
-        'select', 'pageorientation', get_string('pageorientation', 'organizer'),
+        'select',
+        'pageorientation',
+        get_string('pageorientation', 'organizer'),
         ['P' => get_string('orientationportrait', 'organizer'),
             'L' => get_string('orientationlandscape', 'organizer')]
     );
 
     $mform->setDefault('pageorientation', $pageorientation);
-    $mform->disabledif ('pageorientation', 'format', 'neq', 'pdf');
+    $mform->disabledif('pageorientation', 'format', 'neq', 'pdf');
 
     $mform->addElement(
-        'advcheckbox', 'headerfooter', get_string('headerfooter', 'organizer'), null, null,
+        'advcheckbox',
+        'headerfooter',
+        get_string('headerfooter', 'organizer'),
+        null,
+        null,
         [0, 1]
     );
     $mform->setType('headerfooter', PARAM_BOOL);

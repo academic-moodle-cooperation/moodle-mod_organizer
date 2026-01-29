@@ -33,7 +33,6 @@ use moodle_url;
  * The slots_updated event class.
  **/
 class slot_updated extends base {
-
     /**
      * Event init function
      * @return void

@@ -35,7 +35,6 @@
  * Define the complete organizer structure for backup, with file and id annotations
  */
 class backup_organizer_activity_structure_step extends backup_activity_structure_step {
-
     /**
      * Define structure of class
      * @return backup_nested_element
@@ -45,7 +44,8 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
     protected function define_structure() {
         // Define each element separated.
         $organizer = new backup_nested_element(
-            'organizer', ['id'],
+            'organizer',
+            ['id'],
             [
                 'course',
                 'name',
@@ -85,7 +85,8 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
 
         $slots = new backup_nested_element('slots');
         $slot = new backup_nested_element(
-            'slot', ['id'],
+            'slot',
+            ['id'],
             ['organizerid', 'starttime', 'duration', 'gap', 'location', 'locationlink', 'maxparticipants',
                         'visibility', 'availablefrom', 'timemodified', 'notificationtime', 'comments',
             'teachervisible', 'eventid', 'notified', 'visible', 'coursegroup']
@@ -93,7 +94,8 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
 
         $appointments = new backup_nested_element('appointments');
         $appointment = new backup_nested_element(
-            'appointment', ['id'],
+            'appointment',
+            ['id'],
             ['slotid', 'userid', 'groupid', 'applicantid', 'attended', 'grade',
             'feedback', 'comments', 'eventid', 'notified', 'allownewappointments', 'teacherapplicantid',
                     'teacherapplicanttimemodified']
@@ -101,14 +103,16 @@ class backup_organizer_activity_structure_step extends backup_activity_structure
 
         $queues = new backup_nested_element('queues');
         $queue = new backup_nested_element(
-            'queue', ['id'],
+            'queue',
+            ['id'],
             ['slotid', 'userid', 'groupid', 'applicantid', 'eventid', 'notified']
         );
 
         $trainers = new backup_nested_element('trainers');
         $trainer = new backup_nested_element(
-                'trainer', ['id'],
-                ['slotid', 'trainerid', 'eventid']
+            'trainer',
+            ['id'],
+            ['slotid', 'trainerid', 'eventid']
         );
 
         // Build the tree.

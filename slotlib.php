@@ -43,7 +43,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class organizer_slot {
-
     /**
      * The slot object associated with this instance, representing a record from the 'organizer_slots' table.
      *
@@ -349,8 +348,13 @@ class organizer_slot {
         global $DB;
         if ($this->organizer->isgrouporganizer == ORGANIZER_GROUPMODE_EXISTINGGROUPS) {
             $moduleid = $DB->get_field('modules', 'id', ['name' => 'organizer']);
-            if ($groupingid = $DB->get_field('course_modules', 'groupingid',
-                ['module' => $moduleid, 'instance' => $this->organizer->id])) {
+            if (
+                $groupingid = $DB->get_field(
+                    'course_modules',
+                    'groupingid',
+                    ['module' => $moduleid, 'instance' => $this->organizer->id]
+                )
+            ) {
                 $groups = groups_get_user_groups($this->organizer->course);
                 if (!isset($groups[$groupingid]) || !count($groups[$groupingid])) {
                     return false;
@@ -569,7 +573,6 @@ class organizer_slot {
      * @return void
      */
     public function __set(string $name, mixed $value): void {
-
     }
 
     /**
@@ -824,7 +827,8 @@ function organizer_get_all_group_appointments($organizer, $groupid) {
         'SELECT a.* FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             WHERE a.groupid = :groupid AND s.organizerid = :organizerid
-            ORDER BY a.id DESC', $params
+            ORDER BY a.id DESC',
+        $params
     );
 
     return $groupapps;
@@ -855,11 +859,16 @@ function organizer_get_slot_trainers($slotid, $withname = false) {
 				WHERE t.slotid = :slotid';
         $trainers = $DB->get_records_sql($slotquery, $paramssql);
     } else {
-        if ($trainers = $DB->get_fieldset_select(
-                'organizer_slot_trainer', 'trainerid', 'slotid = :slotid', ['slotid' => $slotid])) {
+        if (
+            $trainers = $DB->get_fieldset_select(
+                'organizer_slot_trainer',
+                'trainerid',
+                'slotid = :slotid',
+                ['slotid' => $slotid]
+            )
+        ) {
             sort($trainers);
         }
-
     }
 
     return $trainers;

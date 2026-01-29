@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+5.1.0 (2025-11-12)
+------------------
+* Moodle 5.1 compatible version
+
 5.0.0 (2025-06-08)
 ------------------
 * [FIXED] PR #151 fixed division by zero error

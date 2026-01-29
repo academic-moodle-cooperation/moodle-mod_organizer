@@ -50,8 +50,15 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * @throws dml_exception
  * @throws moodle_exception
  */
-function organizer_send_message($sender, $receiver, $slot, $type, $digest = null, $customdata = [],
-        $trainercheck = false) {
+function organizer_send_message(
+    $sender,
+    $receiver,
+    $slot,
+    $type,
+    $digest = null,
+    $customdata = [],
+    $trainercheck = false
+) {
     global $DB, $CFG;
 
     if (!isset($slot->organizerid)) {
@@ -163,8 +170,18 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
         }
     }
 
-    $message = organizer_build_message($namesplit, $cm, $course, $organizer, $sender, $receiver, $digest,
-        $type, $strings, $customdata);
+    $message = organizer_build_message(
+        $namesplit,
+        $cm,
+        $course,
+        $organizer,
+        $sender,
+        $receiver,
+        $digest,
+        $type,
+        $strings,
+        $customdata
+    );
 
     $message->contexturl        = $CFG->wwwroot . '/mod/organizer/view.php?id=' . $cm->id;
     $message->contexturlname    = $organizer->name;
@@ -193,8 +210,15 @@ function organizer_send_message($sender, $receiver, $slot, $type, $digest = null
  *
  * @return bool True if the message was sent successfully, false otherwise.
  */
-function organizer_send_message_reminder($sender, $receiver, $organizerid, $type, $groupname = null, $digest = null,
-                                         $customdata = []) {
+function organizer_send_message_reminder(
+    $sender,
+    $receiver,
+    $organizerid,
+    $type,
+    $groupname = null,
+    $digest = null,
+    $customdata = []
+) {
 
     [$cm, $course, $organizer, $context] = organizer_get_course_module_data(null, $organizerid);
 
@@ -215,8 +239,18 @@ function organizer_send_message_reminder($sender, $receiver, $organizerid, $type
         $strings->groupname = "";
     }
 
-    $message = organizer_build_message($namesplit, $cm, $course, $organizer, $sender, $receiver, $digest,
-        $type, $strings, $customdata);
+    $message = organizer_build_message(
+        $namesplit,
+        $cm,
+        $course,
+        $organizer,
+        $sender,
+        $receiver,
+        $digest,
+        $type,
+        $strings,
+        $customdata
+    );
 
     if (ORGANIZER_ENABLE_MESSAGING) {
         return message_send($message);
@@ -252,7 +286,6 @@ function organizer_send_message_from_trainer($receiver, $slot, $type, $digest = 
     }
 
     return $success;
-
 }
 
 
@@ -327,8 +360,15 @@ function organizer_prepare_and_send_message($data, $type) {
                         continue;
                     }
                     // Edit notify student: Send notification to participant.
-                    $sentok = organizer_send_message(intval($trainerid), intval($app->userid), $slot, $type, null,
-                        $customdata, true);
+                    $sentok = organizer_send_message(
+                        intval($trainerid),
+                        intval($app->userid),
+                        $slot,
+                        $type,
+                        null,
+                        $customdata,
+                        true
+                    );
                 }
             }
             break;
@@ -366,16 +406,25 @@ function organizer_prepare_and_send_message($data, $type) {
                     }
 
                     // Eval notify student: Send notification to participant.
-                    $sentok = organizer_send_message(intval($USER->id), intval($app->userid), $slot, $type,
-                        null, $customdata, true);
+                    $sentok = organizer_send_message(
+                        intval($USER->id),
+                        intval($app->userid),
+                        $slot,
+                        $type,
+                        null,
+                        $customdata,
+                        true
+                    );
                 }
             }
             break;
         case 'register_notify_teacher:register':
             $slot = $DB->get_record('organizer_slots', ['id' => $data]);
             $organizer = $DB->get_record('organizer', ['id' => $slot->organizerid]);
-            if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG ||
-                    $organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
+            if (
+                $organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG ||
+                    $organizer->emailteachers == ORGANIZER_MESSAGES_ALL
+            ) {
                 $trainers = organizer_get_slot_trainers($slot->id);
                 foreach ($trainers as $trainerid) {
                     // Register notify trainer: Send notification to trainer.
@@ -398,8 +447,10 @@ function organizer_prepare_and_send_message($data, $type) {
         case 'register_notify_teacher:unregister':
             $slot = $DB->get_record('organizer_slots', ['id' => $data]);
             $organizer = $DB->get_record('organizer', ['id' => $slot->organizerid]);
-            if ($organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG ||
-                $organizer->emailteachers == ORGANIZER_MESSAGES_ALL) {
+            if (
+                $organizer->emailteachers == ORGANIZER_MESSAGES_RE_UNREG ||
+                $organizer->emailteachers == ORGANIZER_MESSAGES_ALL
+            ) {
                 $trainers = organizer_get_slot_trainers($slot->id);
                 foreach ($trainers as $trainerid) {
                     // Reregister and unregister notify trainer: Send notification to trainer.
@@ -430,8 +481,15 @@ function organizer_prepare_and_send_message($data, $type) {
                 }
                 if ($app->userid != $USER->id) {
                     // Group registrations, unregistrations, queues notify participant:Send notification to participant.
-                    $sentok = organizer_send_message(intval($USER->id), intval($app->userid),
-                        $slot, $type, null, null, true);
+                    $sentok = organizer_send_message(
+                        intval($USER->id),
+                        intval($app->userid),
+                        $slot,
+                        $type,
+                        null,
+                        null,
+                        true
+                    );
                 }
             }
             break;
@@ -446,8 +504,15 @@ function organizer_prepare_and_send_message($data, $type) {
             } else {
                 $groupname = null;
             }
-            return organizer_send_message_reminder(intval($USER->id), intval($data['user']),
-                $organizerid, $type, $groupname, null, ['custommessage' => $data['custommessage']]);
+            return organizer_send_message_reminder(
+                intval($USER->id),
+                intval($data['user']),
+                $organizerid,
+                $type,
+                $groupname,
+                null,
+                ['custommessage' => $data['custommessage']]
+            );
         case 'assign_notify_student':
             $slot = $DB->get_record('organizer_slots', ['id' => $data->selectedslot]);
             $customdata = [];
@@ -455,11 +520,13 @@ function organizer_prepare_and_send_message($data, $type) {
             if (!$slotx->is_past_due()) {
                 if ($data->participant) {  // If organizer instance is in single mode.
                     $apps = $DB->get_records(
-                        'organizer_slot_appointments', ['slotid' => $data->selectedslot, 'userid' => $data->participant]
+                        'organizer_slot_appointments',
+                        ['slotid' => $data->selectedslot, 'userid' => $data->participant]
                     );
                 } else { // If organizer instance is group mode.
                     $apps = $DB->get_records(
-                        'organizer_slot_appointments', ['slotid' => $data->selectedslot, 'groupid' => $data->group]
+                        'organizer_slot_appointments',
+                        ['slotid' => $data->selectedslot, 'groupid' => $data->group]
                     );
                     if ($groupname = organizer_fetch_groupname($data->group)) {
                         $customdata['groupname'] = $groupname;
@@ -472,8 +539,15 @@ function organizer_prepare_and_send_message($data, $type) {
                         continue;
                     }
                     // Assign notify participant: Send notification to participant.
-                    $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($app->userid),
-                        $slot, $type, null, $customdata, true);
+                    $sentok = organizer_send_message(
+                        intval($app->teacherapplicantid),
+                        intval($app->userid),
+                        $slot,
+                        $type,
+                        null,
+                        $customdata,
+                        true
+                    );
                 }
             }
             break;
@@ -483,11 +557,13 @@ function organizer_prepare_and_send_message($data, $type) {
             if (!$slotx->is_past_due()) {
                 if ($data->participant) {
                     $apps = $DB->get_records(
-                        'organizer_slot_appointments', ['slotid' => $data->selectedslot, 'userid' => $data->participant]
+                        'organizer_slot_appointments',
+                        ['slotid' => $data->selectedslot, 'userid' => $data->participant]
                     );
                 } else {
                     $apps = $DB->get_records(
-                        'organizer_slot_appointments', ['slotid' => $data->selectedslot, 'groupid' => $data->group]
+                        'organizer_slot_appointments',
+                        ['slotid' => $data->selectedslot, 'groupid' => $data->group]
                     );
                 }
                 if ($app = reset($apps)) {
@@ -502,8 +578,14 @@ function organizer_prepare_and_send_message($data, $type) {
                                 $customdata['groupname'] = organizer_fetch_groupname($data->group);
                             }
                             // Assign notify trainer: Send notification to trainer.
-                            $sentok = organizer_send_message(intval($app->teacherapplicantid), intval($trainerid),
-                                $slotx, $type, null, $customdata);
+                            $sentok = organizer_send_message(
+                                intval($app->teacherapplicantid),
+                                intval($trainerid),
+                                $slotx,
+                                $type,
+                                null,
+                                $customdata
+                            );
                         }
                     }
                 } else { // If no app was found there is no need to send messages.
@@ -578,8 +660,18 @@ function organizer_check_messagerights($sender, $receiver, $cm, $course, $organi
  * @return message The constructed message object ready to be sent.
  * @throws coding_exception
  */
-function organizer_build_message($namesplit, $cm, $course, $organizer, $sender, $receiver, $digest,
-                                 $type, $strings, $customdata) {
+function organizer_build_message(
+    $namesplit,
+    $cm,
+    $course,
+    $organizer,
+    $sender,
+    $receiver,
+    $digest,
+    $type,
+    $strings,
+    $customdata
+) {
 
     $messagename = count($namesplit) == 1 ? "$namesplit[0]" : "$namesplit[0]_$namesplit[1]";
     $strings->location = $strings->location ?? false ? $strings->location : get_string('nolocationplaceholder', 'organizer');
@@ -599,7 +691,10 @@ function organizer_build_message($namesplit, $cm, $course, $organizer, $sender, 
     $message->subject = get_string("$type:subject", 'organizer', $strings);
     $message->fullmessage = get_string("$type:fullmessage", 'organizer', $strings);
     $message->fullmessagehtml = organizer_make_html(
-        get_string("$type:fullmessage", 'organizer', $strings), $organizer, $cm, $course
+        get_string("$type:fullmessage", 'organizer', $strings),
+        $organizer,
+        $cm,
+        $course
     );
     if (isset($customdata['custommessage'])) {
         $message->fullmessage = str_replace('{$a->custommessage}', $customdata['custommessage'], $message->fullmessage);

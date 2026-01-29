@@ -52,8 +52,10 @@ require_capability('mod/organizer:deleteslots', $context);
 
 $infoboxmessage = "";
 if (!$slots) {
-    $infoboxmessage .= $OUTPUT->notification(get_string('message_warning_no_slots_selected', 'organizer'),
-        'error');
+    $infoboxmessage .= $OUTPUT->notification(
+        get_string('message_warning_no_slots_selected', 'organizer'),
+        'error'
+    );
     redirect($redirecturl);
 }
 
@@ -64,8 +66,10 @@ if ($data = $mform->get_data()) {
     if (isset($slots)) {
         $notified = 0;
         foreach ($slots as $slotid) {
-            if ($organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPSLOT ||
-                    $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPBOOKING) {
+            if (
+                $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPSLOT ||
+                    $organizer->isgrouporganizer == ORGANIZER_GROUPMODE_NEWGROUPBOOKING
+            ) {
                 organizer_delete_coursegroup(null, $slotid);
             }
             $notified += organizer_delete_appointment_slot($slotid);
@@ -78,11 +82,15 @@ if ($data = $mform->get_data()) {
         $event->trigger();
 
         if ($a->deleted == 1) {
-            $infoboxmessage .= $OUTPUT->notification(get_string('message_info_slots_deleted_sg', 'organizer', $a),
-                'success');
+            $infoboxmessage .= $OUTPUT->notification(
+                get_string('message_info_slots_deleted_sg', 'organizer', $a),
+                'success'
+            );
         } else {
-            $infoboxmessage .= $OUTPUT->notification(get_string('message_info_slots_deleted_pl', 'organizer', $a),
-                'success');
+            $infoboxmessage .= $OUTPUT->notification(
+                get_string('message_info_slots_deleted_pl', 'organizer', $a),
+                'success'
+            );
         }
     }
     if ($infoboxmessage) {

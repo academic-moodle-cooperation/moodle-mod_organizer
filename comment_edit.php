@@ -58,7 +58,6 @@ require_capability('mod/organizer:comment', $context);
 $mform = new organizer_comment_slot_form(null, ['id' => $cm->id, 'slot' => $slot]);
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
-
     $app = $DB->get_record('organizer_slot_appointments', ['slotid' => $slot, 'userid' => $USER->id]);
 
     organizer_update_comments($app->id, $data->comments);

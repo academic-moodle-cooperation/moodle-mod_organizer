@@ -34,7 +34,6 @@ use mod_grouptool\event\registration_deleted;
  * Event observer for mod_organizer.
  */
 class mod_organizer_observer {
-
     /**
      * Triggered via user_enrolment_deleted event.
      *
@@ -64,8 +63,11 @@ class mod_organizer_observer {
                 [$slotselect, $slotparams] = $DB->get_in_or_equal(array_keys($slots), SQL_PARAMS_NAMED);
                 $slotparams['userid'] = $cp->userid;
 
-                $slotappointments = $DB->get_records_select('organizer_slot_appointments',
-                    'userid = :userid AND slotid ' . $slotselect, $slotparams);
+                $slotappointments = $DB->get_records_select(
+                    'organizer_slot_appointments',
+                    'userid = :userid AND slotid ' . $slotselect,
+                    $slotparams
+                );
 
                 foreach ($slotappointments as $slotappointment) {
                     $slot = $slots[$slotappointment->slotid];
@@ -79,8 +81,10 @@ class mod_organizer_observer {
                                     organizer_register_appointment($slot->id, 0, $next->userid, true);
                                     organizer_delete_from_queue($slot->id, $next->userid);
                                     $booked = organizer_count_bookedslots($organizer->id, $next->userid, null);
-                                    if (organizer_multiplebookings_status($booked, $organizer->id)
-                                        == USERSLOTS_MAX_REACHED) {
+                                    if (
+                                        organizer_multiplebookings_status($booked, $organizer->id)
+                                        == USERSLOTS_MAX_REACHED
+                                    ) {
                                         organizer_delete_user_from_any_queue($organizer->id, $next->userid, null);
                                     }
                                 }
@@ -108,24 +112,35 @@ class mod_organizer_observer {
         $userid = $event->relateduserid;
 
         $params = ['groupid' => $groupid, 'groupmode' => ORGANIZER_GROUPMODE_EXISTINGGROUPS];
-        if ($groupapps = $DB->get_records_sql(
-            'SELECT DISTINCT a.id, a.slotid, a.applicantid, a.teacherapplicantid, s.organizerid
+        if (
+            $groupapps = $DB->get_records_sql(
+                'SELECT DISTINCT a.id, a.slotid, a.applicantid, a.teacherapplicantid, s.organizerid
             FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             INNER JOIN {organizer} o ON o.id = s.organizerid
             WHERE a.groupid = :groupid AND o.isgrouporganizer = :groupmode
             AND o.synchronizegroupmembers = 1
-            ORDER BY a.slotid ASC', $params
-        )) {
+            ORDER BY a.slotid ASC',
+                $params
+            )
+        ) {
             require_once(__DIR__ . '/../messaging.php');
             $slotid = 0;
             foreach ($groupapps as $groupapp) {
                 if ($groupapp->slotid != $slotid) {
-                    if (!$DB->get_field('organizer_slot_appointments', 'id', ['slotid' => $groupapp->slotid,
-                        'userid' => $userid])) {
-                        organizer_register_single_appointment($groupapp->slotid, $userid,
-                            $groupapp->applicantid, $groupid, $groupapp->teacherapplicantid,
-                            false, null, $groupapp->organizerid
+                    if (
+                        !$DB->get_field('organizer_slot_appointments', 'id', ['slotid' => $groupapp->slotid,
+                        'userid' => $userid])
+                    ) {
+                        organizer_register_single_appointment(
+                            $groupapp->slotid,
+                            $userid,
+                            $groupapp->applicantid,
+                            $groupid,
+                            $groupapp->teacherapplicantid,
+                            false,
+                            null,
+                            $groupapp->organizerid
                         );
                     }
                     $slotid = $groupapp->slotid;
@@ -154,14 +169,17 @@ class mod_organizer_observer {
         $userid = $event->relateduserid;
 
         $params = ['groupid' => $groupid, 'userid' => $userid, 'groupmode' => ORGANIZER_GROUPMODE_EXISTINGGROUPS];
-        if ($apps = $DB->get_records_sql(
-            'SELECT DISTINCT a.id
+        if (
+            $apps = $DB->get_records_sql(
+                'SELECT DISTINCT a.id
             FROM {organizer_slot_appointments} a
             INNER JOIN {organizer_slots} s ON a.slotid = s.id
             INNER JOIN {organizer} o ON o.id = s.organizerid
             WHERE a.groupid = :groupid AND a.userid = :userid AND o.isgrouporganizer = :groupmode
-            AND o.synchronizegroupmembers = 1', $params
-        )) {
+            AND o.synchronizegroupmembers = 1',
+                $params
+            )
+        ) {
             require_once(__DIR__ . '/../messaging.php');
             foreach ($apps as $app) {
                 organizer_delete_appointment($app->id);
@@ -170,5 +188,4 @@ class mod_organizer_observer {
 
         return true;
     }
-
 }

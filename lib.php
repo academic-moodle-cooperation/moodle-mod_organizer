@@ -226,7 +226,7 @@ function organizer_delete_instance($id) {
  */
 function organizer_user_outline($course, $user, $mod, $organizer) {
     // Tscpr: do we need this function if it's returning just nothing?
-    $return = new stdClass;
+    $return = new stdClass();
     $return->time = time();
     $return->info = '';
     return $return;
@@ -333,7 +333,9 @@ function organizer_reset_userdata($data) {
     if ($data->timeshift) {
         $ok = shift_course_mod_dates(
             'organizer',
-            ['allowregistrationsfromdate', 'duedate'], $data->timeshift, $data->courseid
+            ['allowregistrationsfromdate', 'duedate'],
+            $data->timeshift,
+            $data->courseid
         );
         $status[] = ['component' => $componentstr, 'item' => get_string('timeshift', 'organizer'),
                 'error' => !$ok];
@@ -781,7 +783,7 @@ SQL;
 
     $deletedusers = $DB->get_records_sql($sql, ['now' => $now]);
     foreach ($deletedusers as $du) {
-        $org = new stdClass;
+        $org = new stdClass();
         $org->id = $du->organizerid;
         $org->isgrouporganizer = $du->isgrouporganizer;
         organizer_unregister_single_appointment($du->slotid, $du->userid, $org);
@@ -833,8 +835,13 @@ SQL;
     $apps = $DB->get_records_sql($appsquery, $params);
     foreach ($apps as $app) {
         $customdata = ['showsendername' => intval($app->teachervisible == 1)];
-        $success &= organizer_send_message_from_trainer(intval($app->userid), $app,
-            'appointment_reminder_student', null, $customdata);
+        $success &= organizer_send_message_from_trainer(
+            intval($app->userid),
+            $app,
+            'appointment_reminder_student',
+            null,
+            $customdata
+        );
     }
 
     if (empty($apps)) {
@@ -903,8 +910,11 @@ SQL;
         if ($found) {
             // Reminder for trainer in cron job.
             $success &= $thissuccess = organizer_send_message(
-                intval($trainerid), intval($trainerid), reset($slots),
-                'appointment_reminder_teacher', $digest
+                intval($trainerid),
+                intval($trainerid),
+                reset($slots),
+                'appointment_reminder_teacher',
+                $digest
             );
 
             if ($thissuccess) {
@@ -948,7 +958,7 @@ function organizer_create_digest($trainerid) {
             $date = userdate($slot->starttime, get_string('datetemplate', 'organizer'));
             $time = userdate($slot->starttime, get_string('timetemplate', 'organizer'));
         }
-        $digest .= $date.', '.$time.' @ '.$slot->location.'; ';
+        $digest .= $date . ', ' . $time . ' @ ' . $slot->location . '; ';
         $DB->execute("UPDATE {organizer_slots} SET notified = 1 WHERE id = $slot->slotid");
     }
 
@@ -1106,7 +1116,7 @@ function organizer_get_coursemodule_info($coursemodule) {
 function organizer_remove_waitingqueueentries($organizer) {
     global $DB;
 
-    $query = "slotid in (select id from {organizer_slots} where organizerid = ".$organizer->id.")";
+    $query = "slotid in (select id from {organizer_slots} where organizerid = " . $organizer->id . ")";
     $ok = $DB->delete_records_select('organizer_slot_queues', $query);
     return $ok;
 }
@@ -1122,7 +1132,8 @@ function organizer_remove_waitingqueueentries($organizer) {
  * @param  action_factory $factory
  * @return action_interface|null
  */
-function mod_organizer_core_calendar_provide_event_action(calendar_event $event,
+function mod_organizer_core_calendar_provide_event_action(
+    calendar_event $event,
     action_factory $factory
 ) {
     // Due to significant performance issues, it always returns null!
@@ -1236,15 +1247,30 @@ function organizer_change_event_instance($organizer, $eventids = []) {
         $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : 0;
         $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
         return organizer_change_calendarevent(
-            $eventids, $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
-            $USER->id, $startdate, $duration, 0, $organizer->id
+            $eventids,
+            $organizer,
+            $eventtitle,
+            $eventdescription,
+            ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
+            $USER->id,
+            $startdate,
+            $duration,
+            0,
+            $organizer->id
         );
     } else {
         $startdate = $organizer->allowregistrationsfromdate ? $organizer->allowregistrationsfromdate : 0;
         $duration = $organizer->duedate ? $organizer->duedate - $startdate : 0;
         return organizer_create_calendarevent(
-            $organizer, $eventtitle, $eventdescription, ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
-            $USER->id, $startdate, $duration, 0, $organizer->id
+            $organizer,
+            $eventtitle,
+            $eventdescription,
+            ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE,
+            $USER->id,
+            $startdate,
+            $duration,
+            0,
+            $organizer->id
         );
     }
 }
@@ -1269,12 +1295,20 @@ function organizer_change_event_instance($organizer, $eventids = []) {
  *
  * @return int|false Returns the event ID if created or false on failure.
  */
-function organizer_create_calendarevent($organizer, $eventtitle, $eventdescription, $eventtype, $userid,
-    $timestart, $duration, $group, $uuid
+function organizer_create_calendarevent(
+    $organizer,
+    $eventtitle,
+    $eventdescription,
+    $eventtype,
+    $userid,
+    $timestart,
+    $duration,
+    $group,
+    $uuid
 ) {
     global $CFG, $DB;
 
-    include_once($CFG->dirroot.'/calendar/lib.php');
+    include_once($CFG->dirroot . '/calendar/lib.php');
 
     $event = new stdClass();
     $event->eventtype = $eventtype;
@@ -1349,12 +1383,21 @@ function organizer_create_calendarevent($organizer, $eventtitle, $eventdescripti
  *
  * @return bool Returns true on successful update.
  */
-function organizer_change_calendarevent($eventids, $organizer, $eventtitle, $eventdescription, $eventtype, $userid,
-    $timestart, $duration, $group, $uuid
+function organizer_change_calendarevent(
+    $eventids,
+    $organizer,
+    $eventtitle,
+    $eventdescription,
+    $eventtype,
+    $userid,
+    $timestart,
+    $duration,
+    $group,
+    $uuid
 ) {
     global $CFG;
 
-    include_once($CFG->dirroot.'/calendar/lib.php');
+    include_once($CFG->dirroot . '/calendar/lib.php');
 
     $data = new stdClass();
     $data->eventtype = $eventtype;

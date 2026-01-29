@@ -17,5 +17,5 @@ workflow:
     - when: always
 
 include:
-  - component: $CI_SERVER_FQDN/amc/moodle/moodle-ci/moodle-plugin-ci@5.0
-  - component: $CI_SERVER_FQDN/amc/moodle/moodle-ci/moodle-devil-app@5.0
+  - component: $CI_SERVER_FQDN/amc/moodle/moodle-ci/moodle-plugin-ci@5.1
+  - component: $CI_SERVER_FQDN/amc/moodle/moodle-ci/moodle-devil-app@5.1

@@ -50,13 +50,16 @@ class organizer_comment_slot_form extends moodleform {
         $mform->setType('comment', PARAM_INT);
 
         $mform->addElement(
-            'textarea', 'comments', get_string('appointmentcomments', 'organizer'),
+            'textarea',
+            'comments',
+            get_string('appointmentcomments', 'organizer'),
             ['wrap' => 'virtual', 'rows' => '10', 'cols' => '80']
         );
         $mform->setType('comments', PARAM_RAW);
 
         $comments = $DB->get_field(
-            'organizer_slot_appointments', 'comments',
+            'organizer_slot_appointments',
+            'comments',
             ['slotid' => $data['slot'], 'userid' => $USER->id]
         );
 

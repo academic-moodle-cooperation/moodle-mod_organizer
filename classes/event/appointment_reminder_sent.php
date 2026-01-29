@@ -33,7 +33,6 @@ use moodle_url;
  * The appointment_reminder_sent event class.
  **/
 class appointment_reminder_sent extends base {
-
     /**
      * Init method of event
      * @return void

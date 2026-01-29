@@ -47,7 +47,6 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class organizer_delete_slots_form extends moodleform {
-
     /**
      * Defines the form elements for deleting organizer slots.
      *
@@ -101,8 +100,12 @@ class organizer_delete_slots_form extends moodleform {
                 }
             }
             if (!$deletableslots) {
-                $mform->addElement('static', '', '',
-                    html_writer::span(get_string('deletenoslots', 'organizer'), 'text-danger'));
+                $mform->addElement(
+                    'static',
+                    '',
+                    '',
+                    html_writer::span(get_string('deletenoslots', 'organizer'), 'text-danger')
+                );
             }
             $exceptions = false;
             foreach ($slots as $slot) {

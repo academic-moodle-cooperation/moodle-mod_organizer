@@ -35,9 +35,13 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading('organizerintro', '', get_string('configintro', 'organizer')));
 
     // Maximumgrade.
-    $settings->add(new admin_setting_configtext('organizer/maximumgrade',
-            get_string('maximumgrade'),
-            get_string('configmaximumgrade', 'organizer'), 0, PARAM_INT));
+    $settings->add(new admin_setting_configtext(
+        'organizer/maximumgrade',
+        get_string('maximumgrade'),
+        get_string('configmaximumgrade', 'organizer'),
+        0,
+        PARAM_INT
+    ));
 
     // E-mail teachers.
 
@@ -48,9 +52,14 @@ if ($ADMIN->fulltree) {
     $pickeroptions[ORGANIZER_MESSAGES_ALL] = get_string('messages_all', 'organizer');
 
     $settings->add(
-            new admin_setting_configselect('organizer/emailteachers',
-                    get_string('configemailteachers_label', 'organizer'),
-                    get_string('configemailteachers', 'organizer'), 1, $pickeroptions));
+        new admin_setting_configselect(
+            'organizer/emailteachers',
+            get_string('configemailteachers_label', 'organizer'),
+            get_string('configemailteachers', 'organizer'),
+            1,
+            $pickeroptions
+        )
+    );
 
     // Appointment digest time.
     $pickeroptions = [];
@@ -60,9 +69,14 @@ if ($ADMIN->fulltree) {
     }
 
     $settings->add(
-            new admin_setting_configselect('organizer/digest',
-                    get_string('configdigest_label', 'organizer'),
-                    get_string('configdigest', 'organizer'), 'never', $pickeroptions));
+        new admin_setting_configselect(
+            'organizer/digest',
+            get_string('configdigest_label', 'organizer'),
+            get_string('configdigest', 'organizer'),
+            'never',
+            $pickeroptions
+        )
+    );
 
     // Registration end after regsistration start.
     $abschoices = [];
@@ -79,9 +93,14 @@ if ($ADMIN->fulltree) {
     $abschoices['+1 year'] = '1 ' . get_string('configyear', 'organizer');
 
     $settings->add(
-            new admin_setting_configselect('organizer/absolutedeadline',
-                    get_string('absolutedeadline', 'organizer'),
-                    get_string('configabsolutedeadline', 'organizer'), 'never', $abschoices));
+        new admin_setting_configselect(
+            'organizer/absolutedeadline',
+            get_string('absolutedeadline', 'organizer'),
+            get_string('configabsolutedeadline', 'organizer'),
+            'never',
+            $abschoices
+        )
+    );
 
     // Relative deadline before the slot date for sending remembrance email to students.
     $relchoices = [];
@@ -99,39 +118,75 @@ if ($ADMIN->fulltree) {
     $relchoices[86400 * 2] = '2 ' . get_string('configdays', 'organizer') . ' ' . get_string('configahead', 'organizer');
 
     $settings->add(
-            new admin_setting_configselect('organizer/relativedeadline',
-                    get_string('relativedeadline', 'organizer'),
-                    get_string('configrelativedeadline', 'organizer'), 86400, $relchoices));
+        new admin_setting_configselect(
+            'organizer/relativedeadline',
+            get_string('relativedeadline', 'organizer'),
+            get_string('configrelativedeadline', 'organizer'),
+            86400,
+            $relchoices
+        )
+    );
 
     $yesno = ['0' => get_string('no'), '1' => get_string('yes')];
     $settings->add(
-            new admin_setting_configselect('organizer/allowcreationofpasttimeslots',
-                    get_string('allowcreationofpasttimeslots', 'organizer'),
-                    get_string('configallowcreationofpasttimeslots', 'organizer'), 0, $yesno));
+        new admin_setting_configselect(
+            'organizer/allowcreationofpasttimeslots',
+            get_string('allowcreationofpasttimeslots', 'organizer'),
+            get_string('configallowcreationofpasttimeslots', 'organizer'),
+            0,
+            $yesno
+        )
+    );
 
     // Show participant's identity in registration view.
-    $settings->add(new admin_setting_configcheckbox('organizer/dontshowidentity', get_string('cfg_dontshowidentity', 'organizer'),
-        get_string('cfg_dontshowidentity_desc', 'organizer'), 0));
+    $settings->add(new admin_setting_configcheckbox(
+        'organizer/dontshowidentity',
+        get_string('cfg_dontshowidentity', 'organizer'),
+        get_string('cfg_dontshowidentity_desc', 'organizer'),
+        0
+    ));
 
     // Use moodle 4.x smaller content design.
-    $settings->add(new admin_setting_configcheckbox('organizer/limitedwidth', get_string('cfg_limitedwidth', 'organizer'),
-        get_string('cfg_limitedwidth_desc', 'organizer'), 0));
+    $settings->add(new admin_setting_configcheckbox(
+        'organizer/limitedwidth',
+        get_string('cfg_limitedwidth', 'organizer'),
+        get_string('cfg_limitedwidth_desc', 'organizer'),
+        0
+    ));
 
     // Synchronize organizer slots with Moodle group changes.
-    $settings->add(new admin_setting_configcheckbox('organizer/synchronizegroupmembers',
+    $settings->add(new admin_setting_configcheckbox(
+        'organizer/synchronizegroupmembers',
         get_string('synchronizegroupmembers', 'organizer'),
-        get_string('synchronizegroupmembers_help', 'organizer'), 0));
+        get_string('synchronizegroupmembers_help', 'organizer'),
+        0
+    ));
 
     // Predefine locations for slots, make location mandatory.
-    $settings->add(new admin_setting_heading('organizerlocationsettings', '',
-        get_string('locationsettings', 'organizer')));
+    $settings->add(new admin_setting_heading(
+        'organizerlocationsettings',
+        '',
+        get_string('locationsettings', 'organizer')
+    ));
 
     $settings->add(
-        new admin_setting_configcheckbox('organizer/locationmandatory',
-            get_string('locationmandatory', 'organizer'), null, 0));
+        new admin_setting_configcheckbox(
+            'organizer/locationmandatory',
+            get_string('locationmandatory', 'organizer'),
+            null,
+            0
+        )
+    );
 
-    $settings->add(new admin_setting_configtextarea('mod_organizer/locations', get_string('configlocationslist', 'organizer'),
-            get_string('configlocationslist_desc', 'organizer'), '', PARAM_TEXT, '60', '8'));
+    $settings->add(new admin_setting_configtextarea(
+        'mod_organizer/locations',
+        get_string('configlocationslist', 'organizer'),
+        get_string('configlocationslist_desc', 'organizer'),
+        '',
+        PARAM_TEXT,
+        '60',
+        '8'
+    ));
 
 
     // User profile fields for printing single slots.
@@ -139,31 +194,49 @@ if ($ADMIN->fulltree) {
     $selectableprofilefields = organizer_printslotuserfields();
 
     // Allowed User profile fields for printing single slots.
-    $settings->add(new admin_setting_heading('allowedprofilefieldsprint', '',
-        get_string('allowedprofilefieldsprint', 'organizer')));
+    $settings->add(new admin_setting_heading(
+        'allowedprofilefieldsprint',
+        '',
+        get_string('allowedprofilefieldsprint', 'organizer')
+    ));
 
     $settings->add(
-        new admin_setting_configcheckbox('organizer/enableprintslotuserfields',
+        new admin_setting_configcheckbox(
+            'organizer/enableprintslotuserfields',
             get_string('enableprintslotuserfields', 'organizer'),
-            get_string('enableprintslotuserfieldsdesc', 'organizer'), 1));
+            get_string('enableprintslotuserfieldsdesc', 'organizer'),
+            1
+        )
+    );
     $settings->add(
-        new admin_setting_configmultiselect('organizer/allowedprofilefieldsprint',
-           get_string('allowedprofilefieldsprint', 'organizer'),
+        new admin_setting_configmultiselect(
+            'organizer/allowedprofilefieldsprint',
+            get_string('allowedprofilefieldsprint', 'organizer'),
             get_string('allowedprofilefieldsprint2', 'organizer'),
-            array_keys($selectableprofilefields), $selectableprofilefields));
+            array_keys($selectableprofilefields),
+            $selectableprofilefields
+        )
+    );
 
 
-    $settings->add(new admin_setting_heading('organizersingleslotprintfields', '',
-        get_string('defaultsingleslotprintfields', 'organizer')));
+    $settings->add(new admin_setting_heading(
+        'organizersingleslotprintfields',
+        '',
+        get_string('defaultsingleslotprintfields', 'organizer')
+    ));
 
 
     $selectableprofilefields = ['' => '--'] + $selectableprofilefields;
 
     for ($i = 0; $i <= ORGANIZER_PRINTSLOTUSERFIELDS; $i++) {
         $settings->add(
-            new admin_setting_configselect('organizer/singleslotprintfield' . $i,
+            new admin_setting_configselect(
+                'organizer/singleslotprintfield' . $i,
                 $i + 1 . '. ' . get_string('singleslotprintfield', 'organizer'),
-                null, '', $selectableprofilefields));
+                null,
+                '',
+                $selectableprofilefields
+            )
+        );
     }
-
 }

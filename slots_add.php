@@ -70,18 +70,24 @@ if ($data = $mform->get_data()) {  // When page is called the first time (=empty
 
             $a->count = $finalslots;
             if ($finalslots == 1) {
-                $infoboxmessage .= $OUTPUT->notification(get_string('message_info_slots_added_sg', 'organizer', $a),
-                    'success');
+                $infoboxmessage .= $OUTPUT->notification(
+                    get_string('message_info_slots_added_sg', 'organizer', $a),
+                    'success'
+                );
             } else {
-                $infoboxmessage .= $OUTPUT->notification(get_string('message_info_slots_added_pl', 'organizer', $a),
-                    'success');
+                $infoboxmessage .= $OUTPUT->notification(
+                    get_string('message_info_slots_added_pl', 'organizer', $a),
+                    'success'
+                );
             }
             $redirecturl->param('slots', implode(',', array_values($slotids)));
         }
         if ($slotsnotcreatedduetodeadline) {
             $a->slots = $slotsnotcreatedduetodeadline;
-            $infoboxmessage .= $OUTPUT->notification(get_string('infobox_deadline_passed_slotphp', 'organizer', $a),
-                'error');
+            $infoboxmessage .= $OUTPUT->notification(
+                get_string('infobox_deadline_passed_slotphp', 'organizer', $a),
+                'error'
+            );
         }
         if ($slotsnotcreatedduetopasttime) {
             $a->slots = $slotsnotcreatedduetopasttime;

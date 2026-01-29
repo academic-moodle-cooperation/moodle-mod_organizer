@@ -40,11 +40,16 @@ function xmldb_organizer_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2012081401) {
-
         // Changing precision of field grade on table organizer to (10, 5).
         $table = new xmldb_table('organizer');
         $field = new xmldb_field(
-            'grade', XMLDB_TYPE_NUMBER, '10, 5', null, XMLDB_NOTNULL, null, '0',
+            'grade',
+            XMLDB_TYPE_NUMBER,
+            '10, 5',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            '0',
             'relativedeadline'
         );
 
@@ -58,11 +63,16 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2012081404) {
-
         // Changing precision of field grade on table organizer to (10, 5).
         $table = new xmldb_table('organizer_slot_appointments');
         $field = new xmldb_field(
-            'grade', XMLDB_TYPE_NUMBER, '10, 5', null, null, null, null,
+            'grade',
+            XMLDB_TYPE_NUMBER,
+            '10, 5',
+            null,
+            null,
+            null,
+            null,
             'attended'
         );
 
@@ -76,7 +86,6 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2012122601) {
-
         // Define index slots_eventid (not unique) to be dropped form organizer_slots.
         $table = new xmldb_table('organizer_slots');
         $index = new xmldb_index('slots_organizerid', XMLDB_INDEX_NOTUNIQUE, ['organizerid']);
@@ -158,14 +167,26 @@ function xmldb_organizer_upgrade($oldversion) {
         $table = new xmldb_table('organizer');
 
         $field = new xmldb_field(
-            'duedate', XMLDB_TYPE_INTEGER, '10',
-            XMLDB_UNSIGNED, false, null, '0', 'allowregistrationsfromdate'
+            'duedate',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            XMLDB_UNSIGNED,
+            false,
+            null,
+            '0',
+            'allowregistrationsfromdate'
         );
         $dbman->change_field_notnull($table, $field);
 
         $field = new xmldb_field(
-            'allowregistrationsfromdate', XMLDB_TYPE_INTEGER,
-            '10', XMLDB_UNSIGNED, false, null, '0', 'emailteachers'
+            'allowregistrationsfromdate',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            XMLDB_UNSIGNED,
+            false,
+            null,
+            '0',
+            'emailteachers'
         );
         $dbman->change_field_notnull($table, $field);
 
@@ -184,18 +205,29 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2014032400) {
-
         $table = new xmldb_table('organizer');
 
         $field = new xmldb_field(
-            'duedate', XMLDB_TYPE_INTEGER,
-            '10', XMLDB_UNSIGNED, false, null, '0', 'allowregistrationsfromdate'
+            'duedate',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            XMLDB_UNSIGNED,
+            false,
+            null,
+            '0',
+            'allowregistrationsfromdate'
         );
         $dbman->change_field_notnull($table, $field);
 
         $field = new xmldb_field(
-            'allowregistrationsfromdate', XMLDB_TYPE_INTEGER,
-            '10', XMLDB_UNSIGNED, false, null, '0', 'emailteachers'
+            'allowregistrationsfromdate',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            XMLDB_UNSIGNED,
+            false,
+            null,
+            '0',
+            'emailteachers'
         );
         $dbman->change_field_notnull($table, $field);
 
@@ -204,7 +236,6 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2015012004) {
-
         // Changing precision of field grade on table organizer to INT(10), like in all the other modules.
         $table = new xmldb_table('organizer');
         $field = new xmldb_field('grade', XMLDB_TYPE_INTEGER, '10');
@@ -217,7 +248,6 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2015111900) {
-
         // Define field gap to be added to organizer_slots.
         $table = new xmldb_table('organizer_slots');
         $field = new xmldb_field('gap', XMLDB_TYPE_INTEGER, '4', null, null, null, null, 'duration');
@@ -231,7 +261,6 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2016041800) {
-
         // Define field queue to be added to organizer.
         $table = new xmldb_table('organizer');
         $field = new xmldb_field('queue', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'grade');
@@ -308,7 +337,6 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2016060801) {
-
         // Define field teacherapplicantid and teacherapplicanttimemodified to be added to organizer_slot_appointments.
         $table = new xmldb_table('organizer_slot_appointments');
         $field = new xmldb_field('teacherapplicantid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'allownewappointments');
@@ -318,8 +346,16 @@ function xmldb_organizer_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        $field = new xmldb_field('teacherapplicanttimemodified',
-                XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'teacherapplicantid');
+        $field = new xmldb_field(
+            'teacherapplicanttimemodified',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            null,
+            null,
+            null,
+            null,
+            'teacherapplicantid'
+        );
 
         // Conditionally launch add field teacherapplicanttimemodified.
         if (!$dbman->field_exists($table, $field)) {
@@ -331,7 +367,6 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2016062800) {
-
          // Changing precision of field duration on table organizer_slots to INT(10).
         $table = new xmldb_table('organizer_slots');
         $field = new xmldb_field('duration', XMLDB_TYPE_INTEGER, '10');
@@ -344,7 +379,6 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2017062300) {
-
         // Changing events created with organizer version 3.2 and before to work with calender action events.
 
         include_once(dirname(__FILE__) . '/../locallib.php');
@@ -363,7 +397,6 @@ function xmldb_organizer_upgrade($oldversion) {
         $query = "SELECT e.* FROM {event} e WHERE e.id = :eventid";
 
         foreach ($records as $record) {
-
             $event = $DB->get_record_sql($query, ["eventid" => $record->eventid]);
             $courseid = $DB->get_field('organizer', 'course', ['id' => $record->organizerid]);
 
@@ -382,10 +415,14 @@ function xmldb_organizer_upgrade($oldversion) {
             }
             $update = $DB->update_record('event', $event);
             // Insert event-ds for the organizer instance, if there is none yet.
-            if (!$DB->get_field(
-                'event', 'id', ['modulename' => 'organizer', 'instance' => $record->organizerid,
-                'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE]
-            )) {
+            if (
+                !$DB->get_field(
+                    'event',
+                    'id',
+                    ['modulename' => 'organizer', 'instance' => $record->organizerid,
+                    'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE]
+                )
+            ) {
                 organizer_change_event_instance($record->organizerid);
             }
         }
@@ -394,7 +431,6 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2017112201) {
-
         // Define field visible to be added to organizer_slots.
         $table = new xmldb_table('organizer_slots');
         $field = new xmldb_field('visible', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '1', 'notified');
@@ -408,7 +444,6 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018062602) {
-
         // Define table organizer_slot_trainer to be created.
         $table = new xmldb_table('organizer_slot_trainer');
 
@@ -434,13 +469,11 @@ function xmldb_organizer_upgrade($oldversion) {
             $newrecord = new stdClass();
 
             foreach ($records as $record) {
-
                 $newrecord->slotid = $record->slotid;
                 $newrecord->trainerid = $record->teacherid;
                 $newrecord->eventid = $record->eventid;
                 $newid = $DB->insert_record('organizer_slot_trainer', $newrecord);
             }
-
         }
 
         // Define index slots_userid (not unique) to be dropped form organizer_slots.
@@ -476,8 +509,16 @@ function xmldb_organizer_upgrade($oldversion) {
 
         // Define field includetraineringroups to be added to organizer.
         $table = new xmldb_table('organizer');
-        $field = new xmldb_field('includetraineringroups', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
-            'nocalendareventslotcreation');
+        $field = new xmldb_field(
+            'includetraineringroups',
+            XMLDB_TYPE_INTEGER,
+            '4',
+            null,
+            null,
+            null,
+            '0',
+            'nocalendareventslotcreation'
+        );
 
         // Conditionally launch add field includetraineringroups.
         if (!$dbman->field_exists($table, $field)) {
@@ -559,14 +600,12 @@ function xmldb_organizer_upgrade($oldversion) {
         }
 
         upgrade_mod_savepoint(true, 2018062602, 'organizer');
-
     }
 
     if ($oldversion < 2018081002) {
-
         // Changing precision of field coursegroup on table organizer_slots to (10).
         $table = new xmldb_table('organizer_slots');
-        $field = new xmldb_field('coursegroup',  XMLDB_TYPE_INTEGER, '10');
+        $field = new xmldb_field('coursegroup', XMLDB_TYPE_INTEGER, '10');
         // Launch change of precision.
         $dbman->change_field_precision($table, $field);
 
@@ -574,13 +613,12 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018081003) {
-
         // Delete instance events where the underlaying module instances had been deleted.
         $select = "select distinct(e.id) as id from {event} e left join {organizer} o ON e.instance = o.id
                     where e.modulename = :modulename and e.eventtype = :eventtype and o.id is null;";
         $parms = ['modulename' => 'organizer', 'eventtype' => ORGANIZER_CALENDAR_EVENTTYPE_INSTANCE];
         if ($ids = $DB->get_fieldset_sql($select, $parms)) {
-            list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+            [$insql, $inparams] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
             $select = "id $insql";
             $DB->delete_records_select('event', $select);
         }
@@ -630,7 +668,10 @@ function xmldb_organizer_upgrade($oldversion) {
                 if (!$slot->nocalendareventslotcreation) {
                     $trainerslot = new stdClass();
                     $slottrainers = $DB->get_records_select(
-                        'organizer_slot_trainer', 'slotid = :slotid', ['slotid' => $slot->id]);
+                        'organizer_slot_trainer',
+                        'slotid = :slotid',
+                        ['slotid' => $slot->id]
+                    );
                     foreach ($slottrainers as $trainer) {
                         $trainerslot->id = $trainer->id;
                         $trainerslot->eventid = organizer_add_event_slot($slot->cmid, $slot->id, $trainer->trainerid);
@@ -641,15 +682,21 @@ function xmldb_organizer_upgrade($oldversion) {
         }
 
         upgrade_mod_savepoint(true, 2018081003, 'organizer');
-
     }
 
     if ($oldversion < 2019052700) {
-
         // Define field locationfieldmandatory to be added to organizer.
         $table = new xmldb_table('organizer');
-        $field = new xmldb_field('locationfieldmandatory', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
-            'nocalendareventslotcreation');
+        $field = new xmldb_field(
+            'locationfieldmandatory',
+            XMLDB_TYPE_INTEGER,
+            '4',
+            null,
+            null,
+            null,
+            '0',
+            'nocalendareventslotcreation'
+        );
 
         // Conditionally launch add field locationfieldmandatory.
         if (!$dbman->field_exists($table, $field)) {
@@ -660,17 +707,32 @@ function xmldb_organizer_upgrade($oldversion) {
     }
 
     if ($oldversion < 2020020501) {
-
         $table = new xmldb_table('organizer');
-        $field = new xmldb_field('allowedprofilefieldsprint', XMLDB_TYPE_TEXT, null,
-            null, null, null, null, 'singleslotprintfield9');
+        $field = new xmldb_field(
+            'allowedprofilefieldsprint',
+            XMLDB_TYPE_TEXT,
+            null,
+            null,
+            null,
+            null,
+            null,
+            'singleslotprintfield9'
+        );
         // Conditionally launch add field allowedprofilefieldsprint. Github-issue #43.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        $field = new xmldb_field('enableprintslotuserfields', XMLDB_TYPE_INTEGER, '4', null,
-            null, null, null, 'allowedprofilefieldsprint');
+        $field = new xmldb_field(
+            'enableprintslotuserfields',
+            XMLDB_TYPE_INTEGER,
+            '4',
+            null,
+            null,
+            null,
+            null,
+            'allowedprofilefieldsprint'
+        );
         // Conditionally launch add field enableprintslotuserfields. Github-issue #43.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -739,8 +801,16 @@ function xmldb_organizer_upgrade($oldversion) {
     if ($oldversion < 2024041502) {
         $table = new xmldb_table('organizer');
 
-        $field = new xmldb_field('synchronizegroupmembers', XMLDB_TYPE_INTEGER, '4', null, null, null, '0',
-            'userslotsmax');
+        $field = new xmldb_field(
+            'synchronizegroupmembers',
+            XMLDB_TYPE_INTEGER,
+            '4',
+            null,
+            null,
+            null,
+            '0',
+            'userslotsmax'
+        );
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -752,8 +822,16 @@ function xmldb_organizer_upgrade($oldversion) {
 
         $table = new xmldb_table('organizer_slot_appointments');
 
-        $field = new xmldb_field('registrationtime',
-            XMLDB_TYPE_INTEGER, '10', null, true, null, '0', 'teacherapplicanttimemodified');
+        $field = new xmldb_field(
+            'registrationtime',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            null,
+            true,
+            null,
+            '0',
+            'teacherapplicanttimemodified'
+        );
 
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -779,8 +857,16 @@ function xmldb_organizer_upgrade($oldversion) {
         $table = new xmldb_table('organizer');
 
         // Define field grade to change its type.
-        $field = new xmldb_field('grade',
-            XMLDB_TYPE_INTEGER, '10', null, true, null, '1', 'enableprintslotuserfields');
+        $field = new xmldb_field(
+            'grade',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            null,
+            true,
+            null,
+            '1',
+            'enableprintslotuserfields'
+        );
         $dbman->change_field_type($table, $field);
 
         // Define field gradeaggregationmethod to change its default value.
@@ -788,13 +874,29 @@ function xmldb_organizer_upgrade($oldversion) {
         $dbman->change_field_default($table, $field);
 
         // Define field userslotsmin to change its default value.
-        $field = new xmldb_field('userslotsmin',
-            XMLDB_TYPE_INTEGER, '4', null, false, null, '1', 'enableprintslotuserfields');
+        $field = new xmldb_field(
+            'userslotsmin',
+            XMLDB_TYPE_INTEGER,
+            '4',
+            null,
+            false,
+            null,
+            '1',
+            'enableprintslotuserfields'
+        );
         $dbman->change_field_default($table, $field);
 
         // Define field userslotsmax to change its default value.
-        $field = new xmldb_field('userslotsmax',
-            XMLDB_TYPE_INTEGER, '4', null, false, null, '1', 'userslotsmin');
+        $field = new xmldb_field(
+            'userslotsmax',
+            XMLDB_TYPE_INTEGER,
+            '4',
+            null,
+            false,
+            null,
+            '1',
+            'userslotsmin'
+        );
         $dbman->change_field_default($table, $field);
 
         upgrade_mod_savepoint(true, 2025012200, 'organizer');

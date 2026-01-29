@@ -114,7 +114,6 @@ function export_ics_file($slots, $activityname, $activitydescription) {
 
         // End the event.
         $icscontent .= "END:VEVENT\r\n";
-
     }
 
     // Close the calendar.

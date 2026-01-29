@@ -61,7 +61,6 @@ class organizer_evaluate_slots_form extends moodleform {
 
         $i = 0;
         foreach ($data['slots'] as $slotid) {
-
             $mform->addElement('hidden', "slots[$i]", $slotid);
             $mform->setType("slots[$i]", PARAM_INT);
             $i++;
@@ -125,8 +124,14 @@ class organizer_evaluate_slots_form extends moodleform {
                 $mform->addElement($mform->createElement('static', '', '', $namelink));
                 // Formgroup evaluation.
                 $appgroup = [];
-                $appgroup[] = $mform->createElement('advcheckbox', 'attended',
-                    get_string('eval_attended', 'organizer'), '', null, [0, 1]);
+                $appgroup[] = $mform->createElement(
+                    'advcheckbox',
+                    'attended',
+                    get_string('eval_attended', 'organizer'),
+                    '',
+                    null,
+                    [0, 1]
+                );
                 $maxgrade = $organizer->grade;
                 if ($maxgrade != 0) {
                     $grademenu = organizer_make_grades_menu_organizer($maxgrade);
@@ -135,9 +140,9 @@ class organizer_evaluate_slots_form extends moodleform {
                 $appgroup[] = $mform->createElement('static', '', '', '&nbsp;' .
                     get_string('eval_feedback', 'organizer') . ':&nbsp;');
                 $appgroup[] = $mform->createElement('text', 'feedback', null, ['class' => 'w-25']);
-                $mform->disabledif ("{$name}[attended]", $checkboxname);
-                $mform->disabledif ("{$name}[grade]", $checkboxname);
-                $mform->disabledif ("{$name}[feedback]", $checkboxname);
+                $mform->disabledif("{$name}[attended]", $checkboxname);
+                $mform->disabledif("{$name}[grade]", $checkboxname);
+                $mform->disabledif("{$name}[feedback]", $checkboxname);
                 $mform->setType("{$name}[attended]", PARAM_INT);
                 $mform->setDefault("{$name}[attended]", $app->attended);
                 if ($maxgrade != 0) {
@@ -171,5 +176,4 @@ class organizer_evaluate_slots_form extends moodleform {
         $identity = $identity ? "&nbsp;(" . $identity . ")" : "";
         return html_writer::link($profileurl, $name) . $identity;
     }
-
 }

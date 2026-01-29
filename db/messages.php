@@ -67,4 +67,3 @@ $messageproviders = [
         'appointmentdeleted_notify_student' => ['capability' => 'mod/organizer:receivemessagesstudent',
                 'defaults' => ['popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED, 'email' => MESSAGE_FORCED]],
 ];
-

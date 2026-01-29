@@ -34,7 +34,6 @@ use moodle_url;
  * The appointment_added event class.
  **/
 class queue_added extends base {
-
     /**
      * Event init function
      * @return void
