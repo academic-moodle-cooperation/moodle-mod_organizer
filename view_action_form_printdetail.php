@@ -319,7 +319,7 @@ class organizer_print_slotdetail_form extends moodleform {
             foreach ($columns as $column) {
                 switch ($column) {
                     case 'fullnameuser':
-                        $content = "<span name='{$column}_cell'>" . fullname($entry->id) . '</span>';
+                        $content = "<span name='{$column}_cell'>" . fullname($entry) . '</span>';
                         $cell = new html_table_cell($content);
                         $row->cells[] = $cell;
                         break;

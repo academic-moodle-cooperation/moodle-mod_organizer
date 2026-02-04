@@ -4,6 +4,7 @@ CHANGELOG
 5.1.0 (2025-11-12)
 ------------------
 * Moodle 5.1 compatible version
+* [BUG] #8668 - Fix slot print with fullname 
 
 5.0.0 (2025-06-08)
 ------------------
