@@ -2522,9 +2522,13 @@ function organizer_fetch_printdetail_entries($slot) {
         $params[$paramname] = $socialfield->id;
     }
 
+    $allnames = \core_user\fields::get_name_fields();
+    $allnamessql = '';
+    foreach ($allnames as $namefield) {
+        $allnamessql .= 'u.' . $namefield . ', ';
+    }
     $query = "SELECT u.id,
-                    u.firstname,
-                    u.lastname,
+                    $allnamessql
                     u.email,
                     u.idnumber,
                     a.attended,
