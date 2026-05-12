@@ -167,6 +167,7 @@ function organizer_update_instance($organizer) {
  * @throws dml_exception
  */
 function organizer_delete_instance($id) {
+	include_once(dirname(__FILE__) . '/messaging.php');
     global $DB;
 
     if (!$organizer = $DB->get_record('organizer', ['id' => $id])) {
