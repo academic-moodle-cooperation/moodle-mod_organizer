@@ -2,9 +2,6 @@ default:
   tags:
     - moodle
 
-variables:
-  MUSTACHE_IGNORE_NAMES: 'sortlist_entry.mustache'
-
 stages:
   - preflight
   - test
@@ -17,5 +14,17 @@ workflow:
     - when: always
 
 include:
-  - component: $CI_SERVER_FQDN/amc/moodle/moodle-ci/moodle-plugin-ci@5.1
-  - component: $CI_SERVER_FQDN/amc/moodle/moodle-ci/moodle-devil-app@5.1
+  - component: $CI_SERVER_FQDN/amc/moodle/moodle-ci/moodle-plugin-ci@5.2
+  - component: $CI_SERVER_FQDN/amc/moodle/moodle-ci/moodle-devil-app@5.2
+validate:
+  variables:
+    MUSTACHE_IGNORE_NAMES: 'sortlist_entry.mustache'
+test:postgres:
+  variables:
+    MUSTACHE_IGNORE_NAMES: 'sortlist_entry.mustache'
+test:mysql:
+  variables:
+    MUSTACHE_IGNORE_NAMES: 'sortlist_entry.mustache'
+test:mariadb:
+  variables:
+    MUSTACHE_IGNORE_NAMES: 'sortlist_entry.mustache'
