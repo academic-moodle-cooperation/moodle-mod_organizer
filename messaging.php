@@ -637,7 +637,7 @@ function organizer_check_messagerights($sender, $receiver, $cm, $course, $organi
     $now = time();
     $instancenotactive = !$cm->visible || (isset($cm->availablefrom) && $cm->availablefrom && $cm->availablefrom > $now)
         || (isset($cm->availableuntil) && $cm->availableuntil && $cm->availableuntil < $now);
-    $receiveteachermailsright = has_capability('mod/organizer:receivemessagesteacher', $context);
+    $receiveteachermailsright = has_capability('mod/organizer:receivemessagesteacher', $context, $receiver->id);
     $notrainermail = $trainercheck && $organizer->emailteachers == ORGANIZER_MESSAGES_NONE && $receiveteachermailsright;
     if ($instancenotactive || $hasnoroles || $notrainermail) {
         return false;

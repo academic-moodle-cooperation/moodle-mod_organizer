@@ -3225,12 +3225,14 @@ function organizer_remind_all($recipient = null, $recipients = [], $custommessag
     $count = 0;
     foreach ($entries as $entry) {
         if (!in_array($entry->id, $nonrecepients)) {
-            organizer_prepare_and_send_message(
+            $sent = organizer_prepare_and_send_message(
                 ['user' => $entry->id, 'organizer' => $organizer,
                     'custommessage' => $custommessage],
                 'register_reminder_student'
             );
-            $count++;
+            if ($sent) {
+                $count++;
+            }
         }
     }
     return $count;
