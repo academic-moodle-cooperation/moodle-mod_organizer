@@ -643,7 +643,7 @@ $string['modformwarningplural'] = 'These fields cannot be edited as there are ap
 $string['modformwarningsingular'] = 'This field cannot be edited as there are appointments already made in this organizer!';
 $string['modulename'] = 'Organizer';
 $string['modulename_help'] = '
-###### Key Features: 
+###### Key Features:
  * Create appointments for individuals or groups, so that students can register independently for their preferred slot.
  * Record students’ attendance and feedback.
 ###### Application Scenarios:
