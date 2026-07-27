@@ -703,6 +703,10 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
     $showpastslots = false;
     $showmyslotsonly = false;
 
+    // Keep private when the admin setting is set, and we're not in the appointments view (teacher view).
+    $keeplocationlinkprivate = get_config('mod_organizer', 'keeplocationlinkprivate')
+        && !($params['mode'] == ORGANIZER_TAB_APPOINTMENTS_VIEW);
+
     $onlyownslotsmsg = "";
 
     $rows = [];
@@ -841,6 +845,12 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
             if (($params['mode'] == ORGANIZER_TAB_STUDENT_VIEW) && $isuserslot) {
                 $row->attributes['class'] .= ' registered_slot';
             }
+
+            $locationlink = ($slot->location ?? null) ?: '-';
+            if (!$keeplocationlinkprivate || $app !== null) {
+                $locationlink = organizer_location_link($slot);
+            }
+
             foreach ($columns as $column) {
                 switch ($column) {
                     case 'select':
@@ -856,10 +866,9 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                     break;
                     case 'datetime':
                         if ($params['limitedwidth']) {
-                            $llink = organizer_location_link($slot);
                             $text = organizer_date_time($slot, true);
-                            if ($llink != "-") {
-                                $text .= "<br>".$llink;
+                            if ($locationlink != "-") {
+                                $text .= "<br>".$locationlink;
                             }
                             $cell = $row->cells[] = new html_table_cell($text);
                         } else {
@@ -867,7 +876,7 @@ function organizer_generate_table_content($columns, $params, $organizer, $onlyow
                         }
                     break;
                     case 'location':
-                        $cell = $row->cells[] = new html_table_cell(organizer_location_link($slot));
+                        $cell = $row->cells[] = new html_table_cell($locationlink);
                     break;
                     case 'participants':
                         $cell = $row->cells[] = new html_table_cell(

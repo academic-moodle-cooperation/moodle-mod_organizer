@@ -133,6 +133,9 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtextarea('mod_organizer/locations', get_string('configlocationslist', 'organizer'),
             get_string('configlocationslist_desc', 'organizer'), '', PARAM_TEXT, '60', '8'));
 
+    $settings->add(new admin_setting_configcheckbox('mod_organizer/keeplocationlinkprivate',
+            get_string('configkeeplocationlinkprivate', 'organizer'),
+            get_string('configkeeplocationlinkprivate_desc', 'organizer'), false));
 
     // User profile fields for printing single slots.
 
