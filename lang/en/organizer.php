@@ -642,7 +642,16 @@ $string['min_pl'] = 'mins';
 $string['modformwarningplural'] = 'These fields cannot be edited as there are appointments already made in this organizer!';
 $string['modformwarningsingular'] = 'This field cannot be edited as there are appointments already made in this organizer!';
 $string['modulename'] = 'Organizer';
-$string['modulename_help'] = 'Organizers enable teachers to make appointments with students by creating time slots which students can register to.';
+$string['modulename_help'] = '
+###### Key Features:
+ * Create appointments for individuals or groups, so that students can register independently for their preferred slot.
+ * Record students’ attendance and feedback.
+###### Application Scenarios:
+ * Create appointments for group submission meetings for project work so that students can register independently for a desired appointment. For example, the appointments should be set up for 15 minutes each on Tuesday to Thursday between 8:00 and 12:00 over the next two weeks. Registration, deregistration and re-registration should be possible up to 2 days before the respective appointment. Student attendance and assessments should be documented.';
+$string['modulename_summary'] = 'The "Organizer" activity allows teachers to make appointments or time slots available to students.';
+$string['modulename_tip'] = '
+<p><a href="https://academic-moodle-cooperation.org/anleitungen/terminplaner-erweiterte-funktionen-und-tipps/?lng=en" target="_blank"><i class="icon fa fa-info-circle"></i>Instruction: "Organizer: create and advanced options"</a></p>
+<p><a href="https://academic-moodle-cooperation.org/anleitungen/terminplaner-termine-verwalten/?lng=en" target="_blank"><i class="icon fa fa-info-circle"></i>Instruction: "Organizer: manage time slots"</a></p>';
 $string['modulenameplural'] = 'Organizers';
 $string['monthlyview'] = 'Monthly view';
 $string['multimember'] = 'Users cannot belong to multiple course groups!';

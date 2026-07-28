@@ -68,6 +68,20 @@ function organizer_send_message(
 
     [$cm, $course, $organizer, $context] = organizer_get_course_module_data(0, $organizerid);
 
+    // Privacy: if the slot's trainers are hidden from participants (teachervisible == 0),
+    // never disclose a trainer/teacher as the sender of a student notification.
+    // Send from the no-reply user instead (same pattern as organizer_register_appointment()).
+    $hiddensendertypes = [
+        'appointment_reminder_student',
+        'edit_notify_student',
+        'eval_notify_student',
+        'eval_notify_newappointment',
+        'assign_notify_student',
+    ];
+    if (empty($slot->teachervisible) && in_array(explode(':', $type)[0], $hiddensendertypes, true)) {
+        $sender = core_user::get_noreply_user();
+    }
+
     $strings = organizer_check_messagerights($sender, $receiver, $cm, $course, $organizer, $context, $trainercheck);
     if (!$strings) {
         return false;
@@ -114,6 +128,7 @@ function organizer_send_message(
             $strings->slot_teacher = implode(', ', $teachers);
         } else {
             $strings->slot_teacher = get_string('teacherinvisible', 'organizer');
+            $strings->sendername = get_string('teacherinvisible', 'organizer');
         }
         $strings->slot_location = organizer_location_link($slot);
         if (isset($customdata['participantname'])) {
@@ -622,7 +637,7 @@ function organizer_check_messagerights($sender, $receiver, $cm, $course, $organi
     $now = time();
     $instancenotactive = !$cm->visible || (isset($cm->availablefrom) && $cm->availablefrom && $cm->availablefrom > $now)
         || (isset($cm->availableuntil) && $cm->availableuntil && $cm->availableuntil < $now);
-    $receiveteachermailsright = has_capability('mod/organizer:receivemessagesteacher', $context);
+    $receiveteachermailsright = has_capability('mod/organizer:receivemessagesteacher', $context, $receiver->id);
     $notrainermail = $trainercheck && $organizer->emailteachers == ORGANIZER_MESSAGES_NONE && $receiveteachermailsright;
     if ($instancenotactive || $hasnoroles || $notrainermail) {
         return false;

@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+5.2.0 (2026-07-24)
+------------------
+* Moodle 5.2 compatible version
+* [FIXED] #8744 - fix sending teacher name in notifications when teachervisible = 0
+
 5.1.0 (2025-11-12)
 ------------------
 * Moodle 5.1 compatible version
