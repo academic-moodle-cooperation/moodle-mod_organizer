@@ -33,5 +33,5 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component = 'mod_organizer';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release   = 'v5.2.0';
-$plugin->requires = 2026042000; // Requires Moodle 5.1.0+.
+$plugin->requires = 2026042000;
 $plugin->version  = 2026072400;
